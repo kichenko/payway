@@ -14,6 +14,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @EnableVaadin
 @Configuration
-public class VaadinSampleConfiguration {
+public class AdminVaadinConfiguration {
 
 }

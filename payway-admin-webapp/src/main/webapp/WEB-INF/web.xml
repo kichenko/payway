@@ -2,32 +2,51 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
     <display-name>Vaadin sample web application</display-name>
-    
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    
-    <context-param>
-        <description>Vaadin production mode</description>
-        <param-name>${productionMode}</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    
+
+    <!-- spring context -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/context/application-context.xml</param-value>
-    </context-param> 
-          
+    </context-param>
+
     <servlet>
         <servlet-name>VaadinSampleServlet</servlet-name>
-        <servlet-class>com.payway.core.VaadinSampleServlet</servlet-class>             
+        <servlet-class>com.payway.core.AdminVaadinSpringServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>VaadinSampleServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-       
+
+    <!-- vaadin context params -->
+    <context-param>
+        <description>Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>${productionMode}</param-value>
+    </context-param>
+
+    <context-param>
+        <description>Vaadin UI heartbeat interval (seconds)</description>
+        <param-name>heartbeatInterval</param-name>
+        <param-value>300</param-value>
+    </context-param>
+
+    <context-param>
+        <description>Vaadin closeIdleSessions</description>
+        <param-name>closeIdleSessions</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <!-- session timeout in minutes -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
 </web-app>

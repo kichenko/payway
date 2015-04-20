@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.ui;
+package com.payway.admin.ui;
 
 import com.payway.spring.beans.VaadinSampleSpringBean;
 import com.vaadin.annotations.Theme;
@@ -17,14 +17,14 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
- * Vaadin sample UI
+ * UI viewport of admin webapp
  *
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
 @SpringUI
 @Theme("valo")
-public class VaadinSampleUI extends UI {
+public final class AdminUI extends UI {
 
     @Autowired
     private VaadinSampleSpringBean bean;

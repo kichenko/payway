@@ -11,10 +11,10 @@
     </parent>
         
     <groupId>com.payway</groupId>
-    <artifactId>payway-admin-ui</artifactId>
+    <artifactId>payway-admin-webapp</artifactId>
     
     <packaging>war</packaging>
-    <name>payway-admin-ui</name>
+    <name>payway-admin-webapp</name>
     
     <!-- используем версию родителя-->
     <!--<version>1.0-SNAPSHOT</version>-->
@@ -76,7 +76,7 @@
     <!-- build -->
     <build>   
              
-        <finalName>payway-admin-ui</finalName>
+        <finalName>payway-admin-webapp</finalName>
                 
         <plugins>
 		
