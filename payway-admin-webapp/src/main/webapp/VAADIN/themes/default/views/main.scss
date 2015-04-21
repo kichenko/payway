@@ -1,0 +1,49 @@
+@mixin admin-main-view {
+
+    .main-view {
+        height: 100%;
+        width: 100%;
+        background: green;
+    }
+
+    .main-panel-left {
+        background: yellowgreen;
+        height: 100%;
+        width: 15%;
+    }
+
+    .main-panel-right {
+        background: aqua;
+        height: 100%;
+        width: 85%;
+    }
+
+    .main-panel-header
+    {
+        background: gray;
+        height: 10%;
+        width: 100%;
+    }
+
+    .main-panel-content {
+        background: darkorange;
+        height: 80%;
+        width: 100%;
+    }
+
+    .main-panel-footer {
+        background: gray;
+        height: 10%;
+        width: 100%;
+    }
+
+    .main-user-menu {
+        float:right;
+        margin: 5px;
+    }
+
+    .main-panel-full {
+        height: 100%;
+        width: 100%;
+    }
+}

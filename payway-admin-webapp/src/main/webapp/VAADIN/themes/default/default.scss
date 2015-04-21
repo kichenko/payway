@@ -1,0 +1,11 @@
+@import "../valo/valo";
+@import "views/login";
+@import "views/main";
+@import "components/sidebarmenu";
+
+@mixin default {
+    @include valo;
+    @include admin-login-view;
+    @include admin-main-view;
+    @include sidebar-menu-component;
+}
