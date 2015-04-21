@@ -1,85 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
-        
+
     <parent>
         <artifactId>payway</artifactId>
         <groupId>com.payway</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-        
+
     <groupId>com.payway</groupId>
     <artifactId>payway-admin-webapp</artifactId>
-    
+
     <packaging>war</packaging>
     <name>payway-admin-webapp</name>
-    
+
     <!-- используем версию родителя-->
     <!--<version>1.0-SNAPSHOT</version>-->
-    
+
     <properties>
-        
+
         <!-- project settings -->
-        
+
         <!-- vaadin production mode in web.xml -->
         <productionMode>false</productionMode>
-		
+
         <!-- plugin version-->
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <plugin.m2elifecycle-mapping.version> 1.0.0</plugin.m2elifecycle-mapping.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-        		
+
     </properties>
 
     <!-- dependencies-->
     <dependencies>
-	
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>clara</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
-		
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
-    
+
     <!-- build -->
-    <build>   
-             
+    <build>
+
         <finalName>payway-admin-webapp</finalName>
-                
+
         <plugins>
-		
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -90,7 +96,7 @@
                     <encoding>${project.build.source.encoding}</encoding>
                 </configuration>
             </plugin>
-			
+
             <!-- directory is cleaned properly -->
             <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
             <plugin>
@@ -137,7 +143,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>			
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>

@@ -3,11 +3,12 @@
  */
 package com.payway.ui.component;
 
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Notification;
 
 /**
  * SideBarMenu of admin webapp
@@ -17,51 +18,71 @@ import com.vaadin.ui.CustomComponent;
  */
 public final class SideBarMenu extends CustomComponent {
 
+    private final CssLayout menuContent = new CssLayout();
+    private SideBarMenuItemButton selectedButton;
+
     public static class SideBarMenuItemButton extends Button {
 
-        public SideBarMenuItemButton(String caption, Resource icon) {
-            setPrimaryStyleName("sidebar-menu-valo-menu-item");
-            setCaption(caption);
+        public interface SideBarMenuItemButtonClickListener {
+
+            void clickButton(final SideBarMenuItemButton button, final Button.ClickEvent event);
+        }
+
+        public SideBarMenuItemButton(String caption, Resource icon, final SideBarMenuItemButtonClickListener listener) {
             setIcon(icon);
-        }
-
-        public SideBarMenuItemButton(String caption) {
-            setPrimaryStyleName("sidebar-menu-valo-menu-item");
             setCaption(caption);
-        }
+            setPrimaryStyleName("sidebar-menu-item");
 
-        public SideBarMenuItemButton() {
-            setPrimaryStyleName("sidebar-menu-valo-menu-item");
+            addClickListener(new ClickListener() {
+                @Override
+                public void buttonClick(final ClickEvent event) {
+
+                    SideBarMenuItemButton btn = ((SideBarMenu) SideBarMenuItemButton.this.getParent().getParent()).selectedButton;
+                    if (btn != null) {
+                        btn.removeStyleName("selected");
+                    }
+
+                    if (listener != null) {
+                        listener.clickButton(SideBarMenuItemButton.this, event);
+                    }
+
+                    SideBarMenuItemButton.this.addStyleName("selected");
+                    ((SideBarMenu) SideBarMenuItemButton.this.getParent().getParent()).selectedButton = SideBarMenuItemButton.this;
+                }
+            });
         }
     }
 
     public SideBarMenu() {
-        addStyleName("sidebar");
         setSizeFull();
-        setCompositionRoot(buildContent());
+        addStyleName("sidebar");
+        setCompositionRoot(menuContent);
+
+        //@@
+        buildMenu();
     }
 
-    private Component buildContent() {
+    //@@
+    private void buildMenu() {
+        SideBarMenuItemButton.SideBarMenuItemButtonClickListener l = new SideBarMenuItemButton.SideBarMenuItemButtonClickListener() {
+            @Override
+            public void clickButton(SideBarMenuItemButton button, Button.ClickEvent event) {
+                Notification.show("Notification", "Not implemented", Notification.Type.WARNING_MESSAGE);
+            }
+        };
 
-        CssLayout menuContent = new CssLayout();
-
-        menuContent.addStyleName("sidebar-menu"); //?
-        //menuContent.addStyleName("sidebar-menu-valo-menu-part");
-        //menuContent.addStyleName("sidebar-menu-no-vertical-drag-hints");
-        //menuContent.addStyleName("sidebar-menu-no-horizontal-drag-hints");
-        //menuContent.setHeight(100.0f, Unit.PERCENTAGE);
-
-        menuContent.addComponent(buildMenu());
-
-        return menuContent;
+        menuContent.addComponent(new SideBarMenuItemButton("DashBoard", FontAwesome.HOME, l));
+        menuContent.addComponent(new SideBarMenuItemButton("Sales", FontAwesome.BAR_CHART_O, l));
+        menuContent.addComponent(new SideBarMenuItemButton("Transactions", FontAwesome.TABLE, l));
+        menuContent.addComponent(new SideBarMenuItemButton("Reports", FontAwesome.FILE_TEXT_O, l));
+        menuContent.addComponent(new SideBarMenuItemButton("Schedule", FontAwesome.CALENDAR_O, l));
     }
 
-    private Component buildMenu() {
-        CssLayout menuItemsLayout = new CssLayout();
-        menuItemsLayout.addStyleName("sidebar-menu-valo-menuitems");
-        menuItemsLayout.setHeight(100.0f, Unit.PERCENTAGE);
-        menuItemsLayout.addComponent(new SideBarMenuItemButton("Hello"));
+    public void addMenuItem(String caption, Resource icon, SideBarMenuItemButton.SideBarMenuItemButtonClickListener listener) {
+        menuContent.addComponent(new SideBarMenuItemButton(caption, icon, listener));
+    }
 
-        return menuItemsLayout;
+    public void clearMenuItems() {
+        menuContent.removeAllComponents();
     }
 }
