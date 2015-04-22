@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.core;
+package com.payway.admin.core.servlet;
 
 import com.vaadin.spring.server.SpringVaadinServlet;
 

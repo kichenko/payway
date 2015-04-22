@@ -1,17 +1,17 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.ui.component;
+package com.payway.admin.ui.component;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Notification;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * SideBarMenu of admin webapp
+ * SideBarMenu
  *
  * @author Sergey Kichenko
  * @created 21.04.15 00:00
@@ -23,12 +23,17 @@ public final class SideBarMenu extends CustomComponent {
 
     public static class SideBarMenuItemButton extends Button {
 
+        @Getter
+        @Setter
+        private String tag;
+
         public interface SideBarMenuItemButtonClickListener {
 
-            void clickButton(final SideBarMenuItemButton button, final Button.ClickEvent event);
+            void clickSideBarMenuItemButton(final SideBarMenuItemButton button, final Button.ClickEvent event);
         }
 
-        public SideBarMenuItemButton(String caption, Resource icon, final SideBarMenuItemButtonClickListener listener) {
+        public SideBarMenuItemButton(final String tag, final String caption, final Resource icon, final SideBarMenuItemButtonClickListener listener) {
+            setTag(tag);
             setIcon(icon);
             setCaption(caption);
             setPrimaryStyleName("sidebar-menu-item");
@@ -43,7 +48,7 @@ public final class SideBarMenu extends CustomComponent {
                     }
 
                     if (listener != null) {
-                        listener.clickButton(SideBarMenuItemButton.this, event);
+                        listener.clickSideBarMenuItemButton(SideBarMenuItemButton.this, event);
                     }
 
                     SideBarMenuItemButton.this.addStyleName("selected");
@@ -57,29 +62,10 @@ public final class SideBarMenu extends CustomComponent {
         setSizeFull();
         addStyleName("sidebar");
         setCompositionRoot(menuContent);
-
-        //@@
-        buildMenu();
     }
 
-    //@@
-    private void buildMenu() {
-        SideBarMenuItemButton.SideBarMenuItemButtonClickListener l = new SideBarMenuItemButton.SideBarMenuItemButtonClickListener() {
-            @Override
-            public void clickButton(SideBarMenuItemButton button, Button.ClickEvent event) {
-                Notification.show("Notification", "Not implemented", Notification.Type.WARNING_MESSAGE);
-            }
-        };
-
-        menuContent.addComponent(new SideBarMenuItemButton("DashBoard", FontAwesome.HOME, l));
-        menuContent.addComponent(new SideBarMenuItemButton("Sales", FontAwesome.BAR_CHART_O, l));
-        menuContent.addComponent(new SideBarMenuItemButton("Transactions", FontAwesome.TABLE, l));
-        menuContent.addComponent(new SideBarMenuItemButton("Reports", FontAwesome.FILE_TEXT_O, l));
-        menuContent.addComponent(new SideBarMenuItemButton("Schedule", FontAwesome.CALENDAR_O, l));
-    }
-
-    public void addMenuItem(String caption, Resource icon, SideBarMenuItemButton.SideBarMenuItemButtonClickListener listener) {
-        menuContent.addComponent(new SideBarMenuItemButton(caption, icon, listener));
+    public void addMenuItem(final String tag, final String caption, final Resource icon, final SideBarMenuItemButton.SideBarMenuItemButtonClickListener listener) {
+        menuContent.addComponent(new SideBarMenuItemButton(tag, caption, icon, listener));
     }
 
     public void clearMenuItems() {

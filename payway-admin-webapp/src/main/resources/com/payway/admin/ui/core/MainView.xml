@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:sb="urn:import:com.payway.ui.component" id="mainViewLayout" styleName="main-view">       
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:sb="urn:import:com.payway.admin.ui.component" id="mainViewLayout" styleName="main-view">       
     <CssLayout id="panelLeft" styleName="main-panel-left">
         <sb:SideBarMenu id = "sideBarMenu"/>
     </CssLayout>
@@ -7,7 +7,7 @@
         <CssLayout id="panelHeader" styleName="main-panel-header">
             <MenuBar id="userMenu" styleName="main-user-menu"/>
         </CssLayout>
-        <CssLayout id="panelContent" styleName="main-panel-content"/>
-        <CssLayout id="panelFooter" styleName="main-panel-footer"/> 
+        <CssLayout id="panelContent" setSizeFull="true" styleName="main-panel-content"/>        
+        <CssLayout id="panelFooter" styleName="main-panel-footer"/>
     </CssLayout>
 </CssLayout>

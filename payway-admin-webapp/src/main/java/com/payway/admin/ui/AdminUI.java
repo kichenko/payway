@@ -3,12 +3,22 @@
  */
 package com.payway.admin.ui;
 
-import com.payway.ui.view.MainView;
+import com.google.gwt.thirdparty.guava.common.eventbus.Subscribe;
+import com.payway.admin.core.event.SideBarMenuItemClickBusEvent;
+import com.payway.admin.core.event.UserSignInBusEvent;
+import com.payway.admin.core.event.UserSignOutBusEvent;
+import com.payway.admin.core.service.event.AdminEventBusService;
+import com.payway.admin.ui.core.LoginView;
+import com.payway.admin.ui.core.MainView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * UI viewport of admin webapp
@@ -18,12 +28,61 @@ import com.vaadin.ui.UI;
  */
 @SpringUI
 @Theme("default")
+@NoArgsConstructor
 @Widgetset("com.payway.admin.AdminWidgetSet")
 public final class AdminUI extends UI {
 
+    @Getter
+    @Autowired
+    private AdminEventBusService adminEventBusService;
+
+    private boolean isAuth = false;
+
     @Override
     protected void init(VaadinRequest request) {
-        //setContent(new LoginView());
-        setContent(new MainView());
+        adminEventBusService.register(this);
+        updateContent();
+    }
+
+    private void updateContent() {
+        if (isAuth) {
+            setContent(new MainView(getAdminEventBusService()));
+        } else {
+            setContent(new LoginView(getAdminEventBusService()));
+        }
+    }
+
+    /**
+     * Handle user sign in bus event
+     *
+     * @param event user sign in bus event
+     */
+    @Subscribe
+    public void handleUserSignInBusEvent(final UserSignInBusEvent event) {
+        isAuth = true;
+        updateContent();
+    }
+
+    /**
+     * Handle user sign out bus event
+     *
+     * @param event user sign out bus event
+     */
+    @Subscribe
+    public void handleUserSignOutBusEvent(final UserSignOutBusEvent event) {
+        Notification.show("Notification", "Subscribe UserSignOutBusEvent", Notification.Type.WARNING_MESSAGE);
+    }
+
+    /**
+     * Handle sidebar menu item click bus event
+     *
+     * @param event sidebar menu item click bus event
+     */
+    @Subscribe
+    public void handleSideBarMenuItemClickBusEvent(final SideBarMenuItemClickBusEvent event) {
+        Notification.show("Notification", "Subscribe SideBarMenuItemClickBusEvent", Notification.Type.WARNING_MESSAGE);
+        if (getNavigator() != null) {
+            getNavigator().navigateTo(event.getTag());
+        }
     }
 }

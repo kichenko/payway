@@ -16,8 +16,8 @@
         line-height: 30px;
         white-space: nowrap;
         padding: 0 37px 0 19px;
-        position: relative;
-        overflow: hidden;
+        //position: relative;
+        ///overflow: hidden;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
         -webkit-transition: background-color 300ms, color 60ms;
         -moz-transition: background-color 300ms, color 60ms;
@@ -49,7 +49,7 @@
         .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-top:before, .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-top:before {
             border-top-width: 0;
         }
-
+    
         .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-top:after, .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-top:after {
             border-width: 2px;
             border-radius: 4px;
@@ -57,11 +57,11 @@
             filter: alpha(opacity=30.0);
             background: #8abef2;
         }
-
+    
         .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-bottom:before, .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-bottom:before {
             border-bottom-width: 0;
         }
-
+    
         .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-bottom:after, .sidebar-menu-no-vertical-drag-hints .v-ddwrapper-over-bottom:after {
             border-width: 2px;
             border-radius: 4px;
@@ -69,11 +69,11 @@
             filter: alpha(opacity=30.0);
             background: #8abef2;
         }
-
+    
         .sidebar-menu-valo-menuitems {
             display: block;
         }
-
+    
         .sidebar-menu-valo-menu-item {
             outline: none;
             font-weight: 400;
@@ -86,7 +86,7 @@
             -moz-transition: background-color 300ms, color 60ms;
             transition: background-color 300ms, color 60ms;
         }
-
+    
         .sidebar-menu-valo-menu-item [class*="caption"] {
             vertical-align: middle;
             display: inline-block;
@@ -96,30 +96,30 @@
             text-overflow: ellipsis;
             overflow: hidden;
         }
-
+    
         .sidebar-menu-valo-menu-item [class*="badge"] {
             color: #70a5d9;
         }
-
+    
         .sidebar-menu-valo-menu-item.selected {
             background: #3a434d;
         }
-
+    
         .sidebar-menu-valo-menu-item.selected .v-icon {
             color: #197de1;
         }
-
+    
         .sidebar-menu-valo-menu-item.selected [class*="badge"] {
             background-color: #197de1;
             background-image: -webkit-linear-gradient(top, #1b87e3 2%, #166ed5 98%);
             background-image: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
             color: #c8dbed;
         }
-
+    
         .sidebar-menu-valo-menu-item:focus, .dashboard .valo-menu-item:hover, .dashboard .valo-menu-item.selected {
             color: white;
         }
-
+    
         .sidebar-menu-valo-menu-item span.v-icon {
             min-width: 1em;
             margin-right: 19px;
@@ -127,11 +127,11 @@
             vertical-align: middle;
             -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(black), to(rgba(0, 0, 0, 0.75)));
         }
-
+    
         .sidebar-menu-valo-menu-item span.v-icon  + span {
             margin-left: 0;
         }
-
+    
         .sidebar-menu-valo-menu-item [class*="badge"] {
             background-color: #4c5865;
             -webkit-transition: background-color 300ms;
@@ -144,20 +144,20 @@
             top: 4px;
             border-radius: 4px;
         }
-
+    
         .sidebar-menu-valo-menu {
             border-right: none;
-
+    
             .badgewrapper {
                 position: relative;
                 padding: 0 !important;
             }
         }
-
+    
         .sidebar-menu-valo-menu-item {
             overflow: hidden;
         }
-
+    
         .v-ui[width-range~="0-800px"] {
             .sidebar-menu-valo-menu-title {
                 @include valo-gradient($color: $valo-menu-background-color);
@@ -167,23 +167,23 @@
                 color: inherit;
             }
         }
-
+    
         .v-ui[width-range~="801px-"] {
             .sidebar-menu-valo-menu {
                 @include animation(valo-animate-in-slide-right 700ms 700ms backwards);
             }
-
+    
             .sidebar-menu-valo-menu-title {
                 background: transparent;
                 @include box-shadow(none);
                 border-bottom: none;
             }
         }
-
+    
         .sidebar-menu-valo-menu-title {
             line-height: 1.2;
         }
-
+    
         .sidebar-menu-valo-menu .valo-menu-badge {
             @include valo-badge-style;
             position: absolute;
