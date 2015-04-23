@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>payway</artifactId>
+        <groupId>com.payway</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.payway</groupId>
+    <artifactId>payway-server-messaging-core</artifactId>
+
+    <packaging>jar</packaging>
+    <name>payway-server-messaging-core</name>
+
+    <!-- используем версию родителя-->
+    <!--<version>1.0-SNAPSHOT</version>-->
+
+    <!-- dependencies-->
+    <dependencies>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+                
+    </dependencies>
+
+    <!-- build -->
+    <build>
+        <finalName>payway-server-messaging-core</finalName>
+    </build>
+</project>
