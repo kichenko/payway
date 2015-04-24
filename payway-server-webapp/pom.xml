@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>payway</artifactId>
+        <groupId>com.payway</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.payway</groupId>
+    <artifactId>payway-server-webapp</artifactId>
+
+    <packaging>war</packaging>
+    <name>payway-server-webapp</name>
+
+    <!-- используем версию родителя-->
+    <!--<version>1.0-SNAPSHOT</version>-->
+
+    <!-- properties -->
+    <properties>
+        <!-- project settings -->
+        <web.display.name>payway-server-webapp</web.display.name>
+    </properties>
+
+    <!-- dependencies-->
+    <dependencies>  
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency>        
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+              
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>                        
+    </dependencies>
+
+    <!-- build -->
+    <build>
+        <finalName>payway-server-webapp</finalName>            
+    </build>
+</project>

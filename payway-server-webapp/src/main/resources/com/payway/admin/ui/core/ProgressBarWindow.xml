@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="progressBarWindowLayuot" sizeFull="true" width="50px" height="50px">
+    <ProgressBar id="progressBar" indeterminate="true" p:componentAlignment="MIDDLE_CENTER"/>
+</VerticalLayout>

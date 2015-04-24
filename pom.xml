@@ -10,7 +10,10 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>payway-server-messaging-core</module>
+        <module>payway-model</module>
+        <module>payway-messaging-core</module>
+        <module>payway-messaging-message</module>
+        <module>payway-server-webapp</module>
         <module>payway-admin-webapp</module>
     </modules>
 
@@ -29,11 +32,9 @@
         <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
         <maven.dependency.plugin.version>2.5.1</maven.dependency.plugin.version>
         <maven.jar.plugin.version>2.5</maven.jar.plugin.version>
-        <flyway.maven.plugin.version>3.0</flyway.maven.plugin.version>
-        
+        <flyway.maven.plugin.version>3.0</flyway.maven.plugin.version>        
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <plugin.m2elifecycle-mapping.version> 1.0.0</plugin.m2elifecycle-mapping.version>
-        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
 
         <!-- версии библиотек -->
         <joda.time.version>2.3</joda.time.version>
@@ -124,7 +125,6 @@
                 </configuration>
             </plugin>
         </plugins>
-
 
     </build>
 

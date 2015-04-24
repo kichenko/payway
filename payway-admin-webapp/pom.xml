@@ -22,15 +22,11 @@
     <properties>
 
         <!-- project settings -->
+        <web.display.name>payway-admin-webapp</web.display.name>
 
         <!-- vaadin production mode in web.xml -->
         <productionMode>false</productionMode>
-
-        <!-- plugin version-->
-        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-        <plugin.m2elifecycle-mapping.version> 1.0.0</plugin.m2elifecycle-mapping.version>
-        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-
+       
     </properties>
 
     <!-- dependencies-->
@@ -90,18 +86,6 @@
         <finalName>payway-admin-webapp</finalName>
 
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <source>${compiler.java.version}</source>
-                    <target>${compiler.java.version}</target>
-                    <encoding>${project.build.source.encoding}</encoding>
-                </configuration>
-            </plugin>
-
             <!-- directory is cleaned properly -->
             <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
             <plugin>
@@ -111,10 +95,12 @@
                     <filesets>
                         <fileset>
                             <directory>src/main/webapp/VAADIN/widgetsets</directory>
+                            <directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
                         </fileset>
                     </filesets>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
@@ -123,10 +109,8 @@
                     <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
                     <!-- <runTarget>mobilemail</runTarget> -->
                     <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This way compatible with Vaadin eclipse plugin. -->
-                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-                    </webappDirectory>
-                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-                    </hostedWebapp>
+                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
+                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>
                     <!-- Remove draftCompile when project is ready -->
                     <draftCompile>false</draftCompile>
@@ -148,10 +132,11 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>            
         </plugins>
-        <pluginManagement>
-            <plugins>
+        
+        <pluginManagement>            
+            <plugins>                
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
@@ -178,8 +163,8 @@
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>
-            </plugins>
+                </plugin>                
+            </plugins>                        
         </pluginManagement>
     </build>
 </project>
