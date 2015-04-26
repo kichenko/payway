@@ -4,10 +4,10 @@
 package com.payway.messaging.core.header;
 
 import com.payway.messaging.core.AbstractHeader;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.joda.time.LocalDateTime;
 
 /**
  * Заголовок Date конверта (Envelope).
