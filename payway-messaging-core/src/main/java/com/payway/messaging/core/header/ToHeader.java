@@ -21,6 +21,10 @@ public class ToHeader extends AbstractHeader<String, String> {
 
     private static final long serialVersionUID = -1832473408629910582L;
 
+    public ToHeader() {
+        super("To", "");
+    }
+
     public ToHeader(String value) {
         super("To", value);
     }

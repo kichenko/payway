@@ -18,15 +18,15 @@ import org.joda.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class DateHeader extends AbstractHeader<String, LocalDateTime> {
+public class DateExpiredHeader extends AbstractHeader<String, LocalDateTime> {
 
     private static final long serialVersionUID = -5067799951276570660L;
 
-    public DateHeader() {
-        super("Date", new LocalDateTime());
+    public DateExpiredHeader() {
+        super("DateExpired", new LocalDateTime());
     }
 
-    public DateHeader(LocalDateTime value) {
-        super("Date", value);
+    public DateExpiredHeader(LocalDateTime value) {
+        super("DateExpired", value);
     }
 }

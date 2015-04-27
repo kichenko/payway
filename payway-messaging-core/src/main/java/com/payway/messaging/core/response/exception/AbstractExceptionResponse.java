@@ -3,6 +3,8 @@
  */
 package com.payway.messaging.core.response.exception;
 
+import com.payway.messaging.core.response.ExceptionResponse;
+
 /**
  * Абстрактный класс ошибки-ответа.
  *

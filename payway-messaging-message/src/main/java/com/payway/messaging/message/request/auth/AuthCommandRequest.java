@@ -31,11 +31,11 @@ public class AuthCommandRequest<T extends User> extends CommandRequest {
 
     private static final long serialVersionUID = -8380831312004043667L;
 
+    private T user;
+
     /**
      * Признак аутентификации/авторизации пользователя ч/з "запомнить меня".
      */
     private Boolean isRememberMe;
-
-    private T user;
 
 }

@@ -31,6 +31,20 @@
 
     <!-- dependencies-->
     <dependencies>
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency> 
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-core</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency>               
 
         <dependency>
             <groupId>com.vaadin</groupId>

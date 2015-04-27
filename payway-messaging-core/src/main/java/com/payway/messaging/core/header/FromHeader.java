@@ -21,6 +21,10 @@ public class FromHeader extends AbstractHeader<String, String> {
 
     private static final long serialVersionUID = -5067799951276570660L;
 
+    public FromHeader() {
+        super("From", "");
+    }
+
     public FromHeader(String value) {
         super("From", value);
     }

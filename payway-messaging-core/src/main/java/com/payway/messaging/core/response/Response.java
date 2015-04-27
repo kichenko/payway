@@ -11,6 +11,6 @@ import com.payway.messaging.core.Message;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
-public abstract class Response implements Message {
+public interface Response extends Message {
 
 }

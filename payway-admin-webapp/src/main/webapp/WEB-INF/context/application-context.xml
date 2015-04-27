@@ -8,4 +8,59 @@
 
     <bean class="com.payway.admin.config.AdminVaadinConfiguration" />
     <context:component-scan base-package="com.payway.admin" />
+    
+    <bean id="serverResponseQueue" class="java.util.concurrent.LinkedBlockingQueue"/>
+    <bean id="serverRequestQueue" class="java.util.concurrent.LinkedBlockingQueue"/>
+    
+    <!-- Обработчик отказов для TaskExecutor'а -->
+    <bean id="rejectPolicy" class = "com.payway.admin.messaging.client.RejectExecutionPolicy"/>
+                
+    <!--
+        TaskExecutor для обработки серверных задач.
+        Один поток выделяется для получения входящих сообщений.
+        Другие потоки - обработка сообщений.
+    -->
+    <bean id="serverTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10" />
+        <property name="maxPoolSize" value="25" />
+        <property name="queueCapacity" value="5" />
+        <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
+    </bean>    
+    
+    <!-- Сервис хранения карты с контекстами -->
+    <bean id="serviceContext" class = "com.payway.admin.messaging.client.MessageRequestContextHolderServiceImpl">
+        <property name="map">
+            <bean class="java.util.concurrent.ConcurrentHashMap"/>
+        </property>
+    </bean>
+        
+    <!-- Обработчик ответов с сервера -->
+    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype">
+        <property name="serviceContext" ref="serviceContext"/>
+    </bean>
+    
+    <!-- Обработчик ответов с сервера -->
+    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype">
+        <property name="serviceContext" ref="serviceContext"/>
+    </bean>
+    
+    <!-- Обработчик ответов с сервера -->
+    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseListener" scope="singleton">
+        <property name="applicationContext" ref="applicationContext"/>
+        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
+        <property name="serverResponseQueue" ref="serverResponseQueue"/>
+        <!-- Имя клиентской очереди, куда должен отвечать сервер -->
+        <property name="responseQueueId" value="client-1"/>
+    </bean>    
+                    
+    <!-- Сервис отправки сообщений на сервер -->
+    <bean id="serviceSender" class = "com.payway.admin.messaging.client.MessageServerSenderServiceImpl">
+        <property name="serverRequestQueue" ref="serverRequestQueue"/>
+        <property name="serviceContext" ref="serviceContext"/>
+        <property name="timeOut" ref="5"/>
+        <property name="timeUnit">
+            <bean class= "java.util.concurrent.TimeUnit">
+        </property> 
+    </bean>   
+    
 </beans>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/task
+                           http://www.springframework.org/schema/task/spring-task.xsd">
+    
+    
+    <!-- Контекст HazelCast'а -->
+    <import resource="hazelcast-context.xml"/>
+
+    <context:component-scan base-package="com.payway"/>
+
+    <bean id="serverQueue" class="java.util.concurrent.LinkedBlockingQueue" />
+
+    <!-- Обработчик отказов для TaskExecutor'а -->
+    <bean id="rejectPolicy" class = "com.payway.server.messaging.RejectExecutionPolicy"/>
+       
+    <!--
+        TaskExecutor для обработки серверных задач.
+        Один поток выделяется для получения входящих сообщений.
+        Другие потоки - обработка сообщений.
+    -->
+    <bean id="serverTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10" />
+        <property name="maxPoolSize" value="25" />
+        <property name="queueCapacity" value="5" />
+        <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
+    </bean>    
+
+    <!-- Обработчик получения запросов -->
+    <bean id="messageServerListener" class="com.payway.server.messaging.MessageServerRequestListener">
+        <property name="serverTaskExecutor" ref="serverTaskExecutor" />
+        <property name="serverQueue" ref="serverQueue" />
+    </bean>        
+    
+    <!-- Обработчик входящих запросов -->
+    <bean id="messageServerRequestHandler" class="com.payway.server.messaging.MessageServerRequestHandler" scope="prototype"/>
+    
+</beans>

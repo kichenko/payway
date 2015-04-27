@@ -23,6 +23,10 @@ public class CorrelationIDHeader extends AbstractHeader<String, UUID> {
 
     private static final long serialVersionUID = -8835165738726706881L;
 
+    public CorrelationIDHeader() {
+        super("CorrelationID", UUID.randomUUID());
+    }
+
     public CorrelationIDHeader(UUID value) {
         super("CorrelationID", value);
     }

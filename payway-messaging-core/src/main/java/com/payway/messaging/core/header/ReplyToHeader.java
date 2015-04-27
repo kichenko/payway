@@ -4,7 +4,6 @@
 package com.payway.messaging.core.header;
 
 import com.payway.messaging.core.AbstractHeader;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,11 +17,15 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ReplyToHeader extends AbstractHeader<String, UUID> {
+public class ReplyToHeader extends AbstractHeader<String, String> {
 
     private static final long serialVersionUID = 2135589792479848041L;
 
-    public ReplyToHeader(UUID value) {
+    public ReplyToHeader() {
+        super("ReplyTo", "");
+    }
+
+    public ReplyToHeader(String value) {
         super("ReplyTo", value);
     }
 }

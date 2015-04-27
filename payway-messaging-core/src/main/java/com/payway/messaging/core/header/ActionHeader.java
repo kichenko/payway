@@ -22,6 +22,10 @@ public class ActionHeader extends AbstractHeader<String, String> {
 
     private static final long serialVersionUID = -7122284599817582869L;
 
+    public ActionHeader() {
+        super("Action", "");
+    }
+
     public ActionHeader(String value) {
         super("Action", value);
     }

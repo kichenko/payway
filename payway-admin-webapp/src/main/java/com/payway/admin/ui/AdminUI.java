@@ -10,6 +10,7 @@ import com.payway.admin.core.event.UserSignOutBusEvent;
 import com.payway.admin.core.service.event.AdminEventBusService;
 import com.payway.admin.ui.core.LoginView;
 import com.payway.admin.ui.core.MainView;
+import com.payway.messaging.core.ResponseEnvelope;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
@@ -30,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Theme("default")
 @NoArgsConstructor
 @Widgetset("com.payway.admin.AdminWidgetSet")
-public final class AdminUI extends UI {
+public final class AdminUI extends UI implements BroadcastResponseListener {
 
     @Getter
     @Autowired
@@ -84,5 +85,15 @@ public final class AdminUI extends UI {
         if (getNavigator() != null) {
             getNavigator().navigateTo(event.getTag());
         }
+    }
+
+    /**
+     * Обработка ответов от сервера. Код выполняется в разных потоках.
+     *
+     * @param envelope пакет с сообщением
+     */
+    @Override
+    public void receiveResponse(ResponseEnvelope envelope) {
+        //
     }
 }

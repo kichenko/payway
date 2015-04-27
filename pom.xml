@@ -13,8 +13,9 @@
         <module>payway-model</module>
         <module>payway-messaging-core</module>
         <module>payway-messaging-message</module>
-        <module>payway-server-webapp</module>
-        <module>payway-admin-webapp</module>
+        <module>payway-messaging-hazelcast</module>
+        <module>payway-server-app</module>
+        <module>payway-admin-webapp</module>      
     </modules>
 
     <properties>
@@ -63,10 +64,12 @@
         <com.jayway.jsonpath.json-path.version>0.8.1</com.jayway.jsonpath.json-path.version>
         <com.jayway.jsonpath.json-path-assert.version>0.8.1</com.jayway.jsonpath.json-path-assert.version>
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
-        
+           
         <vaadin.version>7.3.8</vaadin.version>
         <vaadin.addons.clara.version>1.3.0</vaadin.addons.clara.version>
         <vaadin.vaadin-spring.version>1.0.0.beta2</vaadin.vaadin-spring.version>
+        
+        <hazelcast.all.version>3.4.2</hazelcast.all.version>
         
     </properties>
 
@@ -360,6 +363,14 @@
                 <version>${vaadin.version}</version>
             </dependency>
             <!-- vaadin libs end--> 
+            
+            <!-- hazelcast libs--> 
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-all</artifactId>
+                <version>${hazelcast.all.version}</version>
+            </dependency>
+            <!-- hazelcast libs end--> 
 
         </dependencies>
     </dependencyManagement>

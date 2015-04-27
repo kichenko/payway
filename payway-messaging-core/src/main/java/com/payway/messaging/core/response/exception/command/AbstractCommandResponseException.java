@@ -3,8 +3,7 @@
  */
 package com.payway.messaging.core.response.exception.command;
 
-import com.payway.messaging.core.response.command.CommandResponse;
-import com.payway.messaging.core.response.exception.ExceptionResponse;
+import com.payway.messaging.core.response.ExceptionResponse;
 
 /**
  * Абстрактный класс команды-ответа ошибки. Содержит токен пользователя, который
@@ -13,7 +12,7 @@ import com.payway.messaging.core.response.exception.ExceptionResponse;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
-public class AbstractCommandResponseException extends CommandResponse implements ExceptionResponse {
+public class AbstractCommandResponseException implements ExceptionResponse {
 
     private Integer code;
     private String message;

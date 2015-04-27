@@ -22,6 +22,10 @@ public class MessageIDHeader extends AbstractHeader<String, UUID> {
 
     private static final long serialVersionUID = -1606615635803210638L;
 
+    public MessageIDHeader() {
+        super("MessageID", UUID.randomUUID());
+    }
+
     public MessageIDHeader(UUID value) {
         super("MessageID", value);
     }
