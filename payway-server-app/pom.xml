@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.payway</groupId>
-    <artifactId>payway-server-webapp</artifactId>
+    <artifactId>payway-server-app</artifactId>
 
     <packaging>jar</packaging>
     <name>payway-server-app</name>
