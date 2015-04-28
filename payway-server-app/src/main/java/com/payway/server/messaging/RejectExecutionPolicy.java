@@ -21,9 +21,6 @@ public class RejectExecutionPolicy implements RejectedExecutionHandler {
      */
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        log.error("thread is rejected");
-        if (r != null && r instanceof MessageServerRequestHandler) {
-            //
-        }
+        log.error("Ошибка выделения потока из пула");
     }
 }

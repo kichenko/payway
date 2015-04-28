@@ -10,29 +10,17 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Реализация сервиса для работы с распределенными объектами.
+ * Реализация сервиса для работы с распределенными объектами чз Hazelcast.
  *
  * @author Sergey Kichenko
  * @created 27.04.15 00:00
  */
+@Slf4j
 @Getter
 @Setter
-@Slf4j
 public class HazelcastDistributedObjectServiceImpl implements DistributedObjectService {
 
     private HazelcastInstance hazelcastInstance;
-    private String idGeneratorName;
-    private String prefixName;
-
-    /**
-     * Создать новую очередь. Имя очериди = префикс+id
-     *
-     * @return
-     */
-    @Override
-    public Object createQueue() {
-        return hazelcastInstance.getQueue(getPrefixName() + getHazelcastInstance().getIdGenerator(getIdGeneratorName()).newId());
-    }
 
     /**
      * Создать очередь по имени
@@ -43,16 +31,6 @@ public class HazelcastDistributedObjectServiceImpl implements DistributedObjectS
     @Override
     public Object createQueueByName(String name) {
         return getHazelcastInstance().getQueue(name);
-    }
-
-    /**
-     * Получить генератор идентификаторов
-     *
-     * @return
-     */
-    @Override
-    public Object getIdGenerator() {
-        return getHazelcastInstance().getIdGenerator(getIdGeneratorName());
     }
 
     /**

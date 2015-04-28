@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.admin.messaging.client;
+package com.payway.admin.messaging;
 
 import com.payway.messaging.core.ResponseEnvelope;
 import java.util.concurrent.BlockingQueue;
@@ -44,7 +44,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                 ResponseEnvelope envelope = clientQueue.take();
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
             } catch (Exception ex) {
-                log.error("", ex);
+                log.error("Ошибка получения ответа от сервера", ex);
             }
         }
     }

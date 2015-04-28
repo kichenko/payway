@@ -7,7 +7,7 @@ import com.vaadin.spring.annotation.EnableVaadin;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * VaadinSampleConfiguration
+ * Spring бин конфигурации для vaadin
  *
  * @author Sergey Kichenko
  * @created 20.04.15 00:00

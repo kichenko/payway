@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.admin.messaging.client;
+package com.payway.admin.messaging;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,9 +26,6 @@ public class RejectExecutionPolicy implements RejectedExecutionHandler {
      */
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        log.error("thread is rejected");
-        if (r != null && r instanceof MessageServerResponseListener) {
-            //
-        }
+        log.error("Ошибка выделения потока из пула");
     }
 }

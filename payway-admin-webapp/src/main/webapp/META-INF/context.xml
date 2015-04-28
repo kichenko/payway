@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/payway-admin-webapp"/>
+<Context antiJARLocking="true" path="/payway-admin-webapp">
+    <Environment name="server.queue.name" type="java.lang.String" value="server-queue-app" override="true" />
+    <Environment name="client.queue.name" type="java.lang.String" value="client-queue-app-1" override="true" />
+</Context>

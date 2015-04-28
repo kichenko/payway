@@ -12,13 +12,6 @@ package com.payway.messaging.core.service;
 public interface DistributedObjectService {
 
     /**
-     * Создать новую очередь
-     *
-     * @return
-     */
-    Object createQueue();
-
-    /**
      * Создать очередь по имени
      *
      * @param name имя очереди
@@ -33,11 +26,4 @@ public interface DistributedObjectService {
      * @return
      */
     Object getQueueByName(String name);
-
-    /**
-     * Получить генератор идентификаторов
-     *
-     * @return
-     */
-    Object getIdGenerator();
 }

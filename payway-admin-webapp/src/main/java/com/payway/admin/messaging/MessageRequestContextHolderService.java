@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.admin.messaging.client;
+package com.payway.admin.messaging;
 
 import java.util.UUID;
 

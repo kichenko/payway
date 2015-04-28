@@ -1,18 +1,17 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.admin.messaging.client;
+package com.payway.admin.messaging;
 
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 
 /**
- * Обработчик получения клиентских пакетов. Всего будет один объект, больше не
- * нужно.
+ * Интерфес обратного вызова для взаимодействия с UI.
  *
- * @author Sergey Kichenko
  * @param <S>
  * @param <E>
+ * @author Sergey Kichenko
  * @created 25.04.15 00:00
  */
 public interface ResponseCallBack<S extends SuccessResponse, E extends ExceptionResponse> {

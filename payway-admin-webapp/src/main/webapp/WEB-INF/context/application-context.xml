@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
-          
-      
-    <context:component-scan base-package="com.payway.admin" />   
-     
+
+    <context:component-scan base-package="com.payway.admin" />
+
     <bean class="com.payway.admin.config.AdminVaadinConfiguration" />
-           
+
     <!-- Обработчик отказов для TaskExecutor'а -->
-    <bean id="rejectPolicy" class = "com.payway.admin.messaging.client.RejectExecutionPolicy"/>
-                
+    <bean id="rejectPolicy" class = "com.payway.admin.messaging.RejectExecutionPolicy"/>
+
     <!--
         TaskExecutor для обработки серверных задач.
         Один поток выделяется для получения входящих сообщений.
@@ -24,45 +24,37 @@
         <property name="maxPoolSize" value="25" />
         <property name="queueCapacity" value="5" />
         <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
-    </bean>    
-    
+    </bean>
+
     <!-- Сервис хранения карты с контекстами -->
-    <bean id="serviceContext" class = "com.payway.admin.messaging.client.MessageRequestContextHolderServiceImpl">
+    <bean id="serviceContext" class = "com.payway.admin.messaging.MessageRequestContextHolderServiceImpl">
         <property name="map">
             <bean class="java.util.concurrent.ConcurrentHashMap"/>
         </property>
     </bean>
-    
+
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="serviceSender" class = "com.payway.admin.messaging.client.MessageServerSenderServiceImpl" depends-on="serverQueue">
+    <bean id="serviceSender" class = "com.payway.admin.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
         <!-- сюда уходят запросы-->
         <property name="serverQueue" ref="serverQueue"/>
-        <property name="clientQueueName" ref="clientQueueName"/>
+        <property name="clientQueueName" value="#{clientQueueName}"/>
         <property name="serviceContext" ref="serviceContext"/>
         <property name="timeOut" value="5"/>
         <property name="timeUnit">
             <value type="java.util.concurrent.TimeUnit">SECONDS</value>
-        </property> 
-    </bean>   
-        
+        </property>
+    </bean>
+
     <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.admin.messaging.client.MessageServerResponseListener" depends-on="clientQueue">
+    <bean id="messageServerResponseListener" class = "com.payway.admin.messaging.MessageServerResponseListener" depends-on="clientQueue">
         <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
         <!-- отсюда приходят ответы-->
         <property name="clientQueue" ref="clientQueue"/>
-    </bean>    
-    
+    </bean>
+
     <!-- Обработчик полученных ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
+    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
         <property name="serviceContext" ref="serviceContext"/>
     </bean>
-    
-    <!-- Инициализатор потока обработки ответов от сервера -->
-    <!--
-    <bean id="myBean" class = "com.payway.admin.core.servlet.MyBean" init-method="init" depends-on="hazelcastInstance, serviceContext, serviceSender, serverTaskExecutor,messageServerResponseListener">
-        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
-        <property name="messageServerResponseListener" ref="messageServerResponseListener"/>
-    </bean>    
-    -->
-       
+
 </beans>

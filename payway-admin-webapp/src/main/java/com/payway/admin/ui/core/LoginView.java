@@ -3,8 +3,8 @@
  */
 package com.payway.admin.ui.core;
 
-import com.payway.admin.messaging.client.MessageServerSenderServiceImpl;
-import com.payway.admin.messaging.client.ResponseCallBack;
+import com.payway.admin.messaging.MessageServerSenderServiceImpl;
+import com.payway.admin.messaging.ResponseCallBack;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
@@ -15,6 +15,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public final class LoginView extends CustomComponentView implements View {
     private TextField textUserName;
 
     @UiField
-    private TextField textPassword;
+    private PasswordField textPassword;
 
     @UiField
     private CheckBox checkBoxRememberMe;

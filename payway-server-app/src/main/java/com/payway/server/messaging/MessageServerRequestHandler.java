@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
- * Вопрос, а нужно ли создавать объекты через spring ioc, т.к. доп. нагрузка?
  *
  * @author Sergey Kichenko
  * @created 24.04.15 00:00
@@ -56,16 +55,16 @@ public class MessageServerRequestHandler implements Runnable {
                 BlockingQueue<ResponseEnvelope> clientQueue = (BlockingQueue<ResponseEnvelope>) dosService.getQueueByName(envelope.getReplyTo().getValue());
                 if (clientQueue != null) {
                     clientQueue.offer(new ResponseEnvelope(
-                            new MessageIDHeader(),
-                            new DateHeader(),
-                            new DateExpiredHeader(),
-                            new CorrelationIDHeader(envelope.getMessageID().getValue()),
-                            new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null))))
+                      new MessageIDHeader(),
+                      new DateHeader(),
+                      new DateExpiredHeader(),
+                      new CorrelationIDHeader(envelope.getMessageID().getValue()),
+                      new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null))))
                     );
                 }
             }
         } catch (Exception ex) {
-            log.error("", ex);
+            log.error("Ошибка обработки запроса", ex);
         }
     }
 }

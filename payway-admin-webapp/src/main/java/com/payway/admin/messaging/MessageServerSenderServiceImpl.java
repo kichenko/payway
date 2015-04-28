@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.admin.messaging.client;
+package com.payway.admin.messaging;
 
 import com.payway.messaging.core.Body;
 import com.payway.messaging.core.RequestEnvelope;
@@ -44,7 +44,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
             serviceContext.put(envelope.getMessageID().value(), new MessageRequestContextHolderServiceImpl.MessageContext(envelope.getMessageID().value(), callback));
             serverQueue.offer(envelope, timeOut, timeUnit);
         } catch (Exception ex) {
-            log.error("", ex);
+            log.error("Ошибка отправки ответа на сервер", ex);
         }
     }
 }
