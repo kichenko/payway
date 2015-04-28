@@ -5,13 +5,12 @@
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context.xsd">
-
+          
+      
+    <context:component-scan base-package="com.payway.admin" />   
+     
     <bean class="com.payway.admin.config.AdminVaadinConfiguration" />
-    <context:component-scan base-package="com.payway.admin" />
-    
-    <bean id="serverResponseQueue" class="java.util.concurrent.LinkedBlockingQueue"/>
-    <bean id="serverRequestQueue" class="java.util.concurrent.LinkedBlockingQueue"/>
-    
+           
     <!-- Обработчик отказов для TaskExecutor'а -->
     <bean id="rejectPolicy" class = "com.payway.admin.messaging.client.RejectExecutionPolicy"/>
                 
@@ -33,34 +32,37 @@
             <bean class="java.util.concurrent.ConcurrentHashMap"/>
         </property>
     </bean>
-        
-    <!-- Обработчик ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype">
-        <property name="serviceContext" ref="serviceContext"/>
-    </bean>
     
-    <!-- Обработчик ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype">
-        <property name="serviceContext" ref="serviceContext"/>
-    </bean>
-    
-    <!-- Обработчик ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseListener" scope="singleton">
-        <property name="applicationContext" ref="applicationContext"/>
-        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
-        <property name="serverResponseQueue" ref="serverResponseQueue"/>
-        <!-- Имя клиентской очереди, куда должен отвечать сервер -->
-        <property name="responseQueueId" value="client-1"/>
-    </bean>    
-                    
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="serviceSender" class = "com.payway.admin.messaging.client.MessageServerSenderServiceImpl">
-        <property name="serverRequestQueue" ref="serverRequestQueue"/>
+    <bean id="serviceSender" class = "com.payway.admin.messaging.client.MessageServerSenderServiceImpl" depends-on="serverQueue">
+        <!-- сюда уходят запросы-->
+        <property name="serverQueue" ref="serverQueue"/>
+        <property name="clientQueueName" ref="clientQueueName"/>
         <property name="serviceContext" ref="serviceContext"/>
-        <property name="timeOut" ref="5"/>
+        <property name="timeOut" value="5"/>
         <property name="timeUnit">
-            <bean class= "java.util.concurrent.TimeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
         </property> 
     </bean>   
+        
+    <!-- Обработчик получения ответов с сервера -->
+    <bean id="messageServerResponseListener" class = "com.payway.admin.messaging.client.MessageServerResponseListener" depends-on="clientQueue">
+        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
+        <!-- отсюда приходят ответы-->
+        <property name="clientQueue" ref="clientQueue"/>
+    </bean>    
     
+    <!-- Обработчик полученных ответов с сервера -->
+    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.client.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
+        <property name="serviceContext" ref="serviceContext"/>
+    </bean>
+    
+    <!-- Инициализатор потока обработки ответов от сервера -->
+    <!--
+    <bean id="myBean" class = "com.payway.admin.core.servlet.MyBean" init-method="init" depends-on="hazelcastInstance, serviceContext, serviceSender, serverTaskExecutor,messageServerResponseListener">
+        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
+        <property name="messageServerResponseListener" ref="messageServerResponseListener"/>
+    </bean>    
+    -->
+       
 </beans>

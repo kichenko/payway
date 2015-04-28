@@ -5,6 +5,7 @@ package com.payway.admin.ui.view.sample;
 
 import com.payway.admin.ui.view.core.AbstractAdminView;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Label;
 
 /**
@@ -13,6 +14,7 @@ import com.vaadin.ui.Label;
  * @author Sergey Kichenko
  * @created 22.04.15 00:00
  */
+@SpringView(name = "error")
 public class ErrorSampleView extends AbstractAdminView {
 
     public ErrorSampleView() {

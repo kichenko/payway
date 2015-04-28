@@ -5,6 +5,7 @@ package com.payway.server.messaging;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Обработчик отказов для TaskExecutor'а. Синглтон, т.к. не хранит состояния.
@@ -12,6 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author Sergey Kichenko
  * @created 25.04.15 00:00
  */
+@Slf4j
 public class RejectExecutionPolicy implements RejectedExecutionHandler {
 
     /**
@@ -19,12 +21,9 @@ public class RejectExecutionPolicy implements RejectedExecutionHandler {
      */
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        if (r != null) {
-            if (r instanceof MessageServerRequestHandler) {
-                //
-            } else {
-                //
-            }
+        log.error("thread is rejected");
+        if (r != null && r instanceof MessageServerRequestHandler) {
+            //
         }
     }
 }

@@ -22,15 +22,13 @@
     <!-- dependencies-->
     <dependencies>  
         
-          <dependency>
+        <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-hazelcast</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
-        </dependency> 
-        
-        
-        
+        </dependency>        
+                
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
@@ -72,22 +70,31 @@
                 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>                        
+            <artifactId>spring-context</artifactId>
+        </dependency>                            
     </dependencies>
 
     <!-- build -->
     <build>
-        <finalName>payway-server-app</finalName>            
+        <finalName>payway-server-app</finalName>   
+        
+        <plugins> 
+            <plugin> 
+                <artifactId>maven-dependency-plugin</artifactId> 
+                <executions> 
+                    <execution> 
+                        <phase>install</phase> 
+                        <goals> 
+                            <goal>copy-dependencies</goal> 
+                        </goals> 
+                        <configuration> 
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory> 
+                        </configuration> 
+                    </execution> 
+                </executions> 
+            </plugin> 
+        </plugins> 
+                          
+                                            
     </build>
 </project>

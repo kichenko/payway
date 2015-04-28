@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd">
+       
+    <!-- имя очереди сервера, куда клиент отправляет запросы-->
+    <bean id="serverQueueName" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="server-queue-app"/>
+    </bean>   
+    
+    <hz:hazelcast id="hazelcastInstance">
+        <hz:config>
+            <hz:queue name="server-queue-app*"/>
+            <!--<hz:idGenerator name="client-server-id-generator"/>-->
+        </hz:config>
+    </hz:hazelcast>
+    
+    <bean id="dosService" class="com.payway.messaging.core.service.hz.HazelcastDistributedObjectServiceImpl">
+        <property name="hazelcastInstance" ref="hazelcastInstance"/>
+    </bean>
+            
+    <bean id="serverQueue" class="java.util.concurrent.BlockingQueue" factory-bean="dosService" factory-method="createQueueByName" depends-on="dosService">
+        <constructor-arg ref="serverQueueName"/>
+    </bean>
+        
+</beans>

@@ -7,6 +7,7 @@ import com.google.gwt.thirdparty.guava.common.eventbus.EventBus;
 import com.google.gwt.thirdparty.guava.common.eventbus.SubscriberExceptionContext;
 import com.google.gwt.thirdparty.guava.common.eventbus.SubscriberExceptionHandler;
 import com.payway.admin.core.event.AdminBusEvent;
+import java.io.Serializable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class AdminEventBusService implements SubscriberExceptionHandler {
+public class AdminEventBusService implements SubscriberExceptionHandler, Serializable {
 
     private final EventBus eventBus = new EventBus(this);
 

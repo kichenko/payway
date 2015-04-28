@@ -5,6 +5,7 @@ package com.payway.admin.messaging.client;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "rejectPolicy")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class RejectExecutionPolicy implements RejectedExecutionHandler {
 
     /**
@@ -24,12 +26,9 @@ public class RejectExecutionPolicy implements RejectedExecutionHandler {
      */
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        if (r != null) {
-            if (r instanceof MessageServerResponseListener) {
-                //
-            } else {
-                //
-            }
+        log.error("thread is rejected");
+        if (r != null && r instanceof MessageServerResponseListener) {
+            //
         }
     }
 }

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
@@ -20,6 +21,7 @@ import org.springframework.core.task.TaskExecutor;
  * @author Sergey Kichenko
  * @created 25.04.15 00:00
  */
+@Slf4j
 @Setter
 @Getter
 @NoArgsConstructor
@@ -43,11 +45,15 @@ public class MessageServerRequestListener implements Runnable, ApplicationContex
     public void run() {
         try {
             while (true) {
+                log.info("Enter to request listern");
                 AbstractEnvelope envelope = serverQueue.take();
+                log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                log.info("income request - " + envelope.toString());
+                log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                 serverTaskExecutor.execute((MessageServerRequestHandler) applicationContext.getBean("messageServerRequestHandler", envelope));
             }
         } catch (Exception ex) {
-            //
+            log.error(ex.getMessage());
         }
     }
 }

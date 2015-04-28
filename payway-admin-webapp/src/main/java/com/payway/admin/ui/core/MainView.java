@@ -3,24 +3,22 @@
  */
 package com.payway.admin.ui.core;
 
-import com.payway.admin.core.event.SideBarMenuItemClickBusEvent;
 import com.payway.admin.core.event.UserSignOutBusEvent;
 import com.payway.admin.core.service.event.AdminEventBusService;
 import com.payway.admin.ui.component.SideBarMenu;
-import com.payway.admin.ui.navigation.AdminNavigator;
-import com.payway.admin.ui.view.core.AdminView;
-import com.payway.admin.ui.view.sample.DashBoardSampleView;
-import com.payway.admin.ui.view.sample.ErrorSampleView;
-import com.payway.admin.ui.view.sample.SalesSampleView;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.NoArgsConstructor;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
@@ -30,8 +28,11 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
-@NoArgsConstructor
-public final class MainView extends CustomComponentView implements SideBarMenu.SideBarMenuItemButton.SideBarMenuItemButtonClickListener {
+@SpringView(name = "main")
+public final class MainView extends CustomComponentView implements SideBarMenu.SideBarMenuItemButton.SideBarMenuItemButtonClickListener, View {
+
+    @Autowired
+    public SpringViewProvider viewProvider;
 
     @UiField
     private MenuBar userMenu;
@@ -42,29 +43,17 @@ public final class MainView extends CustomComponentView implements SideBarMenu.S
     @UiField
     private CssLayout panelContent;
 
-    public MainView(AdminEventBusService adminEventBusService) {
-        super(adminEventBusService);
-
+    public MainView() {
         setSizeFull();
         setCompositionRoot(Clara.create("MainView.xml", this));
-
-        initializeNavigator();
         initializeUserMenu();
         initializeSideBarMenu();
     }
 
-    /**
-     * Ovveride default UI navigator
-     */
-    private void initializeNavigator() {
-
-        List<AdminView> views = new ArrayList<>();
-        views.add(new DashBoardSampleView());
-        views.add(new SalesSampleView());
-        views.add(new ErrorSampleView());
-
-        //ovveride default ui navigator
-        new AdminNavigator(UI.getCurrent(), panelContent, views, "error");
+    @PostConstruct
+    void init() {
+        Navigator navigator = new Navigator(UI.getCurrent(), panelContent);
+        navigator.addProvider(viewProvider);
     }
 
     /**
@@ -119,8 +108,11 @@ public final class MainView extends CustomComponentView implements SideBarMenu.S
      */
     @Override
     public void clickSideBarMenuItemButton(SideBarMenu.SideBarMenuItemButton button, Button.ClickEvent event) {
-        if (getAdminEventBusService() != null) {
-            getAdminEventBusService().post(new SideBarMenuItemClickBusEvent(button.getTag()));
-        }
+        UI.getCurrent().getNavigator().navigateTo(button.getTag());
+    }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        //
     }
 }

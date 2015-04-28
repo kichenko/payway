@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Реализация сервиса отправки сообщений на сервер.
@@ -27,22 +28,23 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class MessageServerSenderServiceImpl implements MessageServerSenderService {
 
-    private BlockingQueue<RequestEnvelope> serverRequestQueue;
+    private BlockingQueue<RequestEnvelope> serverQueue;
     private MessageRequestContextHolderServiceImpl serviceContext;
+    public String clientQueueName;
     private Long timeOut;
     private TimeUnit timeUnit;
-    public String responseQueueId;
 
     @Override
     public void sendMessage(Request request, ResponseCallBack callback) {
         try {
-            RequestEnvelope envelope = new RequestEnvelope(new MessageIDHeader(), new DateHeader(), new DateExpiredHeader(), new ReplyToHeader(getResponseQueueId()), new Body(request));
+            RequestEnvelope envelope = new RequestEnvelope(new MessageIDHeader(), new DateHeader(), new DateExpiredHeader(), new ReplyToHeader(getClientQueueName()), new Body(request));
             serviceContext.put(envelope.getMessageID().value(), new MessageRequestContextHolderServiceImpl.MessageContext(envelope.getMessageID().value(), callback));
-            serverRequestQueue.offer(envelope, timeOut, timeUnit);
+            serverQueue.offer(envelope, timeOut, timeUnit);
         } catch (Exception ex) {
-            //
+            log.error("", ex);
         }
     }
 }

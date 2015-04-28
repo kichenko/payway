@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
@@ -24,11 +25,12 @@ import org.springframework.core.task.TaskExecutor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class MessageServerResponseListener implements Runnable, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
     private TaskExecutor serverTaskExecutor;
-    private BlockingQueue<ResponseEnvelope> serverResponseQueue;
+    private BlockingQueue<ResponseEnvelope> clientQueue;
 
     @Override
     public void setApplicationContext(ApplicationContext context) {
@@ -39,10 +41,10 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
     public void run() {
         while (true) {
             try {
-                ResponseEnvelope envelope = serverResponseQueue.take();
+                ResponseEnvelope envelope = clientQueue.take();
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
             } catch (Exception ex) {
-                //
+                log.error("", ex);
             }
         }
     }
