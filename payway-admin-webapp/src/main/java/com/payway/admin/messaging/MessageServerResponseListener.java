@@ -41,10 +41,12 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
     public void run() {
         while (true) {
             try {
+                log.info("Waiting for a response message from the server");
                 ResponseEnvelope envelope = clientQueue.take();
+                log.info("Getting the response message from the server, start processing");
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
             } catch (Exception ex) {
-                log.error("Ошибка получения ответа от сервера", ex);
+                log.error("Failed to get a response message from the server", ex);
             }
         }
     }

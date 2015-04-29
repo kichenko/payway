@@ -3,13 +3,10 @@
  */
 package com.payway.messaging.core;
 
-import com.payway.messaging.core.header.DateExpiredHeader;
-import com.payway.messaging.core.header.DateHeader;
-import com.payway.messaging.core.header.MessageIDHeader;
-import com.payway.messaging.core.header.ReplyToHeader;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.LocalDateTime;
 
 /**
  * Конверт запроса, содержит заголовки (Header) и тело (Body).
@@ -27,9 +24,9 @@ public class RequestEnvelope extends AbstractEnvelope {
     /**
      * Набор стандартных заголовков
      */
-    private ReplyToHeader replyTo = new ReplyToHeader();
+    private String replyTo;
 
-    public RequestEnvelope(MessageIDHeader messageID, DateHeader date, DateExpiredHeader dateExpired, ReplyToHeader replyTo, Body body) {
+    public RequestEnvelope(String messageID, LocalDateTime date, LocalDateTime dateExpired, String replyTo, Body body) {
         super(messageID, date, dateExpired, body);
         setReplyTo(replyTo);
     }

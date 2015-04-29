@@ -61,8 +61,7 @@ public final class LoginView extends CustomComponentView implements View {
     @UiHandler("buttonSignIn")
     public void clickButtonSignIn(Button.ClickEvent event) throws Exception {
 
-        final UI currentUI = UI.getCurrent();
-
+        //final UI currentUI = UI.getCurrent();
         //UI.getCurrent().getNavigator().navigateTo("main");
         progressBarWindow.show();
 
@@ -73,27 +72,41 @@ public final class LoginView extends CustomComponentView implements View {
                 service.sendMessage(new AuthCommandRequest<>(new UserImpl(textUserName.getValue(), textPassword.getValue(), "", Boolean.TRUE, null), true),
                         new ResponseCallBack<SuccessResponse, ExceptionResponse>() {
 
-                            private UI ui;
-
-                            public ResponseCallBack<SuccessResponse, ExceptionResponse> setUI(UI ui) {
-                                this.ui = ui;
-                                return this;
-                            }
-
+                            /*
+                             private UI ui;
+                             public ResponseCallBack<SuccessResponse, ExceptionResponse> setUI(UI ui) {
+                             this.ui = ui;
+                             return this;
+                             }
+                             */
                             private UI getUI() {
-                                return ui;
+                                return LoginView.this.getUI();
                             }
 
                             @Override
-                            public void onResponse(SuccessResponse response) {
+                            public void onServerResponse(SuccessResponse response) {
                                 final UI ui = getUI();
                                 if (ui != null) {
                                     ui.access(new Runnable() {
                                         @Override
                                         public void run() {
                                             progressBarWindow.close();
-                                            Notification.show("Notification", "onResponse", Notification.Type.WARNING_MESSAGE);
+                                            Notification.show("Notification", "onServerResponse", Notification.Type.WARNING_MESSAGE);
                                             ui.getNavigator().navigateTo("main");
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onServerException(ExceptionResponse exception) {
+                                UI ui = getUI();
+                                if (ui != null) {
+                                    ui.access(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBarWindow.close();
+                                            Notification.show("Notification", "onServerException", Notification.Type.WARNING_MESSAGE);
                                         }
                                     });
                                 }
@@ -115,19 +128,21 @@ public final class LoginView extends CustomComponentView implements View {
                             }
 
                             @Override
-                            public void onException(ExceptionResponse exception) {
-                                UI ui = getUI();
+                            public void onLocalException() {
+                                final UI ui = getUI();
                                 if (ui != null) {
                                     ui.access(new Runnable() {
                                         @Override
                                         public void run() {
                                             progressBarWindow.close();
-                                            Notification.show("Notification", "onException", Notification.Type.WARNING_MESSAGE);
+                                            Notification.show("Notification", "onLocalException", Notification.Type.WARNING_MESSAGE);
+                                            ui.getNavigator().navigateTo("main");
                                         }
                                     });
                                 }
                             }
-                        }.setUI(currentUI));
+
+                        }/*.setUI(currentUI)*/);
             }
         });
     }

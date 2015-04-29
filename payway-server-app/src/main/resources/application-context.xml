@@ -40,6 +40,10 @@
     <!-- Обработчик входящих запросов -->
     <bean id="messageServerRequestHandler" class="com.payway.server.messaging.MessageServerRequestHandler" scope="prototype">
         <property name="dosService" ref="dosService" />
+        <property name="timeOut" value="20"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
     </bean>
 
 </beans>

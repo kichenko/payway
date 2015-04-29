@@ -45,12 +45,13 @@ public class MessageServerRequestListener implements Runnable, ApplicationContex
     public void run() {
         try {
             while (true) {
-                AbstractEnvelope envelope = serverQueue.take();
-                log.info("Получено входящее сообщение - ", envelope);
+                log.info("Waiting for a request message from the client");
+                AbstractEnvelope envelope = serverQueue.take(); 
+                log.info("Getting the request message from the client, start processing");
                 serverTaskExecutor.execute((MessageServerRequestHandler) applicationContext.getBean("messageServerRequestHandler", envelope));
             }
         } catch (Exception ex) {
-            log.error("Ошибка получения запроса", ex.getMessage());
+            log.error("Failed to get a request message from the client", ex);
         }
     }
 }

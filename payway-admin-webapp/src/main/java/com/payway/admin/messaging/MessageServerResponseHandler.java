@@ -24,7 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MessageServerResponseHandler implements Runnable {
 
-    private MessageRequestContextHolderServiceImpl serviceContext;
+    /**
+     * Сервис контекста сообщений
+     */
+    private MessageRequestContextHolderService serviceContext;
+
     private ResponseEnvelope envelope;
 
     public MessageServerResponseHandler(ResponseEnvelope envelope) {
@@ -34,21 +38,31 @@ public class MessageServerResponseHandler implements Runnable {
     @Override
     public void run() {
         try {
+            log.info("Start processing the response message from the server");
             if (envelope != null) {
-                MessageRequestContextHolderServiceImpl.MessageContext msgContext = serviceContext.remove(envelope.getCorrelationID().getValue());
+                log.info("Start of message processing from the server");
+                MessageContextImpl msgContext = (MessageContextImpl) serviceContext.remove(envelope.getCorrelationID());
                 if (msgContext != null) {
                     if (msgContext.getCallback() != null) {
                         Response rsp = (Response) envelope.getBody().getMessage();
                         if (rsp instanceof SuccessResponse) {
-                            msgContext.getCallback().onResponse((SuccessResponse) rsp);
+                            msgContext.getCallback().onServerResponse((SuccessResponse) rsp);
                         } else if (rsp instanceof ExceptionResponse) {
-                            msgContext.getCallback().onException((ExceptionResponse) rsp);
+                            msgContext.getCallback().onServerException((ExceptionResponse) rsp);
                         }
+                    } else {
+                        log.info("Invalid context data");
                     }
+                } else {
+                    log.info("Not found in the context of the reply message server");
                 }
+                log.info("End of message processing from the server");
+            } else {
+                log.info("An empty message from the server");
             }
+            log.info("End processing the response message from the server");
         } catch (Exception ex) {
-            log.error("Ошибка обработки ответа с сервера", ex);
+            log.error("Error processing the response from the server", ex);
         }
     }
 }

@@ -6,18 +6,17 @@ package com.payway.server.messaging;
 import com.payway.messaging.core.Body;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
-import com.payway.messaging.core.header.CorrelationIDHeader;
-import com.payway.messaging.core.header.DateExpiredHeader;
-import com.payway.messaging.core.header.DateHeader;
-import com.payway.messaging.core.header.MessageIDHeader;
 import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
 import com.payway.model.messaging.auth.UserImpl;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.LocalDateTime;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
@@ -41,6 +40,16 @@ public class MessageServerRequestHandler implements Runnable {
      */
     private DistributedObjectService dosService;
 
+    /**
+     * Время ожидания отправки ответа
+     */
+    private Long timeOut;
+
+    /**
+     * Единица время ожидания отправки ответа
+     */
+    private TimeUnit timeUnit;
+
     public MessageServerRequestHandler(RequestEnvelope envelope) {
         setEnvelope(envelope);
     }
@@ -51,22 +60,33 @@ public class MessageServerRequestHandler implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Обработка входящего сообщения - ", envelope);
+            log.info("Start processing the request message from the client");
             if (envelope != null) {
-                BlockingQueue<ResponseEnvelope> clientQueue = (BlockingQueue<ResponseEnvelope>) dosService.getQueueByName(envelope.getReplyTo().getValue());
-                if (clientQueue != null) {
-                    log.info("Отправка ответа на входящеее сообщение - ", envelope);
-                    clientQueue.offer(new ResponseEnvelope(
-                            new MessageIDHeader(),
-                            new DateHeader(),
-                            new DateExpiredHeader(),
-                            new CorrelationIDHeader(envelope.getMessageID().getValue()),
-                            new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null))))
-                    );
+                log.info("Start of message processing from the client");
+                if (envelope.getReplyTo() != null && !envelope.getReplyTo().isEmpty()) {
+                    BlockingQueue<ResponseEnvelope> clientQueue = (BlockingQueue<ResponseEnvelope>) dosService.getQueueByName(envelope.getReplyTo());
+                    if (clientQueue != null) {
+                        String msgID = UUID.randomUUID().toString();
+                        LocalDateTime dateCreate = new LocalDateTime();
+                        LocalDateTime dateExpired = new LocalDateTime();
+                        String correlationMsgID = envelope.getMessageID();
+
+                        ResponseEnvelope env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null)))); //timeout
+
+                        log.info("Sending a response to the client");
+                        clientQueue.offer(env, timeOut, timeUnit);
+                        log.info("The response is sent to the client");
+                    } else {
+                        log.error("Failed to get the queue to send a response to the client");
+                    }
+                } else {
+                    log.info("Unknown return address of the client request");
                 }
+                log.info("End of message processing from the client");
             }
+            log.info("End processing the request message from the client");
         } catch (Exception ex) {
-            log.error("Ошибка обработки запроса", ex);
+            log.error("Error processing the request from the client", ex);
         }
     }
 }

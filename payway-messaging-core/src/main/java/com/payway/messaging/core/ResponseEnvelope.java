@@ -3,14 +3,11 @@
  */
 package com.payway.messaging.core;
 
-import com.payway.messaging.core.header.CorrelationIDHeader;
-import com.payway.messaging.core.header.DateExpiredHeader;
-import com.payway.messaging.core.header.DateHeader;
-import com.payway.messaging.core.header.MessageIDHeader;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.LocalDateTime;
 
 /**
  * Конверт ответа, содержит заголовки (Header) и тело (Body).
@@ -29,9 +26,9 @@ public class ResponseEnvelope extends AbstractEnvelope {
     /**
      * Набор стандартных заголовков
      */
-    private CorrelationIDHeader correlationID = new CorrelationIDHeader();
+    private String correlationID;
 
-     public ResponseEnvelope(MessageIDHeader messageID, DateHeader date, DateExpiredHeader dateExpired, CorrelationIDHeader correlationID, Body body) {
+    public ResponseEnvelope(String messageID, LocalDateTime date, LocalDateTime dateExpired, String correlationID, Body body) {
         super(messageID, date, dateExpired, body);
         setCorrelationID(correlationID);
     }

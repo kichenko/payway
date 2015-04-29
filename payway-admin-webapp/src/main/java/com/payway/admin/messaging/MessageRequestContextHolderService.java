@@ -3,8 +3,6 @@
  */
 package com.payway.admin.messaging;
 
-import java.util.UUID;
-
 /**
  * Интерфейс сервиса хранения контекста запросов.
  *
@@ -13,13 +11,15 @@ import java.util.UUID;
  */
 public interface MessageRequestContextHolderService {
 
+   
+
     /**
      * Кладем данные запроса в карту
      *
      * @param id
      * @param ui
      */
-    void put(UUID id, MessageRequestContextHolderServiceImpl.MessageContext ui);
+    void put(String id, MessageContext context);
 
     /**
      * Получаем данные запроса из карты по id
@@ -27,7 +27,7 @@ public interface MessageRequestContextHolderService {
      * @param id
      * @return данные запроса
      */
-    MessageRequestContextHolderServiceImpl.MessageContext get(UUID id);
+    MessageContext get(String id);
 
     /**
      * Получаем и удаляем из карты данные запроса по id
@@ -35,5 +35,5 @@ public interface MessageRequestContextHolderService {
      * @param id
      * @return данные запроса
      */
-    MessageRequestContextHolderServiceImpl.MessageContext remove(UUID id);
+    MessageContext remove(String id);
 }

@@ -3,13 +3,11 @@
  */
 package com.payway.messaging.core;
 
-import com.payway.messaging.core.header.DateExpiredHeader;
-import com.payway.messaging.core.header.DateHeader;
-import com.payway.messaging.core.header.MessageIDHeader;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.LocalDateTime;
 
 /**
  * Базовый конверт, содержит набор стандартных заголовков (Header) и тело
@@ -27,9 +25,9 @@ public abstract class AbstractEnvelope implements Envelope {
     /**
      * Набор базовых заголовков
      */
-    private MessageIDHeader messageID = new MessageIDHeader();
-    private DateHeader date = new DateHeader();
-    private DateExpiredHeader dateExpired = new DateExpiredHeader();
+    private String messageID;
+    private LocalDateTime date;
+    private LocalDateTime dateExpired;
 
     /**
      * Тело конверта, содержит полезные данные.

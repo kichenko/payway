@@ -3,9 +3,7 @@
  */
 package com.payway.admin.messaging;
 
-import java.io.Serializable;
 import java.util.Map;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,29 +19,22 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageRequestContextHolderServiceImpl {
+public class MessageRequestContextHolderServiceImpl implements MessageRequestContextHolderService {
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MessageContext implements Serializable {
-
-        private static final long serialVersionUID = 7871864510583276539L;
-
-        private UUID messageId;
-        private ResponseCallBack callback;
-    }
-
-    private Map<UUID, MessageContext> map;
+    /**
+     * Карта, в которой хранится контекст отправленных сообщений
+     */
+    private Map<String, MessageContext> map;
 
     /**
      * Кладем данные запроса в карту
      *
      * @param id
-     * @param ui
+     * @param context
      */
-    public void put(UUID id, MessageContext ui) {
-        map.put(id, ui);
+    @Override
+    public void put(String id, MessageContext context) {
+        map.put(id, context);
     }
 
     /**
@@ -52,7 +43,8 @@ public class MessageRequestContextHolderServiceImpl {
      * @param id
      * @return данные запроса
      */
-    public MessageContext get(UUID id) {
+    @Override
+    public MessageContext get(String id) {
         return map.get(id);
     }
 
@@ -62,7 +54,8 @@ public class MessageRequestContextHolderServiceImpl {
      * @param id
      * @return данные запроса
      */
-    public MessageContext remove(UUID id) {
+    @Override
+    public MessageContext remove(String id) {
         return map.remove(id);
     }
 

@@ -20,18 +20,21 @@ public class ServerApplication {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Загрузка серверного приложения...");
+        log.info("Starting server application...");
 
+        log.info("Start load application context");
         ApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+        log.info("End load application context");
+
+        log.info("Start running thread of processing incoming messages");
         TaskExecutor serverTaskExecutor = context.getBean("serverTaskExecutor", TaskExecutor.class);
         MessageServerRequestListener messageServerListener = context.getBean("messageServerListener", MessageServerRequestListener.class);
-
+        serverTaskExecutor.execute(messageServerListener);
+        log.info("End running thread of processing incoming messages");
 
         System.out.println("$$$$$$$$$$$$$$$=" + context.getBean("serverQueueName", String.class));
 
-        serverTaskExecutor.execute(messageServerListener);
-
-        System.out.println("Начало работы серверного приложения, для завершения работы нажмите Enter...");
+        System.out.println("Server application started, press Enter to exit");
         System.in.read();
     }
 }
