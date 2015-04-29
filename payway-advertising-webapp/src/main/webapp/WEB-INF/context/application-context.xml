@@ -7,12 +7,12 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.payway.admin" />
+    <context:component-scan base-package="com.payway.advertising" />
 
-    <bean class="com.payway.admin.config.AdminVaadinConfiguration" />
+    <bean class="com.payway.advertising.config.AdvertisingVaadinConfiguration" />
 
     <!-- Обработчик отказов для TaskExecutor'а -->
-    <bean id="rejectPolicy" class = "com.payway.admin.messaging.RejectExecutionPolicy"/>
+    <bean id="rejectPolicy" class = "com.payway.advertising.messaging.RejectExecutionPolicy"/>
 
     <!--
         TaskExecutor для обработки серверных задач.
@@ -27,14 +27,14 @@
     </bean>
 
     <!-- Сервис хранения карты с контекстами -->
-    <bean id="serviceContext" class = "com.payway.admin.messaging.MessageRequestContextHolderServiceImpl">
+    <bean id="serviceContext" class = "com.payway.advertising.messaging.MessageRequestContextHolderServiceImpl">
         <property name="map">
             <bean class="java.util.concurrent.ConcurrentHashMap"/>
         </property>
     </bean>
 
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="serviceSender" class = "com.payway.admin.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
+    <bean id="serviceSender" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
         <!-- сюда уходят запросы-->
         <property name="serverQueue" ref="serverQueue"/>
         <property name="clientQueueName" value="#{clientQueueName}"/>
@@ -46,14 +46,14 @@
     </bean>
 
     <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.admin.messaging.MessageServerResponseListener" depends-on="clientQueue">
+    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" depends-on="clientQueue">
         <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
         <!-- отсюда приходят ответы-->
         <property name="clientQueue" ref="clientQueue"/>
     </bean>
 
     <!-- Обработчик полученных ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.admin.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
+    <bean id="messageServerResponseHandler" class = "com.payway.advertising.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
         <property name="serviceContext" ref="serviceContext"/>
     </bean>
 

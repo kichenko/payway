@@ -18,6 +18,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -56,6 +57,11 @@ public final class LoginView extends CustomComponentView implements View {
     public LoginView() {
         setSizeFull();
         setCompositionRoot(Clara.create("LoginView.xml", this));
+    }
+
+    @PostConstruct
+    public void post() {
+        int k = 0;
     }
 
     @UiHandler("buttonSignIn")

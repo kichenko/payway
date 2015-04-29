@@ -12,7 +12,7 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import lombok.NoArgsConstructor;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -23,14 +23,22 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @SpringUI
 @Theme("default")
-@NoArgsConstructor
-@Widgetset("com.payway.admin.AdvertisingWidgetSet")
+@Widgetset("com.payway.advertising.AdvertisingWidgetSet")
 public final class AdvertisingUI extends UI {
 
     @Autowired
     public SpringViewProvider viewProvider;
-    
+
     private boolean isAuth = false;
+
+    public AdvertisingUI() {
+        int k = 0;
+    }
+
+    @PostConstruct
+    public void post() {
+        int k = 0;
+    }
 
     @Override
     protected void init(VaadinRequest request) {
