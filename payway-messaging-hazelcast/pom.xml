@@ -53,6 +53,6 @@
 
     <!-- build -->
     <build>
-        <finalName>payway-messaging-hazelcast</finalName>
+        <!-- <finalName>payway-messaging-hazelcast</finalName> -->
     </build>
 </project>

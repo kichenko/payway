@@ -35,6 +35,6 @@
 
     <!-- build -->
     <build>
-        <finalName>payway-messaging-core</finalName>
+        <!-- <finalName>payway-messaging-core</finalName> -->
     </build>
 </project>

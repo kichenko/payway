@@ -31,6 +31,6 @@
 
     <!-- build -->
     <build>
-        <finalName>payway-model</finalName>
+        <!-- <finalName>payway-model</finalName> -->
     </build>
 </project>

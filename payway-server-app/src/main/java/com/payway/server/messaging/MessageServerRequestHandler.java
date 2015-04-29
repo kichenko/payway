@@ -51,15 +51,17 @@ public class MessageServerRequestHandler implements Runnable {
     @Override
     public void run() {
         try {
+            log.info("Обработка входящего сообщения - ", envelope);
             if (envelope != null) {
                 BlockingQueue<ResponseEnvelope> clientQueue = (BlockingQueue<ResponseEnvelope>) dosService.getQueueByName(envelope.getReplyTo().getValue());
                 if (clientQueue != null) {
+                    log.info("Отправка ответа на входящеее сообщение - ", envelope);
                     clientQueue.offer(new ResponseEnvelope(
-                      new MessageIDHeader(),
-                      new DateHeader(),
-                      new DateExpiredHeader(),
-                      new CorrelationIDHeader(envelope.getMessageID().getValue()),
-                      new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null))))
+                            new MessageIDHeader(),
+                            new DateHeader(),
+                            new DateExpiredHeader(),
+                            new CorrelationIDHeader(envelope.getMessageID().getValue()),
+                            new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null))))
                     );
                 }
             }
