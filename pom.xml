@@ -11,11 +11,12 @@
 
     <modules>
         <module>payway-model</module>
+        <module>payway-data</module>
         <module>payway-messaging-core</module>
         <module>payway-messaging-message</module>
         <module>payway-messaging-hazelcast</module>
         <module>payway-server-app</module>
-        <module>payway-admin-webapp</module>      
+        <module>payway-advertising-webapp</module>      
     </modules>
 
     <properties>
@@ -371,6 +372,12 @@
                 <version>${hazelcast.all.version}</version>
             </dependency>
             <!-- hazelcast libs end--> 
+                        
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring.data.jpa.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
