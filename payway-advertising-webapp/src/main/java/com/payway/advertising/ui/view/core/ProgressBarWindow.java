@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.advertising.ui.core;
+package com.payway.advertising.ui.view.core;
 
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;

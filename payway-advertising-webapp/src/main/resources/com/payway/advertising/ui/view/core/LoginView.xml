@@ -3,7 +3,7 @@
     <VerticalLayout id="loginPanelLayout" spacing="true" styleName="login-panel" sizeUndefined="true" p:componentAlignment="MIDDLE_CENTER">
         <CssLayout id="labelLayout" styleName="labels">
             <Label id="labelCaption" sizeUndefined="true" styleName="login-label-caption" value= "Welcome"/>
-            <Label id="labelTitle" sizeUndefined="true" styleName="login-label-title" value="Payway Admin Console"/>
+            <Label id="labelTitle" sizeUndefined="true" styleName="login-label-title" value="Payway Advertsing Desktop"/>
         </CssLayout>
         <HorizontalLayout id = "horizontalFieldLayout" spacing="true" styleName="fields">
             <TextField id = "textUserName" icon="" styleName="" caption = "UserName"/>

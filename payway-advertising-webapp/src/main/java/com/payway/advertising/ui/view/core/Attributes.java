@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.advertising.ui.core;
+package com.payway.advertising.ui.view.core;
 
 /**
  * Типы ключей в сессиии
@@ -9,13 +9,14 @@ package com.payway.advertising.ui.core;
  * @author Sergey Kichenko
  * @created 30.04.15 00:00
  */
-public enum AdvertisingSessionAttributeType {
+public enum Attributes {
 
-    USER("user");
+    USER("user_name"),
+    REMEMBER_ME("remember_me");
 
     private final String value;
 
-    AdvertisingSessionAttributeType(final String value) {
+    Attributes(final String value) {
         this.value = value;
     }
 

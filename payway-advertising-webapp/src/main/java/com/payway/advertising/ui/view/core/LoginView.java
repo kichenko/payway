@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.advertising.ui.core;
+package com.payway.advertising.ui.view.core;
 
 import com.payway.advertising.messaging.MessageServerSenderServiceImpl;
 import com.payway.advertising.messaging.ResponseCallBack;
@@ -9,13 +9,13 @@ import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.model.messaging.auth.UserImpl;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class LoginView extends CustomComponent implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
+public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
 
     @Autowired
     @Qualifier("serverTaskExecutor")
@@ -62,25 +62,20 @@ public class LoginView extends CustomComponent implements ResponseCallBack<Succe
         setSizeFull();
         setCompositionRoot(Clara.create("LoginView.xml", this));
     }
-    
-    public void init() {
-        //
+
+    @Override
+    public void initialize() {
+        Cookie rememberMeCookie = getCookieByName(Attributes.REMEMBER_ME.value());
+        if (rememberMeCookie != null && rememberMeCookie.getValue() != null) {
+            checkBoxRememberMe.setValue(true);
+        } else {
+            checkBoxRememberMe.setValue(false);
+        }
     }
 
     @UiHandler("buttonSignIn")
     public void clickButtonSignIn(Button.ClickEvent event) throws Exception {
         progressBarWindow.show();
-
-        if (checkBoxRememberMe.getValue()) {
-            Cookie cookie = new Cookie("remember-me", "");
-            cookie.setMaxAge(120);
-            VaadinService.getCurrentResponse().addCookie(cookie);
-        } else {
-            Cookie cookie = new Cookie("remember-me", "");
-            cookie.setMaxAge(0);
-            VaadinService.getCurrentResponse().addCookie(cookie);
-        }
-
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -97,7 +92,9 @@ public class LoginView extends CustomComponent implements ResponseCallBack<Succe
                 @Override
                 public void run() {
                     progressBarWindow.close();
-                    ((ResponseCallBack) UI.getCurrent()).onServerResponse(response);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put(Attributes.REMEMBER_ME.value(), checkBoxRememberMe.getValue());
+                    ((ResponseCallBack) UI.getCurrent()).onServerResponse(response, map);
                 }
             });
         }
@@ -143,5 +140,10 @@ public class LoginView extends CustomComponent implements ResponseCallBack<Succe
                 }
             });
         }
+    }
+
+    @Override
+    public void onServerResponse(SuccessResponse response, Map<String, Object> data) {
+        throw new UnsupportedOperationException("Method is not implemented");
     }
 }

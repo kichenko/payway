@@ -7,7 +7,9 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -19,20 +21,31 @@ import lombok.Setter;
 public final class SideBarMenu extends CustomComponent {
 
     private final CssLayout menuContent = new CssLayout();
-    private SideBarMenuItemButton selectedButton;
+    private SideBarMenuButton selectedButton;
 
-    public static class SideBarMenuItemButton extends Button {
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MenuItem {
+
+        private String tag;
+        private String caption;
+        private Resource icon;
+    }
+
+    @NoArgsConstructor
+    public static class SideBarMenuButton extends Button {
 
         @Getter
         @Setter
         private String tag;
 
-        public interface SideBarMenuItemButtonClickListener {
+        public interface SideBarMenuButtonClickListener {
 
-            void clickSideBarMenuItemButton(final SideBarMenuItemButton button, final Button.ClickEvent event);
+            void onClickSideBarMenuItemButton(final SideBarMenuButton button, final Button.ClickEvent event);
         }
 
-        public SideBarMenuItemButton(final String tag, final String caption, final Resource icon, final SideBarMenuItemButtonClickListener listener) {
+        public SideBarMenuButton(final String tag, final String caption, final Resource icon, final SideBarMenuButtonClickListener listener) {
             setTag(tag);
             setIcon(icon);
             setCaption(caption);
@@ -42,17 +55,17 @@ public final class SideBarMenu extends CustomComponent {
                 @Override
                 public void buttonClick(final ClickEvent event) {
 
-                    SideBarMenuItemButton btn = ((SideBarMenu) SideBarMenuItemButton.this.getParent().getParent()).selectedButton;
+                    SideBarMenuButton btn = ((SideBarMenu) SideBarMenuButton.this.getParent().getParent()).selectedButton;
                     if (btn != null) {
                         btn.removeStyleName("selected");
                     }
 
                     if (listener != null) {
-                        listener.clickSideBarMenuItemButton(SideBarMenuItemButton.this, event);
+                        listener.onClickSideBarMenuItemButton(SideBarMenuButton.this, event);
                     }
 
-                    SideBarMenuItemButton.this.addStyleName("selected");
-                    ((SideBarMenu) SideBarMenuItemButton.this.getParent().getParent()).selectedButton = SideBarMenuItemButton.this;
+                    SideBarMenuButton.this.addStyleName("selected");
+                    ((SideBarMenu) SideBarMenuButton.this.getParent().getParent()).selectedButton = SideBarMenuButton.this;
                 }
             });
         }
@@ -64,8 +77,8 @@ public final class SideBarMenu extends CustomComponent {
         setCompositionRoot(menuContent);
     }
 
-    public void addMenuItem(final String tag, final String caption, final Resource icon, final SideBarMenuItemButton.SideBarMenuItemButtonClickListener listener) {
-        menuContent.addComponent(new SideBarMenuItemButton(tag, caption, icon, listener));
+    public void addMenuItem(final SideBarMenu.MenuItem item, final SideBarMenuButton.SideBarMenuButtonClickListener listener) {
+        menuContent.addComponent(new SideBarMenuButton(item.getTag(), item.getCaption(), item.icon, listener));
     }
 
     public void clearMenuItems() {
