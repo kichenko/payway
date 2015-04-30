@@ -3,7 +3,6 @@
  */
 package com.payway.messaging.message.response.auth;
 
-import com.payway.messaging.core.response.command.CommandResponse;
 import com.payway.model.messaging.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -26,7 +25,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthSuccessComandResponse<T extends User> extends CommandResponse {
+public class AuthSuccessComandResponse<T extends User> extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = -4184111918743320984L;
 

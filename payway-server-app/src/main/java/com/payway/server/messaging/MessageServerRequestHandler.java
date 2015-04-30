@@ -63,6 +63,9 @@ public class MessageServerRequestHandler implements Runnable {
             log.info("Start processing the request message from the client");
             if (envelope != null) {
                 log.info("Start of message processing from the client");
+                if (log.isDebugEnabled()) {
+                    log.debug("Envelope={} ", envelope);
+                }
                 if (envelope.getReplyTo() != null && !envelope.getReplyTo().isEmpty()) {
                     BlockingQueue<ResponseEnvelope> clientQueue = (BlockingQueue<ResponseEnvelope>) dosService.getQueueByName(envelope.getReplyTo());
                     if (clientQueue != null) {

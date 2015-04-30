@@ -6,6 +6,7 @@ package com.payway.messaging.core;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -17,6 +18,7 @@ import org.joda.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class RequestEnvelope extends AbstractEnvelope {
 
     private static final long serialVersionUID = -5394044189519318966L;

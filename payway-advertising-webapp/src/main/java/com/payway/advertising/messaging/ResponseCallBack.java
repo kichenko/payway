@@ -22,14 +22,14 @@ public interface ResponseCallBack<R extends SuccessResponse, E extends Exception
      * аутентификация/авторизация
      *
      */
-    void onServerResponse(R response);
+    void onServerResponse(final R response);
 
     /**
      * Информирование об ошибке на сервере, например ошибка обращения к БД при
      * выполнении бизнес-логики на сервере порождает подобное исключение.
      *
      */
-    void onServerException(E exception);
+    void onServerException(final E exception);
 
     /**
      * Информирование о локальной ошибке, происходит до отправки сообщения на

@@ -3,36 +3,34 @@
  */
 package com.payway.advertising.ui.core;
 
-import com.payway.advertising.core.event.UserSignOutBusEvent;
-import com.payway.advertising.core.service.event.AdminEventBusService;
 import com.payway.advertising.ui.component.SideBarMenu;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
+import com.payway.advertising.ui.view.sample.DashBoardSampleView;
+import com.payway.model.messaging.auth.User;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
- * MainView of admin webapp
+ * Главное окно
  *
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
-@SpringView(name = "main")
-public final class MainView extends CustomComponentView implements SideBarMenu.SideBarMenuItemButton.SideBarMenuItemButtonClickListener, View {
-
-    @Autowired
-    public SpringViewProvider viewProvider;
+@Component
+@NoArgsConstructor
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public final class MainView extends CustomComponent implements SideBarMenu.SideBarMenuItemButton.SideBarMenuItemButtonClickListener {
 
     @UiField
     private MenuBar userMenu;
@@ -43,56 +41,30 @@ public final class MainView extends CustomComponentView implements SideBarMenu.S
     @UiField
     private CssLayout panelContent;
 
-    public MainView() {
-        setSizeFull();
-        setCompositionRoot(Clara.create("MainView.xml", this));
-        initializeUserMenu();
-        initializeSideBarMenu();
-    }
-
     @PostConstruct
     void init() {
-        Navigator navigator = new Navigator(UI.getCurrent(), panelContent);
-        navigator.addProvider(viewProvider);
+        setSizeFull();
+        setCompositionRoot(Clara.create("MainView.xml", this));
     }
 
     /**
-     * Build user menu items
+     * Создать меню пользователя
      */
-    private void initializeUserMenu() {
-
-        MenuBar.MenuItem settingsItem = userMenu.addItem("kichenko", null);
-
-        settingsItem.addItem("Edit Profile", new MenuBar.Command() {
-            @Override
-            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                Notification.show("Notification", "Not implemented", Notification.Type.WARNING_MESSAGE);
-            }
-        });
-
-        settingsItem.addItem("Preferences", new MenuBar.Command() {
-            @Override
-            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                Notification.show("Notification", "Not implemented", Notification.Type.WARNING_MESSAGE);
-            }
-        });
-
-        settingsItem.addSeparator();
+    public void initializeUserMenu() {
+        MenuBar.MenuItem settingsItem = userMenu.addItem(((User) VaadinSession.getCurrent().getAttribute(AdvertisingSessionAttributeType.USER.value())).username(), null);
         settingsItem.addItem("Sign Out", new MenuBar.Command() {
             @Override
             public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                AdminEventBusService adminEventBusService = MainView.this.getAdminEventBusService();
-                if (adminEventBusService != null) {
-                    adminEventBusService.post(new UserSignOutBusEvent());
-                }
+                VaadinSession.getCurrent().close();
+                Page.getCurrent().reload();
             }
         });
     }
 
     /**
-     * Build user side bar menu items
+     * Создать меню в SideBar
      */
-    private void initializeSideBarMenu() {
+    public void initializeSideBarMenu() {
         sideBarMenu.addMenuItem("dashboard", "DashBoard", FontAwesome.HOME, this);
         sideBarMenu.addMenuItem("sales", "Sales", FontAwesome.BAR_CHART_O, this);
         sideBarMenu.addMenuItem("transactions", "Transactions", FontAwesome.TABLE, this);
@@ -101,18 +73,13 @@ public final class MainView extends CustomComponentView implements SideBarMenu.S
     }
 
     /**
-     * SideBar menu item click listener
+     * Обработчик клика по меню в SideBar
      *
-     * @param button Clicked menu item button
-     * @param event Clicked menu item button event
+     * @param button
+     * @param event
      */
     @Override
     public void clickSideBarMenuItemButton(SideBarMenu.SideBarMenuItemButton button, Button.ClickEvent event) {
-        UI.getCurrent().getNavigator().navigateTo(button.getTag());
-    }
-
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        //
+        panelContent.addComponent(new DashBoardSampleView());
     }
 }

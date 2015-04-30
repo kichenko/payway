@@ -13,4 +13,6 @@ import com.payway.messaging.core.Message;
  */
 public abstract class Request implements Message {
 
+    private static final long serialVersionUID = -9014705301031179506L;
+
 }

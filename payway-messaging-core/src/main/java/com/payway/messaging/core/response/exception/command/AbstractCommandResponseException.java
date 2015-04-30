@@ -14,6 +14,8 @@ import com.payway.messaging.core.response.ExceptionResponse;
  */
 public class AbstractCommandResponseException implements ExceptionResponse {
 
+    private static final long serialVersionUID = 4024035156593304870L;
+
     private Integer code;
     private String message;
     private String description;

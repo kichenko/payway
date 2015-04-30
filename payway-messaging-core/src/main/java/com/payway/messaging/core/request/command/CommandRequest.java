@@ -16,5 +16,7 @@ import com.payway.messaging.core.request.Request;
  */
 public abstract class CommandRequest extends Request {
 
+    private static final long serialVersionUID = -505506877343728875L;
+
     private String userToken;
 }

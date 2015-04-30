@@ -5,6 +5,9 @@ package com.payway.advertising.ui.core;
 
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 
 /**
@@ -13,6 +16,8 @@ import org.vaadin.teemu.clara.Clara;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ProgressBarWindow extends Window {
 
     public ProgressBarWindow() {

@@ -66,6 +66,9 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
             RequestEnvelope envelope = new RequestEnvelope(msgID, dateCreate, expiredDate, getClientQueueName(), new Body(request));
             serviceContext.put(envelope.getMessageID(), new MessageContextImpl(envelope.getMessageID(), callback));
             log.info("Sending a message to the server");
+            if (log.isDebugEnabled()) {
+                 log.debug("Envelope={} ", envelope);
+            }
             serverQueue.offer(envelope, timeOut, timeUnit);
             log.info("Message sent to the server");
         } catch (Exception ex) {

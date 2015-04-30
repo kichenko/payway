@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -19,6 +20,7 @@ import org.joda.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class ResponseEnvelope extends AbstractEnvelope {
 
     private static final long serialVersionUID = 6918309089564715542L;

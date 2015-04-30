@@ -3,7 +3,6 @@
  */
 package com.payway.messaging.message.response.auth;
 
-import com.payway.messaging.core.response.exception.command.CommandResponseException;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +21,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthBadCredentialsCommandResponse extends CommandResponseException {
+public class AuthBadCredentialsCommandResponse extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = 1031314572819220266L;
 

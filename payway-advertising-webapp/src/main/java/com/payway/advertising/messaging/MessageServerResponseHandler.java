@@ -41,6 +41,9 @@ public class MessageServerResponseHandler implements Runnable {
             log.info("Start processing the response message from the server");
             if (envelope != null) {
                 log.info("Start of message processing from the server");
+                if (log.isDebugEnabled()) {
+                    log.debug("Envelope={} ", envelope);
+                }
                 MessageContextImpl msgContext = (MessageContextImpl) serviceContext.remove(envelope.getCorrelationID());
                 if (msgContext != null) {
                     if (msgContext.getCallback() != null) {
