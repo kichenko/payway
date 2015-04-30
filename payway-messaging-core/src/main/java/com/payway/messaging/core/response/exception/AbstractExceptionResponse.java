@@ -20,17 +20,17 @@ public abstract class AbstractExceptionResponse implements ExceptionResponse {
     private String description;
 
     @Override
-    public Integer code() {
+    public Integer getCode() {
         return code;
     }
 
     @Override
-    public String message() {
+    public String getMessage() {
         return message;
     }
 
     @Override
-    public String description() {
+    public String getDescription() {
         return description;
     }
 

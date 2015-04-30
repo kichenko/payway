@@ -4,6 +4,7 @@
 package com.payway.messaging.core.response.exception.command;
 
 import com.payway.messaging.core.response.ExceptionResponse;
+import lombok.Setter;
 
 /**
  * Абстрактный класс команды-ответа ошибки. Содержит токен пользователя, который
@@ -12,6 +13,7 @@ import com.payway.messaging.core.response.ExceptionResponse;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
+@Setter
 public class AbstractCommandResponseException implements ExceptionResponse {
 
     private static final long serialVersionUID = 4024035156593304870L;
@@ -21,17 +23,17 @@ public class AbstractCommandResponseException implements ExceptionResponse {
     private String description;
 
     @Override
-    public Integer code() {
+    public Integer getCode() {
         return code;
     }
 
     @Override
-    public String message() {
+    public String getMessage() {
         return message;
     }
 
     @Override
-    public String description() {
+    public String getDescription() {
         return description;
     }
 

@@ -11,10 +11,10 @@ package com.payway.messaging.core.response;
  */
 public interface ExceptionResponse extends Response {
 
-    Integer code();
+    Integer getCode();
 
-    String message();
+    String getMessage();
 
-    String description();
+    String getDescription();
 
 }

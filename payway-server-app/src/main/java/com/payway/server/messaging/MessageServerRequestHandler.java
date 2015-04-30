@@ -8,6 +8,7 @@ import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
+import com.payway.model.configuration.Configuration;
 import com.payway.model.messaging.auth.UserImpl;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -74,7 +75,7 @@ public class MessageServerRequestHandler implements Runnable {
                         LocalDateTime dateExpired = new LocalDateTime();
                         String correlationMsgID = envelope.getMessageID();
 
-                        ResponseEnvelope env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null)))); //timeout
+                        ResponseEnvelope env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserImpl("example", "example", "example", Boolean.TRUE, null), new Configuration()))); //timeout
 
                         log.info("Sending a response to the client");
                         clientQueue.offer(env, timeOut, timeUnit);
