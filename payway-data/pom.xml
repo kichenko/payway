@@ -20,19 +20,19 @@
     <!--<version>1.0-SNAPSHOT</version>-->
 
     <!-- dependencies-->
-    <dependencies>                                 
+    <dependencies>
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-model</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
-        </dependency>  
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -108,11 +108,49 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>                                                                           
+        </dependency>
     </dependencies>
 
     <!-- build -->
     <build>
         <!-- <finalName>payway-data</finalName> -->
+        <plugins>
+            <!--
+            Plugin for update DB schema on compile goal (only for test uses).
+            In production db schema updated from java config)
+            -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway.maven.plugin.version}</version>
+                <configuration>
+                    <url>${database.url}</url>
+                    <user>${database.username}</user>
+                    <password>${database.password}</password>
+                    <validateOnMigrate>true</validateOnMigrate>
+                    <initOnMigrate>true</initOnMigrate>
+                    <locations>
+                        <location>filesystem:${project.basedir}/src/main/resources/db/migration</location>
+                    </locations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flyway-migrate-first</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
     </build>
 </project>
