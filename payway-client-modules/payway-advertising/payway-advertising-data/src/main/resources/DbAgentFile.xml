@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.payway.model.DbAgentFile" table="agent_file">
+        <id name="id" column="id" type="java.lang.Long">
+            <generator class="sequence">
+                <param name="sequence">seq_agent_file</param>
+            </generator>
+        </id>
+        <property name="name" column="name" type="string"/>
+        <property name="expression" column="expression" type="string"/>        
+        <property name="kind" column="GENDER">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.payway.model.DbFileType</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>                
+        <many-to-one name="owner" column="agent_file_owner_id" class="com.payway.model.DbAgentFileOwner" lazy="false" not-null="false"/>
+    </class>
+</hibernate-mapping>

@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AbstractEntity<ID extends Serializable> {
+public abstract class DbAbstractEntity<ID extends Serializable> {
 
     protected ID id;
 }

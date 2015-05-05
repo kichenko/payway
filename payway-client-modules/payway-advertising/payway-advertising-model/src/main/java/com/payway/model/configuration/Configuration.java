@@ -3,7 +3,7 @@
  */
 package com.payway.model.configuration;
 
-import com.payway.model.AbstractEntity;
+import com.payway.model.DbAbstractEntity;
 import java.util.Collection;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Collection;
  * @author Sergey Kichenko
  * @created 30.04.15 00:00
  */
-public class Configuration extends AbstractEntity<Long> {
+public class Configuration extends DbAbstractEntity<Long> {
 
     private String webDavPath;
     private Collection<Item> userMenuItems;
