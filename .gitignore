@@ -10,3 +10,4 @@ nb-configuration.xml
 /target/
 **/VAADIN/gwt-unitCache/
 **/VAADIN/widgetsets/
+.svn/
