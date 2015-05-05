@@ -35,6 +35,13 @@
             <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-model</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
