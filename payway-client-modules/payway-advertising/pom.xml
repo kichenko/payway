@@ -4,15 +4,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.payway</groupId>
-    <artifactId>payway</artifactId>
+    <artifactId>payway-advertising</artifactId>
     <packaging>pom</packaging>
-    <name>payway</name>
+    <name>payway-advertising</name>
     <version>1.0-SNAPSHOT</version>
-
+    
+    <parent>
+        <artifactId>payway-client-modules</artifactId>
+        <groupId>com.payway</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    
     <modules>
-        <module>payway-client-modules</module>
-        <module>payway-messaging</module>
-        <module>payway-server-app</module>        
+        <module>payway-advertising-model</module>
+        <module>payway-advertising-data</module>        
+        <module>payway-advertising-webapp</module>      
     </modules>
 
     <properties>
