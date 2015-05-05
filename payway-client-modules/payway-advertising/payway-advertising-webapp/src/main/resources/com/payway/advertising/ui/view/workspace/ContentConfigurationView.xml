@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="mainViewLayout" styleName="">       
-    <CssLayout id="panelLeft" styleName="">
-        <Table id="gridFileExplorer" sizeFull="true"/> 
-    </CssLayout>    
-</CssLayout>
+<Table id="gridFileExplorer" sizeFull="true"/>

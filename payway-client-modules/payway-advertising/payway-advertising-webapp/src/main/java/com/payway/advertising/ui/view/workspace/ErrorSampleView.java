@@ -28,4 +28,9 @@ public class ErrorSampleView extends AbstractView {
     public void postConstruct() {
         //
     }
+
+    @Override
+    public void activate() {
+        //
+    }
 }

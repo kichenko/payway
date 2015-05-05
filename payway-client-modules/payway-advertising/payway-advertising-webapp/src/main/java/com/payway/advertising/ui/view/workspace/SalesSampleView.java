@@ -28,4 +28,9 @@ public class SalesSampleView extends AbstractView {
     public void postConstruct() {
         //
     }
+
+    @Override
+    public void activate() {
+        //
+    }
 }

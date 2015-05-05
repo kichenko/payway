@@ -30,19 +30,9 @@ public class ContextRefreshedApplicationListener implements ApplicationListener<
     @Qualifier("messageServerResponseListener")
     private MessageServerResponseListener messageServerResponseListener;
 
-    @Autowired
-    @Qualifier("serverQueueName")
-    private String s1;
-
-    @Autowired
-    @Qualifier("clientQueueName")
-    private String s2;
-
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         log.debug("#####");
-        log.debug(s1);
-        log.debug(s2);
         serverTaskExecutor.execute(messageServerResponseListener);
     }
 }

@@ -61,7 +61,7 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("dashboard", "DashBoard", FontAwesome.HOME));
+        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", FontAwesome.HOME));
         items.add(new SideBarMenu.MenuItem("sales", "Sales", FontAwesome.BAR_CHART_O));
         items.add(new SideBarMenu.MenuItem("transactions", "Transactions", FontAwesome.TABLE));
         items.add(new SideBarMenu.MenuItem("reports", "Reports", FontAwesome.FILE_TEXT_O));

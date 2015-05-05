@@ -5,9 +5,12 @@ package com.payway.advertising.ui.view.workspace;
 
 import com.payway.advertising.ui.view.core.AbstractView;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Table;
 import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
+import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
@@ -19,17 +22,22 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @UIScope
 @Component(value = "content-configuration")
 public class ContentConfigurationView extends AbstractView {
-    
-    @UiField
-    private Table gridFileExplorer; 
 
-    public ContentConfigurationView() {
-        setSizeFull();
-        //addComponent(new Label("Hello from 'DashBoardSampleView'"));
-    }
-    
+    @UiField
+    private Table gridFileExplorer;
+
     @PostConstruct
     public void postConstruct() {
-        //
+
+    }
+
+    @Override
+    public void activate() {
+         addComponent(Clara.create("ContentConfigurationView.xml", this));
+
+        gridFileExplorer.addContainerProperty("File name", String.class, null);
+        gridFileExplorer.addContainerProperty("Size", String.class, null);
+        gridFileExplorer.addContainerProperty("Progress", ProgressIndicator.class, null);
+        DragAndDropWrapper dropGridFileExplorer = new DragAndDropWrapper(gridFileExplorer);
     }
 }

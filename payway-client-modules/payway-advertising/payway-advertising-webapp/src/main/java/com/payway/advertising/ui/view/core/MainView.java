@@ -29,32 +29,32 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @UIScope
 @NoArgsConstructor
 public class MainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuButton.SideBarMenuButtonClickListener {
-    
+
     public interface SlideBarMenuButtonClickCallback {
-        
+
         void onClick(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event);
     }
-    
+
     @Autowired
     private ViewFactory viewFactory;
-    
+
     @UiField
     private MenuBar userMenu;
-    
+
     @UiField
     private SideBarMenu sideBarMenu;
-    
+
     @UiField
     private CssLayout panelContent;
-    
+
     private SlideBarMenuButtonClickCallback sbMenuButtonClickCallback;
-    
+
     @PostConstruct
     void init() {
         setSizeFull();
         setCompositionRoot(Clara.create("MainView.xml", this));
     }
-    
+
     @Override
     public void initialize() {
         //
@@ -83,7 +83,7 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         for (SideBarMenu.MenuItem i : items) {
             sideBarMenu.addMenuItem(i, this);
         }
-        
+
         sbMenuButtonClickCallback = sbButtonclick;
     }
 
@@ -95,11 +95,18 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
      */
     @Override
     public void onClickSideBarMenuItemButton(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event) {
-        
+
         if (sbMenuButtonClickCallback != null) {
             sbMenuButtonClickCallback.onClick(button, event);
         }
+
         panelContent.removeAllComponents();
-        panelContent.addComponent(viewFactory.view(button.getTag()));
+
+        com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(button.getTag());
+        panelContent.addComponent(view);
+
+        if (view instanceof AbstractView) {
+            ((AbstractView) view).activate();
+        }
     }
 }

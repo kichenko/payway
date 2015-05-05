@@ -13,4 +13,5 @@ import com.vaadin.ui.VerticalLayout;
  */
 public abstract class AbstractView extends VerticalLayout {
 
+    public abstract void activate();
 }
