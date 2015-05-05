@@ -9,14 +9,15 @@ import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
 import com.payway.messaging.model.messaging.auth.UserDto;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDateTime;
+
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
