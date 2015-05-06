@@ -77,7 +77,12 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>clara</artifactId>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>contextmenu</artifactId>
+        </dependency>
+                
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

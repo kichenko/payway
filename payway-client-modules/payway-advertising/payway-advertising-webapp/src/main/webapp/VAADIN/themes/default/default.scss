@@ -2,10 +2,12 @@
 @import "views/login";
 @import "views/main";
 @import "components/sidebarmenu";
+@import "addons";
 
 @mixin default {
     @include valo;
     @include admin-login-view;
     @include admin-main-view;
     @include sidebar-menu-component;
+    @include addons
 }

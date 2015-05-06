@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FormLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="progressBarWindowLayuot" width="350px" height="80px">
+    <Upload id = "upload" buttonCaption="Ok"/> 
+</FormLayout >
