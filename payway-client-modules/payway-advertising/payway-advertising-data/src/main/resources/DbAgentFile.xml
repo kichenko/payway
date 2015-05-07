@@ -11,7 +11,8 @@
             </generator>
         </id>
         <property name="name" column="name" type="string"/>
-        <property name="expression" column="expression" type="string"/>        
+        <property name="expression" column="expression" type="string"/>   
+        <property name="digest" column="name" type="string"/>     
         <property name="kind" column="GENDER">
             <type name="org.hibernate.type.EnumType">
                 <param name="enumClass">com.payway.model.DbFileType</param>

@@ -24,4 +24,5 @@ public class DbAgentFile extends DbAbstractEntity<Long> {
     protected DbFileType kind;
     protected DbAgentFileOwner owner;
     protected String expression;
+    protected String digest;
 }
