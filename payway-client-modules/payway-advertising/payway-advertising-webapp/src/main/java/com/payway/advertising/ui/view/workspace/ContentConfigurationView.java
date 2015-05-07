@@ -3,21 +3,26 @@
  */
 package com.payway.advertising.ui.view.workspace;
 
-import com.payway.advertising.ui.view.workspace.content.UploadTaskWindow;
-import com.payway.advertising.ui.view.workspace.content.UploadTask;
+import com.payway.advertising.ui.view.core.AbstractView;
+import com.payway.advertising.ui.view.workspace.content.FileExplorerItemData;
 import com.payway.advertising.ui.view.workspace.content.FileUploadWindow;
+import com.payway.advertising.ui.view.workspace.content.UploadTask;
 import com.payway.advertising.ui.view.workspace.content.UploadTaskDnD;
 import com.payway.advertising.ui.view.workspace.content.UploadTaskFileInput;
-import com.payway.advertising.ui.view.core.AbstractView;
+import com.payway.advertising.ui.view.workspace.content.UploadTaskWindow;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIsTarget;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Html5File;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
@@ -76,49 +81,30 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
     @UiField
     private Panel panelDragDropFileUpload;
 
+    //private FileSystemManagerService fileSystemManagerService;
     private ContextMenu gridContextMenu = new ContextMenu();
-
     private UploadTaskWindow uploadTaskWindow = new UploadTaskWindow();
 
     @PostConstruct
     public void postConstruct() {
         setSizeFull();
         addComponent(Clara.create("ContentConfigurationView.xml", this));
-        gridFileExplorer.addContainerProperty("Icon", String.class, null);
-        gridFileExplorer.addContainerProperty("Caption", String.class, null);
-        gridFileExplorer.addContainerProperty("Has Properties", String.class, null);
 
-        gridFileExplorer.setSelectable(true);
-        gridFileExplorer.setDragMode(Table.TableDragMode.ROW);
+        initGridFileExplorerTable();
+        initFileUploadButton();
+        initDragAndDropWrapper();
+    }
 
-        gridContextMenu.setAsContextMenuOf(gridFileExplorer);
-        gridContextMenu.addContextMenuTableListener(this);
-        gridContextMenu.addContextMenuComponentListener(this);
-
-        gridFileExplorer.addItem();
-        gridFileExplorer.addItem();
-        gridFileExplorer.addItem();
-
-        gridFileExplorer.setDropHandler(new DropHandler() {
-
-            @Override
-            public AcceptCriterion getAcceptCriterion() {
-                return SourceIsTarget.get();
-            }
-
-            @Override
-            public void drop(DragAndDropEvent event) {
-                //
-            }
-        });
-
+    private void initFileUploadButton() {
         btnFileUpload.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 new FileUploadWindow("Select file to upload on server...", new UploadTaskFileInput(), ContentConfigurationView.this).show();
             }
         });
+    }
 
+    private void initDragAndDropWrapper() {
         DragAndDropWrapper wrapper = new DragAndDropWrapper(new Panel());
         wrapper.setSizeFull();
         wrapper.setDropHandler(new DropHandler() {
@@ -144,7 +130,71 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
         });
 
         panelDragDropFileUpload.setContent(wrapper);
+    }
 
+    private void initGridFileExplorerTable() {
+        //set common 
+        gridFileExplorer.setSelectable(true);
+        gridFileExplorer.setDragMode(Table.TableDragMode.ROW);
+        gridFileExplorer.setContainerDataSource(new BeanItemContainer<>(FileExplorerItemData.class));
+
+        //set menu
+        gridContextMenu.setAsContextMenuOf(gridFileExplorer);
+        gridContextMenu.addContextMenuTableListener(this);
+        gridContextMenu.addContextMenuComponentListener(this);
+
+        //set click event handler
+        gridFileExplorer.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    //
+                } else {
+                    //
+                }
+            }
+        });
+
+        //set DnD event handler
+        gridFileExplorer.setDropHandler(new DropHandler() {
+
+            @Override
+            public AcceptCriterion getAcceptCriterion() {
+                return SourceIsTarget.get();
+            }
+
+            @Override
+            public void drop(DragAndDropEvent event) {
+                //
+            }
+        });
+
+        //set column render
+        gridFileExplorer.addGeneratedColumn("hello", new Table.ColumnGenerator() {
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {  
+                
+                //BeanItem <FileExplorerItemData> data = ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).getItem(itemId);
+                
+                Label label = new Label();
+                label.setIcon(null);
+                label.setContentMode(ContentMode.HTML);
+                label.setValue("");
+                return label;
+            }
+        });
+
+        //set column view
+        gridFileExplorer.setColumnHeader("fileType", "File type");
+        gridFileExplorer.setColumnHeader("name", "File name");
+        gridFileExplorer.setColumnHeader("size", "File size");
+        gridFileExplorer.setColumnHeader("hasProperty", "Has property");
+        gridFileExplorer.setVisibleColumns("hello", "name", "size", "hasProperty");
+
+        //load data to table 
+        ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).addBean(new FileExplorerItemData());
+        ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).addBean(new FileExplorerItemData());
+        ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).addBean(new FileExplorerItemData());
     }
 
     private void initContextMenuTableRow(ContextMenu menu, Object data) {

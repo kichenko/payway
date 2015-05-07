@@ -11,7 +11,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 /**
- * UploadInfoWindow
+ * UploadTaskWindow
  *
  * @author Sergey Kichenko
  * @created 06.10.15 00:00

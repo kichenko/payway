@@ -1,13 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+
 /**
+ * UploadListener
  *
- * @author sergey
+ * @author Sergey Kichenko
+ * @created 07.10.15 00:00
  */
 public interface UploadListener {
 
