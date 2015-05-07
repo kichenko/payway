@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.core;
+package com.payway.advertising.ui.view.workspace.content;
 
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
@@ -22,9 +22,9 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileUploadWindow extends Window {
 
-    public interface FileUploadWindowAction {
+    public interface FileUploadWindowEvent {
 
-        void onOk(Upload upload);
+        boolean onOk(UploadTaskFileInput uploadTask);
 
         void onCancel();
     }
@@ -32,34 +32,46 @@ public class FileUploadWindow extends Window {
     @UiField
     private Upload upload;
 
-    private FileUploadWindowAction listener;
+    private FileUploadWindowEvent listener;
+    private UploadTaskFileInput uploadTask;
 
-    public FileUploadWindow(Upload.Receiver receiver) {
-        setModal(true);
-        setClosable(true);
-        setDraggable(false);
-        setResizable(false);
-        setContent(Clara.create("FileUploadWindow.xml", this));
-        
-        upload.setImmediate(false);
-        upload.setReceiver(receiver);
+    public FileUploadWindow(String caption, UploadTaskFileInput task, FileUploadWindowEvent event) {
+
+        initUI(caption);
+
+        uploadTask = task;
+        listener = event;
+        uploadTask.setUploadObject(upload);
+        upload.setReceiver(uploadTask);
+
         upload.addStartedListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
+                uploadTask.setFileName(event.getFilename());
                 if (listener != null) {
+                    if (listener.onOk(uploadTask)) {
+                        UI.getCurrent().removeWindow(FileUploadWindow.this);
+                    }
+                } else {
                     UI.getCurrent().removeWindow(FileUploadWindow.this);
-                    listener.onOk(FileUploadWindow.this.upload);
                 }
             }
         });
     }
 
-    public Upload getUpload() {
-        return upload;
+    private void initUI(String caption) {
+        setModal(true);
+        setClosable(true);
+        setDraggable(false);
+        setResizable(false);
+        setCaption(caption);
+        setContent(Clara.create("FileUploadWindow.xml", this));
     }
 
     public void show() {
-        UI.getCurrent().addWindow(this);
+        if (this.getParent() == null) {
+            UI.getCurrent().addWindow(this);
+        }
     }
 
     @Override
@@ -68,9 +80,5 @@ public class FileUploadWindow extends Window {
         if (listener != null) {
             listener.onCancel();
         }
-    }
-
-    public void addUploadActionListener(FileUploadWindowAction listener) {
-        this.listener = listener;
     }
 }

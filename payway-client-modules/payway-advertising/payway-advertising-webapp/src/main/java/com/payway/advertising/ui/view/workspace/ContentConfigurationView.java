@@ -3,20 +3,24 @@
  */
 package com.payway.advertising.ui.view.workspace;
 
+import com.payway.advertising.ui.view.workspace.content.UploadTaskWindow;
+import com.payway.advertising.ui.view.workspace.content.UploadTask;
+import com.payway.advertising.ui.view.workspace.content.FileUploadWindow;
+import com.payway.advertising.ui.view.workspace.content.UploadTaskDnD;
+import com.payway.advertising.ui.view.workspace.content.UploadTaskFileInput;
 import com.payway.advertising.ui.view.core.AbstractView;
-import com.payway.advertising.ui.view.core.FileUploadWindow;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIsTarget;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.Html5File;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Upload;
-import java.io.IOException;
-import java.io.OutputStream;
 import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +39,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @UIScope
 @Component(value = "content-configuration")
-public class ContentConfigurationView extends AbstractView implements FileUploadWindow.FileUploadWindowAction, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
+public class ContentConfigurationView extends AbstractView implements FileUploadWindow.FileUploadWindowEvent, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
     @Getter
     @Setter
@@ -45,6 +49,7 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
 
         public enum MenuAction {
 
+            ROW_REFRESH_FOLDER,
             ROW_NEW_FOLDER,
             ROW_EDIT,
             ROW_REMOVE,
@@ -54,25 +59,12 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
             ROW_PROP_NEW,
             ROW_PROP_EDIT,
             ROW_PROP_REMOVE,
-            TABLE_MENU_NEW_FOLDER
+            TABLE_NEW_FOLDER,
+            TABLE_REFRESH_FOLDER
         }
 
         private MenuAction action;
         private Object data;
-    }
-
-    public static class MyReceiver implements Upload.Receiver {
-
-        @Override
-        public OutputStream receiveUpload(String filename, String mimeType) {
-            return new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                    int k = 900;
-                }
-            };
-        }
-
     }
 
     @UiField
@@ -80,6 +72,9 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
 
     @UiField
     private Button btnFileUpload;
+
+    @UiField
+    private Panel panelDragDropFileUpload;
 
     private ContextMenu gridContextMenu = new ContextMenu();
 
@@ -92,7 +87,6 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
         gridFileExplorer.addContainerProperty("Icon", String.class, null);
         gridFileExplorer.addContainerProperty("Caption", String.class, null);
         gridFileExplorer.addContainerProperty("Has Properties", String.class, null);
-        gridFileExplorer.addContainerProperty("Progress", ProgressIndicator.class, null);
 
         gridFileExplorer.setSelectable(true);
         gridFileExplorer.setDragMode(Table.TableDragMode.ROW);
@@ -121,12 +115,36 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
         btnFileUpload.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                FileUploadWindow wnd = new FileUploadWindow(new MyReceiver());
-                wnd.setCaption("Select file to upload on server...");
-                wnd.addUploadActionListener(ContentConfigurationView.this);
-                wnd.show();
+                new FileUploadWindow("Select file to upload on server...", new UploadTaskFileInput(), ContentConfigurationView.this).show();
             }
         });
+
+        DragAndDropWrapper wrapper = new DragAndDropWrapper(new Panel());
+        wrapper.setSizeFull();
+        wrapper.setDropHandler(new DropHandler() {
+
+            @Override
+            public AcceptCriterion getAcceptCriterion() {
+                return AcceptAll.get();
+            }
+
+            @Override
+            public void drop(DragAndDropEvent event) {
+                Html5File files[] = ((DragAndDropWrapper.WrapperTransferable) event.getTransferable()).getFiles();
+                if (files != null) {
+                    for (final Html5File file : files) {
+                        UploadTask uploadTask = new UploadTaskDnD();
+                        uploadTask.setFileName(file.getFileName());
+                        uploadTask.setUploadObject(file);
+                        uploadTaskWindow.addUploadTask(uploadTask);
+                    }
+                    uploadTaskWindow.show();
+                }
+            }
+        });
+
+        panelDragDropFileUpload.setContent(wrapper);
+
     }
 
     private void initContextMenuTableRow(ContextMenu menu, Object data) {
@@ -134,6 +152,11 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
             ContextMenu.ContextMenuItem tmp;
 
             menu.removeAllItems();
+
+            tmp = menu.addItem("Refresh");
+            tmp.setSeparatorVisible(true);
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_REFRESH_FOLDER, data));
+            tmp.addItemClickListener(this);
 
             tmp = menu.addItem("New folder");
             tmp.setSeparatorVisible(true);
@@ -185,8 +208,13 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
 
             menu.removeAllItems();
 
+            tmp = menu.addItem("Refresh");
+            tmp.setSeparatorVisible(true);
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_REFRESH_FOLDER, null));
+            tmp.addItemClickListener(this);
+
             tmp = menu.addItem("New folder");
-            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_MENU_NEW_FOLDER, null));
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_NEW_FOLDER, null));
             tmp.addItemClickListener(this);
         }
     }
@@ -241,15 +269,21 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
     }
 
     @Override
-    public void onOk(Upload upload) {
-        UploadTaskWindow wnd = new UploadTaskWindow();
-        wnd.addUploadTask(upload);
-        wnd.show();
+    public boolean onOk(UploadTaskFileInput uploadTask) {
+        if (uploadTask.getFileName() == null || uploadTask.getFileName().isEmpty()) {
+            Notification.show("Please, select file to upload", Notification.Type.WARNING_MESSAGE);
+            return false;
+        } else {
+            uploadTaskWindow.addUploadTask(uploadTask);
+            uploadTaskWindow.show();
+        }
+
+        return true;
     }
 
     @Override
     public void onCancel() {
         //
+        //StreamVariable
     }
-
 }

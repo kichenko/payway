@@ -3,6 +3,6 @@
     <Table id="gridFileExplorer" width="100%" height="200px"/>   
     <CssLayout id="panelUpload"  width="100%" height="300px"> 
         <Button id="btnFileUpload" caption="+"/>
-        <Panel id="panelDragDropUploadZone" height="300px"/> 
+        <Panel id="panelDragDropFileUpload" height="300px"/> 
     </CssLayout>     
 </VerticalLayout>
