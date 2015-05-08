@@ -25,6 +25,7 @@ public class FileExplorerItemData implements Serializable {
 
     private FileExplorerType fileType;
     private String name;
+    private String path;
     private Long size;
     private Boolean hasProperty;
 }

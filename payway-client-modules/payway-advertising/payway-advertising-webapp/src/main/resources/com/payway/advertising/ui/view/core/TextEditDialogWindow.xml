@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FormLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="textEditDialogWindowLayout" width="350px" height="80px">
+    <TextField id = "editText"/>     
+    <Button id="btnCancel" caption="Cancel"/>
+    <Button id="btnOk" caption="Ok"/>    
+</FormLayout >

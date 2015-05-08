@@ -3,6 +3,8 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import java.util.List;
+
 /**
  * FileSystemManagerService
  *
@@ -10,7 +12,16 @@ package com.payway.advertising.ui.view.workspace.content;
  * @created 07.10.15 00:00
  */
 public interface FileSystemManagerService {
-    void move();
-    void delete();
-    void list();
+
+    void create(FileSystemObject srcUri) throws FileSystemManagerServiceException;
+
+    void rename(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+
+    void delete(FileSystemObject srcUri) throws FileSystemManagerServiceException;
+
+    void move(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+
+    void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+
+    List<FileSystemObject> list(FileSystemObject srcUri, boolean isRecursive) throws FileSystemManagerServiceException;
 }
