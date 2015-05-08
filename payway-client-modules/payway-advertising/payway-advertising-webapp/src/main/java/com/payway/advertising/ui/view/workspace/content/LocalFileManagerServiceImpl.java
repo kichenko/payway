@@ -10,7 +10,8 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.Selectors;
-import org.apache.commons.vfs2.VFS;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,17 +28,9 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
 
     private final static String SCHEMA = "file:///";
 
-    //@Autowired
-    //@Qualifier(value = "fileSystemManager")
+    @Autowired
+    @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
-
-    {
-        try {
-            fileSystemManager = VFS.getManager();
-        } catch (Exception ex) {
-            //
-        }
-    }
 
     @Override
     public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
@@ -123,11 +116,11 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 FileObject[] childs = fo.getChildren();
                 if (childs != null) {
                     for (FileObject f : childs) {
-                        
+
                         String s = f.getName().getBaseName();
                         s = f.getName().getPath();
                         s = f.getName().getURI();
-                        
+
                         list.add(new FileSystemObject(f.getName().getPath(),
                                 FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
                                 FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,

@@ -9,11 +9,5 @@
 
     <!-- файл с конфигом -->
     <context:property-placeholder location="classpath:config.properties" />
-    
-    <!-- Фабрика для работы с файловой системой -->
-    <bean id="vfs" class="org.apache.commons.vfs2.VFS"/>
-        
-    <!-- Объект для работы с файловой системой -->
-    <bean id="fileSystemManager" class="org.apache.commons.vfs2.FileSystemManager" scope="prototype" factory-bean="vfs" factory-method="getManager"/>   
-    
+
 </beans>

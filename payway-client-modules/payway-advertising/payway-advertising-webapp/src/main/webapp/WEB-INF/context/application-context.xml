@@ -6,8 +6,8 @@
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
-            
-    
+
+
     <context:component-scan base-package="com.payway.advertising" />
 
     <bean class="com.payway.advertising.config.AdvertisingVaadinConfiguration" />
@@ -52,9 +52,13 @@
         <!-- отсюда приходят ответы-->
         <property name="clientQueue" ref="clientQueue"/>
     </bean>
-    
+
     <!-- Обработчик полученных ответов с сервера -->
     <bean id="messageServerResponseHandler" class = "com.payway.advertising.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
         <property name="serviceContext" ref="serviceContext"/>
     </bean>
+
+    <!-- Объект для работы с файловой системой -->
+    <bean  id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
+
 </beans>
