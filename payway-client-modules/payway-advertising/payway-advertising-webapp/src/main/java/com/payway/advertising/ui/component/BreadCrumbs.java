@@ -19,9 +19,6 @@ import java.util.List;
  * breadCrumbs.setWidth(100.0f, Unit.PERCENTAGE);
  * breadCrumbs.addCrumb("", FontAwesome.HOME);
  * breadCrumbs.setCrumbEnabled(0, false);
- * for (int i = 0; i <10; i++) {
- *     breadCrumbs.addCrumb("Item" + i, FontAwesome.FOLDER, "Item" + i);
- * }
  *
  * breadCrumbs.addBreadCrumbSelectListener(newBreadCrumbs.BreadCrumbSelectListener() {
  *     @Override public void selected(int index) {
@@ -29,10 +26,14 @@ import java.util.List;
  *     }
  * });
  *
+ * for (int i = 0; i * <10; i++) {
+ *     breadCrumbs.addCrumb("Item" + i, FontAwesome.FOLDER, "Item" + i);
+ * }
+ *
+ * breadCrumbs.selectCrumb(breadCrumbs.size() - 1, false);
  * panel.setContent(breadCrumbs);
  *
  *
- * 
  * @author Sergey Kichenko
  * @created 10.05.15 00:00
  */
@@ -45,35 +46,32 @@ public class BreadCrumbs extends HorizontalLayout {
 
     private final List<Object> crumbStates = new ArrayList<>();
     private MenuBar menuBar = new MenuBar();
+    MenuBar.MenuItem previousSelectedCrumb = null;
     private BreadCrumbSelectListener selectListener;
 
     private final MenuBar.Command menuCommand = new MenuBar.Command() {
 
-        MenuBar.MenuItem previous = null;
-
         @Override
         public void menuSelected(final MenuBar.MenuItem selectedItem) {
-
-            int crumbIndex = menuBar.getItems().indexOf(selectedItem);
-
-            if (previous != null) {
-                previous.setStyleName(null);
-            }
-
-            selectedItem.setStyleName("highlight");
-            previous = selectedItem;
-
-            if (selectCrumb(crumbIndex)) {
-                if (selectListener != null) {
-                    selectListener.selected(crumbIndex);
-                }
-            }
+            selectCrumb(menuBar.getItems().indexOf(selectedItem), true);
         }
     };
 
     public BreadCrumbs() {
         menuBar.setSizeFull();
         addComponent(menuBar);
+    }
+
+    private boolean handleSelectCrumb(int index) {
+        if (index >= 0 && index < menuBar.getItems().size()) {
+            if ((index + 1) < menuBar.getItems().size()) {
+                menuBar.getItems().subList(index + 1, menuBar.getItems().size()).clear();
+                crumbStates.subList(index + 1, crumbStates.size()).clear();
+                menuBar.markAsDirty();
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -118,6 +116,10 @@ public class BreadCrumbs extends HorizontalLayout {
         }
     }
 
+    public int size() {
+        return menuBar.getItems().size();
+    }
+
     public void addBreadCrumbSelectListener(BreadCrumbSelectListener listener) {
         selectListener = listener;
     }
@@ -126,24 +128,32 @@ public class BreadCrumbs extends HorizontalLayout {
         selectListener = null;
     }
 
-    public boolean selectCrumb(int index) {
-        if (index >= 0 && index < menuBar.getItems().size()) {
-            if ((index + 1) < menuBar.getItems().size()) {
-                menuBar.getItems().subList(index + 1, menuBar.getItems().size()).clear();
-                crumbStates.subList(index + 1, crumbStates.size()).clear();
-                menuBar.markAsDirty();
-            }
-            return true;
-        }
-        return false;
-    }
-
     public boolean removeCrumb(int index) {
         if (index >= 0 && index < menuBar.getItems().size()) {
             menuBar.getItems().remove(index);
             crumbStates.remove(index);
             menuBar.markAsDirty();
             return true;
+        }
+        return false;
+    }
+
+    public boolean selectCrumb(int index, boolean fireSelectEvent) {
+        if (index >= 0 && index < menuBar.getItems().size()) {
+            final MenuBar.MenuItem selectedItem = menuBar.getItems().get(index);
+
+            if (previousSelectedCrumb != null) {
+                previousSelectedCrumb.setStyleName(null);
+            }
+
+            selectedItem.setStyleName("highlight");
+            previousSelectedCrumb = selectedItem;
+            if (handleSelectCrumb(index)) {
+                if (fireSelectEvent && selectListener != null) {
+                    selectListener.selected(index);
+                }
+                return true;
+            }
         }
         return false;
     }
