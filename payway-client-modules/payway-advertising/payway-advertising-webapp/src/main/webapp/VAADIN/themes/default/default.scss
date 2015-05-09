@@ -2,6 +2,7 @@
 @import "views/login";
 @import "views/main";
 @import "components/sidebarmenu";
+@import "components/breadcrumbs";
 @import "addons";
 
 @mixin default {
@@ -9,5 +10,6 @@
     @include admin-login-view;
     @include admin-main-view;
     @include sidebar-menu-component;
+    @include breadcrumbs-component;
     @include addons
 }
