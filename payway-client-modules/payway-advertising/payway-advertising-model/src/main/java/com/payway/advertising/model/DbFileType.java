@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.model;
+package com.payway.advertising.model;
 
 /**
  * File types

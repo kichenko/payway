@@ -4,6 +4,7 @@
 package com.payway.messaging.message.request.auth;
 
 import com.payway.messaging.core.request.command.CommandRequest;
+import com.payway.messaging.model.messaging.auth.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,7 +27,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthCommandRequest<T extends com.payway.messaging.model.messaging.auth.User> extends CommandRequest {
+public class AuthCommandRequest<T extends UserDto> extends CommandRequest {
 
     private static final long serialVersionUID = -8380831312004043667L;
 

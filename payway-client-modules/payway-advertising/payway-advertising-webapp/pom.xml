@@ -12,7 +12,7 @@
 
     <groupId>com.payway</groupId>
     <artifactId>payway-advertising-webapp</artifactId>
-    
+
     <packaging>war</packaging>
     <name>payway-advertising-webapp</name>
 
@@ -26,37 +26,46 @@
 
         <!-- vaadin production mode in web.xml -->
         <productionMode>false</productionMode>
-       
+
     </properties>
 
     <!-- dependencies-->
     <dependencies>
-        
+
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-vfs2</artifactId>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-advertising-model</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency> 
+
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-advertising-data</artifactId>
+            <scope>compile</scope>
+            <version>${project.parent.version}</version>
         </dependency>
-                
+
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-hazelcast</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
-        </dependency> 
-        
+        </dependency>
+
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
-        </dependency> 
-        
+        </dependency>
+
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-core</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
-        </dependency>               
+        </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -82,12 +91,12 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>clara</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>contextmenu</artifactId>
         </dependency>
-                
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -97,33 +106,38 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>  
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
-      
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!-- build -->
@@ -146,7 +160,7 @@
                     </filesets>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
@@ -178,11 +192,11 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
         </plugins>
-        
-        <pluginManagement>            
-            <plugins>                
+
+        <pluginManagement>
+            <plugins>
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
@@ -209,8 +223,8 @@
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>                
-            </plugins>                        
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
 </project>

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.core.service;
 
 import java.util.List;
 
@@ -24,4 +24,6 @@ public interface FileSystemManagerService {
     void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
 
     List<FileSystemObject> list(FileSystemObject srcUri, boolean isRecursive) throws FileSystemManagerServiceException;
+
+    boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException;
 }

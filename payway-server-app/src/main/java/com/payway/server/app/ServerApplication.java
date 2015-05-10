@@ -32,8 +32,6 @@ public class ServerApplication {
         serverTaskExecutor.execute(messageServerListener);
         log.info("End running thread of processing incoming messages");
 
-        System.out.println("$$$$$$$$$$$$$$$=" + context.getBean("serverQueueName", String.class));
-
         System.out.println("Server application started, press Enter to exit");
         System.in.read();
     }

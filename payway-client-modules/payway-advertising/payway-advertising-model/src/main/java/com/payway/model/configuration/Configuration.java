@@ -3,7 +3,7 @@
  */
 package com.payway.model.configuration;
 
-import com.payway.model.DbAbstractEntity;
+import com.payway.advertising.model.DbAbstractEntity;
 import java.util.Collection;
 
 /**

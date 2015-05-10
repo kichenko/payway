@@ -1,14 +1,16 @@
 @import "../valo/valo";
 @import "views/login";
 @import "views/main";
+@import "views/content-configuration";
 @import "components/sidebarmenu";
 @import "components/breadcrumbs";
 @import "addons";
 
 @mixin default {
     @include valo;
-    @include admin-login-view;
-    @include admin-main-view;
+    @include login-view;
+    @include main-view;
+    @include content-configuration-view;
     @include sidebar-menu-component;
     @include breadcrumbs-component;
     @include addons

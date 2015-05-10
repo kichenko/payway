@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,10 +122,10 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                         s = f.getName().getURI();
 
                         list.add(new FileSystemObject(f.getName().getPath(),
-                                FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
-                                FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                new ArrayList<FileSystemObject>(0),
-                                srcUri
+                          FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
+                          FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                          new ArrayList<FileSystemObject>(0),
+                          srcUri
                         ));
                     }
                 }
@@ -133,9 +133,23 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 throw new FileSystemManagerServiceException("Can list only folder file system object");
             }
         } catch (FileSystemException ex) {
-            throw new FileSystemManagerServiceException("Error list file system object.", ex);
+            throw new FileSystemManagerServiceException("Error list file system object", ex);
         }
 
         return list;
+    }
+
+    @Override
+    public boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException {
+        try {
+            FileObject fo = fileSystemManager.resolveFile(SCHEMA + uri.getPath());
+            if (FileType.FOLDER.equals(fo.getType())) {
+                return fo.exists();
+            }
+        } catch (FileSystemException ex) {
+            throw new FileSystemManagerServiceException("Error exist file system object", ex);
+        }
+
+        return false;
     }
 }

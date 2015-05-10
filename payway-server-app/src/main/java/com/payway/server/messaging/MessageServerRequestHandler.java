@@ -7,17 +7,17 @@ import com.payway.messaging.core.Body;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.service.DistributedObjectService;
+import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
 import com.payway.messaging.model.messaging.auth.UserDto;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDateTime;
-
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
@@ -75,7 +75,7 @@ public class MessageServerRequestHandler implements Runnable {
                         LocalDateTime dateExpired = new LocalDateTime();
                         String correlationMsgID = envelope.getMessageID();
 
-                        ResponseEnvelope env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserDto("example", "example", "example", Boolean.TRUE, null)))); //timeout
+                        ResponseEnvelope env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserDto(((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getPassword(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), Boolean.TRUE, null)))); //timeout
 
                         log.info("Sending a response to the client");
                         clientQueue.offer(env, timeOut, timeUnit);

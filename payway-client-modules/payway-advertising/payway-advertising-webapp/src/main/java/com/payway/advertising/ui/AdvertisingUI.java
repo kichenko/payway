@@ -3,7 +3,9 @@
  */
 package com.payway.advertising.ui;
 
+import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.messaging.ResponseCallBack;
+import com.payway.advertising.model.User;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
@@ -14,7 +16,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
 import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandResponse;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
-import com.payway.messaging.model.messaging.auth.User;
+import com.payway.messaging.model.messaging.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -34,6 +36,7 @@ import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Главное UI
@@ -54,6 +57,10 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     @Autowired
     private LoginView loginView;
 
+    @Autowired
+    @Qualifier(value = "userService")
+    private UserService userService;
+
     @Override
     protected void init(VaadinRequest request) {
         updateContent();
@@ -68,21 +75,21 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<ImmutablePair<String, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-                new ImmutablePair<String, MenuBar.Command>(
-                        "Sign Out", new MenuBar.Command() {
-                            @Override
-                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                                VaadinSession.getCurrent().close();
-                                Page.getCurrent().reload();
-                            }
-                        }));
+          new ImmutablePair<String, MenuBar.Command>(
+            "Sign Out", new MenuBar.Command() {
+                @Override
+                public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                    VaadinSession.getCurrent().close();
+                    Page.getCurrent().reload();
+                }
+            }));
     }
 
     private void updateContent() {
-        User user = (User) VaadinSession.getCurrent().getAttribute(Attributes.USER.value());
+        User user = userService.getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-            mainView.initializeUserMenu(user.getUsername(), getMenuBarItems());
+            mainView.initializeUserMenu(user.getUserName(), getMenuBarItems());
             setContent(mainView);
         } else {
             loginView.initialize();
@@ -96,20 +103,18 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
             if (response instanceof AuthSuccessComandResponse) {
                 Notification.show("Notification", "onServerResponse, AuthSuccessComandResponse", Notification.Type.WARNING_MESSAGE);
 
-                VaadinSession session = VaadinSession.getCurrent();
-                if (session != null) {
+                UserDto userDto = ((AuthSuccessComandResponse) response).getUser();
+                if (userDto != null && userService.setUser(new User(userDto.getUsername(), userDto.getPassword(), userDto.getUserToken()))) {
 
                     boolean isRememberMe = false;
-
-                    User user = ((AuthSuccessComandResponse) response).getUser();
-                    session.setAttribute(Attributes.USER.value(), user);
+                    User user = userService.getUser();
 
                     if (data != null) {
                         isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());
                     }
 
                     if (isRememberMe) {
-                        Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user == null ? "" : user.getUserToken());
+                        Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getToken());
                         cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
                         //#hack cookie
                         UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
@@ -121,7 +126,6 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
                         UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
                         //VaadinService.getCurrentResponse().addCookie(cookie);
                     }
-
                     updateContent();
                 } else {
                     Notification.show("Notification", "Failed to get session authentication/authorization user", Notification.Type.WARNING_MESSAGE);

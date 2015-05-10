@@ -3,6 +3,7 @@
  */
 package com.payway.messaging.model.messaging.auth;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"authorities"})
-public class UserDto implements User {
+public class UserDto implements Serializable {
 
     private static final long serialVersionUID = 942608076596562119L;
 
@@ -29,27 +30,22 @@ public class UserDto implements User {
     private Boolean isEnabled = Boolean.FALSE;
     private Collection<Authority> authorities = new ArrayList<>(0);
 
-    @Override
     public String getUsername() {
         return username;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
 
-    @Override
     public String getUserToken() {
         return userToken;
     }
 
-    @Override
     public Boolean getIsEnabled() {
         return isEnabled;
     }
 
-    @Override
     public Collection<Authority> getAuthorities() {
         return authorities;
     }

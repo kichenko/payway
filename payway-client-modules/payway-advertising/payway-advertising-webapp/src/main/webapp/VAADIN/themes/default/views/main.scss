@@ -1,10 +1,10 @@
-@mixin admin-main-view {
-    
+@mixin main-view {
+
     //var's
     $sidebarWidth: 200px;
     $panelHeaderHeight: 60px;
     $panelFooterHeight: 20px;
-    
+
 
     .main-view {
         height: 100%;
@@ -14,7 +14,7 @@
 
     .main-panel-left {
         background: yellowgreen;
-        height: 100%;        
+        height: 100%;
         width: 200px;
 
         /*
@@ -43,11 +43,11 @@
     }
 
     .main-panel-content {
-        background: darkorange;       
+        background: darkorange;
         width: 100%;
         height: 100%;
         -moz-box-sizing: border-box;
-        box-sizing: border-box;             
+        box-sizing: border-box;
         padding-bottom: $panelHeaderHeight + $panelFooterHeight;
         margin-bottom: -1 * ($panelHeaderHeight + $panelFooterHeight);
     }

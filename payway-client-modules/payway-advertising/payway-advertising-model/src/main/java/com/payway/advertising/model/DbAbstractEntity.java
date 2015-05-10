@@ -1,7 +1,7 @@
 /*
  * (c) Sergey Kichenko, 2015. All right reserved.
  */
-package com.payway.model;
+package com.payway.advertising.model;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

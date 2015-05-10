@@ -61,4 +61,9 @@
     <!-- Объект для работы с файловой системой -->
     <bean  id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
 
+    <!-- Путь, где хранятся локальные конфигурации пользователей-->
+    <bean id="localConfigPath" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${config.local.path}"/>
+    </bean>
+
 </beans>
