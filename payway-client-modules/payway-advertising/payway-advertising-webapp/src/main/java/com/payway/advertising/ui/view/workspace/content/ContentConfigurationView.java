@@ -136,11 +136,11 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
     }
 
     private void initCurrentRelativePath() {
-        currentRelativePath = "";
+        currentRelativePath = rootUserConfigPath;
     }
 
     private String getCurrentPath() {
-        return rootUserConfigPath + currentRelativePath;
+        return currentRelativePath + settingsService.getSeparator();
     }
 
     private String getRootUserConfigPath() {
@@ -500,7 +500,7 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerType.FOLDER, text, path, 0L, false));
+                            container.addBean(new FileExplorerItemData(FileExplorerType.FOLDER, text, path + text, 0L, false));
                         }
 
                         //#sleep

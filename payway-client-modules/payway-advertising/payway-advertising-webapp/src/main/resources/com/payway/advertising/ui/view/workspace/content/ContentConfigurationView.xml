@@ -12,7 +12,7 @@
     <CssLayout id="panelFileUpload" styleName="content-cfg-panel-upload-file">
         <Button id="btnFileUpload" styleName="content-cfg-panel-upload-file-btn-upload"/>
         <VerticalLayout id="dragDropPanel" styleName="content-cfg-panel-drop-pane">
-            <Label id="label" styleName="content-cfg-panel-drop-pane-text" caption="Drag and Drop files from desktop here"/>
+            <!--<Label id="label" styleName="content-cfg-panel-drop-pane-text" caption="Drag and Drop files from desktop here"/>-->
         </VerticalLayout>
     </CssLayout>
 

@@ -5,6 +5,7 @@ package com.payway.advertising.core.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -116,12 +117,7 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 FileObject[] childs = fo.getChildren();
                 if (childs != null) {
                     for (FileObject f : childs) {
-
-                        String s = f.getName().getBaseName();
-                        s = f.getName().getPath();
-                        s = f.getName().getURI();
-
-                        list.add(new FileSystemObject(f.getName().getPath(),
+                        list.add(new FileSystemObject(StringUtils.substring(f.getName().getURI(), SCHEMA.length()),
                           FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
                           FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
                           new ArrayList<FileSystemObject>(0),
