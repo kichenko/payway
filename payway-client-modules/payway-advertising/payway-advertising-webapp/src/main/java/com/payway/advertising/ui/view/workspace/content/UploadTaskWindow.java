@@ -9,6 +9,7 @@ import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * UploadTaskWindow
@@ -16,6 +17,7 @@ import com.vaadin.ui.Window;
  * @author Sergey Kichenko
  * @created 06.10.15 00:00
  */
+@Slf4j
 public class UploadTaskWindow extends Window implements UploadListener {
 
     private final Table tableTasks = new Table();
@@ -51,7 +53,7 @@ public class UploadTaskWindow extends Window implements UploadListener {
 
     public void addUploadTask(final UploadTask uploadTask) {
 
-        uploadTask.setListener(this);
+        uploadTask.addListener(this);
 
         Button btnCancel = new Button("Cancel");
 

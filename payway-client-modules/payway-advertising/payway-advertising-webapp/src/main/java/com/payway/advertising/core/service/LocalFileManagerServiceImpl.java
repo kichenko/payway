@@ -37,13 +37,16 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
         try {
             FileObject fo = fileSystemManager.resolveFile(SCHEMA + srcUri.getPath());
-
-            if (FileSystemObject.FileSystemObjectType.FILE.equals(srcUri.getType())) {
-                fo.createFile();
-            } else if (FileSystemObject.FileSystemObjectType.FOLDER.equals(srcUri.getType())) {
-                fo.createFolder();
+            if (!exist(srcUri)) {
+                if (FileSystemObject.FileSystemObjectType.FILE.equals(srcUri.getType())) {
+                    fo.createFile();
+                } else if (FileSystemObject.FileSystemObjectType.FOLDER.equals(srcUri.getType())) {
+                    fo.createFolder();
+                } else {
+                    throw new FileSystemManagerServiceException("Can't create file system object, unknown type");
+                }
             } else {
-                throw new FileSystemManagerServiceException("Can't create file system object, unknown type");
+                throw new FileSystemManagerServiceException("Can't create file system object, already exist");
             }
         } catch (FileSystemException ex) {
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
@@ -118,10 +121,10 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 if (childs != null) {
                     for (FileObject f : childs) {
                         list.add(new FileSystemObject(StringUtils.substring(f.getName().getURI(), SCHEMA.length()),
-                          FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
-                          FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                          new ArrayList<FileSystemObject>(0),
-                          srcUri
+                                FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
+                                FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                                new ArrayList<FileSystemObject>(0),
+                                srcUri
                         ));
                     }
                 }
@@ -139,13 +142,9 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     public boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException {
         try {
             FileObject fo = fileSystemManager.resolveFile(SCHEMA + uri.getPath());
-            if (FileType.FOLDER.equals(fo.getType())) {
-                return fo.exists();
-            }
+            return fo.exists();
         } catch (FileSystemException ex) {
             throw new FileSystemManagerServiceException("Error exist file system object", ex);
         }
-
-        return false;
     }
 }

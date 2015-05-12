@@ -11,6 +11,7 @@ import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.view.core.AbstractView;
 import com.payway.advertising.ui.view.core.ProgressBarWindow;
 import com.payway.advertising.ui.view.core.TextEditDialogWindow;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -53,7 +54,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Slf4j
 @UIScope
 @Component(value = "content-configuration")
-public class ContentConfigurationView extends AbstractView implements FileUploadWindow.FileUploadWindowEvent, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
+public class ContentConfigurationView extends AbstractView implements UploadListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
     @Getter
     @Setter
@@ -187,15 +188,44 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
         btnFileUpload.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                new FileUploadWindow("Choose a file to upload", new UploadTaskFileInput(), ContentConfigurationView.this).show();
+                UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsService.getUploadBufferSize());
+                task.addListener(ContentConfigurationView.this);
+                new FileUploadWindow("Choose a file to upload", task,
+                        new FileUploadWindow.FileUploadWindowEvent() {
+                            @Override
+                            public boolean onOk(UploadTaskFileInput uploadTask) {
+                                boolean isOk = false;
+                                if (StringUtils.isBlank(uploadTask.getFileName())) {
+                                    showNotificationError("", "Please, select file to upload");
+                                } else {
+                                    try {
+                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
+                                            showNotificationError("", "File already downloaded on server");
+                                        } else {
+                                            uploadTaskWindow.addUploadTask(uploadTask);
+                                            uploadTaskWindow.show();
+                                            isOk = true;
+                                        }
+                                    } catch (Exception ex) {
+                                        showNotificationError("", "Unknown file upload error");
+                                    }
+                                }
+
+                                return isOk;
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                //
+                            }
+                        }
+                ).show();
             }
         });
     }
 
     private void initDragAndDropWrapper() {
         DragAndDropWrapper wrapper = new DragAndDropWrapper(dragDropPanel);
-        wrapper.setSizeFull();
-
         wrapper.setDropHandler(new DropHandler() {
             @Override
             public AcceptCriterion getAcceptCriterion() {
@@ -207,17 +237,48 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
                 Html5File files[] = ((DragAndDropWrapper.WrapperTransferable) event.getTransferable()).getFiles();
                 if (files != null) {
                     for (final Html5File file : files) {
-                        UploadTask uploadTask = new UploadTaskDnD();
+                        UploadTask uploadTask = new UploadTaskDnD(getCurrentPath(), settingsService.getUploadBufferSize());
+                        uploadTask.addListener(ContentConfigurationView.this);
                         uploadTask.setFileName(file.getFileName());
                         uploadTask.setUploadObject(file);
-                        uploadTaskWindow.addUploadTask(uploadTask);
+                        try {
+                            if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
+                                uploadTask.interrupt();
+                                showNotificationError("", "File already downloaded on server");
+                            } else {
+                                uploadTaskWindow.addUploadTask(uploadTask);
+                                uploadTaskWindow.show();
+                            }
+                        } catch (Exception ex) {
+                            showNotificationError("", "Unknown file upload error");
+                        }
                     }
-                    uploadTaskWindow.show();
                 }
             }
         });
 
+        wrapper.setSizeFull();
         panelFileUpload.addComponent(wrapper);
+    }
+
+    @Override
+    public void updateProgress(UploadTask task, long readBytes, long contentLength) {
+        //
+    }
+
+    @Override
+    public void uploadFailed(UploadTask task, boolean isInterrupted) {
+        //
+    }
+
+    @Override
+    public void uploadSucceeded(UploadTask task) {
+        if (getCurrentPath().equals(task.getPath())) {
+            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+            if (container != null) {
+                container.addBean(new FileExplorerItemData(FileExplorerType.FOLDER, task.getFileName(), task.getPath() + task.getFileName(), 0L, false));
+            }
+        }
     }
 
     private void initBreadCrumbs() {
@@ -443,24 +504,6 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
         event.getContextMenu().open(event.getX(), event.getY());
     }
 
-    @Override
-    public boolean onOk(UploadTaskFileInput uploadTask) {
-        boolean isOk = true;
-        if (uploadTask.getFileName() == null || uploadTask.getFileName().isEmpty()) {
-            Notification.show("Please, select file to upload", Notification.Type.WARNING_MESSAGE);
-            isOk = false;
-        } else {
-            uploadTaskWindow.addUploadTask(uploadTask);
-            uploadTaskWindow.show();
-        }
-        return isOk;
-    }
-
-    @Override
-    public void onCancel() {
-        //
-    }
-
     private void fillGridFileExplorer(String path) throws Exception {
         try {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
@@ -469,11 +512,11 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
                 List<FileSystemObject> list = fileSystemManagerService.list(new FileSystemObject(path, FileSystemObject.FileSystemObjectType.FOLDER, null, null, null), false);
                 for (FileSystemObject f : list) {
                     container.addBean(new FileExplorerItemData(
-                      FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerType.FOLDER : FileExplorerType.FILE,
-                      StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()),
-                      f.getPath(),
-                      f.getSize(),
-                      Boolean.FALSE
+                            FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerType.FOLDER : FileExplorerType.FILE,
+                            StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()),
+                            f.getPath(),
+                            f.getSize(),
+                            Boolean.FALSE
                     ));
                 }
             }
@@ -485,7 +528,7 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
     }
 
     private void createNewFolder(final String path) {
-        new TextEditDialogWindow("Create new folder", new TextEditDialogWindow.TextEditDialogWindowEvent() {
+        new TextEditDialogWindow("Create new folder", "New folder", new TextEditDialogWindow.TextEditDialogWindowEvent() {
             @Override
             public boolean onOk(String text) {
                 boolean isOk = false;
@@ -519,55 +562,62 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
             }
 
             @Override
-            public void onCancel() {
-                //
+            public boolean onCancel() {
+                return true;
             }
         }).show();
     }
 
     private void renameFileOrFolder(final Object selectedItemId) {
-        new TextEditDialogWindow("Rename", new TextEditDialogWindow.TextEditDialogWindowEvent() {
-            @Override
-            public boolean onOk(String text) {
-                boolean isOk = false;
-                if (StringUtils.isNotBlank(text)) {
-                    try {
-                        showLoadingIndicator();
-                        BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
-                        if (container != null) {
-                            FileExplorerItemData bean = container.getItem(selectedItemId).getBean();
-                            if (bean != null) {
-                                FileSystemObject foOld = new FileSystemObject(bean.getPath(), FileExplorerType.FILE.equals(bean.getFileType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER, 0L, null, null);
-                                FileSystemObject foNew = new FileSystemObject(StringUtils.substringBeforeLast(bean.getPath(), "/") + text, FileExplorerType.FILE.equals(bean.getFileType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER, 0L, null, null);
+
+        final BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+        if (container != null) {
+            final BeanItem<FileExplorerItemData> item = container.getItem(selectedItemId);
+            if (item != null && item.getBean() != null) {
+                new TextEditDialogWindow("Rename", item.getBean().getName(), new TextEditDialogWindow.TextEditDialogWindowEvent() {
+                    @Override
+                    public boolean onOk(String text) {
+                        boolean isOk = false;
+                        if (StringUtils.isNotBlank(text)) {
+                            try {
+                                showLoadingIndicator();
+
+                                String pathNew = StringUtils.substringBeforeLast(item.getBean().getPath(), settingsService.getSeparator()) + settingsService.getSeparator() + text;
+                                FileSystemObject foOld = new FileSystemObject(item.getBean().getPath(), FileExplorerType.FILE.equals(item.getBean().getFileType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER, 0L, null, null);
+                                FileSystemObject foNew = new FileSystemObject(pathNew, FileExplorerType.FILE.equals(item.getBean().getFileType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER, 0L, null, null);
 
                                 //do rename
                                 fileSystemManagerService.rename(foOld, foNew);
 
                                 //update grid item
-                                bean.setName(text);
+                                item.getBean().setName(text);
+                                item.getBean().setPath(pathNew);
+
+                                //#hack to update change data model value
+                                gridFileExplorer.refreshRowCache();
 
                                 //#sleep
                                 Thread.sleep(500);
                                 isOk = true;
+                            } catch (Exception ex) {
+                                log.error("Error rename", ex);
+                                showNotificationError("", "Error rename");
+                            } finally {
+                                closeLoadingIndicator();
                             }
+                        } else {
+                            Notification.show("Please, enter correct folder name", Notification.Type.WARNING_MESSAGE);
                         }
-                    } catch (Exception ex) {
-                        log.error("Error rename", ex);
-                        showNotificationError("", "Error rename");
-                    } finally {
-                        closeLoadingIndicator();
+                        return isOk;
                     }
-                } else {
-                    Notification.show("Please, enter correct folder name", Notification.Type.WARNING_MESSAGE);
-                }
-                return isOk;
-            }
 
-            @Override
-            public void onCancel() {
-                //
+                    @Override
+                    public boolean onCancel() {
+                        return true;
+                    }
+                }).show();
             }
-        }).show();
+        }
     }
 
     private void removeFileOrFolder(final Object selectedItemId) {
@@ -631,13 +681,13 @@ public class ContentConfigurationView extends AbstractView implements FileUpload
                     } else {
                         showNotificationError("", "Choose item to rename");
                     }
-                }
-            } else if (ContextMenuItemData.MenuAction.ROW_REMOVE.equals(data.getAction())) {
-                Object itemId = gridFileExplorer.getValue();
-                if (itemId != null) {
-                    removeFileOrFolder(gridFileExplorer.getValue());
-                } else {
-                    showNotificationError("", "Choose item to remove");
+                } else if (ContextMenuItemData.MenuAction.ROW_REMOVE.equals(data.getAction())) {
+                    Object itemId = gridFileExplorer.getValue();
+                    if (itemId != null) {
+                        removeFileOrFolder(gridFileExplorer.getValue());
+                    } else {
+                        showNotificationError("", "Choose item to remove");
+                    }
                 }
             }
         }

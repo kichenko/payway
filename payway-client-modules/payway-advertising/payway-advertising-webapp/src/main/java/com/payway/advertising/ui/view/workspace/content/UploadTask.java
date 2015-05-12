@@ -13,13 +13,23 @@ public interface UploadTask {
 
     void interrupt();
 
+    boolean isInterrupted();
+
     UUID getTaskId();
 
     String getFileName();
 
+    String getPath();
+
+    int getBufferSize();
+
+    void setBufferSize(int size);
+
     void setFileName(String fileName);
 
-    void setListener(UploadListener listener);
+    void setPath(String path);
+
+    void addListener(UploadListener listener);
 
     void setUploadObject(Object uploadObject);
 

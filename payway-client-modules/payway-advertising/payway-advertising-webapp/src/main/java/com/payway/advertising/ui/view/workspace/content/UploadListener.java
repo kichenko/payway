@@ -12,9 +12,9 @@ package com.payway.advertising.ui.view.workspace.content;
  */
 public interface UploadListener {
 
-    public void updateProgress(UploadTask task, long readBytes, long contentLength);
+    public void updateProgress(final UploadTask task, long readBytes, long contentLength);
 
-    public void uploadFailed(UploadTask task, boolean isInterrupted);
+    public void uploadFailed(final UploadTask task, boolean isInterrupted);
 
-    public void uploadSucceeded(UploadTask task);
+    public void uploadSucceeded(final UploadTask task);
 }

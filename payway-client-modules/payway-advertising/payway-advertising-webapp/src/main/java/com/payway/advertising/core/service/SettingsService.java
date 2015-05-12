@@ -13,4 +13,5 @@ public interface SettingsService {
 
     String getLocalConfigPath();
     String getSeparator();
+    int getUploadBufferSize();
 }

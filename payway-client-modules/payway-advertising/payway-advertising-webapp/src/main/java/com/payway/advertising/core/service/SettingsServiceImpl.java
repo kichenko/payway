@@ -32,4 +32,9 @@ public class SettingsServiceImpl implements SettingsService {
     public String getSeparator() {
         return "/";
     }
+
+    @Override
+    public int getUploadBufferSize() {
+        return 2048;
+    }
 }

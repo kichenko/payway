@@ -51,6 +51,8 @@ public class FileUploadWindow extends Window {
                 if (listener != null) {
                     if (listener.onOk(uploadTask)) {
                         UI.getCurrent().removeWindow(FileUploadWindow.this);
+                    } else {
+                        uploadTask.interrupt();
                     }
                 } else {
                     UI.getCurrent().removeWindow(FileUploadWindow.this);

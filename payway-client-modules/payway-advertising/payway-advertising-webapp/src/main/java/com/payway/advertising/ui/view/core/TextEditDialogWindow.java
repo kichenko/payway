@@ -22,7 +22,7 @@ public class TextEditDialogWindow extends Window {
 
         boolean onOk(String text);
 
-        void onCancel();
+        boolean onCancel();
     }
 
     @UiField
@@ -36,7 +36,7 @@ public class TextEditDialogWindow extends Window {
 
     private TextEditDialogWindowEvent listener;
 
-    public TextEditDialogWindow(String caption, TextEditDialogWindowEvent eventListener) {
+    public TextEditDialogWindow(String caption, String value, TextEditDialogWindowEvent eventListener) {
         setModal(true);
         setClosable(true);
         setDraggable(false);
@@ -45,6 +45,7 @@ public class TextEditDialogWindow extends Window {
         setContent(Clara.create("TextEditDialogWindow.xml", this));
 
         listener = eventListener;
+        editText.setValue(value);
 
         btnOk.addClickListener(new Button.ClickListener() {
             @Override
@@ -61,7 +62,9 @@ public class TextEditDialogWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (listener != null) {
-                    listener.onCancel();
+                    if (listener.onCancel()) {
+                        close();
+                    }
                 }
             }
         });
