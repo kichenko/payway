@@ -48,6 +48,7 @@ public class FileUploadWindow extends Window {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
                 uploadTask.setFileName(event.getFilename());
+                uploadTask.setFileSize(event.getContentLength());
                 if (listener != null) {
                     if (listener.onOk(uploadTask)) {
                         UI.getCurrent().removeWindow(FileUploadWindow.this);

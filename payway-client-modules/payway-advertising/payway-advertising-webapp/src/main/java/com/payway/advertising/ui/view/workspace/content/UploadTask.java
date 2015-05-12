@@ -29,6 +29,9 @@ public interface UploadTask {
 
     void setPath(String path);
 
+    long getFileSize();
+    void setFileSize(long fileSize);
+
     void addListener(UploadListener listener);
 
     void setUploadObject(Object uploadObject);

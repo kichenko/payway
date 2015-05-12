@@ -27,9 +27,10 @@ public class UploadTaskFileInput implements UploadTask, Upload.Receiver, Upload.
     private Upload upload;
     private String fileName;
     private String path;
+    private long fileSize;
     private int bufSize;
     private boolean isInterrupted;
-    private List<UploadListener> listeners = new ArrayList<>();
+    private final List<UploadListener> listeners = new ArrayList<>();
 
     public UploadTaskFileInput() {
         taskId = UUID.randomUUID();
@@ -86,6 +87,16 @@ public class UploadTaskFileInput implements UploadTask, Upload.Receiver, Upload.
     }
 
     @Override
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    @Override
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    @Override
     public int getBufferSize() {
         return bufSize;
     }
@@ -123,15 +134,15 @@ public class UploadTaskFileInput implements UploadTask, Upload.Receiver, Upload.
     public void uploadFailed(Upload.FailedEvent event
     ) {
         if (listeners != null) {
-            boolean isInterrupted = false;
+            boolean isInterrupt = false;
             if (event.getReason() != null) {
                 if (event.getReason().getClass().getName().equals(FileUploadHandler.UploadInterruptedException.class.getName())) {
-                    isInterrupted = true;
+                    isInterrupt = true;
                 }
             }
             if (listeners != null) {
                 for (UploadListener l : listeners) {
-                    l.uploadFailed(this, isInterrupted);
+                    l.uploadFailed(this, isInterrupt);
                 }
             }
         }

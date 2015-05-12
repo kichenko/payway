@@ -26,10 +26,11 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
     private int bufSize;
     private String fileName;
     private String path;
+    private long fileSize;
     private UUID taskId;
-    private List<UploadListener> listeners = new ArrayList<>();
     private Html5File html5File;
     private boolean isInterrupted;
+    private final List<UploadListener> listeners = new ArrayList<>();
 
     public UploadTaskDnD() {
         taskId = UUID.randomUUID();
@@ -55,6 +56,16 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
     @Override
     public void interrupt() {
         isInterrupted = true;
+    }
+
+    @Override
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    @Override
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 
     @Override

@@ -191,34 +191,34 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                 UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsService.getUploadBufferSize());
                 task.addListener(ContentConfigurationView.this);
                 new FileUploadWindow("Choose a file to upload", task,
-                        new FileUploadWindow.FileUploadWindowEvent() {
-                            @Override
-                            public boolean onOk(UploadTaskFileInput uploadTask) {
-                                boolean isOk = false;
-                                if (StringUtils.isBlank(uploadTask.getFileName())) {
-                                    showNotificationError("", "Please, select file to upload");
-                                } else {
-                                    try {
-                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
-                                            showNotificationError("", "File already downloaded on server");
-                                        } else {
-                                            uploadTaskWindow.addUploadTask(uploadTask);
-                                            uploadTaskWindow.show();
-                                            isOk = true;
-                                        }
-                                    } catch (Exception ex) {
-                                        showNotificationError("", "Unknown file upload error");
-                                    }
-                                }
+                  new FileUploadWindow.FileUploadWindowEvent() {
+                      @Override
+                      public boolean onOk(UploadTaskFileInput uploadTask) {
+                          boolean isOk = false;
+                          if (StringUtils.isBlank(uploadTask.getFileName())) {
+                              showNotificationError("", "Please, select file to upload");
+                          } else {
+                              try {
+                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
+                                      showNotificationError("", "File already downloaded on server");
+                                  } else {
+                                      uploadTaskWindow.addUploadTask(uploadTask);
+                                      uploadTaskWindow.show();
+                                      isOk = true;
+                                  }
+                              } catch (Exception ex) {
+                                  showNotificationError("", "Unknown file upload error");
+                              }
+                          }
 
-                                return isOk;
-                            }
+                          return isOk;
+                      }
 
-                            @Override
-                            public void onCancel() {
-                                //
-                            }
-                        }
+                      @Override
+                      public void onCancel() {
+                          //
+                      }
+                  }
                 ).show();
             }
         });
@@ -240,6 +240,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                         UploadTask uploadTask = new UploadTaskDnD(getCurrentPath(), settingsService.getUploadBufferSize());
                         uploadTask.addListener(ContentConfigurationView.this);
                         uploadTask.setFileName(file.getFileName());
+                        uploadTask.setFileSize(file.getFileSize());
                         uploadTask.setUploadObject(file);
                         try {
                             if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
@@ -276,7 +277,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
         if (getCurrentPath().equals(task.getPath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerType.FOLDER, task.getFileName(), task.getPath() + task.getFileName(), 0L, false));
+                container.addBean(new FileExplorerItemData(FileExplorerType.FOLDER, task.getFileName(), task.getPath() + task.getFileName(), task.getFileSize(), false));
             }
         }
     }
@@ -512,11 +513,11 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                 List<FileSystemObject> list = fileSystemManagerService.list(new FileSystemObject(path, FileSystemObject.FileSystemObjectType.FOLDER, null, null, null), false);
                 for (FileSystemObject f : list) {
                     container.addBean(new FileExplorerItemData(
-                            FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerType.FOLDER : FileExplorerType.FILE,
-                            StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()),
-                            f.getPath(),
-                            f.getSize(),
-                            Boolean.FALSE
+                      FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerType.FOLDER : FileExplorerType.FILE,
+                      StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()),
+                      f.getPath(),
+                      f.getSize(),
+                      Boolean.FALSE
                     ));
                 }
             }
