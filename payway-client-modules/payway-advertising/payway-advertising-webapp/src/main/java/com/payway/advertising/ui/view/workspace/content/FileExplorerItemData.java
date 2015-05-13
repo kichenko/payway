@@ -21,11 +21,27 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FileExplorerItemData implements Serializable {
 
+    public enum FileType {
+
+        File,
+        Folder
+    }
+
+    public enum FileKind {
+
+        Unknown,
+        Logo,
+        Banner,
+        Archive,
+        Clip,
+        Popup
+    }
+
     private static final long serialVersionUID = -3077409807450078907L;
 
-    private FileExplorerType fileType;
+    private FileType fileType;
+    private FileKind kind;
     private String name;
     private String path;
     private Long size;
-    private Boolean hasProperty;
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tb="urn:import:com.payway.advertising.ui.view.workspace.content" id="layoutTabsProperty" styleName="" sizeFull="true">
+    
+    <CssLayout id="layoutTab" styleName="content-cfg-panel-tab-property">
+        <TabSheet id="tabSheetFileProperty" styleName="framed padded-tabbar"/>
+        <tb:FilePropertyTabGeneral id="tabGeneral"/>
+        <tb:FilePropertyTabAdditional id="tabAdditional"/>
+    </CssLayout>
+    
+    <CssLayout id="layoutButtons" styleName="content-cfg-panel-btn-property">
+        <Button id="btnOk" caption="Save"/>
+        <Button id="btnDiscard" caption="Discard"/>
+    </CssLayout>
+    
+</CssLayout>

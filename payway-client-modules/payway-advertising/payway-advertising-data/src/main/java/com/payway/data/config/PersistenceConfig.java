@@ -1,5 +1,5 @@
 /*
- * (c) Sergey Kichenko, 2015. All right reserved.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.data.config;
 
@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.payway.data.dao")
+@EnableJpaRepositories(basePackages = "com.payway.advertising.data.dao")
 public class PersistenceConfig {
 
     /**
@@ -44,7 +44,7 @@ public class PersistenceConfig {
 
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        factoryBean.setPersistenceUnitName("payway-data");
+        factoryBean.setPersistenceUnitName("payway-advertising-data");
         factoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         factoryBean.setDataSource(dataSource);
 

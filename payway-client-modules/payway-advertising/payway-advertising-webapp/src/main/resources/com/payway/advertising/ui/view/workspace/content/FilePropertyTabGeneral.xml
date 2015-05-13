@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTabGeneralProperty" sizeFull="true">
+
+    <VerticalLayout id="layoutEditControls" sizeFull="true">
+        <HorizontalLayout id="layoutEditName" width="100%">
+            <TextField id="editFileName" caption="File name" inputPrompt="enter file name" enabled="false" width="100%"/>
+        </HorizontalLayout>
+        <HorizontalLayout id="layoutOwnerArea" width="100%">
+            <ComboBox id="cbOwner" caption="Owner" inputPrompt="select owner"/>
+            <Button id="btnOwnerBook" caption="..."/>
+        </HorizontalLayout>
+        <HorizontalLayout id="layoutFileType" width="100%">
+            <ComboBox id="cbFileType" caption="File type" inputPrompt="select type" width="100%"/>
+        </HorizontalLayout>
+    </VerticalLayout>
+        
+</CssLayout>

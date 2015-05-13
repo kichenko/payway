@@ -6,8 +6,10 @@ package com.payway.advertising.ui.view.workspace.content;
 import java.util.UUID;
 
 /**
+ * UploadTask
  *
- * @author sergey
+ * @author Sergey Kichenko
+ * @created 07.10.15 00:00
  */
 public interface UploadTask {
 

@@ -13,6 +13,7 @@ import lombok.Setter;
  * Базовая сущность
  *
  * @author Сергей Киченко
+ * @param <ID>
  * @created 29.04.15 00:00
  */
 @Setter
