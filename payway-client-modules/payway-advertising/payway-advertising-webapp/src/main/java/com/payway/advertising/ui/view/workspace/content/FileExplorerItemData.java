@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import com.payway.advertising.model.DbAgentFile;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,21 +28,10 @@ public class FileExplorerItemData implements Serializable {
         Folder
     }
 
-    public enum FileKind {
-
-        Unknown,
-        Logo,
-        Banner,
-        Archive,
-        Clip,
-        Popup
-    }
-
     private static final long serialVersionUID = -3077409807450078907L;
-
     private FileType fileType;
-    private FileKind kind;
     private String name;
     private String path;
     private Long size;
+    private DbAgentFile property;
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.file;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

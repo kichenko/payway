@@ -1,7 +1,9 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.file;
+
+import com.payway.advertising.core.service.exception.ServiceException;
 
 /**
  * FileSystemManagerServiceException
@@ -9,7 +11,7 @@ package com.payway.advertising.core.service;
  * @author Sergey Kichenko
  * @created 08.10.15 00:00
  */
-public class FileSystemManagerServiceException extends Exception {
+public class FileSystemManagerServiceException extends ServiceException {
 
     public FileSystemManagerServiceException() {
         super();

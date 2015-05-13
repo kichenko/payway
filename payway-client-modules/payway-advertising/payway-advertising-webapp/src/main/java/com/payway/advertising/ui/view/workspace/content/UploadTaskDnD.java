@@ -23,11 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UploadTaskDnD implements UploadTask, StreamVariable {
 
+    private UUID taskId;
     private int bufSize;
-    private String fileName;
     private String path;
     private long fileSize;
-    private UUID taskId;
+    private String fileName;
+    private String fileTmpExt;
     private Html5File html5File;
     private boolean isInterrupted;
     private final List<UploadListener> listeners = new ArrayList<>();
@@ -99,6 +100,16 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
     }
 
     @Override
+    public void setTmpFileExt(String ext) {
+        fileTmpExt = ext;
+    }
+
+    @Override
+    public String getTmpFileExt() {
+        return fileTmpExt;
+    }
+
+    @Override
     public void setUploadObject(Object uploadObject) {
         html5File = (Html5File) uploadObject;
         if (html5File != null) {
@@ -127,15 +138,45 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
 
     @Override
     public void streamingFinished(StreamVariable.StreamingEndEvent event) {
+
+        boolean isOk = false;
+
+        //then upload is success - rename uploaded file (remove tmp file ext)
+        try {
+            File file = new File(getPath() + getFileName() + getTmpFileExt());
+            isOk = file.renameTo(new File(getPath() + getFileName()));
+            if (!isOk) {
+                log.error("Error then rename uploaded file");
+            }
+        } catch (Exception ex) {
+            log.error("", ex);
+        }
+
         if (listeners != null) {
-            for (UploadListener l : listeners) {
-                l.uploadSucceeded(this);
+            if (isOk) {
+                for (UploadListener l : listeners) {
+                    l.uploadSucceeded(this);
+                }
+            } else {
+                for (UploadListener l : listeners) {
+                    l.uploadFailed(this, false);
+                }
             }
         }
     }
 
     @Override
     public void streamingFailed(StreamVariable.StreamingErrorEvent event) {
+        //then upload is failed, remove tmp uploaded file
+        try {
+            File file = new File(getPath() + getFileName() + getTmpFileExt());
+            if (!file.delete()) {
+                log.error("Error then delete failed uploaded file");
+            }
+        } catch (Exception ex) {
+            log.error("", ex);
+        }
+
         if (listeners != null) {
             for (UploadListener l : listeners) {
                 l.uploadFailed(this, this.isInterrupted);
@@ -157,7 +198,7 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
     public OutputStream getOutputStream() {
         if (!isInterrupted()) {
             try {
-                File file = new File(getPath() + getFileName());
+                File file = new File(getPath() + getFileName() + getTmpFileExt());
                 if (!file.exists()) {
                     return new BufferedOutputStream(new FileOutputStream(file), getBufferSize());
                 } else {

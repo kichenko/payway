@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.view.core;
 
+import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.messaging.MessageServerSenderServiceImpl;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.messaging.core.response.ExceptionResponse;

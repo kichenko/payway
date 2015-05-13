@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.ui;
 
-import com.payway.advertising.core.service.UserService;
+import com.payway.advertising.core.service.user.UserService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.User;
 import com.payway.advertising.ui.component.SideBarMenu;

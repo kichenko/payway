@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.file;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * LocalFileManagerServiceImpl
  *
  * @author Sergey Kichenko
- * @created 08.10.15 00:00
+ * @created 08.05.15 00:00
  */
 @Component(value = "localFileManagerService")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

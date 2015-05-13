@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.user;
 
 import com.payway.advertising.model.User;
 import com.payway.advertising.ui.view.core.Attributes;

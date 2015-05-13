@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.model.DbAgentFile;
+import java.util.List;
 
 /**
  * DbAgentFileService
@@ -13,4 +14,6 @@ import com.payway.advertising.model.DbAgentFile;
  */
 public interface DbAgentFileService extends CrudEntityService<Long, DbAgentFile> {
 
+    List<DbAgentFile> findAllByName(List<String> names);
+    List<DbAgentFile> findStartWithByName(String name);
 }

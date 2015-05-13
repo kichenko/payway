@@ -6,7 +6,7 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.DbAgentFileOwnerService;
 import com.payway.advertising.core.service.DbAgentFileService;
 import com.payway.advertising.model.DbAgentFile;
-import com.payway.advertising.ui.view.core.UIHelpers;
+import com.payway.advertising.ui.utils.UIUtils;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
@@ -77,14 +77,14 @@ public class FilePropertyPanel extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
-                    UIHelpers.showLoadingIndicator();
+                    UIUtils.showLoadingIndicator();
                     fieldGroup.commit();
                     dbAgentFileService.update(dbAgentFile);
                 } catch (Exception ex) {
                     log.error("", ex);
-                    UIHelpers.showErrorNotification("", "Error saving file property data");
+                    UIUtils.showErrorNotification("", "Error saving file property data");
                 } finally {
-                    UIHelpers.closeLoadingIndicator();
+                    UIUtils.closeLoadingIndicator();
                 }
             }
         });
@@ -92,9 +92,9 @@ public class FilePropertyPanel extends VerticalLayout {
         btnDiscard.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                UIHelpers.showLoadingIndicator();
+                UIUtils.showLoadingIndicator();
                 fieldGroup.discard();
-                UIHelpers.closeLoadingIndicator();
+                UIUtils.closeLoadingIndicator();
             }
         });
     }

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.core;
+package com.payway.advertising.ui.component;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;

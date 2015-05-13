@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,4 +37,10 @@ public class SettingsServiceImpl implements SettingsService {
     public int getUploadBufferSize() {
         return 2048;
     }
+
+    @Override
+    public String getTemporaryFileExt() {
+        return ".tmp";
+    }
+
 }

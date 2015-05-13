@@ -19,7 +19,15 @@ public interface UploadTask {
 
     UUID getTaskId();
 
+    void setFileName(String fileName);
+
     String getFileName();
+
+    void setTmpFileExt(String ext);
+
+    String getTmpFileExt();
+
+    void setPath(String path);
 
     String getPath();
 
@@ -27,11 +35,8 @@ public interface UploadTask {
 
     void setBufferSize(int size);
 
-    void setFileName(String fileName);
-
-    void setPath(String path);
-
     long getFileSize();
+
     void setFileSize(long fileSize);
 
     void addListener(UploadListener listener);
