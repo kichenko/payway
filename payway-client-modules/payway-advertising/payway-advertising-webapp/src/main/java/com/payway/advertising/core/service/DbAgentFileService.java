@@ -18,4 +18,8 @@ public interface DbAgentFileService extends CrudEntityService<Long, DbAgentFile>
     List<DbAgentFile> findAllByName(List<String> names) throws ServiceException;
 
     List<DbAgentFile> findStartWithByName(String name) throws ServiceException;
+
+    long updateByNamePrefix(String srcName, String dstName);
+
+    long deleteByNamePrefix(String srcName);
 }

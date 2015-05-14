@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.service.file;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -27,8 +28,5 @@ public interface FileSystemManagerService {
 
     boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException;
 
-    //byte[] digest(FileSystemObject uri);
-    
-    //FileSystemObject get(FileSystemObject uri);
-
+    InputStream getInputStream(FileSystemObject uri) throws FileSystemManagerServiceException;
 }

@@ -26,8 +26,9 @@ public class DbAgentFile extends DbAbstractEntity<Long> implements Cloneable {
     protected String expression;
     protected String digest;
     protected Boolean isCountHits;
+    protected DbConfiguration configuration;
 
-    public DbAgentFile(Long id, String name, DbFileType kind, DbAgentFileOwner owner, String expression, String digest, Boolean isCountHits) {
+    public DbAgentFile(Long id, String name, DbFileType kind, DbAgentFileOwner owner, String expression, String digest, Boolean isCountHits, DbConfiguration configuration) {
         super(id);
         setName(name);
         setKind(kind);
@@ -35,10 +36,11 @@ public class DbAgentFile extends DbAbstractEntity<Long> implements Cloneable {
         setExpression(expression);
         setDigest(digest);
         setIsCountHits(isCountHits);
+        setConfiguration(configuration);
     }
 
     @Override
     public Object clone() {
-        return new DbAgentFile(getId(), getName(), getKind(), getOwner() != null ? (DbAgentFileOwner) getOwner().clone() : null, getExpression(), getDigest(), getIsCountHits());
+        return new DbAgentFile(getId(), getName(), getKind(), getOwner() != null ? (DbAgentFileOwner) getOwner().clone() : null, getExpression(), getDigest(), getIsCountHits(), getConfiguration() != null ? (DbConfiguration) getConfiguration().clone() : null);
     }
 }

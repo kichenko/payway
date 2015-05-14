@@ -31,19 +31,19 @@
 
     <!-- dependencies-->
     <dependencies>
-        
+
         <!-- db connection pool -->
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
-        </dependency>   
-                
+        </dependency>
+
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-advertising-model</artifactId>
             <scope>compile</scope>
             <version>${project.parent.version}</version>
-        </dependency> 
+        </dependency>
 
         <dependency>
             <groupId>com.payway</groupId>
@@ -142,6 +142,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-vfs2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
 
     </dependencies>

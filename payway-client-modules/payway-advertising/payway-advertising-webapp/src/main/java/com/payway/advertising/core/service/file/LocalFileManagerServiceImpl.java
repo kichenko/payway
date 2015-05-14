@@ -3,6 +3,8 @@
  */
 package com.payway.advertising.core.service.file;
 
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +34,10 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     @Autowired
     @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
+
+    @Autowired
+    @Qualifier(value = "md5MessageDigest")
+    private MessageDigest messageDigest;
 
     @Override
     public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
@@ -122,10 +128,10 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 if (childs != null) {
                     for (FileObject f : childs) {
                         list.add(new FileSystemObject(StringUtils.substring(f.getName().getURI(), SCHEMA.length()),
-                                FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
-                                FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                new ArrayList<FileSystemObject>(0),
-                                srcUri
+                          FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
+                          FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                          new ArrayList<FileSystemObject>(0),
+                          srcUri
                         ));
                     }
                 }
@@ -147,5 +153,20 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
         } catch (FileSystemException ex) {
             throw new FileSystemManagerServiceException("Error exist file system object", ex);
         }
+    }
+
+    @Override
+    public InputStream getInputStream(FileSystemObject uri) throws FileSystemManagerServiceException {
+        InputStream is = null;
+        try {
+            FileObject fo = fileSystemManager.resolveFile(SCHEMA + uri.getPath());
+            if (FileType.FILE.equals(fo.getType())) {
+                is = fo.getContent().getInputStream();
+            }
+        } catch (Exception ex) {
+            throw new FileSystemManagerServiceException("Error receive file system object input stream", ex);
+        }
+
+        return is;
     }
 }

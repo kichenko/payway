@@ -6,6 +6,8 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.DbAgentFileOwnerService;
 import com.payway.advertising.core.service.DbAgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
+import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.DbAgentFileValidator;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
@@ -66,6 +68,10 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @Getter
     @Setter
+    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
+
+    @Getter
+    @Setter
     private BeanItem<DbAgentFile> beanItem;
 
     @Getter
@@ -74,6 +80,14 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @Getter
     private final Validator dbAgentFileValidator = new DbAgentFileValidator();
+
+    @Getter
+    @Setter
+    private String rootPath;
+
+    @Getter
+    @Setter
+    private String relativePath;
 
     public FilePropertyPanel() {
         init();
@@ -99,13 +113,17 @@ public class FilePropertyPanel extends VerticalLayout {
                     UIUtils.showLoadingIndicator();
                     if (dbAgentFileValidator.validate(beanItem.getBean())) {
 
-                        //set digest only for new object!
+                        //set name only for new object, where id == null
+                        getBeanItem().getBean().setName(getRelativePath());
+
+                        //set digest only for new object, where id == null
                         if (getBeanItem().getBean().getId() == null) {
-                            getBeanItem().getBean().setDigest(null);
+                            String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRootPath() + getRelativePath(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null)));
+                            getBeanItem().getBean().setDigest(digest);
                         }
-                        //
 
                         dbAgentFileService.save(getBeanItem().getBean());
+
                         if (getListener() != null) {
                             getListener().onSave(beanItem.getBean());
                         }
@@ -153,9 +171,11 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getEditFileName().setReadOnly(true);
     }
 
-    public void showProperty(String fileName, BeanItem<DbAgentFile> beanItem) {
+    public void showProperty(String rootPath, String relativePath, String fileName, BeanItem<DbAgentFile> beanItem) {
 
         setBeanItem(beanItem);
+        setRootPath(rootPath);
+        setRelativePath(relativePath);
 
         tabGeneral.getCbOwner().getContainerDataSource().removeAllItems();
         if (beanItem.getBean().getOwner() != null) {

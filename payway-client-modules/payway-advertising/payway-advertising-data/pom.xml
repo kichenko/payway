@@ -119,7 +119,8 @@
             Plugin for update DB schema on compile goal (only for test uses).
             In production db schema updated from java config)
             -->
-            <!--<plugin>
+            <!--
+            <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>${flyway.maven.plugin.version}</version>
@@ -150,7 +151,8 @@
                         <version>${postgresql.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>-->
+            </plugin>
+            -->
         </plugins>
     </build>
 </project>

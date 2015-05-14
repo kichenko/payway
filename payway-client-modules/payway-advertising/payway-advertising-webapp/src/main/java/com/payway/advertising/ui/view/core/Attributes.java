@@ -12,7 +12,8 @@ package com.payway.advertising.ui.view.core;
 public enum Attributes {
 
     USER("user_name"),
-    REMEMBER_ME("remember_me");
+    REMEMBER_ME("remember_me"),
+    CONFIG("user_configuration");
 
     private final String value;
 

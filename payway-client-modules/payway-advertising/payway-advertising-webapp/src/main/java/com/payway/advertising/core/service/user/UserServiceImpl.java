@@ -3,7 +3,8 @@
  */
 package com.payway.advertising.core.service.user;
 
-import com.payway.advertising.model.User;
+import com.payway.advertising.model.DbConfiguration;
+import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.vaadin.server.VaadinSession;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -21,26 +22,52 @@ import org.springframework.stereotype.Component;
 public class UserServiceImpl implements UserService {
 
     @Override
-    public User getUser() {
+    public DbUser getUser() {
 
-        User user = null;
+        DbUser user = null;
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            user = (User) session.getAttribute(Attributes.USER.value());
+            user = (DbUser) session.getAttribute(Attributes.USER.value());
         }
 
         return user;
     }
 
     @Override
-    public boolean setUser(User user) {
+    public boolean setUser(DbUser user) {
 
         boolean isOk = false;
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
             session.setAttribute(Attributes.USER.value(), user);
+            isOk = true;
+        }
+
+        return isOk;
+    }
+
+    @Override
+    public DbConfiguration getConfiguration() {
+        DbConfiguration config = null;
+
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session != null) {
+            config = (DbConfiguration) session.getAttribute(Attributes.CONFIG.value());
+        }
+
+        return config;
+    }
+
+    @Override
+    public boolean setDbConfiguration(DbConfiguration config) {
+
+        boolean isOk = false;
+
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session != null) {
+            session.setAttribute(Attributes.CONFIG.value(), config);
             isOk = true;
         }
 

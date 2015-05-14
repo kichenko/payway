@@ -3,9 +3,11 @@
  */
 package com.payway.advertising.ui;
 
+import com.payway.advertising.core.service.DbConfigurationService;
+import com.payway.advertising.core.service.DbUserService;
 import com.payway.advertising.core.service.user.UserService;
 import com.payway.advertising.messaging.ResponseCallBack;
-import com.payway.advertising.model.User;
+import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
@@ -61,6 +63,14 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     @Qualifier(value = "userService")
     private UserService userService;
 
+    @Autowired
+    @Qualifier(value = "dbUserService")
+    private DbUserService dbUserService;
+
+    @Autowired
+    @Qualifier(value = "dbConfigurationService")
+    private DbConfigurationService dbConfigurationService;
+
     @Override
     protected void init(VaadinRequest request) {
         updateContent();
@@ -75,23 +85,23 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<ImmutablePair<String, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-                new ImmutablePair<String, MenuBar.Command>(
-                        "Sign Out", new MenuBar.Command() {
-                            @Override
-                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                                VaadinSession.getCurrent().close();
-                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                                VaadinSession.getCurrent().close();
-                                Page.getCurrent().reload();
-                            }
-                        }));
+          new ImmutablePair<String, MenuBar.Command>(
+            "Sign Out", new MenuBar.Command() {
+                @Override
+                public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                    VaadinSession.getCurrent().close();
+                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                    VaadinSession.getCurrent().close();
+                    Page.getCurrent().reload();
+                }
+            }));
     }
 
     private void updateContent() {
-        User user = userService.getUser();
+        DbUser user = userService.getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-            mainView.initializeUserMenu(user.getUserName(), getMenuBarItems());
+            mainView.initializeUserMenu(user.getLogin(), getMenuBarItems());
             setContent(mainView);
         } else {
             loginView.initialize();
@@ -106,10 +116,20 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
                 Notification.show("Notification", "onServerResponse, AuthSuccessComandResponse", Notification.Type.WARNING_MESSAGE);
 
                 UserDto userDto = ((AuthSuccessComandResponse) response).getUser();
-                if (userDto != null && userService.setUser(new User(userDto.getUsername(), userDto.getPassword(), userDto.getUserToken()))) {
+
+                //DbUser user = dbUserService.findUserByLogin(userDto.getUsername(), true);
+                //user.setPassword(userDto.getPassword());
+                //user.setToken(userDto.getUserToken());
+
+                //DbConfiguration config = dbConfigurationService.findConfigurationByUserLogin(user, true);
+
+                //userService.setUser(user);
+                //userService.setDbConfiguration(config);
+
+                if (userDto != null && userService.setUser(new DbUser(userDto.getUsername(), userDto.getPassword(), userDto.getUserToken()))) {
 
                     boolean isRememberMe = false;
-                    User user = userService.getUser();
+                    DbUser user = userService.getUser();
 
                     if (data != null) {
                         isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());

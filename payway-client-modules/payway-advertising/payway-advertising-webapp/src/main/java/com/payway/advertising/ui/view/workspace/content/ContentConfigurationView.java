@@ -11,6 +11,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.payway.advertising.core.service.DbAgentFileOwnerService;
 import com.payway.advertising.core.service.DbAgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.service.user.UserService;
 import com.payway.advertising.core.service.utils.SettingsService;
@@ -118,6 +119,12 @@ public class ContentConfigurationView extends AbstractView implements UploadList
     @Qualifier("localFileManagerService")
     private FileSystemManagerService fileSystemManagerService;
 
+    @Getter
+    @Setter
+    @Autowired
+    @Qualifier("fileSystemManagerServiceSecurity")
+    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
+
     @Autowired
     @Qualifier("userService")
     private UserService userService;
@@ -174,7 +181,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
     }
 
     private void initRootUserConfigPath() {
-        rootUserConfigPath = settingsService.getLocalConfigPath() + userService.getUser().getUserName() + settingsService.getSeparator();
+        rootUserConfigPath = settingsService.getLocalConfigPath() + userService.getUser().getLogin() + settingsService.getSeparator();
     }
 
     private void initCurrentRelativePath() {
@@ -214,35 +221,35 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                 task.setTmpFileExt(settingsService.getTemporaryFileExt()); //set tmp file ext
                 task.addListener(ContentConfigurationView.this);
                 new FileUploadWindow("Choose a file to upload", task,
-                        new FileUploadWindow.FileUploadWindowEvent() {
-                            @Override
-                            public boolean onOk(UploadTaskFileInput uploadTask) {
-                                boolean isOk = false;
-                                if (StringUtils.isBlank(uploadTask.getFileName())) {
-                                    UIUtils.showErrorNotification("", "Please, select file to upload");
-                                } else {
-                                    try {
-                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
-                                            UIUtils.showErrorNotification("", "File already downloaded on server");
-                                        } else {
-                                            uploadTaskWindow.addUploadTask(uploadTask);
-                                            uploadTaskWindow.show();
-                                            isOk = true;
-                                        }
-                                    } catch (Exception ex) {
-                                        log.error("Unknown file upload error", ex);
-                                        UIUtils.showErrorNotification("", "Unknown file upload error");
-                                    }
-                                }
+                  new FileUploadWindow.FileUploadWindowEvent() {
+                      @Override
+                      public boolean onOk(UploadTaskFileInput uploadTask) {
+                          boolean isOk = false;
+                          if (StringUtils.isBlank(uploadTask.getFileName())) {
+                              UIUtils.showErrorNotification("", "Please, select file to upload");
+                          } else {
+                              try {
+                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemObjectType.FILE, 0L, null, null))) {
+                                      UIUtils.showErrorNotification("", "File already downloaded on server");
+                                  } else {
+                                      uploadTaskWindow.addUploadTask(uploadTask);
+                                      uploadTaskWindow.show();
+                                      isOk = true;
+                                  }
+                              } catch (Exception ex) {
+                                  log.error("Unknown file upload error", ex);
+                                  UIUtils.showErrorNotification("", "Unknown file upload error");
+                              }
+                          }
 
-                                return isOk;
-                            }
+                          return isOk;
+                      }
 
-                            @Override
-                            public void onCancel() {
-                                //
-                            }
-                        }
+                      @Override
+                      public void onCancel() {
+                          //
+                      }
+                  }
                 ).show();
             }
         });
@@ -378,7 +385,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                     if (container != null) {
                         FileExplorerItemData bean = container.getItem(itemId).getBean();
                         if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                            panelFileProperty.showProperty(bean.getName(), new BeanItem<>(bean.getProperty()));
+                            panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(bean.getProperty()));
                         } else {
                             panelFileProperty.clearProperty();
                         }
@@ -573,14 +580,14 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                     public boolean apply(DbAgentFile file) {
                         return file.getName().equals(StringUtils.substring(f.getPath(), getRootUserConfigPath().length()));
                     }
-                }, new DbAgentFile("", null, new DbAgentFileOwner("sergey k.", ""), "", "", false));
+                }, new DbAgentFile("", null, new DbAgentFileOwner("sergey k.", ""), "", "", false, userService.getConfiguration()));
 
                 container.addBean(new FileExplorerItemData(
-                        FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
-                        StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()), //only name
-                        StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
-                        f.getSize(),
-                        property
+                  FileSystemObject.FileSystemObjectType.FOLDER.equals(f.getType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
+                  StringUtils.substringAfterLast(f.getPath(), settingsService.getSeparator()), //only name
+                  StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
+                  f.getSize(),
+                  property
                 ));
             }
         }
@@ -602,7 +609,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, getCurrentRelativePath() + settingsService.getSeparator() + text, 0L, null));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, getCurrentRelativePath() + settingsService.getSeparator() + text, 0L, new DbAgentFile("", null, null, "", "", false, userService.getConfiguration())));
                         }
                         isOk = true;
                     } catch (Exception ex) {
@@ -641,12 +648,20 @@ public class ContentConfigurationView extends AbstractView implements UploadList
 
                                 UIUtils.showLoadingIndicator();
 
-                                //rename
+                                //step-1: refresh properties from db
+                                dbAgentFileService.updateByNamePrefix(item.getBean().getPath(), pathNew);
+
+                                //step-2: refresh files/folders from file system
                                 fileSystemManagerService.rename(foOld, foNew);
 
                                 //upd grid item
                                 item.getBean().setName(text);
                                 item.getBean().setPath(pathNew);
+
+                                if (item.getBean().getProperty() != null) {
+                                    item.getBean().getProperty().setName(pathNew);
+                                    panelFileProperty.updateFileName(text);
+                                }
 
                                 //#hack to update change data model value
                                 gridFileExplorer.refreshRowCache();
@@ -682,7 +697,10 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                 if (bean != null) {
                     FileSystemObject fo = new FileSystemObject(getRootUserConfigPath() + bean.getPath(), FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER, 0L, null, null);
 
-                    //remove
+                    //step-1: remove properties from db
+                    dbAgentFileService.deleteByNamePrefix(bean.getPath());
+
+                    //step-2: remove files/folders from file system
                     fileSystemManagerService.delete(fo);
 
                     //upd grid
@@ -749,6 +767,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
         panelFileProperty.setDbAgentFileOwnerService(getDbAgentFileOwnerService());
         panelFileProperty.setDbAgentFileService(getDbAgentFileService());
         panelFileProperty.setFileSystemManagerService(getFileSystemManagerService());
+        panelFileProperty.setFileSystemManagerServiceSecurity(getFileSystemManagerServiceSecurity());
 
         //
         panelFileProperty.initOwnerBeanContainer();

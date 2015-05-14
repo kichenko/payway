@@ -25,6 +25,18 @@ public class DbAgentFileServiceImpl implements DbAgentFileService {
     private DbAgentFileDao dbAgentFileDao;
 
     @Override
+    @Transactional
+    public long updateByNamePrefix(String srcName, String dstName) {
+        return dbAgentFileDao.updateByNamePrefix(srcName, dstName);
+    }
+
+    @Override
+    @Transactional
+    public long deleteByNamePrefix(String srcName) {
+        return dbAgentFileDao.deleteByNamePrefix(srcName);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<DbAgentFile> findAllByName(List<String> names) throws ServiceException {
         if (names != null && !names.isEmpty()) {
