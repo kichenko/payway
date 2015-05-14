@@ -26,4 +26,9 @@ public interface FileSystemManagerService {
     List<FileSystemObject> list(FileSystemObject srcUri, boolean isRecursive) throws FileSystemManagerServiceException;
 
     boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException;
+
+    //byte[] digest(FileSystemObject uri);
+    
+    //FileSystemObject get(FileSystemObject uri);
+
 }

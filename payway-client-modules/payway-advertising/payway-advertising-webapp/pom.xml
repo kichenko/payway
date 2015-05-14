@@ -31,7 +31,13 @@
 
     <!-- dependencies-->
     <dependencies>
-
+        
+        <!-- db connection pool -->
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+        </dependency>   
+                
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-advertising-model</artifactId>

@@ -9,6 +9,8 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             /WEB-INF/context/root-context.xml,
+            /WEB-INF/context/data-source-context.xml,
+            /WEB-INF/context/spring-data-context.xml,
             /WEB-INF/context/hazelcast-client-context.xml,
             /WEB-INF/context/application-context.xml
         </param-value>

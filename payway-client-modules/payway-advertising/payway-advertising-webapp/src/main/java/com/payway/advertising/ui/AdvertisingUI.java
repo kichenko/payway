@@ -75,14 +75,16 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<ImmutablePair<String, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-          new ImmutablePair<String, MenuBar.Command>(
-            "Sign Out", new MenuBar.Command() {
-                @Override
-                public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                    VaadinSession.getCurrent().close();
-                    Page.getCurrent().reload();
-                }
-            }));
+                new ImmutablePair<String, MenuBar.Command>(
+                        "Sign Out", new MenuBar.Command() {
+                            @Override
+                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                                VaadinSession.getCurrent().close();
+                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                                VaadinSession.getCurrent().close();
+                                Page.getCurrent().reload();
+                            }
+                        }));
     }
 
     private void updateContent() {

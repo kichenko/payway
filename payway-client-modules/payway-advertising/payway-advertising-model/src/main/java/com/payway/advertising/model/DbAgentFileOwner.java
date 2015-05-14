@@ -18,9 +18,19 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DbAgentFileOwner extends DbAbstractEntity<Long> {
+public class DbAgentFileOwner extends DbAbstractEntity<Long> implements Cloneable {
 
     protected String name;
     protected String description;
 
+    public DbAgentFileOwner(Long id, String name, String description) {
+        super(id);
+        setName(name);
+        setDescription(description);
+    }
+
+    @Override
+    public Object clone() {
+        return new DbAgentFileOwner(getId(), getName(), getDescription());
+    }
 }

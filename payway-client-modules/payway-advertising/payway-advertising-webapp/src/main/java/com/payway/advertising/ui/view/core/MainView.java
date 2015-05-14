@@ -25,8 +25,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
-@Component
 @UIScope
+@Component
 @NoArgsConstructor
 public class MainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuButton.SideBarMenuButtonClickListener {
 

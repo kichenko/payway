@@ -5,9 +5,16 @@ package com.payway.advertising.ui.view.workspace.content;
 
 import com.payway.advertising.core.service.DbAgentFileOwnerService;
 import com.payway.advertising.core.service.DbAgentFileService;
+import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.validator.DbAgentFileValidator;
+import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
+import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -26,11 +33,13 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Slf4j
 public class FilePropertyPanel extends VerticalLayout {
 
-    @UiField
-    private Button btnOk;
+    public interface PropertySaveListener {
+
+        void onSave(DbAgentFile file);
+    }
 
     @UiField
-    private Button btnDiscard;
+    private Button btnOk;
 
     @UiField
     private TabSheet tabSheetFileProperty;
@@ -51,7 +60,20 @@ public class FilePropertyPanel extends VerticalLayout {
     @Setter
     private DbAgentFileService dbAgentFileService;
 
-    private DbAgentFile dbAgentFile;
+    @Getter
+    @Setter
+    private FileSystemManagerService fileSystemManagerService;
+
+    @Getter
+    @Setter
+    private BeanItem<DbAgentFile> beanItem;
+
+    @Getter
+    @Setter
+    private PropertySaveListener listener;
+
+    @Getter
+    private final Validator dbAgentFileValidator = new DbAgentFileValidator();
 
     public FilePropertyPanel() {
         init();
@@ -63,43 +85,102 @@ public class FilePropertyPanel extends VerticalLayout {
         tabSheetFileProperty.addTab(tabGeneral, "General");
         tabSheetFileProperty.addTab(tabAdditional, "Additional");
 
-        //set custom container for owner combobox
-        tabGeneral.getCbFileType().setContainerDataSource(new DbAgentFileOwnerBeanItemContainer(dbAgentFileOwnerService));
-
         //bind fields
-        fieldGroup.bind(tabGeneral.getEditFileName(), "name");
+        fieldGroup.setBuffered(false);
         fieldGroup.bind(tabGeneral.getCbOwner(), "owner");
         fieldGroup.bind(tabGeneral.getCbFileType(), "kind");
         fieldGroup.bind(tabAdditional.getEditExpression(), "expression");
-        fieldGroup.bind(tabAdditional.getChCountHints(), "countHints");
+        fieldGroup.bind(tabAdditional.getChCountHints(), "isCountHits");
 
         btnOk.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     UIUtils.showLoadingIndicator();
-                    fieldGroup.commit();
-                    dbAgentFileService.update(dbAgentFile);
+                    if (dbAgentFileValidator.validate(beanItem.getBean())) {
+
+                        //set digest only for new object!
+                        if (getBeanItem().getBean().getId() == null) {
+                            getBeanItem().getBean().setDigest(null);
+                        }
+                        //
+
+                        dbAgentFileService.save(getBeanItem().getBean());
+                        if (getListener() != null) {
+                            getListener().onSave(beanItem.getBean());
+                        }
+                    } else {
+                        UIUtils.showErrorNotification("", "Error validate data");
+                    }
                 } catch (Exception ex) {
-                    log.error("", ex);
+                    log.error("Error saving file property data", ex);
                     UIUtils.showErrorNotification("", "Error saving file property data");
                 } finally {
                     UIUtils.closeLoadingIndicator();
                 }
             }
         });
-
-        btnDiscard.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                UIUtils.showLoadingIndicator();
-                fieldGroup.discard();
-                UIUtils.closeLoadingIndicator();
-            }
-        });
     }
 
-    public void selectItem(DbAgentFile dbAgentFile) {
-        this.dbAgentFile = dbAgentFile;
+    public void initOwnerBeanContainer() {
+        //set custom container for owner combobox
+        tabGeneral.getCbOwner().setContainerDataSource(new DbAgentFileOwnerBeanItemContainer(dbAgentFileOwnerService));
+        tabGeneral.getCbOwner().setFilteringMode(FilteringMode.CONTAINS);
+        tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+        tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
+    }
+
+    public void initFileTypeBeanContainer() {
+        //set custom container for file type combobox
+        tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+        tabGeneral.getCbFileType().addItem(DbFileType.Unknown);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "-Unknown-");
+        tabGeneral.getCbFileType().addItem(DbFileType.Popup);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Popup, "-Popup-");
+        tabGeneral.getCbFileType().addItem(DbFileType.Logo);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Logo, "-Logo-");
+        tabGeneral.getCbFileType().addItem(DbFileType.Clip);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Clip, "-Clip-");
+        tabGeneral.getCbFileType().addItem(DbFileType.Banner);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Banner, "-Banner-");
+        tabGeneral.getCbFileType().addItem(DbFileType.Archive);
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Archive, "-Archive-");
+    }
+
+    public void updateFileName(String fileName) {
+        tabGeneral.getEditFileName().setReadOnly(false);
+        tabGeneral.getEditFileName().setValue(fileName);
+        tabGeneral.getEditFileName().setReadOnly(true);
+    }
+
+    public void showProperty(String fileName, BeanItem<DbAgentFile> beanItem) {
+
+        setBeanItem(beanItem);
+
+        tabGeneral.getCbOwner().getContainerDataSource().removeAllItems();
+        if (beanItem.getBean().getOwner() != null) {
+            ((DbAgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addItem(beanItem.getBean().getOwner());
+        }
+
+        tabGeneral.getEditFileName().setReadOnly(false);
+        tabGeneral.getEditFileName().setValue(fileName);
+        tabGeneral.getEditFileName().setReadOnly(true);
+        fieldGroup.setItemDataSource(beanItem);
+
+        tabSheetFileProperty.setEnabled(true);
+        btnOk.setEnabled(true);
+    }
+
+    public void clearProperty() {
+        tabGeneral.getEditFileName().setReadOnly(false);
+        tabGeneral.getEditFileName().setValue("");
+        tabGeneral.getEditFileName().setReadOnly(true);
+        tabGeneral.getCbOwner().select(null);
+        tabGeneral.getCbFileType().select(null);
+        tabAdditional.getEditExpression().setValue("");
+        tabAdditional.getChCountHints().setValue(false);
+
+        tabSheetFileProperty.setEnabled(false);
+        btnOk.setEnabled(false);
     }
 }

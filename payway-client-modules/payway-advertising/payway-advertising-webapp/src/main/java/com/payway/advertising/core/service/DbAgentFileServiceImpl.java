@@ -6,6 +6,7 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.data.dao.DbAgentFileDao;
 import com.payway.advertising.model.DbAgentFile;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,23 +26,21 @@ public class DbAgentFileServiceImpl implements DbAgentFileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DbAgentFile> findAllByName(List<String> names) {
-        return dbAgentFileDao.findAllByName(names);
+    public List<DbAgentFile> findAllByName(List<String> names) throws ServiceException {
+        if (names != null && !names.isEmpty()) {
+            return dbAgentFileDao.findAllByName(names);
+        }
+        return Collections.emptyList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DbAgentFile> findStartWithByName(String name) {
+    public List<DbAgentFile> findStartWithByName(String name) throws ServiceException {
         return dbAgentFileDao.findStartWithByName(name);
     }
 
     @Override
-    public DbAgentFile insert(DbAgentFile entity) throws ServiceException {
-        return dbAgentFileDao.save(entity);
-    }
-
-    @Override
-    public DbAgentFile update(DbAgentFile entity) throws ServiceException {
+    public DbAgentFile save(DbAgentFile entity) throws ServiceException {
         return dbAgentFileDao.save(entity);
     }
 

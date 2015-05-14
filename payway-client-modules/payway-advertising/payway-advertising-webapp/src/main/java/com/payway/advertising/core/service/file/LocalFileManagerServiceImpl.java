@@ -37,6 +37,7 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
         try {
             FileObject fo = fileSystemManager.resolveFile(SCHEMA + srcUri.getPath());
+
             if (!exist(srcUri)) {
                 if (FileSystemObject.FileSystemObjectType.FILE.equals(srcUri.getType())) {
                     fo.createFile();

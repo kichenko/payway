@@ -18,9 +18,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIUtils {
 
-    private final static ProgressBarWindow progressWindow = new ProgressBarWindow();
+    private static ProgressBarWindow progressWindow = new ProgressBarWindow();
 
     public static void showLoadingIndicator() {
+        progressWindow = new ProgressBarWindow();
         progressWindow.show();
         UI.getCurrent().push();
     }

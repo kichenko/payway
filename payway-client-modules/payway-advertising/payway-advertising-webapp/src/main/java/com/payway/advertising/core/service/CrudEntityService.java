@@ -18,9 +18,7 @@ import java.util.List;
  */
 public interface CrudEntityService<ID extends Serializable, E extends DbAbstractEntity> {
 
-    E insert(E entity) throws ServiceException;
-
-    E update(E entity) throws ServiceException;
+    E save(E entity) throws ServiceException;
 
     void delete(E entity) throws ServiceException;
 

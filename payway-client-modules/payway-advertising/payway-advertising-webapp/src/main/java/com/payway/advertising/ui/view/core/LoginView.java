@@ -3,13 +3,14 @@
  */
 package com.payway.advertising.ui.view.core;
 
-import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.messaging.MessageServerSenderServiceImpl;
 import com.payway.advertising.messaging.ResponseCallBack;
+import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.messaging.model.messaging.auth.UserDto;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.PasswordField;
@@ -21,8 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
@@ -35,8 +34,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
+@UIScope
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
 
     @Autowired

@@ -19,23 +19,23 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Getter
 public class FilePropertyTabGeneral extends VerticalLayout {
-
+    
     @UiField
     private TextField editFileName;
-
+    
     @UiField
     private ComboBox cbOwner;
-
+    
     @UiField
     private Button btnOwnerBook;
-
+    
     @UiField
     private ComboBox cbFileType;
-
+    
     public FilePropertyTabGeneral() {
         init();
     }
-
+    
     private void init() {
         setSizeFull();
         addComponent(Clara.create("FilePropertyTabGeneral.xml", this));

@@ -3,14 +3,14 @@
 
     <VerticalLayout id="layoutEditControls" sizeFull="true">
         <HorizontalLayout id="layoutEditName" width="100%">
-            <TextField id="editFileName" caption="File name" inputPrompt="enter file name" enabled="false" width="100%"/>
+            <TextField id="editFileName" caption="File name" readOnly="true" width="100%"/>
         </HorizontalLayout>
         <HorizontalLayout id="layoutOwnerArea" width="100%">
-            <ComboBox id="cbOwner" caption="Owner" inputPrompt="select owner"/>
+            <ComboBox id="cbOwner" caption="Owner" />
             <Button id="btnOwnerBook" caption="..."/>
         </HorizontalLayout>
         <HorizontalLayout id="layoutFileType" width="100%">
-            <ComboBox id="cbFileType" caption="File type" inputPrompt="select type" width="100%"/>
+            <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" width="100%"/>
         </HorizontalLayout>
     </VerticalLayout>
         

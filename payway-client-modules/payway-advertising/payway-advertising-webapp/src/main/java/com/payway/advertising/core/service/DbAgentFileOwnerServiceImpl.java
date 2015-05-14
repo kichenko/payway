@@ -32,12 +32,7 @@ public class DbAgentFileOwnerServiceImpl implements DbAgentFileOwnerService {
     }
 
     @Override
-    public DbAgentFileOwner insert(DbAgentFileOwner entity) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public DbAgentFileOwner update(DbAgentFileOwner entity) throws ServiceException {
+    public DbAgentFileOwner save(DbAgentFileOwner entity) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

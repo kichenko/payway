@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.payway.model.DbAgentFileOwner" table="agent_file_owner">
+    <class name="com.payway.advertising.model.DbAgentFileOwner" table="agent_file_owner">
         <id name="id" column="id" type="java.lang.Long">
             <generator class="sequence">
                 <param name="sequence">seq_agent_file_owner</param>
