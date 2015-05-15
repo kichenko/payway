@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  * @created 13.05.15 00:00
  */
 @Slf4j
-@Service(value = "dbUserService")
+@Service(value = "dbConfigurationService")
 public class DbConfigurationServiceImpl implements DbConfigurationService {
 
     @Autowired

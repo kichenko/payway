@@ -143,6 +143,7 @@ public class UploadTaskDnD implements UploadTask, StreamVariable {
 
         //then upload is success - rename uploaded file (remove tmp file ext)
         try {
+            Thread.sleep(2000);
             File file = new File(getPath() + getFileName() + getTmpFileExt());
             isOk = file.renameTo(new File(getPath() + getFileName()));
             if (!isOk) {

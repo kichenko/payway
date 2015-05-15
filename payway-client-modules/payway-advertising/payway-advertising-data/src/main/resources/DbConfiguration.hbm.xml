@@ -5,9 +5,11 @@
 
 <hibernate-mapping>
     <class name="com.payway.advertising.model.DbConfiguration" table="configuration">
-        <id name="id" column="id" >
-            <generator class="identity"/>
-        </id>
+        <id name="id" column="id" type="java.lang.Long">
+            <generator class="sequence">
+                <param name="sequence">seq_configuration</param>
+            </generator>
+        </id>  
         <property name="name" column="name" type="string"/>
         <many-to-one name="user" column="user_id" class="com.payway.advertising.model.DbUser" lazy="false" not-null="false"/>
     </class>

@@ -4,7 +4,6 @@
 package com.payway.advertising.core.service.file;
 
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +12,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.Selectors;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -34,10 +34,6 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     @Autowired
     @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
-
-    @Autowired
-    @Qualifier(value = "md5MessageDigest")
-    private MessageDigest messageDigest;
 
     @Override
     public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
@@ -128,10 +124,11 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 if (childs != null) {
                     for (FileObject f : childs) {
                         list.add(new FileSystemObject(StringUtils.substring(f.getName().getURI(), SCHEMA.length()),
-                          FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
-                          FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                          new ArrayList<FileSystemObject>(0),
-                          srcUri
+                                FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
+                                FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                                new ArrayList<FileSystemObject>(0),
+                                srcUri,
+                                new LocalDateTime(f.getContent().getLastModifiedTime())
                         ));
                     }
                 }

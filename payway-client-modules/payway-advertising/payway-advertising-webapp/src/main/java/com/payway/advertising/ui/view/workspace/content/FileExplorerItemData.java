@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.LocalDateTime;
 
 /**
  * ContentConfigurationView
@@ -34,4 +35,5 @@ public class FileExplorerItemData implements Serializable {
     private String path;
     private Long size;
     private DbAgentFile property;
+    private LocalDateTime lastModifiedTime;
 }

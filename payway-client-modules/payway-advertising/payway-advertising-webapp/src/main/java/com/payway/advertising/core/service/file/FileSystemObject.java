@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.joda.time.LocalDateTime;
 
 /**
  *
@@ -32,4 +33,5 @@ public class FileSystemObject {
     protected Long size;
     protected List<FileSystemObject> child;
     protected FileSystemObject parent;
+    protected LocalDateTime lastModifiedTime;
 }

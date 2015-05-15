@@ -4,7 +4,7 @@
 package com.payway.advertising.ui.view.workspace.content;
 
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import lombok.Getter;
 import org.vaadin.teemu.clara.Clara;
@@ -20,7 +20,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 public class FilePropertyTabAdditional extends VerticalLayout {
 
     @UiField
-    private TextField editExpression;
+    private TextArea editExpression;
 
     @UiField
     private CheckBox chCountHints;

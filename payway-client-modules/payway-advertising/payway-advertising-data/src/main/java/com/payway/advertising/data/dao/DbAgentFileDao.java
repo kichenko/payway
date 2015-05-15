@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Param;
  */
 public interface DbAgentFileDao extends JpaRepository<DbAgentFile, Long> {
 
-    @Query(value = "select f from DbAgentFile f where f.name like :name%")
+    @Query(value = "select f from DbAgentFile f where f.name like :name || '%'")
     List<DbAgentFile> findStartWithByName(@Param("name") String name);
 
     @Query(value = "select f from DbAgentFile f where f.name in :names")
@@ -27,12 +27,12 @@ public interface DbAgentFileDao extends JpaRepository<DbAgentFile, Long> {
     @Query(value = "select f from DbAgentFile f where f.name = :name")
     DbAgentFile findByName(@Param("name") String name);
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "update DbAgentFile f set f.name = concat(:dstName, substring(f.name, length(:srcName))) where f.name like :srcName%")
-    long updateByNamePrefix(@Param("srcName") String srcName, @Param("dstName") String dstName);
+    @Modifying
+    @Query(value = "update DbAgentFile f set f.name = concat(:dstName, substring(f.name, length(:srcName)+1)) where f.name like :srcName || '%'")
+    int updateByNamePrefix(@Param("srcName") String srcName, @Param("dstName") String dstName);
 
-    @Modifying(clearAutomatically = true)
-    @Query(value = "delete from DbAgentFile f where f.name like :srcName%")
-    long deleteByNamePrefix(@Param("srcName") String srcName);
+    @Modifying
+    @Query(value = "delete from DbAgentFile f where f.name like :srcName || '%'")
+    int deleteByNamePrefix(@Param("srcName") String srcName);
 
 }

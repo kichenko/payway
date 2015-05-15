@@ -5,6 +5,7 @@ package com.payway.advertising.core.service.file;
 
 import java.io.InputStream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,14 +15,14 @@ import org.springframework.stereotype.Component;
  * @created 14.10.15 00:00
  */
 @Slf4j
-@Component(value = "fileSystemManagerServiceSecurityImpl")
+@Component(value = "fileSystemManagerServiceSecurity")
 public class FileSystemManagerServiceSecurityImpl implements FileSystemManagerServiceSecurity {
 
     @Override
     public String digestMD5Hex(InputStream is) throws FileSystemManagerServiceException {
         String digest = null;
         try {
-            digest = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
+            digest = DigestUtils.md5Hex(is);
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error generate md5 hex digest", ex);
         }

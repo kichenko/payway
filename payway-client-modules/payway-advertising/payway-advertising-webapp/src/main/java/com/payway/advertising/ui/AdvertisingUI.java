@@ -7,6 +7,7 @@ import com.payway.advertising.core.service.DbConfigurationService;
 import com.payway.advertising.core.service.DbUserService;
 import com.payway.advertising.core.service.user.UserService;
 import com.payway.advertising.messaging.ResponseCallBack;
+import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
@@ -85,16 +86,16 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<ImmutablePair<String, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-          new ImmutablePair<String, MenuBar.Command>(
-            "Sign Out", new MenuBar.Command() {
-                @Override
-                public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                    VaadinSession.getCurrent().close();
-                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                    VaadinSession.getCurrent().close();
-                    Page.getCurrent().reload();
-                }
-            }));
+                new ImmutablePair<String, MenuBar.Command>(
+                        "Sign Out", new MenuBar.Command() {
+                            @Override
+                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                                VaadinSession.getCurrent().close();
+                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                                VaadinSession.getCurrent().close();
+                                Page.getCurrent().reload();
+                            }
+                        }));
     }
 
     private void updateContent() {
@@ -114,47 +115,55 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
         if (response instanceof AbstractAuthCommandResponse) {
             if (response instanceof AuthSuccessComandResponse) {
                 Notification.show("Notification", "onServerResponse, AuthSuccessComandResponse", Notification.Type.WARNING_MESSAGE);
+                try {
+                    UserDto userDto = ((AuthSuccessComandResponse) response).getUser();
+                    if (userDto != null) {
 
-                UserDto userDto = ((AuthSuccessComandResponse) response).getUser();
+                        boolean isRememberMe = false;
 
-                //DbUser user = dbUserService.findUserByLogin(userDto.getUsername(), true);
-                //user.setPassword(userDto.getPassword());
-                //user.setToken(userDto.getUserToken());
+                        DbUser user = dbUserService.findUserByLogin(userDto.getUsername(), true);
+                        if (user == null) {
+                            throw new Exception("Error authentication/authorization user");
+                        }
 
-                //DbConfiguration config = dbConfigurationService.findConfigurationByUserLogin(user, true);
+                        DbConfiguration config = dbConfigurationService.findConfigurationByUserLogin(user, true);
+                        if (config == null) {
+                            throw new Exception("Error authentication/authorization user");
+                        }
 
-                //userService.setUser(user);
-                //userService.setDbConfiguration(config);
+                        user.setPassword(userDto.getPassword());
+                        user.setToken(userDto.getUserToken());
 
-                if (userDto != null && userService.setUser(new DbUser(userDto.getUsername(), userDto.getPassword(), userDto.getUserToken()))) {
+                        //set params to session
+                        userService.setUser(user);
+                        userService.setDbConfiguration(config);
 
-                    boolean isRememberMe = false;
-                    DbUser user = userService.getUser();
+                        if (data != null) {
+                            isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());
+                        }
 
-                    if (data != null) {
-                        isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());
-                    }
+                        if (isRememberMe) {
+                            Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getToken());
+                            cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
+                            //#hack cookie
+                            UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
+                        } else {
+                            Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), "");
+                            cookie.setMaxAge(0);
+                            //#hack cookie
+                            UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
+                        }
 
-                    if (isRememberMe) {
-                        Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getToken());
-                        cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
-                        //#hack cookie
-                        UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-                        //VaadinService.getCurrentResponse().addCookie(cookie);
+                        updateContent();
                     } else {
-                        Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), "");
-                        cookie.setMaxAge(0);
-                        //#hack cookie
-                        UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-                        //VaadinService.getCurrentResponse().addCookie(cookie);
+                        throw new Exception("Error authentication/authorization user");
                     }
-                    updateContent();
-                } else {
-                    Notification.show("Notification", "Failed to get session authentication/authorization user", Notification.Type.WARNING_MESSAGE);
-                    log.error("Failed to get session authentication/authorization user");
+                } catch (Exception ex) {
+                    log.error("Error sign in", ex);
+                    Notification.show("Notification", "Error authentication/authorization user", Notification.Type.WARNING_MESSAGE);
                 }
             } else if (response instanceof AuthBadCredentialsCommandResponse) {
-                Notification.show("Sign In", "Invalid username or password", Notification.Type.WARNING_MESSAGE);
+                Notification.show("Sign In", "Error authentication/authorization user", Notification.Type.WARNING_MESSAGE);
             }
         }
     }
