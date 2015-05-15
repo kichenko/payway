@@ -4,7 +4,19 @@
        xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
-
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/payway-prod" expected-type="javax.sql.DataSource" />
-
+    
+    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource">
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://${db.host}:${db.port:5432}/${db.name}"/>
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="idleConnectionTestPeriodInMinutes" value="60"/>        
+        <property name="idleMaxAgeInSeconds" value="240"/>
+        <property name="minConnectionsPerPartition" value="2"/>
+        <property name="maxConnectionsPerPartition" value="8"/>
+        <property name="partitionCount" value="3"/>
+        <property name="acquireIncrement" value="2"/>        
+        <property name="statementsCacheSize" value="50"/>
+        <property name="statisticsEnabled" value="false"/>    
+    </bean>   
 </beans>

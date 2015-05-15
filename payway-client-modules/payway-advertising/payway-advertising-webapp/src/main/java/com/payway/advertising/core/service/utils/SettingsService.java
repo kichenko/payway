@@ -12,7 +12,10 @@ package com.payway.advertising.core.service.utils;
 public interface SettingsService {
 
     String getLocalConfigPath();
+
     String getSeparator();
+
     int getUploadBufferSize();
+
     String getTemporaryFileExt();
 }

@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- файл с конфигом -->
-    <context:property-placeholder location="classpath:config.properties" />
+    <!-- файл с конфигом /etc/avs/apps.conf -->
+    <context:property-placeholder location="classpath:config.properties,location:${user.home}/var/apps/advertising/apps.conf" ignore-resource-not-found="true"/>
 
 </beans>

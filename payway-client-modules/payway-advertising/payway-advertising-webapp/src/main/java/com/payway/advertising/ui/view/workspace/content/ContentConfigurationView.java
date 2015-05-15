@@ -400,7 +400,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
                 }
             }
         });
-        
+
         //set grid DnD event handler
         gridFileExplorer.setDropHandler(new DropHandler() {
             @Override
@@ -423,6 +423,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
 
                 FileExplorerItemData bean = ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).getItem(itemId).getBean();
                 if (bean != null) {
+
                     Label label = new Label();
                     HorizontalLayout layout = new HorizontalLayout();
 
