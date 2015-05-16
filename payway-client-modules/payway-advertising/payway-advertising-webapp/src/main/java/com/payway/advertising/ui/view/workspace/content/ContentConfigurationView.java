@@ -171,6 +171,7 @@ public class ContentConfigurationView extends AbstractView implements UploadList
 
         splitPanel.setFirstComponent(gridFileExplorer);
         splitPanel.setSecondComponent(panelFileProperty);
+        splitPanel.setSplitPosition(75, Unit.PERCENTAGE);
 
         initRootUserConfigPath();
         initCurrentRelativePath();

@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.component;
 
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -42,7 +43,12 @@ public class TextEditDialogWindow extends Window {
         setDraggable(false);
         setResizable(false);
         setCaption(caption);
+        setWidth(400, Unit.PIXELS);
+        setHeight(150, Unit.PIXELS);
         setContent(Clara.create("TextEditDialogWindow.xml", this));
+
+        btnOk.setIcon(new ThemeResource("images/components/text-edit-dialog-window/btn_ok.png"));
+        btnCancel.setIcon(new ThemeResource("images/components/text-edit-dialog-window/btn_cancel.png"));
 
         listener = eventListener;
         editText.setValue(value);
@@ -50,6 +56,7 @@ public class TextEditDialogWindow extends Window {
         btnOk.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+
                 if (listener != null) {
                     if (listener.onOk(editText.getValue())) {
                         UI.getCurrent().removeWindow(TextEditDialogWindow.this);

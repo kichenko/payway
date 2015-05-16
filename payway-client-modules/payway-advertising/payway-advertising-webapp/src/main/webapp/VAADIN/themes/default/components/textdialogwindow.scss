@@ -1,0 +1,24 @@
+@mixin textdialogwindow-component {
+
+    .text-dialog-window-edit-text-box-layout {
+        width: 100%;
+        padding: 0px 5px 5px 5px;
+    }
+
+    .text-dialog-window-buttons-box-layout {
+        width: 100%;
+        padding: 5px 5px 0px 5px;
+    }
+
+    .text-dialog-window-buttons-box-area-layout {
+        float: right;
+    }
+
+    .text-dialog-window-button-ok {
+        margin: 0px 5px 0px 0px;
+    }
+
+    .text-dialog-window-button-cancel {
+        //
+    }
+}

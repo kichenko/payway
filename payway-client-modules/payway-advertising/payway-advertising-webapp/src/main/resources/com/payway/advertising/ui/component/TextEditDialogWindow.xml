@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="panelTextWindow">
-    <TextField id = "editText"/>
-    <CssLayout id="panelButtons">
-        <Button id="btnCancel" caption="Cancel"/>
-        <Button id="btnOk" caption="Ok"/>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTextDialogWindow">
+
+    <VerticalLayout id="layoutTexBox" styleName="text-dialog-window-edit-text-box-layout">
+        <TextField id = "editText" caption="Title" width="100%"/>
+    </VerticalLayout>
+
+    <CssLayout id="layoutBtnOkCancel" styleName="text-dialog-window-buttons-box-layout">
+        <CssLayout id="layoutBtnOkCancelArea" styleName="text-dialog-window-buttons-box-area-layout">
+            <Button id="btnCancel" caption="Cancel" styleName="text-dialog-window-button-ok"/>
+            <Button id="btnOk" caption="Ok" styleName="text-dialog-window-button-cancel"/>
+        </CssLayout>
     </CssLayout>
-</CssLayout>
+
+</VerticalLayout>

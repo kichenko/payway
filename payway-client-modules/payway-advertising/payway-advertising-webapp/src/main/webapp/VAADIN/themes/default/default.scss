@@ -5,6 +5,7 @@
 @import "views/main";
 @import "components/sidebarmenu";
 @import "components/breadcrumbs";
+@import "components/textdialogwindow";
 @import "views/tab-sheet-property";
 @import "views/tab-sheet-property-general";
 @import "views/tab-sheet-property-additional";
@@ -19,6 +20,7 @@
     @include content-configuration-view;
     @include sidebar-menu-component;
     @include breadcrumbs-component;
+    @include textdialogwindow-component;
     @include tab-sheet-property-view;
     @include tab-sheet-property-general-view;
     @include tab-sheet-property-additional-view;

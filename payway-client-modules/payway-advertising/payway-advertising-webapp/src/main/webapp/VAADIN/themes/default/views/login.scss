@@ -27,11 +27,14 @@
             .login-label-caption {
                 margin: 0;
                 vertical-align: baseline;
+                text-transform: uppercase;
+                color: blue;
             }
 
             .login-label-title {
                 margin: 0;
                 float: right;
+                font-weight: bold;
             }
         }
 
