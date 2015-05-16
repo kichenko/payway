@@ -1,0 +1,39 @@
+@mixin tab-sheet-property-general-view {
+
+    //var's
+    $btnOwnerBookWidth: 50px;
+
+    .tab-general-layout {
+        padding: 5px;
+    }
+
+    .tab-general-layout-edit-name {
+        width: 100px;
+    }
+
+    .tab-general-layout-cb-file-type {
+        width: 100%;
+    }
+
+    .tab-general-layout-owner-area {
+        width: 100%;
+    }
+
+    //left
+    .tab-general-layout-cb-owner {
+        //background: red;
+        width: 100%;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-left: $btnOwnerBookWidth;
+        margin-left: -1 * $btnOwnerBookWidth;
+    }
+
+    //right
+    .tab-general-layout-btn-ownerbook {
+        width: $btnOwnerBookWidth;
+        //background: blue;
+        padding-top: 27px;
+        padding-left: 5px;
+    }
+}

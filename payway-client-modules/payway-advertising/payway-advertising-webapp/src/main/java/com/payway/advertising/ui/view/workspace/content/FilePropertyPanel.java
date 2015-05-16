@@ -15,6 +15,7 @@ import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -95,9 +96,13 @@ public class FilePropertyPanel extends VerticalLayout {
 
     private void init() {
         setSizeFull();
+        addStyleName("tab-panel-file-property");
         addComponent(Clara.create("FilePropertyTabs.xml", this));
-        tabSheetFileProperty.addTab(tabGeneral, "General");
-        tabSheetFileProperty.addTab(tabAdditional, "Additional");
+
+        btnOk.setIcon(new ThemeResource("images/btn_save_property.png"));
+
+        tabSheetFileProperty.addTab(tabGeneral, "General", new ThemeResource("images/tab_general.png"));
+        tabSheetFileProperty.addTab(tabAdditional, "Additional", new ThemeResource("images/tab_additional.png"));
 
         //bind fields
         fieldGroup.setBuffered(false);
@@ -187,7 +192,9 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getEditFileName().setReadOnly(true);
         fieldGroup.setItemDataSource(beanItem);
 
-        tabSheetFileProperty.setEnabled(true);
+        tabGeneral.setEnabled(false);
+        tabAdditional.setEnabled(false);
+
         btnOk.setEnabled(true);
     }
 
@@ -200,7 +207,9 @@ public class FilePropertyPanel extends VerticalLayout {
         tabAdditional.getEditExpression().setValue("");
         tabAdditional.getChCountHints().setValue(false);
 
-        tabSheetFileProperty.setEnabled(false);
+        tabGeneral.setEnabled(false);
+        tabAdditional.setEnabled(false);
+
         btnOk.setEnabled(false);
     }
 }

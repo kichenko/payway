@@ -1,17 +1,25 @@
 @import "../valo/valo";
+@import "addons";
+@import "commons";
 @import "views/login";
 @import "views/main";
-@import "views/content-configuration";
 @import "components/sidebarmenu";
 @import "components/breadcrumbs";
-@import "addons";
+@import "views/tab-sheet-property";
+@import "views/tab-sheet-property-general";
+@import "views/tab-sheet-property-additional";
+@import "views/content-configuration";
 
 @mixin default {
     @include valo;
+    @include addons;
+    @include commons;
     @include login-view;
     @include main-view;
     @include content-configuration-view;
     @include sidebar-menu-component;
     @include breadcrumbs-component;
-    @include addons
+    @include tab-sheet-property-view;
+    @include tab-sheet-property-general-view;
+    @include tab-sheet-property-additional-view;
 }

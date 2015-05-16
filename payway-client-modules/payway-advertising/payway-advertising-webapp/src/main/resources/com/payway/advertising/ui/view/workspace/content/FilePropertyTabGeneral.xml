@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTabGeneralProperty" sizeFull="true">
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTabGeneralProperty" sizeFull="true" styleName="tab-general-layout">
 
-    <VerticalLayout id="layoutEditControls" sizeFull="true">
-        <HorizontalLayout id="layoutEditName" width="100%">
-            <TextField id="editFileName" caption="File name" readOnly="true" width="100%"/>
-        </HorizontalLayout>
-        <HorizontalLayout id="layoutOwnerArea" width="100%">
-            <ComboBox id="cbOwner" caption="Owner" />
-            <Button id="btnOwnerBook" caption="..."/>
-        </HorizontalLayout>
-        <HorizontalLayout id="layoutFileType" width="100%">
-            <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" width="100%"/>
-        </HorizontalLayout>
+    <VerticalLayout id="layoutEditName" styleName="tab-general-layout-edit-name">
+        <TextField id="editFileName" caption="File name" readOnly="true" width="100%"/>
     </VerticalLayout>
-        
-</CssLayout>
+
+    <VerticalLayout id="layoutOwnerArea" width="100%">
+        <CssLayout id="layoutHorizontalOwnerArea" styleName="tab-general-layout-owner-area">
+            <CssLayout id="layoutCbOwner" styleName="tab-general-layout-cb-owner">
+                <ComboBox id="cbOwner" caption="Owner" width="100%"/>
+            </CssLayout>
+            <CssLayout id="layoutBtnOwnerBook" styleName="tab-general-layout-btn-ownerbook">
+                <Button id="btnOwnerBook" caption=""/>
+            </CssLayout>
+        </CssLayout>
+    </VerticalLayout>
+
+    <VerticalLayout id="layoutFileType" styleName="tab-general-layout-cb-file-type">
+        <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" width="100%"/>
+    </VerticalLayout>
+
+</VerticalLayout>

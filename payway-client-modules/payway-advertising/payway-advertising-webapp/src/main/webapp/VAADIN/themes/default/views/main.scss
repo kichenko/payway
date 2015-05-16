@@ -2,8 +2,8 @@
 
     //var's
     $sidebarWidth: 200px;
-    $panelHeaderHeight: 60px;
-    $panelFooterHeight: 20px;
+    $panelHeaderHeight: 50px;
+    $panelFooterHeight: 10px;
 
 
     .main-view {
@@ -13,9 +13,11 @@
     }
 
     .main-panel-left {
-        background: yellowgreen;
+        //background: yellowgreen;
+        background-color: #3a434d;
+        padding-top: 10px;
         height: 100%;
-        width: 200px;
+        width: $sidebarWidth;
 
         /*
         //animation

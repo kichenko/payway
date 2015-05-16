@@ -1,0 +1,22 @@
+@mixin tab-sheet-property-additional-view {
+
+    .common-no-space-image-button {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .tab-additional-layout {
+        padding: 5px;
+    }
+
+    .tab-additional-layout-edit-expression {
+        width: 100%;
+        padding-bottom: 5px;
+    }
+
+    .tab-additional-layout-ch-count-hints {
+        //
+    }
+}

@@ -3,8 +3,7 @@
  */
 package com.payway.advertising.core.service.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,16 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SettingsServiceImpl implements SettingsService {
 
-    @Autowired
-    @Qualifier("localConfigPath")
+    @Value("${config.local.path}")
     private String localConfigPath;
+
+    @Value("${config.upload.buf.size}")
+    private int uploadBufferSize;
+
+    @Value("${config.upload.tmp.file.ext}")
+    private String temporaryFileExt;
+
+    private final String separator = "/";
 
     @Override
     public String getLocalConfigPath() {
@@ -30,17 +36,17 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public String getSeparator() {
-        return "/";
+        return separator;
     }
 
     @Override
     public int getUploadBufferSize() {
-        return 2048;
+        return uploadBufferSize;
     }
 
     @Override
     public String getTemporaryFileExt() {
-        return ".tmp";
+        return temporaryFileExt;
     }
 
 }

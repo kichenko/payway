@@ -4,6 +4,7 @@
 package com.payway.advertising.ui.view.core;
 
 import com.payway.advertising.ui.component.SideBarMenu;
+import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -12,8 +13,8 @@ import com.vaadin.ui.MenuBar;
 import java.util.Collection;
 import javax.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
@@ -64,12 +65,13 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
      * Создать меню пользователя
      *
      * @param caption
+     * @param icon
      * @param items
      */
-    public void initializeUserMenu(String caption, Collection<ImmutablePair<String, MenuBar.Command>> items) {
-        MenuBar.MenuItem settingsItem = userMenu.addItem(caption, null);
-        for (Pair<String, MenuBar.Command> i : items) {
-            settingsItem.addItem(i.getLeft(), i.getRight());
+    public void initializeUserMenu(String caption, Resource icon, Collection<ImmutableTriple<String, Resource, MenuBar.Command>> items) {
+        MenuBar.MenuItem settingsItem = userMenu.addItem(caption, icon, null);
+        for (Triple<String, Resource, MenuBar.Command> i : items) {
+            settingsItem.addItem(i.getLeft(), i.getMiddle(), i.getRight());
         }
     }
 

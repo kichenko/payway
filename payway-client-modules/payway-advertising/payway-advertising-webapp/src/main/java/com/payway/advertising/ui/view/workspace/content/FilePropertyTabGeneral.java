@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
@@ -19,25 +20,27 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Getter
 public class FilePropertyTabGeneral extends VerticalLayout {
-    
+
     @UiField
     private TextField editFileName;
-    
+
     @UiField
     private ComboBox cbOwner;
-    
+
     @UiField
     private Button btnOwnerBook;
-    
+
     @UiField
     private ComboBox cbFileType;
-    
+
     public FilePropertyTabGeneral() {
         init();
     }
-    
+
     private void init() {
         setSizeFull();
         addComponent(Clara.create("FilePropertyTabGeneral.xml", this));
+        btnOwnerBook.setIcon(new ThemeResource("images/btn_owner_book.png"));
+        btnOwnerBook.addStyleName("common-no-space-image-button");
     }
 }

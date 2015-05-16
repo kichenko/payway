@@ -11,3 +11,4 @@ nb-configuration.xml
 **/VAADIN/gwt-unitCache/
 **/VAADIN/widgetsets/
 .svn/
+/payway-client-modules/payway-advertising/payway-advertising-data/target/

@@ -23,8 +23,9 @@ import com.payway.messaging.model.messaging.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
@@ -37,7 +38,7 @@ import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -79,30 +80,30 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", FontAwesome.HOME));
-        items.add(new SideBarMenu.MenuItem("reports", "Reports", FontAwesome.BAR_CHART_O));
+        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png")));
+        items.add(new SideBarMenu.MenuItem("reports", "Reports", new ThemeResource("images/sidebar_report.png")));
         return items;
     }
 
-    private Collection<ImmutablePair<String, MenuBar.Command>> getMenuBarItems() {
+    private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-                new ImmutablePair<String, MenuBar.Command>(
-                        "Sign Out", new MenuBar.Command() {
-                            @Override
-                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                                VaadinSession.getCurrent().close();
-                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                                VaadinSession.getCurrent().close();
-                                Page.getCurrent().reload();
-                            }
-                        }));
+          new ImmutableTriple<String, Resource, MenuBar.Command>(
+            "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
+                @Override
+                public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                    VaadinSession.getCurrent().close();
+                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                    VaadinSession.getCurrent().close();
+                    Page.getCurrent().reload();
+                }
+            }));
     }
 
     private void updateContent() {
         DbUser user = userService.getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-            mainView.initializeUserMenu(user.getLogin(), getMenuBarItems());
+            mainView.initializeUserMenu(user.getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
             setContent(mainView);
         } else {
             loginView.initialize();

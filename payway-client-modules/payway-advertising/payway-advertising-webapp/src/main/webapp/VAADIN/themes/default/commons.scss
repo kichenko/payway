@@ -1,0 +1,9 @@
+@mixin commons {
+
+    .common-no-space-image-button {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
