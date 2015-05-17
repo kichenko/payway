@@ -1,5 +1,5 @@
 /*
- * (c) Sergey Kichenko, 2015. All right reserved.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.ui.component;
 
@@ -83,5 +83,17 @@ public final class SideBarMenu extends CustomComponent {
 
     public void clearMenuItems() {
         menuContent.removeAllComponents();
+    }
+
+    public boolean select(int index) {
+        if (index >= 0 && index < menuContent.getComponentCount()) {
+            SideBarMenuButton btn = (SideBarMenuButton) menuContent.getComponent(index);
+            if (btn != null) {
+                btn.click();
+                return true;
+            }
+        }
+
+        return false;
     }
 }

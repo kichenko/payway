@@ -76,7 +76,9 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
     public void delete(FileSystemObject srcUri) throws FileSystemManagerServiceException {
         try {
             FileObject fo = fileSystemManager.resolveFile(SCHEMA + srcUri.getPath());
-            fo.delete(Selectors.SELECT_ALL);
+            if (fo.delete(Selectors.SELECT_ALL) == 0) {
+                throw new Exception("Error delete file system object");
+            }
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error delete file system object", ex);
         }
@@ -124,11 +126,11 @@ public class LocalFileManagerServiceImpl implements FileSystemManagerService {
                 if (childs != null) {
                     for (FileObject f : childs) {
                         list.add(new FileSystemObject(StringUtils.substring(f.getName().getURI(), SCHEMA.length()),
-                                FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
-                                FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                new ArrayList<FileSystemObject>(0),
-                                srcUri,
-                                new LocalDateTime(f.getContent().getLastModifiedTime())
+                          FileType.FILE.equals(f.getType()) ? FileSystemObject.FileSystemObjectType.FILE : FileSystemObject.FileSystemObjectType.FOLDER,
+                          FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                          new ArrayList<FileSystemObject>(0),
+                          srcUri,
+                          new LocalDateTime(f.getContent().getLastModifiedTime())
                         ));
                     }
                 }

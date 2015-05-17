@@ -4,7 +4,7 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
-import com.payway.advertising.data.dao.DbAgentFileDao;
+import com.payway.advertising.data.dao.AgentFileDao;
 import com.payway.advertising.model.DbAgentFile;
 import java.util.Collections;
 import java.util.List;
@@ -13,34 +13,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * DbAgentFileServiceImpl
+ * AgentFileServiceImpl
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
-@Service(value = "dbAgentFileService")
-public class DbAgentFileServiceImpl implements DbAgentFileService {
+@Service(value = "agentFileService")
+public class AgentFileServiceImpl implements AgentFileService {
 
     @Autowired
-    private DbAgentFileDao dbAgentFileDao;
+    private AgentFileDao agentFileDao;
 
     @Override
     @Transactional
     public long updateByNamePrefix(String srcName, String dstName) {
-        return dbAgentFileDao.updateByNamePrefix(srcName, dstName);
+        return agentFileDao.updateByNamePrefix(srcName, dstName);
     }
 
     @Override
     @Transactional
     public long deleteByNamePrefix(String srcName) {
-        return dbAgentFileDao.deleteByNamePrefix(srcName);
+        return agentFileDao.deleteByNamePrefix(srcName);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DbAgentFile> findAllByName(List<String> names) throws ServiceException {
         if (names != null && !names.isEmpty()) {
-            return dbAgentFileDao.findAllByName(names);
+            return agentFileDao.findAllByName(names);
         }
         return Collections.emptyList();
     }
@@ -48,12 +48,12 @@ public class DbAgentFileServiceImpl implements DbAgentFileService {
     @Override
     @Transactional(readOnly = true)
     public List<DbAgentFile> findStartWithByName(String name) throws ServiceException {
-        return dbAgentFileDao.findStartWithByName(name);
+        return agentFileDao.findStartWithByName(name);
     }
 
     @Override
     public DbAgentFile save(DbAgentFile entity) throws ServiceException {
-        return dbAgentFileDao.save(entity);
+        return agentFileDao.save(entity);
     }
 
     @Override

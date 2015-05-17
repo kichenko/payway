@@ -11,12 +11,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * DbAgentFileDao
+ * AgentFileDao
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
-public interface DbAgentFileDao extends JpaRepository<DbAgentFile, Long> {
+public interface AgentFileDao extends JpaRepository<DbAgentFile, Long> {
 
     @Query(value = "select f from DbAgentFile f where f.name like :name || '%'")
     List<DbAgentFile> findStartWithByName(@Param("name") String name);

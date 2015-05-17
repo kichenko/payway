@@ -4,55 +4,54 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
-import com.payway.advertising.data.dao.DbUserDao;
+import com.payway.advertising.data.dao.ConfigurationDao;
+import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * DbUserServiceImpl
+ * ConfigurationServiceImpl
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
 @Slf4j
-@Service(value = "dbUserService")
-public class DbUserServiceImpl implements DbUserService {
+@Service(value = "configurationService")
+public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired
-    private DbUserDao dbUserDao;
+    private ConfigurationDao configurationDao;
 
     @Override
-    @Transactional
-    public DbUser findUserByLogin(String login, boolean isCreate) throws ServiceException {
-        DbUser user = dbUserDao.findByLogin(login);
-        if (user == null && isCreate) {
-            user = new DbUser(login, null, null);
-            dbUserDao.save(user);
+    public DbConfiguration findConfigurationByUserLogin(DbUser user, boolean isCreate) throws ServiceException {
+        DbConfiguration config = configurationDao.findByLogin(user.getLogin());
+        if (config == null && isCreate) {
+            config = new DbConfiguration(user.getLogin(), user);
+            configurationDao.save(config);
         }
-        return user;
+        return config;
     }
 
     @Override
-    public DbUser save(DbUser entity) throws ServiceException {
+    public DbConfiguration save(DbConfiguration entity) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void delete(DbUser entity) throws ServiceException {
+    public void delete(DbConfiguration entity) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public DbUser getById(Long id) throws ServiceException {
+    public DbConfiguration getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<DbUser> list() throws ServiceException {
+    public List<DbConfiguration> list() throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

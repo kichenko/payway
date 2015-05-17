@@ -1,10 +1,8 @@
 @mixin main-view {
 
     //var's
-    $sidebarWidth: 200px;
     $panelHeaderHeight: 50px;
     $panelFooterHeight: 10px;
-
 
     .main-view {
         height: 100%;
@@ -15,26 +13,27 @@
     .main-panel-left {
         //background: yellowgreen;
         background-color: #3a434d;
-        padding-top: 10px;
+        //padding-top: 10px;
         height: 100%;
-        width: $sidebarWidth;
-
-        /*
-        //animation
-        -webkit-animation: valo-animate-in-slide-right 700ms 700ms backwards;
-        -moz-animation: valo-animate-in-slide-right 700ms 700ms backwards;
-        animation: valo-animate-in-slide-right 700ms 700ms backwards;
-        */
+        width: 100%;
     }
 
     .main-panel-right {
         background: aqua;
         height: 100%;
         width: 100%;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        padding-right: $sidebarWidth;
-        margin-right: -1 * $sidebarWidth;
+    }
+
+    .main-panel-left-layout-side-bar {
+        //background: darkorange;
+        width: 100%;
+        height: 100%;
+    }
+
+    .main-panel-left-layout-upload-tasks {
+        //background: red;
+        width: 100%;
+        height: 100%;
     }
 
     .main-panel-header

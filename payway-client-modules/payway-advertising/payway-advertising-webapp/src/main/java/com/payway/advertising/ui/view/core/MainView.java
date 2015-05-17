@@ -1,17 +1,22 @@
 /*
- * (c) Sergey Kichenko, 2015. All right reserved.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.ui.view.core;
 
+import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
+import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.VerticalSplitPanel;
 import java.util.Collection;
 import javax.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
@@ -36,6 +41,9 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         void onClick(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event);
     }
 
+    public static final float SIDEBAR_DEFAULT_WIDTH_PERCENT = 20;
+    public static final float SIDEBAR_DEFAULT_HEIGHT_PERCENT = 80;
+
     @Autowired
     private ViewFactory viewFactory;
 
@@ -43,10 +51,34 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     private MenuBar userMenu;
 
     @UiField
+    @Getter
     private SideBarMenu sideBarMenu;
 
     @UiField
+    private UploadTaskPanel uploadTaskPanel;
+
+    @UiField
     private CssLayout panelContent;
+
+    @UiField
+    private HorizontalSplitPanel splitHorizontalPanel;
+
+    @UiField
+    private VerticalSplitPanel splitVerticalPanel;
+
+    @UiField
+    private CssLayout layoutLeft;
+
+    @UiField
+    private CssLayout layoutRight;
+
+    @UiField
+    private CssLayout layoutSideBar;
+
+    @UiField
+    private CssLayout layoutUploadTasks;
+
+    private ProgressBarWindow progressBarWindow;
 
     private SlideBarMenuButtonClickCallback sbMenuButtonClickCallback;
 
@@ -54,6 +86,15 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     void init() {
         setSizeFull();
         setCompositionRoot(Clara.create("MainView.xml", this));
+        progressBarWindow = new ProgressBarWindow();
+
+        splitHorizontalPanel.setFirstComponent(layoutLeft);
+        splitHorizontalPanel.setSecondComponent(layoutRight);
+        splitHorizontalPanel.setSplitPosition(SIDEBAR_DEFAULT_WIDTH_PERCENT, Unit.PERCENTAGE);
+
+        splitVerticalPanel.setFirstComponent(layoutSideBar);
+        splitVerticalPanel.setSecondComponent(layoutUploadTasks);
+        splitVerticalPanel.setSplitPosition(SIDEBAR_DEFAULT_HEIGHT_PERCENT, Unit.PERCENTAGE);
     }
 
     @Override
@@ -107,8 +148,11 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(button.getTag());
         panelContent.addComponent(view);
 
-        if (view instanceof AbstractView) {
-            ((AbstractView) view).activate();
+        AbstractWorkspaceView v = (AbstractWorkspaceView) view;
+        if (v != null) {
+            v.setUploadTaskPanel(uploadTaskPanel);
+            v.setProgressBarWindow(progressBarWindow);
+            v.activate();
         }
     }
 }

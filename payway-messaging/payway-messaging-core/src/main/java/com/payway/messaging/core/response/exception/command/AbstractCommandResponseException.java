@@ -1,5 +1,5 @@
 /*
- * (c) Sergey Kichenko, 2015. All right reserved.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.messaging.core.response.exception.command;
 

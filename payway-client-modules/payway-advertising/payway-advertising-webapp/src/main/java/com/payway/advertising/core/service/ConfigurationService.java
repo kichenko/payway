@@ -8,12 +8,12 @@ import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 
 /**
- * DbConfigurationService
+ * ConfigurationService
  *
  * @author Sergey Kichenko
  * @created 15.05.15 00:00
  */
-public interface DbConfigurationService extends CrudEntityService<Long, DbConfiguration> {
+public interface ConfigurationService extends CrudEntityService<Long, DbConfiguration> {
 
     DbConfiguration findConfigurationByUserLogin(DbUser user, boolean isCreate) throws ServiceException;
 }

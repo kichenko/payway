@@ -3,33 +3,19 @@
  */
 package com.payway.advertising.ui.utils;
 
-import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * CrudEntityService
+ * UIUtils
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIUtils {
-
-    private static ProgressBarWindow progressWindow = new ProgressBarWindow();
-
-    public static void showLoadingIndicator() {
-        progressWindow = new ProgressBarWindow();
-        progressWindow.show();
-        UI.getCurrent().push();
-    }
-
-    public static void closeLoadingIndicator() {
-        progressWindow.close();
-        UI.getCurrent().push();
-    }
 
     public static void showErrorNotification(String title, String message) {
         Notification.show(message, Notification.Type.ERROR_MESSAGE);

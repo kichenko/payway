@@ -1,61 +1,46 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.component;
 
+import com.payway.advertising.ui.view.workspace.content.UploadListener;
+import com.payway.advertising.ui.view.workspace.content.UploadTask;
 import com.vaadin.data.Item;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * UploadTaskWindow
+ * UploadTaskPanel
  *
  * @author Sergey Kichenko
- * @created 06.10.15 00:00
+ * @created 17.10.15 00:00
  */
 @Slf4j
-public class UploadTaskWindow extends Window implements UploadListener {
+public class UploadTaskPanel extends Panel implements UploadListener {
 
-    private final Table tableTasks = new Table();
+    private final Table gridTasks = new Table();
 
-    public UploadTaskWindow() {
-
-        setWidth(500, Unit.PIXELS);
-        setHeight(400, Unit.PIXELS);
-
-        tableTasks.setSizeFull();
-        tableTasks.addContainerProperty("FileName", String.class, null);
-        tableTasks.addContainerProperty("Progress", ProgressBar.class, null);
-        tableTasks.addContainerProperty("Status", String.class, null);
-        tableTasks.addContainerProperty("Cancel", Button.class, null);
-
-        setContent(tableTasks);
-
-        setClosable(true);
-        setResizable(true);
-        setCaption("Upload task window");
-    }
-
-    public void show() {
-        if (this.getParent() == null) {
-            UI.getCurrent().addWindow(this);
-        }
-    }
-
-    @Override
-    public void close() {
-        UI.getCurrent().removeWindow(this);
+    public UploadTaskPanel() {
+        setIcon(new ThemeResource("images/components/upload-task-panel/upload-task-panel.png"));
+        gridTasks.addContainerProperty("File name", String.class, null);
+        gridTasks.addContainerProperty("Progress", ProgressBar.class, null);
+        gridTasks.addContainerProperty("Status", String.class, null);
+        gridTasks.addContainerProperty("Cancel/Drop", Button.class, null);
+        gridTasks.setSizeFull();
+        gridTasks.addStyleName("upload-task-panel-grid-task");
+        setContent(gridTasks);
     }
 
     public void addUploadTask(final UploadTask uploadTask) {
 
         uploadTask.addListener(this);
 
-        Button btnCancel = new Button("Cancel");
+        Button btnCancel = new Button(new ThemeResource("images/components/upload-task-panel/btn_delete_cancel_upload.png"));
+        btnCancel.setStyleName("common-no-space-image-button");
 
         btnCancel.setData(uploadTask);
         btnCancel.addClickListener(new Button.ClickListener() {
@@ -65,18 +50,18 @@ public class UploadTaskWindow extends Window implements UploadListener {
                     UploadTask task = (UploadTask) event.getButton().getData();
                     if (task != null) {
                         task.interrupt();
-                        event.getButton().setEnabled(false);
+                        gridTasks.removeItem(task.getTaskId());
                     }
                 }
             }
         });
 
-        tableTasks.addItem(new Object[]{uploadTask.getFileName(), new ProgressBar(), "Start", btnCancel}, uploadTask.getTaskId());
+        gridTasks.addItem(new Object[]{uploadTask.getFileName(), new ProgressBar(), "Start", btnCancel}, uploadTask.getTaskId());
     }
 
     @Override
     public void updateProgress(UploadTask task, final long readBytes, final long contentLength) {
-        Item item = tableTasks.getItem(task.getTaskId());
+        Item item = gridTasks.getItem(task.getTaskId());
         if (item != null) {
             ((ProgressBar) item.getItemProperty("Progress").getValue()).setValue(readBytes / (float) contentLength);
             item.getItemProperty("Status").setValue("In progress");
@@ -85,23 +70,21 @@ public class UploadTaskWindow extends Window implements UploadListener {
 
     @Override
     public void uploadFailed(UploadTask task, boolean isInterrupted) {
-        Item item = tableTasks.getItem(task.getTaskId());
+        Item item = gridTasks.getItem(task.getTaskId());
         if (item != null) {
             if (isInterrupted) {
                 item.getItemProperty("Status").setValue("Cancel");
             } else {
                 item.getItemProperty("Status").setValue("Failed");
             }
-            ((Button) item.getItemProperty("Cancel").getValue()).setEnabled(false);
         }
     }
 
     @Override
     public void uploadSucceeded(UploadTask task) {
-        Item item = tableTasks.getItem(task.getTaskId());
+        Item item = gridTasks.getItem(task.getTaskId());
         if (item != null) {
             item.getItemProperty("Status").setValue("Succeess");
-            ((Button) item.getItemProperty("Cancel").getValue()).setEnabled(false);
         }
     }
 }

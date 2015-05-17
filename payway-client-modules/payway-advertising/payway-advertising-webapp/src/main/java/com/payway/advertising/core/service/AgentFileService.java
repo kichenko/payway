@@ -3,33 +3,23 @@
  */
 package com.payway.advertising.core.service;
 
-import com.payway.advertising.data.dao.DbAgentFileDao;
+import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbAgentFile;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 /**
  * AgentFileService
  *
  * @author Sergey Kichenko
- * @created 05.05.15 00:00
+ * @created 13.05.15 00:00
  */
-@Slf4j
-@Service
-public class AgentFileService {
+public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
 
-    @Autowired
-    private DbAgentFileDao dbAgentFileDao;
+    List<DbAgentFile> findAllByName(List<String> names) throws ServiceException;
 
-    @Transactional
-    public DbAgentFile save(DbAgentFile entity) {
-        return dbAgentFileDao.save(entity);
-    }
+    List<DbAgentFile> findStartWithByName(String name) throws ServiceException;
 
-    @Transactional
-    public void delete(DbAgentFile entity) {
-        dbAgentFileDao.delete(entity);
-    }
+    long updateByNamePrefix(String srcName, String dstName);
+
+    long deleteByNamePrefix(String srcName);
 }

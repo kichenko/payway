@@ -3,19 +3,19 @@
  */
 package com.payway.advertising.data.dao;
 
-import com.payway.advertising.model.DbConfiguration;
+import com.payway.advertising.model.DbUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * DbConfigurationDao
+ * UserDao
  *
  * @author Sergey Kichenko
  * @created 15.05.15 00:00
  */
-public interface DbConfigurationDao extends JpaRepository<DbConfiguration, Long> {
+public interface UserDao extends JpaRepository<DbUser, Long> {
 
-    @Query(value = "select c from DbConfiguration c where c.name = :login")
-    DbConfiguration findByLogin(@Param("login") String login);
+    @Query(value = "select u from DbUser u where u.login = :login")
+    DbUser findByLogin(@Param("login") String login);
 }

@@ -1,11 +1,12 @@
 /*
- * (c) Sergey Kichenko, 2015. All right reserved.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.ui;
 
-import com.payway.advertising.core.service.DbConfigurationService;
-import com.payway.advertising.core.service.DbUserService;
-import com.payway.advertising.core.service.user.UserService;
+import com.payway.advertising.core.service.ConfigurationService;
+import com.payway.advertising.core.service.UserService;
+import com.payway.advertising.core.service.app.user.UserAppService;
+import com.payway.advertising.core.service.app.utils.SettingsAppService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
@@ -62,19 +63,24 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     private LoginView loginView;
 
     @Autowired
+    @Qualifier(value = "userAppService")
+    private UserAppService userAppService;
+
+    @Autowired
     @Qualifier(value = "userService")
     private UserService userService;
 
     @Autowired
-    @Qualifier(value = "dbUserService")
-    private DbUserService dbUserService;
+    @Qualifier(value = "configurationService")
+    private ConfigurationService configurationService;
 
     @Autowired
-    @Qualifier(value = "dbConfigurationService")
-    private DbConfigurationService dbConfigurationService;
+    @Qualifier(value = "settingsAppService")
+    SettingsAppService settingsAppService;
 
     @Override
     protected void init(VaadinRequest request) {
+        settingsAppService.setContextPath(request.getContextPath());
         updateContent();
     }
 
@@ -100,10 +106,11 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     }
 
     private void updateContent() {
-        DbUser user = userService.getUser();
+        DbUser user = userAppService.getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
             mainView.initializeUserMenu(user.getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+            mainView.getSideBarMenu().select(0);
             setContent(mainView);
         } else {
             loginView.initialize();
@@ -122,12 +129,12 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
                         boolean isRememberMe = false;
 
-                        DbUser user = dbUserService.findUserByLogin(userDto.getUsername(), true);
+                        DbUser user = userService.findUserByLogin(userDto.getUsername(), true);
                         if (user == null) {
                             throw new Exception("Error authentication/authorization user");
                         }
 
-                        DbConfiguration config = dbConfigurationService.findConfigurationByUserLogin(user, true);
+                        DbConfiguration config = configurationService.findConfigurationByUserLogin(user, true);
                         if (config == null) {
                             throw new Exception("Error authentication/authorization user");
                         }
@@ -136,8 +143,8 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
                         user.setToken(userDto.getUserToken());
 
                         //set params to session
-                        userService.setUser(user);
-                        userService.setDbConfiguration(config);
+                        userAppService.setUser(user);
+                        userAppService.setConfiguration(config);
 
                         if (data != null) {
                             isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());

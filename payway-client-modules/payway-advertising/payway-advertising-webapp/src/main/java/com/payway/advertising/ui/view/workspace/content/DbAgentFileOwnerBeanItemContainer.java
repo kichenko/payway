@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
-import com.payway.advertising.core.service.DbAgentFileOwnerService;
+import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -21,13 +21,13 @@ import org.codehaus.plexus.util.StringUtils;
 @Slf4j
 public class DbAgentFileOwnerBeanItemContainer extends BeanItemContainer<DbAgentFileOwner> {
 
-    private DbAgentFileOwnerService service;
+    private AgentFileOwnerService service;
 
     public DbAgentFileOwnerBeanItemContainer() {
         super(DbAgentFileOwner.class);
     }
 
-    public DbAgentFileOwnerBeanItemContainer(DbAgentFileOwnerService service) {
+    public DbAgentFileOwnerBeanItemContainer(AgentFileOwnerService service) {
         this();
         this.service = service;
     }

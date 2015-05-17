@@ -4,7 +4,7 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
-import com.payway.advertising.data.dao.DbAgentFileOwnerDao;
+import com.payway.advertising.data.dao.AgentFileOwnerDao;
 import com.payway.advertising.model.DbAgentFileOwner;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -13,22 +13,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * DbAgentFileOwnerServiceImpl
+ * AgentFileOwnerServiceImpl
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
 @Slf4j
-@Service(value = "dbAgentFileOwnerService")
-public class DbAgentFileOwnerServiceImpl implements DbAgentFileOwnerService {
+@Service(value = "agentFileOwnerService")
+public class AgentFileOwnerServiceImpl implements AgentFileOwnerService {
 
     @Autowired
-    private DbAgentFileOwnerDao dbAgentFileOwnerDao;
+    private AgentFileOwnerDao agentFileOwnerDao;
 
     @Override
     @Transactional(readOnly = true)
     public List<DbAgentFileOwner> findByName(String name) throws ServiceException {
-        return dbAgentFileOwnerDao.findByName(name);
+        return agentFileOwnerDao.findByName(name);
     }
 
     @Override
@@ -49,6 +49,6 @@ public class DbAgentFileOwnerServiceImpl implements DbAgentFileOwnerService {
     @Override
     @Transactional(readOnly = true)
     public List<DbAgentFileOwner> list() throws ServiceException {
-        return dbAgentFileOwnerDao.findAll();
+        return agentFileOwnerDao.findAll();
     }
 }

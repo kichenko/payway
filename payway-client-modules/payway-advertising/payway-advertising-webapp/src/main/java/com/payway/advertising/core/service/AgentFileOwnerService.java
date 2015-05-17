@@ -8,12 +8,12 @@ import com.payway.advertising.model.DbAgentFileOwner;
 import java.util.List;
 
 /**
- * DbAgentFileOwnerService
+ * AgentFileOwnerService
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
-public interface DbAgentFileOwnerService extends CrudEntityService<Long, DbAgentFileOwner> {
+public interface AgentFileOwnerService extends CrudEntityService<Long, DbAgentFileOwner> {
 
     List<DbAgentFileOwner> findByName(String name) throws ServiceException;
 }

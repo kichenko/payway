@@ -7,12 +7,12 @@ import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbUser;
 
 /**
- * DbUserService
+ * UserService
  *
  * @author Sergey Kichenko
  * @created 15.05.15 00:00
  */
-public interface DbUserService extends CrudEntityService<Long, DbUser> {
+public interface UserService extends CrudEntityService<Long, DbUser> {
 
     DbUser findUserByLogin(String login, boolean isCreate) throws ServiceException;
 }

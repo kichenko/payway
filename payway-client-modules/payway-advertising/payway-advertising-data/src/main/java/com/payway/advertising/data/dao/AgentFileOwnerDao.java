@@ -10,12 +10,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * DbAgentFileOwnerDao
+ * AgentFileOwnerDao
  *
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
-public interface DbAgentFileOwnerDao extends JpaRepository<DbAgentFileOwner, Long> {
+public interface AgentFileOwnerDao extends JpaRepository<DbAgentFileOwner, Long> {
 
     @Query(value = "select o from DbAgentFileOwner o where o.name like '%' || :name || '%'")
     List<DbAgentFileOwner> findByName(@Param("name") String name);

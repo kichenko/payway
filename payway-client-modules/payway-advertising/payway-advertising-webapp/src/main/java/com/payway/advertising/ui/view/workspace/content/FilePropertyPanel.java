@@ -3,8 +3,8 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
-import com.payway.advertising.core.service.DbAgentFileOwnerService;
-import com.payway.advertising.core.service.DbAgentFileService;
+import com.payway.advertising.core.service.AgentFileOwnerService;
+import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
@@ -13,6 +13,7 @@ import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.ui.utils.UIUtils;
+import com.payway.advertising.ui.view.core.WorkspaceView;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.ThemeResource;
@@ -57,11 +58,11 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @Getter
     @Setter
-    private DbAgentFileOwnerService dbAgentFileOwnerService;
+    private AgentFileOwnerService agentFileOwnerService;
 
     @Getter
     @Setter
-    private DbAgentFileService dbAgentFileService;
+    private AgentFileService agentFileService;
 
     @Getter
     @Setter
@@ -90,6 +91,10 @@ public class FilePropertyPanel extends VerticalLayout {
     @Setter
     private String relativePath;
 
+    @Getter
+    @Setter
+    private WorkspaceView workspaceView;
+
     public FilePropertyPanel() {
         init();
     }
@@ -115,7 +120,7 @@ public class FilePropertyPanel extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
-                    UIUtils.showLoadingIndicator();
+                    workspaceView.showProgressBar();
                     if (dbAgentFileValidator.validate(beanItem.getBean())) {
 
                         //set name only for new object, where id == null
@@ -127,7 +132,7 @@ public class FilePropertyPanel extends VerticalLayout {
                             getBeanItem().getBean().setDigest(digest);
                         }
 
-                        dbAgentFileService.save(getBeanItem().getBean());
+                        agentFileService.save(getBeanItem().getBean());
 
                         if (getListener() != null) {
                             getListener().onSave(beanItem.getBean());
@@ -139,7 +144,7 @@ public class FilePropertyPanel extends VerticalLayout {
                     log.error("Error saving file property data", ex);
                     UIUtils.showErrorNotification("", "Error saving file property data");
                 } finally {
-                    UIUtils.closeLoadingIndicator();
+                    workspaceView.hideProgressBar();
                 }
             }
         });
@@ -147,7 +152,7 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void initOwnerBeanContainer() {
         //set custom container for owner combobox
-        tabGeneral.getCbOwner().setContainerDataSource(new DbAgentFileOwnerBeanItemContainer(dbAgentFileOwnerService));
+        tabGeneral.getCbOwner().setContainerDataSource(new DbAgentFileOwnerBeanItemContainer(agentFileOwnerService));
         tabGeneral.getCbOwner().setFilteringMode(FilteringMode.CONTAINS);
         tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
@@ -192,8 +197,8 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getEditFileName().setReadOnly(true);
         fieldGroup.setItemDataSource(beanItem);
 
-        tabGeneral.setEnabled(false);
-        tabAdditional.setEnabled(false);
+        tabGeneral.setEnabled(true);
+        tabAdditional.setEnabled(true);
 
         btnOk.setEnabled(true);
     }

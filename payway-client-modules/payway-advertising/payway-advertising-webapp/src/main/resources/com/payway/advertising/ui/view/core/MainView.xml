@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:sb="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view">
-    <CssLayout id="panelLeft" styleName="main-panel-left">
-        <sb:SideBarMenu id = "sideBarMenu"/>
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view">
+
+    <HorizontalSplitPanel id="splitHorizontalPanel"/>
+
+    <CssLayout id="layoutLeft" styleName="main-panel-left">
+
+        <VerticalSplitPanel id="splitVerticalPanel"/>
+
+        <CssLayout id="layoutSideBar" styleName="main-panel-left-layout-side-bar">
+            <cmp:SideBarMenu id="sideBarMenu" sizeFull="true"/>
+        </CssLayout>
+        <CssLayout id="layoutUploadTasks" styleName="main-panel-left-layout-upload-tasks">
+            <cmp:UploadTaskPanel id="uploadTaskPanel" caption="Upload tasks" sizeFull="true"/>
+        </CssLayout>
     </CssLayout>
-    <CssLayout id="panelRight" styleName="main-panel-right">
+
+    <CssLayout id="layoutRight" styleName="main-panel-right">
         <CssLayout id="panelHeader" styleName="main-panel-header">
             <MenuBar id="userMenu" styleName="main-user-menu"/>
         </CssLayout>

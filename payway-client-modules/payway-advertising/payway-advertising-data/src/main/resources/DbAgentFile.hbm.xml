@@ -4,10 +4,10 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.payway.advertising.model.DbAgentFile" table="agent_file">
+    <class name="com.payway.advertising.model.DbAgentFile" table="agent_files">
         <id name="id" column="id" type="java.lang.Long">
             <generator class="sequence">
-                <param name="sequence">seq_agent_file</param>
+                <param name="sequence">seq_agent_files</param>
             </generator>
         </id>
         <property name="name" column="name" type="string"/>
@@ -19,7 +19,7 @@
                 <param name="enumClass">com.payway.advertising.model.DbFileType</param>
                 <param name="useNamed">true</param>
             </type>
-        </property>      
+        </property>
         <many-to-one name="owner" column="agent_file_owner_id" class="com.payway.advertising.model.DbAgentFileOwner" lazy="false" not-null="false"/>
         <many-to-one name="configuration" column="configuration_id" class="com.payway.advertising.model.DbConfiguration" lazy="false" not-null="false"/>
     </class>

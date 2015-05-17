@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service.utils;
+package com.payway.advertising.core.service.app.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * SettingsServiceImpl
+ * SettingsAppServiceImpl
  *
  * @author Sergey Kichenko
  * @created 10.05.15 00:00
  */
-@Component(value = "settingsService")
+@Component(value = "settingsAppService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class SettingsServiceImpl implements SettingsService {
+public class SettingsAppServiceImpl implements SettingsAppService {
 
     @Value("${config.local.path}")
     private String localConfigPath;
@@ -28,6 +28,8 @@ public class SettingsServiceImpl implements SettingsService {
     private String temporaryFileExt;
 
     private final String separator = "/";
+
+    private String contextPath = "";
 
     @Override
     public String getLocalConfigPath() {
@@ -47,6 +49,16 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public String getTemporaryFileExt() {
         return temporaryFileExt;
+    }
+
+    @Override
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    @Override
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
 }

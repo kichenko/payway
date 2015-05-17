@@ -7,9 +7,9 @@
     <class name="com.payway.advertising.model.DbUser" table="users">
         <id name="id" column="id" type="java.lang.Long">
             <generator class="sequence">
-                <param name="sequence">seq_user</param>
+                <param name="sequence">seq_users</param>
             </generator>
-        </id>        
+        </id>
         <property name="login" column="login" type="string"/>
     </class>
 </hibernate-mapping>
