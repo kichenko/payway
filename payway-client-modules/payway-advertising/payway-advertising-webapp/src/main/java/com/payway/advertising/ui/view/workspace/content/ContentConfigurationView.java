@@ -22,9 +22,11 @@ import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.AbstractWorkspaceView;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.DefaultItemSorter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -203,6 +205,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     fileSystemManagerService.create(fo);
                 }
                 fillGridFileExplorer(getCurrentPath());
+                panelFileProperty.clearProperty();
                 isFileGridLoadedOnActivate = true;
             } catch (Exception ex) {
                 log.error("Error on activate view", ex);
@@ -364,65 +367,94 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         gridFileExplorer.addStyleName("grid-file-explorer");
         gridFileExplorer.setContainerDataSource(new BeanItemContainer<>(FileExplorerItemData.class));
 
-        /*
-         ((BeanItemContainer) gridFileExplorer.getContainerDataSource()).setItemSorter(
-         new DefaultItemSorter() {
+        //grid sorting
+        ((BeanItemContainer) gridFileExplorer.getContainerDataSource()).setItemSorter(
+          new DefaultItemSorter() {
 
-         @Override
-         protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
+              @Override
+              protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
 
-         if(propertyId.equals("name")) {
-         FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>)item1).getBean();
-         FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>)item1).getBean();
+                  FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>) item1).getBean();
+                  FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>) item2).getBean();
 
-         if(bean1.getFileType().equals(bean1.getFileType())) {
+                  int result = 0;
 
-         }
-         }
+                  if (bean1.getFileType() != null && bean2.getFileType() != null) {
+                      //folder+folder, file+file
+                      if ((FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType()))
+                      || FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType())) {
+                          if (propertyId.equals("name")) {
+                              result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                          } else if (propertyId.equals("size")) {
+                              //folder
+                              if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType())) {
+                                  result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                              } else { //file
+                                  result = Long.compare(bean1.getSize(), bean2.getSize());
+                              }
+                          } else if (propertyId.equals("lastModifiedTime")) {
+                              result = bean1.getLastModifiedTime().compareTo(bean1.getLastModifiedTime());
+                          }
+                      } //folder+file
+                      else if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                          result = -1;
+                      } //file+foder
+                      else if (FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                          result = 1;
+                      }
+                  } else {
+                      result = super.compareProperty(propertyId, sortDirection, item1, item2);
+                  }
 
-         return super.compareProperty(propertyId, sortDirection, item1, item2); //To change body of generated methods, choose Tools | Templates.
-         }
-         @Override
-         public int compare(Object o1, Object o2) {
-         return super.compare(o1, o2); //To change body of generated methods, choose Tools | Templates.
-         }
-         }
-         );
-         */
-        
+                  return sortDirection ? result : -1 * result;
+              }
+
+              @Override
+              public int compare(Object o1, Object o2) {
+                  return super.compare(o1, o2);
+              }
+          });
+
         //set menu
         gridContextMenu.setAsContextMenuOf(gridFileExplorer);
-        gridContextMenu.addContextMenuTableListener(this);
-        gridContextMenu.addContextMenuComponentListener(this);
+
+        gridContextMenu.addContextMenuTableListener(
+          this);
+        gridContextMenu.addContextMenuComponentListener(
+          this);
 
         //set double click event handler
-        gridFileExplorer.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                if (event.isDoubleClick()) {
-                    processGridDoubleClick(event.getItemId());
-                }
-            }
-        });
+        gridFileExplorer.addItemClickListener(
+          new ItemClickEvent.ItemClickListener() {
+              @Override
+              public void itemClick(ItemClickEvent event
+              ) {
+                  if (event.isDoubleClick()) {
+                      processGridDoubleClick(event.getItemId());
+                  }
+              }
+          });
 
         //set to detect row select change
-        gridFileExplorer.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                Object itemId = gridFileExplorer.getValue();
-                if (itemId != null) {
-                    BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
-                    if (container != null) {
-                        FileExplorerItemData bean = container.getItem(itemId).getBean();
-                        if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                            panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>((DbAgentFile) bean.getProperty().clone()));
-                        } else {
-                            panelFileProperty.clearProperty();
-                        }
-                    }
-                }
-            }
-        });
+        gridFileExplorer.addValueChangeListener(
+          new Property.ValueChangeListener() {
+              @Override
+              public void valueChange(Property.ValueChangeEvent event
+              ) {
+                  Object itemId = gridFileExplorer.getValue();
+                  if (itemId != null) {
+                      BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+                      if (container != null) {
+                          FileExplorerItemData bean = container.getItem(itemId).getBean();
+                          if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
+                              panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>((DbAgentFile) bean.getProperty().clone()));
+                          } else {
+                              panelFileProperty.clearProperty();
+                          }
+                      }
+                  }
+              }
+          });
 
         //set column name render
         gridFileExplorer.addGeneratedColumn("name", new Table.ColumnGenerator() {
@@ -526,6 +558,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         gridFileExplorer.setColumnHeader("lastModifiedTime", "File last modified time");
 
         gridFileExplorer.setVisibleColumns("name", "size", "lastModifiedTime");
+        gridFileExplorer.sort(new Object[]{"name"}, new boolean[]{true});
     }
 
     private void initContextMenuTableRow(ContextMenu menu, Object data) {
@@ -655,6 +688,9 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                   f.getLastModifiedTime()
                 ));
             }
+
+            //sort grid
+            gridFileExplorer.sort();
         }
     }
 
@@ -674,7 +710,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, getCurrentRelativePath() + settingsAppService.getSeparator() + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), null));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, getCurrentRelativePath() + settingsAppService.getSeparator() + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
+                            gridFileExplorer.sort();
                         }
                         isOk = true;
                     } catch (Exception ex) {
