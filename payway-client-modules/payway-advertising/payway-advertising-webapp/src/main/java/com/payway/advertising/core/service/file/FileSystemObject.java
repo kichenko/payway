@@ -1,11 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.core.service.file;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +10,10 @@ import lombok.Setter;
 import org.joda.time.LocalDateTime;
 
 /**
+ * FileSystemObject
  *
- * @author sergey
+ * @author Sergey Kichenko
+ * @created 10.05.15 00:00
  */
 @Getter
 @Setter
@@ -22,16 +21,21 @@ import org.joda.time.LocalDateTime;
 @AllArgsConstructor
 public class FileSystemObject {
 
-    public enum FileSystemObjectType {
+    public enum FileSystemType {
+
+        FILE,
+        WEBDAV
+    }
+
+    public enum FileType {
 
         FILE,
         FOLDER
     }
 
     protected String path;
-    protected FileSystemObjectType type;
+    protected FileSystemType fileSystemType;
+    protected FileType fileType;
     protected Long size;
-    protected List<FileSystemObject> child;
-    protected FileSystemObject parent;
     protected LocalDateTime lastModifiedTime;
 }

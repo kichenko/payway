@@ -13,6 +13,10 @@ import java.util.List;
  * @created 07.10.15 00:00
  */
 public interface FileSystemManagerService {
+    
+    String getSchema(FileSystemObject uri);
+    
+    String getUri(FileSystemObject uri);
 
     void create(FileSystemObject srcUri) throws FileSystemManagerServiceException;
 
@@ -24,7 +28,7 @@ public interface FileSystemManagerService {
 
     void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
 
-    List<FileSystemObject> list(FileSystemObject srcUri, boolean isRecursive) throws FileSystemManagerServiceException;
+    List<FileSystemObject> list(FileSystemObject srcUri, boolean addFolders, boolean recursive) throws FileSystemManagerServiceException;
 
     boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException;
 
