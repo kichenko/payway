@@ -10,6 +10,8 @@ import com.google.gwt.thirdparty.guava.common.collect.Iterables;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
+import com.payway.advertising.core.service.ConfigurationApplyCallback;
+import com.payway.advertising.core.service.ConfigurationApplyService;
 import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.app.utils.SettingsAppService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
@@ -84,8 +86,10 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             ROW_NEW_FOLDER,
             ROW_EDIT,
             ROW_REMOVE,
+            ROW_CFG_APPLY,
             TABLE_NEW_FOLDER,
-            TABLE_REFRESH_FOLDER
+            TABLE_REFRESH_FOLDER,
+            TABLE_CFG_APPLY
         }
 
         private MenuAction action;
@@ -150,6 +154,12 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     @Autowired
     @Qualifier("agentFileService")
     private AgentFileService agentFileService;
+
+    @Getter
+    @Setter
+    @Autowired
+    @Qualifier("configurationApplyService")
+    private ConfigurationApplyService configurationApplyService;
 
     @Getter
     private String rootUserConfigPath;
@@ -585,6 +595,11 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             tmp.setSeparatorVisible(true);
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_REMOVE, data));
             tmp.addItemClickListener(this);
+
+            tmp = menu.addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"));
+            tmp.setSeparatorVisible(true);
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_CFG_APPLY, data));
+            tmp.addItemClickListener(this);
         }
     }
 
@@ -601,6 +616,11 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
             tmp = menu.addItem("New folder", new ThemeResource("images/grid_files_menu_item_new_folder.png"));
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_NEW_FOLDER, null));
+            tmp.addItemClickListener(this);
+
+            tmp = menu.addItem("Apply", new ThemeResource("images/grid_files_menu_item_new_cfg_apply.png"));
+            tmp.setSeparatorVisible(true);
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_CFG_APPLY, null));
             tmp.addItemClickListener(this);
         }
     }
@@ -876,9 +896,46 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     } else {
                         UIUtils.showErrorNotification("", "Choose item to remove");
                     }
+                } else if (ContextMenuItemData.MenuAction.TABLE_CFG_APPLY.equals(data.getAction()) || ContextMenuItemData.MenuAction.ROW_CFG_APPLY.equals(data.getAction())) {
+                    applyConfig();
                 }
             }
         }
+    }
+
+    /**
+     * Apply local->server configuration
+     *
+     */
+    private void applyConfig() {
+
+        configurationApplyService.apply(null, null, null, null, new ConfigurationApplyCallback() {
+            @Override
+            public void start() {
+                //
+            }
+
+            @Override
+            public boolean progress(ConfigurationApplyCallback.ProgressStep step, Object arg) {
+                return false;
+            }
+
+            @Override
+            public void success() {
+                //
+            }
+
+            @Override
+            public void fail(ConfigurationApplyCallback.ReasonCode code) {
+                //
+            }
+
+            @Override
+            public void finish() {
+                //
+            }
+        });
+
     }
 
     private void initTabSheetProperty() {

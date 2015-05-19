@@ -4,7 +4,7 @@
 package com.payway.messaging.message.request.auth;
 
 import com.payway.messaging.core.request.command.CommandRequest;
-import com.payway.messaging.model.messaging.auth.UserDto;
+import com.payway.messaging.model.message.auth.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

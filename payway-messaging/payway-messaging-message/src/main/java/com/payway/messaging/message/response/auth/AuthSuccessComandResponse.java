@@ -3,7 +3,7 @@
  */
 package com.payway.messaging.message.response.auth;
 
-import com.payway.messaging.model.messaging.auth.UserDto;
+import com.payway.messaging.model.message.auth.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

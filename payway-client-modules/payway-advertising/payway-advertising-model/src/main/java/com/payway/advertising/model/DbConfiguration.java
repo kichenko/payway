@@ -1,10 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * (c) Payway, 2015. All right reserved.
  */
 package com.payway.advertising.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +24,15 @@ public class DbConfiguration extends DbAbstractEntity<Long> implements Cloneable
 
     protected String name;
     protected DbUser user;
+    protected Collection<DbAgentFile> files = new ArrayList<>();
 
     public DbConfiguration(Long id, String name, DbUser user) {
         super(id);
+        setName(name);
+        setUser(user);
+    }
+
+    public DbConfiguration(String name, DbUser user) {
         setName(name);
         setUser(user);
     }

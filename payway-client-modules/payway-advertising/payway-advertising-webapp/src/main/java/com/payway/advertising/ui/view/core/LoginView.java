@@ -9,7 +9,7 @@ import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
-import com.payway.messaging.model.messaging.auth.UserDto;
+import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -79,7 +79,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.sendMessage(new AuthCommandRequest<>(new UserDto(textUserName.getValue(), textPassword.getValue(), "", checkBoxRememberMe.getValue(), null), true), LoginView.this);
+                service.sendMessage(new AuthCommandRequest<>(new UserDto(textUserName.getValue(), textPassword.getValue(), "", checkBoxRememberMe.getValue()), true), LoginView.this);
             }
         });
     }

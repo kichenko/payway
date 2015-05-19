@@ -20,7 +20,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
 import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandResponse;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
-import com.payway.messaging.model.messaging.auth.UserDto;
+import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -134,7 +134,7 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
                             throw new Exception("Error authentication/authorization user");
                         }
 
-                        DbConfiguration config = configurationService.findConfigurationByUserLogin(user, true);
+                        DbConfiguration config = configurationService.findConfigurationByUser(user, true);
                         if (config == null) {
                             throw new Exception("Error authentication/authorization user");
                         }

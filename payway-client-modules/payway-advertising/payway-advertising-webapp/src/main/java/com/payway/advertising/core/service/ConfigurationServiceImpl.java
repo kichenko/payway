@@ -12,10 +12,10 @@ import com.payway.advertising.model.DbUser;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ConfigurationServiceImpl
@@ -35,8 +35,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     FileSystemManagerService fileManagerService;
 
     @Override
-    public DbConfiguration findConfigurationByUserLogin(DbUser user, boolean isCreate) throws ServiceException {
-        DbConfiguration config = configurationDao.findByLogin(user.getLogin());
+    @Transactional(readOnly = true)
+    public DbConfiguration findConfigurationByUser(DbUser user, boolean isCreate) throws ServiceException {
+        DbConfiguration config = configurationDao.findByName(user.getLogin());
         if (config == null && isCreate) {
             config = new DbConfiguration(user.getLogin(), user);
             configurationDao.save(config);
@@ -45,128 +46,53 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public DbConfiguration findConfigurationByNameWithFiles(String name) throws ServiceException {
+        return configurationDao.findByNameWithFiles(name);
+    }
+
+    @Override
     public DbConfiguration save(DbConfiguration entity) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void delete(DbConfiguration entity) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public DbConfiguration getById(Long id) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public List<DbConfiguration> list() throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public String generateUniqueFolderName(String prefix, String folder) {
         return String.format("%s_%s_%s", prefix, folder, UUID.randomUUID().toString());
     }
 
-    /**
-     * Lock server configuration (folder + db)
-     *
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public void lock() throws ServiceException {
-        //
+    @Override
+    public List<FileSystemObject> files(FileSystemObject localConfigPath) throws ServiceException {
+        return fileManagerService.list(localConfigPath, false, true);
     }
 
-    /**
-     * Unlock server configuration (folder + db)
-     *
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public void unlock() throws ServiceException {
-        //
+    @Override
+    public void copy(FileSystemObject src, FileSystemObject dst) throws ServiceException {
+        fileManagerService.copy(src, dst);
     }
 
-    /**
-     * Check for lock server configuration (folder + db)
-     *
-     * @return
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public boolean checkLock() throws ServiceException {
-        return false;
+    @Override
+    public void remove(FileSystemObject src) throws ServiceException {
+        fileManagerService.delete(src);
     }
 
-    /**
-     * Copy local to tmp remote folder (folder)
-     *
-     * @param localTmpRemoteFolderName
-     * @param localConfigPath - c:/store/login
-     * @param remoteRootPath - http://127.0.0.1/store
-     * @param callback
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public void copyLocal2RemoteTemp(String localTmpRemoteFolderName, FileSystemObject localConfigPath, FileSystemObject remoteRootPath, FileCopyCallBack callback) throws ServiceException {
-        try {
-            if (FileSystemObject.FileType.FOLDER.equals(localConfigPath.getFileType()) && FileSystemObject.FileType.FOLDER.equals(remoteRootPath.getFileType())) {
-
-                boolean cancel = false;
-
-                //1. list local files
-                List<FileSystemObject> files = fileManagerService.list(localConfigPath, false, true);
-
-                //2. create tmp folder on remote host(webdav)
-                fileManagerService.create(new FileSystemObject(remoteRootPath.getPath() + "/" + localTmpRemoteFolderName, remoteRootPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
-
-                //3. copy files to tmp folder on remote host(webdav)
-                if (files != null) {
-                    for (FileSystemObject f : files) {
-                        fileManagerService.copy(f, new FileSystemObject(remoteRootPath.getPath() + "/" + localTmpRemoteFolderName + "/" + StringUtils.substringAfterLast(f.getPath(), "/"), remoteRootPath.getFileSystemType(), FileSystemObject.FileType.FILE, 0L, null));
-                        if (callback != null) {
-                            cancel = callback.copy(f);
-                            if (cancel) {
-                                break;
-                            }
-                        }
-                    }
-
-                    //3.1 remove tmp remote folder on 'cancel'
-                    if (cancel) {
-                        fileManagerService.delete(new FileSystemObject(remoteRootPath.getPath() + "/" + localTmpRemoteFolderName, remoteRootPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
-                    }
-
-                    //4. finish copy local to tmp remote
-                    if (callback != null) {
-                        callback.finish();
-                    }
-                }
-            } else {
-                throw new Exception("Local and/or remote path must be folder");
-            }
-        } catch (Exception ex) {
-            log.error("", ex);
-        }
-    }
-
-    /**
-     * Rename remote to tmp (folder)
-     *
-     * @param remoteTmpFolderName
-     * @param remotePath
-     * @param remoteRootPath
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public void renameRemote2Temp(String remoteTmpFolderName, FileSystemObject remotePath, FileSystemObject remoteRootPath) throws ServiceException {
-        fileManagerService.rename(new FileSystemObject(remoteRootPath.getPath() + "/" + remoteTmpFolderName, remotePath.getFileSystemType(), FileSystemObject.FileType.FILE, 0L, null), null);
-    }
-
-    /**
-     * Rename remote tmp local to remote original (folder)
-     *
-     * @param remoteLocalTempPath
-     * @param remotePath
-     * @throws com.payway.advertising.core.service.exception.ServiceException
-     */
-    public void renameLocalRemoteTemp2Remote(FileSystemObject remoteLocalTempPath, FileSystemObject remotePath) throws ServiceException {
-        fileManagerService.rename(remoteLocalTempPath, remotePath);
+    @Override
+    public void rename(FileSystemObject src, FileSystemObject dst) throws ServiceException {
+        fileManagerService.rename(src, dst);
     }
 }

@@ -7,7 +7,7 @@ package com.payway.advertising.core.service.exception;
  * ConfigurationLockServiceException
  *
  * @author Sergey Kichenko
- * @created 18.05.15 00:00
+ * @created 19.05.15 00:00
  */
 public class ConfigurationLockServiceException extends ServiceException {
 

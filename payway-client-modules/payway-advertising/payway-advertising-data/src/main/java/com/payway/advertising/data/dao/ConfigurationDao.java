@@ -16,6 +16,9 @@ import org.springframework.data.repository.query.Param;
  */
 public interface ConfigurationDao extends JpaRepository<DbConfiguration, Long> {
 
-    @Query(value = "select c from DbConfiguration c where c.name = :login")
-    DbConfiguration findByLogin(@Param("login") String login);
+    @Query(value = "select c from DbConfiguration c where c.name = :name")
+    DbConfiguration findByName(@Param("name") String name);
+
+    @Query(value = "select c from DbConfiguration c join fetch c.files f where c.name = :name")
+    DbConfiguration findByNameWithFiles(@Param("name") String name);
 }
