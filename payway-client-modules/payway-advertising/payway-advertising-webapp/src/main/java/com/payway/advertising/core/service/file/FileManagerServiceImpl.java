@@ -27,13 +27,13 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component(value = "fileManagerService")
-public abstract class FileManagerServiceImpl implements FileSystemManagerService {
+public class FileManagerServiceImpl implements FileSystemManagerService {
 
     @Autowired
     @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
 
-    @Value("file://")
+    @Value("file:///")
     private String fileSchema;
 
     @Value("webdav://")
@@ -80,7 +80,7 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
         return sb.append(ObjectUtils.defaultIfNull(uri.getPath(), "")).toString();
     }
 
-    //[file://] absolute-path
+    //[file:///] absolute-path
     private String getFileUri(FileSystemObject uri) {
         return fileSchema + uri.getPath();
     }
@@ -136,9 +136,7 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
     public void delete(FileSystemObject srcUri) throws FileSystemManagerServiceException {
         try {
             FileObject fo = fileSystemManager.resolveFile(getUri(srcUri));
-            if (fo.delete(Selectors.SELECT_ALL) == 0) {
-                throw new Exception("Error delete file system object");
-            }
+            fo.delete(Selectors.SELECT_ALL);
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error delete file system object", ex);
         }
@@ -156,7 +154,7 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
     @Override
     public void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException {
         try {
-            
+
             if (srcUri.getPath().equals(destUri.getPath())) {
                 throw new Exception("Can't copy to the same file system object");
             }
@@ -164,7 +162,7 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
             FileObject src = fileSystemManager.resolveFile(getUri(srcUri));
             FileObject dst = fileSystemManager.resolveFile(getUri(destUri));
             dst.copyFrom(src, Selectors.SELECT_ALL);
-            
+
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
@@ -174,11 +172,11 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
         if (file != null) {
             if ((addFolders && FileType.FOLDER.equals(file.getType())) || (FileType.FILE.equals(file.getType()))) {
                 list.add(new FileSystemObject(
-                        StringUtils.substring(file.getName().getURI(), getSchemaWithoutAbsolutePath(fileSystemType).length()),
-                        fileSystemType,
-                        FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                        FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
-                        new LocalDateTime(file.getContent().getLastModifiedTime())));
+                  StringUtils.substring(file.getName().getURI(), getSchemaWithoutAbsolutePath(fileSystemType).length()),
+                  fileSystemType,
+                  FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                  FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
+                  new LocalDateTime(file.getContent().getLastModifiedTime())));
             }
 
             if (FileType.FOLDER.equals(file.getType())) {
@@ -208,11 +206,11 @@ public abstract class FileManagerServiceImpl implements FileSystemManagerService
                         for (FileObject f : childs) {
                             if ((addFolders && FileType.FOLDER.equals(f.getType())) || (FileType.FILE.equals(f.getType()))) {
                                 list.add(new FileSystemObject(
-                                        StringUtils.substring(f.getName().getURI(), getSchemaWithoutAbsolutePath(srcUri.getFileSystemType()).length()),
-                                        srcUri.getFileSystemType(),
-                                        FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                                        FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                        new LocalDateTime(f.getContent().getLastModifiedTime())));
+                                  StringUtils.substring(f.getName().getURI(), getSchemaWithoutAbsolutePath(srcUri.getFileSystemType()).length()),
+                                  srcUri.getFileSystemType(),
+                                  FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                                  FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                                  new LocalDateTime(f.getContent().getLastModifiedTime())));
                             }
                         }
                     }

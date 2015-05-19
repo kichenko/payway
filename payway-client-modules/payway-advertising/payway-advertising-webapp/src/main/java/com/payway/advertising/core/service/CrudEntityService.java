@@ -6,7 +6,6 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbAbstractEntity;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * CrudEntityService
@@ -23,6 +22,4 @@ public interface CrudEntityService<ID extends Serializable, E extends DbAbstract
     void delete(E entity) throws ServiceException;
 
     E getById(ID id) throws ServiceException;
-
-    List<E> list() throws ServiceException;
 }

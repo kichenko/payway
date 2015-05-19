@@ -31,6 +31,8 @@ public class SettingsAppServiceImpl implements SettingsAppService {
 
     private String contextPath = "";
 
+    private String serverConfigPath;
+
     @Override
     public String getLocalConfigPath() {
         return localConfigPath;
@@ -61,4 +63,13 @@ public class SettingsAppServiceImpl implements SettingsAppService {
         this.contextPath = contextPath;
     }
 
+    @Override
+    public String getServerConfigPath() {
+        return serverConfigPath;
+    }
+
+    @Override
+    public void setServerConfigPath(String serverConfigPath) {
+        this.serverConfigPath = serverConfigPath;
+    }
 }

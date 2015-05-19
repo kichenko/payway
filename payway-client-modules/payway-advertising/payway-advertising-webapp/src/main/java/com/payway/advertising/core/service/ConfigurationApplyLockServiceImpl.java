@@ -4,7 +4,10 @@
 package com.payway.advertising.core.service;
 
 import java.util.concurrent.TimeUnit;
-import org.springframework.stereotype.Component;
+import java.util.concurrent.locks.Lock;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ConfigurationApplyLockServiceImpl
@@ -12,28 +15,34 @@ import org.springframework.stereotype.Component;
  * @author Sergey Kichenko
  * @created 19.05.15 00:00
  */
-@Component(value = "configurationApplyLockService")
+@Slf4j
 public class ConfigurationApplyLockServiceImpl implements ConfigurationApplyLockService {
 
-    private volatile boolean busy;
+    @Getter
+    @Setter
+    private Lock lock;
 
     @Override
     public void lock() {
-        busy = true;
+        lock.lock();
     }
 
     @Override
     public void unlock() {
-        busy = false;
-    }
-
-    @Override
-    public boolean isLock() {
-        return busy = true;
+        lock.unlock();
     }
 
     @Override
     public boolean tryLock(long time, TimeUnit unit) {
-        return (busy = true);
+
+        boolean buzy = false;
+
+        try {
+            buzy = lock.tryLock(time, unit);
+        } catch (Exception ex) {
+            log.error("Error try to lock", ex);
+        }
+        
+        return buzy;
     }
 }

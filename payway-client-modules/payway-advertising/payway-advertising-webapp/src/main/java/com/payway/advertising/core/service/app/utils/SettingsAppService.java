@@ -22,4 +22,7 @@ public interface SettingsAppService {
     String getContextPath();
 
     void setContextPath(String contextPath);
+
+    String getServerConfigPath();
+    void setServerConfigPath(String serverConfigPath);
 }

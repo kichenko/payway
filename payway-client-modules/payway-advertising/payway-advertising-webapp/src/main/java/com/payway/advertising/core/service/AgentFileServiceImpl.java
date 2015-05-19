@@ -7,7 +7,7 @@ import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.data.dao.AgentFileDao;
 import com.payway.advertising.model.DbAgentFile;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +38,16 @@ public class AgentFileServiceImpl implements AgentFileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DbAgentFile> findAllByName(List<String> names) throws ServiceException {
+    public Set<DbAgentFile> findAllByName(Set<String> names) throws ServiceException {
         if (names != null && !names.isEmpty()) {
             return agentFileDao.findAllByName(names);
         }
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DbAgentFile> findStartWithByName(String name) throws ServiceException {
+    public Set<DbAgentFile> findStartWithByName(String name) throws ServiceException {
         return agentFileDao.findStartWithByName(name);
     }
 
@@ -63,11 +63,6 @@ public class AgentFileServiceImpl implements AgentFileService {
 
     @Override
     public DbAgentFile getById(Long id) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<DbAgentFile> list() throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

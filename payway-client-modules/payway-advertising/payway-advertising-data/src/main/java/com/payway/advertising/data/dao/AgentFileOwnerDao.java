@@ -4,7 +4,7 @@
 package com.payway.advertising.data.dao;
 
 import com.payway.advertising.model.DbAgentFileOwner;
-import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +18,5 @@ import org.springframework.data.repository.query.Param;
 public interface AgentFileOwnerDao extends JpaRepository<DbAgentFileOwner, Long> {
 
     @Query(value = "select o from DbAgentFileOwner o where o.name like '%' || :name || '%'")
-    List<DbAgentFileOwner> findByName(@Param("name") String name);
+    Set<DbAgentFileOwner> findByName(@Param("name") String name);
 }

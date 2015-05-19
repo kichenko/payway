@@ -4,7 +4,7 @@
 package com.payway.advertising.data.dao;
 
 import com.payway.advertising.model.DbAgentFile;
-import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,10 +19,10 @@ import org.springframework.data.repository.query.Param;
 public interface AgentFileDao extends JpaRepository<DbAgentFile, Long> {
 
     @Query(value = "select f from DbAgentFile f where f.name like :name || '%'")
-    List<DbAgentFile> findStartWithByName(@Param("name") String name);
+    Set<DbAgentFile> findStartWithByName(@Param("name") String name);
 
     @Query(value = "select f from DbAgentFile f where f.name in :names")
-    List<DbAgentFile> findAllByName(@Param("names") List<String> names);
+    Set<DbAgentFile> findAllByName(@Param("names") Set<String> names);
 
     @Query(value = "select f from DbAgentFile f where f.name = :name")
     DbAgentFile findByName(@Param("name") String name);

@@ -4,6 +4,7 @@
 package com.payway.messaging.model.message.auth;
 
 import com.payway.messaging.model.AbstractDto;
+import com.payway.messaging.model.message.settings.SettingsDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,6 @@ public class UserDto extends AbstractDto {
     private String username;
     private String password;
     private String userToken;
-    private Boolean rememberMe;
+    private boolean rememberMe;
+    private SettingsDto settings;
 }

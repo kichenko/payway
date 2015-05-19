@@ -17,7 +17,5 @@ public interface ConfigurationApplyLockService {
 
     void unlock();
 
-    boolean isLock();
-
     boolean tryLock(long time, TimeUnit unit);
 }

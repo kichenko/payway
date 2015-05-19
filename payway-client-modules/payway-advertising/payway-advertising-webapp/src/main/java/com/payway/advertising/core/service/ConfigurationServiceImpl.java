@@ -4,16 +4,12 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
-import com.payway.advertising.core.service.file.FileSystemManagerService;
-import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.data.dao.ConfigurationDao;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +25,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired
     private ConfigurationDao configurationDao;
-
-    @Autowired
-    @Qualifier(value = "fileManagerService")
-    FileSystemManagerService fileManagerService;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,6 +44,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public String generateUniqueFolderName(String prefix, String folder) {
+        return String.format("%s_%s_%s", prefix, folder, UUID.randomUUID().toString());
+    }
+
+    @Override
     public DbConfiguration save(DbConfiguration entity) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -64,35 +61,5 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public DbConfiguration getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public List<DbConfiguration> list() throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String generateUniqueFolderName(String prefix, String folder) {
-        return String.format("%s_%s_%s", prefix, folder, UUID.randomUUID().toString());
-    }
-
-    @Override
-    public List<FileSystemObject> files(FileSystemObject localConfigPath) throws ServiceException {
-        return fileManagerService.list(localConfigPath, false, true);
-    }
-
-    @Override
-    public void copy(FileSystemObject src, FileSystemObject dst) throws ServiceException {
-        fileManagerService.copy(src, dst);
-    }
-
-    @Override
-    public void remove(FileSystemObject src) throws ServiceException {
-        fileManagerService.delete(src);
-    }
-
-    @Override
-    public void rename(FileSystemObject src, FileSystemObject dst) throws ServiceException {
-        fileManagerService.rename(src, dst);
     }
 }

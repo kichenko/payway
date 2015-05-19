@@ -67,7 +67,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
             serviceContext.put(envelope.getMessageID(), new MessageContextImpl(envelope.getMessageID(), callback));
             log.info("Sending a message to the server");
             if (log.isDebugEnabled()) {
-                 log.debug("Envelope={} ", envelope);
+                log.debug("Envelope={} ", envelope);
             }
             serverQueue.offer(envelope, timeOut, timeUnit);
             log.info("Message sent to the server");
@@ -77,7 +77,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
                 if (ctx != null) {
                     ResponseCallBack cb = ctx.getCallback();
                     if (cb != null) {
-                        cb.onLocalException();
+                        cb.onLocalException(ex);
                     }
                 }
             } catch (Exception e) {

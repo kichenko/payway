@@ -79,7 +79,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.sendMessage(new AuthCommandRequest<>(new UserDto(textUserName.getValue(), textPassword.getValue(), "", checkBoxRememberMe.getValue()), true), LoginView.this);
+                service.sendMessage(new AuthCommandRequest<>(new UserDto(textUserName.getValue(), textPassword.getValue(), "", checkBoxRememberMe.getValue(), null), true), LoginView.this);
             }
         });
     }
@@ -115,14 +115,14 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     }
 
     @Override
-    public void onLocalException() {
+    public void onLocalException(final Exception ex) {
         final UI ui = getUI();
         if (ui != null) {
             ui.access(new Runnable() {
                 @Override
                 public void run() {
                     progressBarWindow.close();
-                    ((ResponseCallBack) UI.getCurrent()).onLocalException();
+                    ((ResponseCallBack) UI.getCurrent()).onLocalException(ex);
                 }
             });
         }

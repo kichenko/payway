@@ -6,7 +6,7 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.data.dao.AgentFileOwnerDao;
 import com.payway.advertising.model.DbAgentFileOwner;
-import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class AgentFileOwnerServiceImpl implements AgentFileOwnerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DbAgentFileOwner> findByName(String name) throws ServiceException {
+    public Set<DbAgentFileOwner> findByName(String name) throws ServiceException {
         return agentFileOwnerDao.findByName(name);
     }
 
@@ -44,11 +44,5 @@ public class AgentFileOwnerServiceImpl implements AgentFileOwnerService {
     @Override
     public DbAgentFileOwner getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<DbAgentFileOwner> list() throws ServiceException {
-        return agentFileOwnerDao.findAll();
     }
 }

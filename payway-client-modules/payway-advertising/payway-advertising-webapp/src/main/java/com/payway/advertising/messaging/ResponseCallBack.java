@@ -46,7 +46,7 @@ public interface ResponseCallBack<R extends SuccessResponse, E extends Exception
      * сервер.
      *
      */
-    void onLocalException();
+    void onLocalException(final Exception ex);
 
     /**
      * Если ответ от сервера не приходит в течении определенного времени -

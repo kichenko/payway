@@ -145,6 +145,7 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
                         //set params to session
                         userAppService.setUser(user);
                         userAppService.setConfiguration(config);
+                        settingsAppService.setServerConfigPath(userDto.getSettings() == null ? "" : userDto.getSettings().getConfigPath());
 
                         if (data != null) {
                             isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());
@@ -187,7 +188,7 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     }
 
     @Override
-    public void onLocalException() {
+    public void onLocalException(Exception ex) {
         Notification.show("Notification", "onLocalException", Notification.Type.WARNING_MESSAGE);
     }
 

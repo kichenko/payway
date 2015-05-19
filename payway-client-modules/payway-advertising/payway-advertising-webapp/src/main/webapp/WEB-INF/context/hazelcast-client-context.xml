@@ -33,6 +33,8 @@
         </hz:config>
     </hz:hazelcast>
 
+    <hz:lock id="lockServerAppConfigApply" instance-ref="hazelcastInstance" name="${server.lock.app.config.apply}"/>
+
     <!-- сервис для работы с распределенными объектами-->
     <bean id="dosService" class="com.payway.messaging.core.service.hz.HazelcastDistributedObjectServiceImpl" depends-on="hazelcastInstance">
         <property name="hazelcastInstance" ref="hazelcastInstance"/>

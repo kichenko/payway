@@ -4,10 +4,8 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
-import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import java.util.List;
 
 /**
  * ConfigurationService
@@ -20,14 +18,6 @@ public interface ConfigurationService extends CrudEntityService<Long, DbConfigur
     DbConfiguration findConfigurationByUser(DbUser user, boolean isCreate) throws ServiceException;
 
     DbConfiguration findConfigurationByNameWithFiles(String name) throws ServiceException;
-
-    List<FileSystemObject> files(FileSystemObject localConfigPath) throws ServiceException;
-
-    void copy(FileSystemObject src, FileSystemObject dst) throws ServiceException;
-
-    void remove(FileSystemObject src) throws ServiceException;
-
-    void rename(FileSystemObject src, FileSystemObject dst) throws ServiceException;
 
     String generateUniqueFolderName(String prefix, String folder);
 }

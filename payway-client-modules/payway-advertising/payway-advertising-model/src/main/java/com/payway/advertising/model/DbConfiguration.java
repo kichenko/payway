@@ -3,9 +3,10 @@
  */
 package com.payway.advertising.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,11 +21,12 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "files")
 public class DbConfiguration extends DbAbstractEntity<Long> implements Cloneable {
 
     protected String name;
     protected DbUser user;
-    protected Collection<DbAgentFile> files = new ArrayList<>();
+    protected Set<DbAgentFile> files = new HashSet<>();
 
     public DbConfiguration(Long id, String name, DbUser user) {
         super(id);

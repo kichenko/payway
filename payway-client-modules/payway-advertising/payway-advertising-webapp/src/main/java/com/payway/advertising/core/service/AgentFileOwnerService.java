@@ -5,7 +5,7 @@ package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbAgentFileOwner;
-import java.util.List;
+import java.util.Set;
 
 /**
  * AgentFileOwnerService
@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface AgentFileOwnerService extends CrudEntityService<Long, DbAgentFileOwner> {
 
-    List<DbAgentFileOwner> findByName(String name) throws ServiceException;
+    Set<DbAgentFileOwner> findByName(String name) throws ServiceException;
 }

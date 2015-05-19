@@ -12,11 +12,11 @@
         </id>
         <property name="name" column="name" type="string"/>
         <many-to-one name="user" column="user_id" class="com.payway.advertising.model.DbUser" lazy="false" not-null="false"/>
-        
-        <bag name="files" table="agent_files" inverse="true" cascade="all" lazy="true">
+
+        <set name="files" table="agent_files" inverse="true" cascade="all" lazy="true">
             <key column="configuration_id" not-null="true"/>
             <one-to-many class="com.payway.advertising.model.DbAgentFile"/>
-        </bag>
-                        
+        </set>
+
     </class>
 </hibernate-mapping>

@@ -5,7 +5,7 @@ package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbAgentFile;
-import java.util.List;
+import java.util.Set;
 
 /**
  * AgentFileService
@@ -15,9 +15,9 @@ import java.util.List;
  */
 public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
 
-    List<DbAgentFile> findAllByName(List<String> names) throws ServiceException;
+    Set<DbAgentFile> findAllByName(Set<String> names) throws ServiceException;
 
-    List<DbAgentFile> findStartWithByName(String name) throws ServiceException;
+    Set<DbAgentFile> findStartWithByName(String name) throws ServiceException;
 
     long updateByNamePrefix(String srcName, String dstName);
 

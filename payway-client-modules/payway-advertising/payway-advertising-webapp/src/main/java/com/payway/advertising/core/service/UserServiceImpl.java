@@ -6,7 +6,6 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.data.dao.UserDao;
 import com.payway.advertising.model.DbUser;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,11 +47,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DbUser getById(Long id) throws ServiceException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<DbUser> list() throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
