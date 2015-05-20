@@ -7,8 +7,6 @@ import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.vaadin.server.VaadinSession;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @created 10.05.15 00:00
  */
 @Component(value = "userAppService")
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class UserAppServiceImpl implements UserAppService {
 
     @Override

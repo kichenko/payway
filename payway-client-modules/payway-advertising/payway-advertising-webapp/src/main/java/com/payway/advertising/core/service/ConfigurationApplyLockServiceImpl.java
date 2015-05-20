@@ -35,14 +35,14 @@ public class ConfigurationApplyLockServiceImpl implements ConfigurationApplyLock
     @Override
     public boolean tryLock(long time, TimeUnit unit) {
 
-        boolean buzy = false;
+        boolean busy = false;
 
         try {
-            buzy = lock.tryLock(time, unit);
+            busy = lock.tryLock(time, unit);
         } catch (Exception ex) {
             log.error("Error try to lock", ex);
         }
         
-        return buzy;
+        return busy;
     }
 }

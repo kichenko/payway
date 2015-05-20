@@ -40,7 +40,8 @@ public class DbConfiguration extends DbAbstractEntity<Long> implements Cloneable
     }
 
     @Override
-    public Object clone() {
+    public DbConfiguration clone() {
         return new DbConfiguration(getId(), getName(), getUser() != null ? (DbUser) getUser().clone() : null);
     }
+
 }

@@ -11,26 +11,5 @@ package com.payway.advertising.core.service;
  */
 public interface ConfigurationApplyCallback {
 
-    public enum ProgressStep {
-
-        FileCopy,
-        DbRefresh,
-        SeverRefresh
-    }
-
-    public enum ReasonCode {
-
-        Unknown,
-        AlreadyInUse
-    }
-
-    void start();
-
-    boolean progress(ProgressStep step, Object arg);
-
-    void success();
-
-    void fail(ReasonCode code);
-
-    void finish();
+    void progress(final ApplyConfigurationStatus status);
 }

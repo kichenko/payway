@@ -28,6 +28,8 @@
 
     <hz:hazelcast id="hazelcastInstance">
         <hz:config>
+            <!-- Sometimes I need to clusters in the same network: Production and Test clusters -->
+            <!--<hz:group name="${avs.cluster.name}" password="${avs.cluster.password:AvsPass}"/>-->
             <hz:queue name="client-queue-app*"/>
             <!--<hz:idGenerator name="client-server-id-generator"/>-->
         </hz:config>

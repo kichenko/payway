@@ -32,7 +32,8 @@ public class DbAgentFileOwner extends DbAbstractEntity<Long> implements Cloneabl
     }
 
     @Override
-    public Object clone() {
+    public DbAgentFileOwner clone() {
         return new DbAgentFileOwner(getId(), getName(), getDescription());
     }
+
 }

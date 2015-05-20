@@ -14,7 +14,6 @@ import lombok.Setter;
  * Базовая сущность
  *
  * @author Сергей Киченко
- * @param <ID>
  * @created 29.04.15 00:00
  */
 @Setter
@@ -22,7 +21,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class DbAbstractEntity<ID extends Serializable> {
+public abstract class DbAbstractEntity<T extends Serializable> implements Cloneable {
 
-    protected ID id;
+    private T id;
+
 }

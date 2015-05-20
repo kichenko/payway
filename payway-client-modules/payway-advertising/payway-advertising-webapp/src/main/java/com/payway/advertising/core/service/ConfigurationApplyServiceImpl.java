@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service;
 
 import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.messaging.MessageServerSenderService;
@@ -21,9 +22,13 @@ import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -67,12 +72,81 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
     @Getter
     @Setter
-    @Value("10")
+    @Value("1")
     private long time;
 
     @Autowired
     @Qualifier(value = "serviceSender")
     MessageServerSenderService messageServerSenderService;
+
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private volatile ApplyConfigurationStatus status = new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.None);
+
+    @Getter(AccessLevel.PRIVATE)
+    private final Set<ConfigurationApplyCallback> subscribers = new ConcurrentSkipListSet<>(new Comparator<ConfigurationApplyCallback>() {
+        @Override
+        public int compare(ConfigurationApplyCallback o1, ConfigurationApplyCallback o2) {
+            return Integer.compare(o1.hashCode(), o2.hashCode());
+        }
+    });
+
+    @Override
+    public void addSubscriber(final ConfigurationApplyCallback subscriber) {
+        subscribers.add(subscriber);
+    }
+
+    @Override
+    public void removeSubscriber(final ConfigurationApplyCallback subscriber) {
+        subscribers.remove(subscriber);
+    }
+
+    /**
+     * Cancel applying configuration, only on step copying files.
+     *
+     * @return 
+     */
+    @Override
+    public boolean cancel() {
+        if (ApplyConfigurationStatus.Step.Start.equals(getStatus().getStep()) || ApplyConfigurationStatus.Step.CopyFiles.equals(getStatus().getStep())) {
+            setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Canceling));
+            notifySubscribers(getStatus());
+            return true;
+        }
+
+        return false;
+    }
+
+    private void notifySubscribers(ApplyConfigurationStatus status) {
+        for (ConfigurationApplyCallback s : subscribers) {
+            s.progress(status);
+        }
+    }
+
+    private void notifyFailAndFinish() {
+        //status - fail
+        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Fail));
+        notifySubscribers(getStatus());
+
+        //status - finish
+        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
+        notifySubscribers(getStatus());
+    }
+
+    private void notifySuccessAndFinish() {
+        //status - fail
+        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Success));
+        notifySubscribers(getStatus());
+
+        //status - finish
+        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
+        notifySubscribers(getStatus());
+    }
+
+    private void notifyCancelAndFinish() {
+        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Cancel));
+        notifySubscribers(getStatus());
+    }
 
     /**
      * Apply configuration, method execute async!
@@ -80,17 +154,24 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      * @param configurationName
      * @param localPath
      * @param serverPath
-     * @param listener
+     * @param result
      */
     @Override
     @Async(value = "serverTaskExecutor")
-    public void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, final ConfigurationApplyCallback listener) {
+    public void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
         Thread th = Thread.currentThread();
 
-
         //try lock
         if (clientApplyLockService.tryLock(getTime(), getUnit())) {
+
+            if (result != null) {
+                result.success();
+            }
+
+            //status - start
+            setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Start));
+            notifySubscribers(getStatus());
 
             //1. get unique name
             final String serverRootPathName = StringUtils.substringBeforeLast(serverPath.getPath(), "/");
@@ -100,21 +181,35 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             try {
                 //2. copy files
                 List<FileSystemObject> files = fileManagerService.list(localPath, false, true);
-
                 if (files == null || files.isEmpty()) {
                     throw new Exception("Error apply configuration - files not found");
                 }
 
+                int i = 1;
                 for (FileSystemObject src : files) {
-                    fileManagerService.copy(src,
-                      new FileSystemObject(
-                        serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
-                        serverPath.getFileSystemType(),
-                        FileSystemObject.FileType.FILE,
-                        0L,
-                        null
-                      ));
+
+                    if (ApplyConfigurationStatus.Step.Canceling.equals(getStatus().getStep())) {
+                        throw new ConfigurationApplyCancelException();
+                    }
+
+                    //status - copy files
+                    setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/")));
+                    notifySubscribers(getStatus());
+
+                    fileManagerService.copy(src, new FileSystemObject(
+                            serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
+                            serverPath.getFileSystemType(),
+                            FileSystemObject.FileType.FILE,
+                            0L,
+                            null
+                    ));
+
+                    i++;
                 }
+
+                //status - update db
+                setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.UpdateDatabase));
+                notifySubscribers(getStatus());
 
                 //3. send server msg
                 if (serverApplyLockService.tryLock(getTime(), getUnit())) {
@@ -180,6 +275,10 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                         ApplyConfigurationResponse rsp = (ApplyConfigurationResponse) response;
                                         if (rsp != null && rsp.isSuccess()) {
                                             try {
+                                                //status - сonfirmation
+                                                setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Confirmation));
+                                                notifySubscribers(getStatus());
+
                                                 //3.3.1 rename server folder to tmp
                                                 fileManagerService.rename(serverPath, new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
 
@@ -188,6 +287,8 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                                                 //3.3.3 remove tmp server folder, do it???
                                                 fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+
+                                                notifySuccessAndFinish();
                                             } catch (Exception ex) {
                                                 throw new Exception("CRITICAL ERROR RENAME ORIGINAL SERVER FOLDER");
                                             }
@@ -196,6 +297,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                         }
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
+                                        notifyFailAndFinish();
                                     } finally {
                                         clientApplyLockService.unlock();
                                         serverApplyLockService.unlock();
@@ -211,11 +313,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 public void onServerException(final ExceptionResponse exception) {
                                     try {
                                         log.error("Error apply local->server configuration", exception.getMessage());
+
                                         //3.3.1 remove tmp local-server folder
                                         fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
+                                        notifyFailAndFinish();
                                         clientApplyLockService.unlock();
                                         serverApplyLockService.unlock();
                                     }
@@ -225,11 +329,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 public void onLocalException(Exception ex) {
                                     try {
                                         log.error("Error apply local->server configuration: Local server response exception");
+
                                         //3.3.1 remove tmp local-server folder
                                         fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception e) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
+                                        notifyFailAndFinish();
                                         clientApplyLockService.unlock();
                                         serverApplyLockService.unlock();
                                     }
@@ -244,8 +350,8 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
+                                        notifyFailAndFinish();
                                         clientApplyLockService.unlock();
-                                        serverApplyLockService.unlock();
                                     }
                                 }
                             });
@@ -253,26 +359,45 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                             throw new Exception(String.format("Error can not find local configuration with name [%s] in DB", configurationName));
                         }
                     } catch (Exception ex) {
-                        throw ex;
-                    } finally {
+                        //free server lock
                         serverApplyLockService.unlock();
+                        throw ex;
                     }
                 } else {
                     throw new Exception("Error apply local->server configuration, can not get server lock");
                 }
+            } catch (ConfigurationApplyCancelException ex) {
+                log.info("Applying local->server configuration is canceled by user", ex);
+                try {
+                    //4. remove tmp local-remote folder
+                    fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                } catch (Exception e) {
+                    log.error("Error remove tmp local-remote folder", e);
+                }
+                
+                notifyCancelAndFinish();
+                
+                //free client lock
+                clientApplyLockService.unlock();
             } catch (Exception ex) {
                 log.error("Error apply local->server configuration", ex);
                 try {
                     //4. remove tmp local-remote folder
                     fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
                 } catch (Exception e) {
-                    log.error("Error remove tmp local remote folder", e);
+                    log.error("Error remove tmp local-remote folder", e);
                 }
-            } finally {
+
+                notifyFailAndFinish();
+
+                //free client lock
                 clientApplyLockService.unlock();
             }
         } else {
             log.error("Error apply local->server configuration, can not get client lock");
+            if (result != null) {
+                result.fail();
+            }
         }
     }
 }

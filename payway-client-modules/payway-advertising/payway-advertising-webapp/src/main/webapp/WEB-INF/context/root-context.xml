@@ -8,5 +8,6 @@
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- property file -->
-    <context:property-placeholder location="classpath:config.properties,file:${user.home}/payway/var/apps/advertising/config.properties" ignore-resource-not-found="true"/>
+    <context:property-placeholder location="classpath:config.properties,file:/etc/avs.conf" ignore-resource-not-found="true"/>
+
 </beans>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutApplyWindow" width="300px" height="200px">
+    
+    <VerticalLayout id = "layoutLabelDescription">
+        <Label id="lblDescription" caption = "Description..." sizeFull="true"/>
+    </VerticalLayout>
+    
+    <VerticalLayout id = "layoutProgressBarDescription">
+        <ProgressBar id="progressBar" sizeFull="true"/>
+    </VerticalLayout>
+    
+    <VerticalLayout id = "layoutButtonDescription">
+        <Button id="btnCancel" caption="Cancel"/>
+    </VerticalLayout>
+    
+</VerticalLayout>

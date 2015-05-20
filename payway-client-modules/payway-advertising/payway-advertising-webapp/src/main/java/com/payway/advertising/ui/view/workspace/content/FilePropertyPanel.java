@@ -127,7 +127,7 @@ public class FilePropertyPanel extends VerticalLayout {
                         getBeanItem().getBean().setName(getRelativePath());
 
                         //set digest only for new object, where id == null
-                        if (getBeanItem().getBean().getId() == null) {
+                        if (getBeanItem().getBean().getId() == 0) {
                             String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRootPath() + getRelativePath(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FILE, 0L, null)));
                             getBeanItem().getBean().setDigest(digest);
                         }
