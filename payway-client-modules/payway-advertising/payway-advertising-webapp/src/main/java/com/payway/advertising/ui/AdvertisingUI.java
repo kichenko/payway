@@ -3,11 +3,11 @@
  */
 package com.payway.advertising.ui;
 
-import com.payway.advertising.core.bus.EventBusBridge;
+import com.payway.advertising.core.app.bus.EventBusBridge;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.core.service.app.user.UserAppService;
-import com.payway.advertising.core.service.app.utils.SettingsAppService;
+import com.payway.advertising.core.service.app.settings.SettingsAppService;
 import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.core.service.notification.NotificationService;
 import com.payway.advertising.messaging.ResponseCallBack;

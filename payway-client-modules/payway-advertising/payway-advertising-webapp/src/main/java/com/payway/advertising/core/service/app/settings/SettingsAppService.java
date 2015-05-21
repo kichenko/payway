@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service.app.utils;
+package com.payway.advertising.core.service.app.settings;
 
 /**
  * SettingsAppService

@@ -21,8 +21,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class DbAbstractEntity<T extends Serializable> implements Cloneable {
+public abstract class DbAbstractEntity implements Serializable {
 
-    private T id;
-
+    private Long id;
 }

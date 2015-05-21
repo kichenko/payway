@@ -18,8 +18,4 @@ public interface NotificationEvent {
     }
 
     EventType getKind();
-
-    NotificationAction getAction();
-
-    void setAction(NotificationAction action);
 }

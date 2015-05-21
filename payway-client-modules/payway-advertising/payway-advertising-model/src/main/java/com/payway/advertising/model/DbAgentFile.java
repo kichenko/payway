@@ -17,10 +17,10 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class DbAgentFile extends DbAbstractEntity<Long> implements Cloneable {
+@EqualsAndHashCode(callSuper = true)
+public class DbAgentFile extends DbAbstractEntity {
 
     protected String name;
     protected DbFileType kind;
@@ -40,10 +40,4 @@ public class DbAgentFile extends DbAbstractEntity<Long> implements Cloneable {
         setIsCountHits(isCountHits);
         setConfiguration(configuration);
     }
-
-    @Override
-    public DbAgentFile clone() {
-        return new DbAgentFile(getId(), getName(), getKind(), getOwner() != null ? (DbAgentFileOwner) getOwner().clone() : null, getExpression(), getDigest(), getIsCountHits(), getConfiguration() != null ? (DbConfiguration) getConfiguration().clone() : null);
-    }
-
 }

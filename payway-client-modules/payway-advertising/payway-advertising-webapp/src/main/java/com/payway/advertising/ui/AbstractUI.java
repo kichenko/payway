@@ -13,7 +13,6 @@ import com.vaadin.ui.UI;
  * @created 21.05.15 00:00
  */
 public abstract class AbstractUI extends UI {
-    
-    public abstract UIEventBus getEventBus();
 
+    public abstract UIEventBus getEventBus();
 }

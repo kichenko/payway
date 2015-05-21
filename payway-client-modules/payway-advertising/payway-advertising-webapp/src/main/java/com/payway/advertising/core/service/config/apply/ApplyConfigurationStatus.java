@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service.config.apply;
 
 import lombok.Getter;
+import org.joda.time.LocalDateTime;
 
 /**
  * ApplyConfigurationStatus
@@ -17,28 +18,31 @@ public final class ApplyConfigurationStatus {
     public enum Step {
 
         None,
-        Start,
+        Prepare,
         Canceling,
         Cancel,
         CopyFiles,
         UpdateDatabase,
         Confirmation,
         Success,
-        Fail,
-        Finish
+        Fail
     }
 
-    //private final String login;
-    //private final LocalDateTime dateCreated;
+    private final String login;
+    private final LocalDateTime startTime;
     private final Step step;
     private final Object[] args;
 
-    public ApplyConfigurationStatus(Step step, Object... args) {
+    public ApplyConfigurationStatus(String login, LocalDateTime startTime, Step step, Object... args) {
+        this.login = login;
+        this.startTime = startTime;
         this.step = step;
         this.args = args;
     }
 
-    public ApplyConfigurationStatus(Step step) {
+    public ApplyConfigurationStatus(String login, LocalDateTime startTime, Step step) {
+        this.login = login;
+        this.startTime = startTime;
         this.step = step;
         this.args = null;
     }

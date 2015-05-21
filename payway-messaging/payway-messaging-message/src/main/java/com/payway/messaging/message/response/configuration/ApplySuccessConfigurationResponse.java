@@ -20,9 +20,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class ApplyConfigurationResponse extends AbstractAuthCommandResponse {
+public class ApplySuccessConfigurationResponse extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = 8810560983127046283L;
-
-    private boolean success;
 }

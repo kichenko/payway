@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.bean;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

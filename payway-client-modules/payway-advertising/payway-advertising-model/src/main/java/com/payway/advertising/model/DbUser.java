@@ -17,10 +17,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class DbUser extends DbAbstractEntity<Long> implements Cloneable {
+@EqualsAndHashCode(callSuper = true)
+public class DbUser extends DbAbstractEntity {
 
     protected String login;
     protected String password;

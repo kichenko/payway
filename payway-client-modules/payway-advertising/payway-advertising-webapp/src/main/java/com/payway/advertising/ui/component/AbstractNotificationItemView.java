@@ -6,11 +6,11 @@ package com.payway.advertising.ui.component;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * AbstractNotificationItem
+ * AbstractNotificationItemView
  *
  * @author Sergey Kichenko
  * @created 21.05.15 00:00
  */
 public abstract class AbstractNotificationItemView extends VerticalLayout {
-    //
+
 }

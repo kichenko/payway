@@ -4,6 +4,8 @@
 package com.payway.advertising.core.service.notification;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.vaadin.spring.annotation.UIScope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,9 +19,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @UIScope
 @Component(value = "notificationService")
-public class NotificationServiceImpl implements NotificationService {
+public class NotificationServiceImpl implements NotificationService, SubscriberExceptionHandler {
 
-    private final EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus(this);
 
     @Override
     public void addSubscriber(Object subscriber) {
@@ -34,5 +36,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotification(NotificationEvent event) {
         eventBus.post(event);
+    }
+
+    @Override
+    public void handleException(Throwable exception, SubscriberExceptionContext context) {
+        log.error("Error in notification event bus", exception);
     }
 }

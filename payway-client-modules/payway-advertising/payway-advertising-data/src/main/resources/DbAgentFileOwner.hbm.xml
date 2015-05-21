@@ -5,10 +5,8 @@
 
 <hibernate-mapping>
     <class name="com.payway.advertising.model.DbAgentFileOwner" table="agent_file_owners">
-        <id name="id" column="id" type="java.lang.Long">
-            <generator class="sequence">
-                <param name="sequence">seq_agent_file_owners</param>
-            </generator>
+        <id name="id" column="id" >
+            <generator class="identity"/>
         </id>
         <property name="name" column="name" type="string"/>
         <property name="description" column="description" type="string"/>

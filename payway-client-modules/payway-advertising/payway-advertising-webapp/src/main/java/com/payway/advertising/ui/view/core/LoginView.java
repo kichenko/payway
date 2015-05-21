@@ -43,7 +43,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     private TaskExecutor serverTaskExecutor;
 
     @Autowired
-    @Qualifier("serviceSender")
+    @Qualifier("messageServerSenderService")
     MessageServerSenderServiceImpl service;
 
     @UiField

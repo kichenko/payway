@@ -21,8 +21,8 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "files")
-public class DbConfiguration extends DbAbstractEntity<Long> implements Cloneable {
+@EqualsAndHashCode(callSuper = true, exclude = "files")
+public class DbConfiguration extends DbAbstractEntity{
 
     protected String name;
     protected DbUser user;
@@ -38,10 +38,4 @@ public class DbConfiguration extends DbAbstractEntity<Long> implements Cloneable
         setName(name);
         setUser(user);
     }
-
-    @Override
-    public DbConfiguration clone() {
-        return new DbConfiguration(getId(), getName(), getUser() != null ? (DbUser) getUser().clone() : null);
-    }
-
 }

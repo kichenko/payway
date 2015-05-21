@@ -104,8 +104,8 @@ public class ConfigurationApplyWindow extends Window {
     public void refresh(ApplyConfigurationStatus status) {
         switch (status.getStep()) {
 
-            case Start: {
-                lblDescription.setCaption("Start apply configuration");
+            case Prepare: {
+                lblDescription.setCaption("Prepare applying configuration");
                 progressBar.setValue(new Float(0.2));
                 btnCancel.setEnabled(true);
             }
@@ -123,48 +123,41 @@ public class ConfigurationApplyWindow extends Window {
             break;
 
             case UpdateDatabase: {
-                lblDescription.setCaption("Update databse apply configuration");
+                lblDescription.setCaption("Update databse applying configuration");
                 progressBar.setValue(new Float(0.6));
                 btnCancel.setEnabled(false);
             }
             break;
 
             case Confirmation: {
-                lblDescription.setCaption("Confirmation apply configuration");
+                lblDescription.setCaption("Confirmation applying configuration");
                 progressBar.setValue(new Float(0.8));
                 btnCancel.setEnabled(false);
             }
             break;
 
             case Success: {
-                lblDescription.setCaption("Success apply configuration");
+                lblDescription.setCaption("Success applying configuration");
                 progressBar.setValue(new Float(1));
                 btnCancel.setEnabled(false);
             }
             break;
 
             case Canceling: {
-                lblDescription.setCaption("Canceling apply configuration");
+                lblDescription.setCaption("Canceling applying configuration");
                 btnCancel.setEnabled(false);
             }
             break;
 
             case Cancel: {
-                lblDescription.setCaption("Cancel apply configuration");
+                lblDescription.setCaption("Cancel applying configuration");
                 btnCancel.setEnabled(false);
             }
             break;
 
             case Fail: {
-                lblDescription.setCaption("Fail apply configuration");
+                lblDescription.setCaption("Fail applying configuration");
                 btnCancel.setEnabled(false);
-            }
-            break;
-
-            case Finish: {
-                lblDescription.setCaption("Finish apply configuration");
-                btnCancel.setEnabled(false);
-                this.close();
             }
             break;
         }

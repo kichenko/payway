@@ -1,18 +1,19 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.bus;
+package com.payway.advertising.core.app.bus;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.ui.AbstractUI;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,9 +26,10 @@ import org.springframework.stereotype.Component;
 @Component(value = "eventBusBridge")
 public class EventBusBridgeImpl implements EventBusBridge {
 
-    private final Set<VaadinSession> sessions = new HashSet<>(); //?
+    private final Set<VaadinSession> sessions = Sets.newConcurrentHashSet();
 
     @Autowired
+    @Qualifier(value = "appEventBus")
     private AppEventBus appEventBus;
 
     @PostConstruct
@@ -72,13 +74,13 @@ public class EventBusBridgeImpl implements EventBusBridge {
                         ((AbstractUI) ui).getEventBus().sendNotification(event.getData());
                     } else {
                         if (log.isDebugEnabled()) {
-                            log.debug("processed ui is not instanceof AbstractUI {}", ui);
+                            log.debug("Processed UI is not instance of AbstractUI class {}", ui);
                         }
                     }
                 }
             }
         } catch (Exception ex) {
-            log.error("Error process event", ex);
+            log.error("Error process app bus event", ex);
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service.file;
+package com.payway.advertising.core.service.exception;
 
 import com.payway.advertising.core.service.exception.ServiceException;
 

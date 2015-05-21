@@ -4,8 +4,8 @@
 package com.payway.advertising.core.service.config.apply;
 
 import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.payway.advertising.core.bus.AppBusEventImpl;
-import com.payway.advertising.core.bus.AppEventBus;
+import com.payway.advertising.core.app.bus.AppBusEventImpl;
+import com.payway.advertising.core.app.bus.AppEventBus;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
@@ -19,7 +19,7 @@ import com.payway.advertising.model.DbFileType;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
-import com.payway.messaging.message.response.configuration.ApplyConfigurationResponse;
+import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.configuration.AgentFileDto;
 import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ConfigurationDto;
@@ -33,6 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,17 +76,31 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     @Value("1")
     private long time;
 
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private LocalDateTime startTime;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private String login;
+
     @Autowired
-    @Qualifier(value = "serviceSender")
+    @Qualifier(value = "messageServerSenderService")
     MessageServerSenderService messageServerSenderService;
 
     @Getter
     @Setter(AccessLevel.PRIVATE)
-    private volatile ApplyConfigurationStatus status = new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.None);
+    private volatile ApplyConfigurationStatus status = new ApplyConfigurationStatus("", new LocalDateTime(), ApplyConfigurationStatus.Step.None);
 
     @Autowired
     @Qualifier(value = "appEventBus")
     private AppEventBus appEventBus;
+
+    private void notifyFail() {
+        setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Fail));
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Fail)));
+
+    }
 
     /**
      * Cancel applying configuration, only on step copying files.
@@ -94,38 +109,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      */
     @Override
     public boolean cancel() {
-        if (ApplyConfigurationStatus.Step.Start.equals(getStatus().getStep()) || ApplyConfigurationStatus.Step.CopyFiles.equals(getStatus().getStep())) {
-            setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Canceling));
-            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Canceling)));
+        if (ApplyConfigurationStatus.Step.Prepare.equals(getStatus().getStep()) || ApplyConfigurationStatus.Step.CopyFiles.equals(getStatus().getStep())) {
+            setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Canceling));
+            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Canceling)));
             return true;
         }
 
         return false;
-    }
-
-    private void notifyFailAndFinish() {
-        //status - fail
-        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Fail));
-        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Fail)));
-
-        //status - finish
-        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
-        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish)));
-    }
-
-    private void notifySuccessAndFinish() {
-        //status - fail
-        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Success));
-        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Success)));
-
-        //status - finish
-        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
-        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish)));
-    }
-
-    private void notifyCancelAndFinish() {
-        setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Cancel));
-        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Cancel)));
     }
 
     /**
@@ -147,9 +137,9 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                 result.success();
             }
 
-            //status - start
-            setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Start));
-            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Start)));
+            //status - prepare
+            setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Prepare));
+            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Prepare)));
 
             //1. get unique name
             final String serverRootPathName = StringUtils.substringBeforeLast(serverPath.getPath(), "/");
@@ -171,23 +161,27 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     }
 
                     //status - copy files
-                    setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/")));
-                    appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/"))));
+                    setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/")));
+                    appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/"))));
 
                     fileManagerService.copy(src, new FileSystemObject(
-                            serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
-                            serverPath.getFileSystemType(),
-                            FileSystemObject.FileType.FILE,
-                            0L,
-                            null
+                      serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
+                      serverPath.getFileSystemType(),
+                      FileSystemObject.FileType.FILE,
+                      0L,
+                      null
                     ));
 
                     i++;
                 }
 
+                if (ApplyConfigurationStatus.Step.Canceling.equals(getStatus().getStep())) {
+                    throw new ConfigurationApplyCancelException();
+                }
+
                 //status - update db
-                setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.UpdateDatabase));
-                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.UpdateDatabase)));
+                setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.UpdateDatabase));
+                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.UpdateDatabase)));
 
                 //3. send server msg
                 if (serverApplyLockService.tryLock(getTime(), getUnit())) {
@@ -250,12 +244,12 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 @Override
                                 public void onServerResponse(final SuccessResponse response) {
                                     try {
-                                        ApplyConfigurationResponse rsp = (ApplyConfigurationResponse) response;
-                                        if (rsp != null && rsp.isSuccess()) {
+                                        ApplySuccessConfigurationResponse rsp = (ApplySuccessConfigurationResponse) response;
+                                        if (rsp != null) {
                                             try {
                                                 //status - сonfirmation
-                                                setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Confirmation));
-                                                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Confirmation)));
+                                                setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Confirmation));
+                                                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Confirmation)));
 
                                                 //3.3.1 rename server folder to tmp
                                                 fileManagerService.rename(serverPath, new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
@@ -266,19 +260,21 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                                 //3.3.3 remove tmp server folder, do it???
                                                 fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
 
-                                                notifySuccessAndFinish();
+                                                setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Success));
+                                                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Success)));
                                             } catch (Exception ex) {
                                                 throw new Exception("CRITICAL ERROR RENAME ORIGINAL SERVER FOLDER");
                                             }
                                         } else {
-                                            throw new Exception("Error unsuccess response from server");
+                                            throw new Exception("Error unknown success applying command response from server");
                                         }
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
-                                        notifyFailAndFinish();
+                                        setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Fail));
+                                        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Fail)));
                                     } finally {
-                                        clientApplyLockService.unlock();
                                         serverApplyLockService.unlock();
+                                        clientApplyLockService.unlock();
                                     }
                                 }
 
@@ -297,9 +293,9 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
-                                        notifyFailAndFinish();
-                                        clientApplyLockService.unlock();
+                                        notifyFail();
                                         serverApplyLockService.unlock();
+                                        clientApplyLockService.unlock();
                                     }
                                 }
 
@@ -313,28 +309,29 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                     } catch (Exception e) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
-                                        notifyFailAndFinish();
-                                        clientApplyLockService.unlock();
+                                        notifyFail();
                                         serverApplyLockService.unlock();
+                                        clientApplyLockService.unlock();
                                     }
                                 }
 
                                 @Override
                                 public void onTimeout() {
                                     try {
-                                        log.error("Error apply local->server configuration: Timeput server response");
+                                        log.error("Error apply local->server configuration: Timeout server response");
                                         //3.3.1 remove tmp local-server folder
                                         fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception ex) {
                                         log.error("Error apply local->server configuration", ex);
                                     } finally {
-                                        notifyFailAndFinish();
+                                        notifyFail();
+                                        serverApplyLockService.unlock();
                                         clientApplyLockService.unlock();
                                     }
                                 }
                             });
                         } else {
-                            throw new Exception(String.format("Error can not find local configuration with name [%s] in DB", configurationName));
+                            throw new Exception(String.format("Error can not find local database configuration with name [%s]", configurationName));
                         }
                     } catch (Exception ex) {
                         //free server lock
@@ -353,7 +350,8 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     log.error("Error remove tmp local-remote folder", e);
                 }
 
-                notifyCancelAndFinish();
+                setStatus(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Cancel));
+                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyConfigurationStatus.Step.Cancel)));
 
                 //free client lock
                 clientApplyLockService.unlock();
@@ -366,7 +364,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     log.error("Error remove tmp local-remote folder", e);
                 }
 
-                notifyFailAndFinish();
+                notifyFail();
 
                 //free client lock
                 clientApplyLockService.unlock();

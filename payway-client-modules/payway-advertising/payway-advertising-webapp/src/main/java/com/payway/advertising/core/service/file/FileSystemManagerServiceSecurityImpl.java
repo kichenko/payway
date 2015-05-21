@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.service.file;
 
+import com.payway.advertising.core.service.exception.FileSystemManagerServiceException;
 import java.io.InputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;

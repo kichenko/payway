@@ -14,7 +14,7 @@ import org.joda.time.LocalDateTime;
  * @author Sergey Kichenko
  * @created 21.05.15 00:00
  */
-public class ApplyConfigurationNotificationEvent extends AbstractNotificationEvent {
+public class ApplyConfigurationNotificationEvent implements NotificationEvent {
 
     @Getter
     @Setter

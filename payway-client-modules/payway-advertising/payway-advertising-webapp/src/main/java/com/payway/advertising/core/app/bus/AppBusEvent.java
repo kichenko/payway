@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.bus;
+package com.payway.advertising.core.app.bus;
 
 /**
  * AppBusEvent

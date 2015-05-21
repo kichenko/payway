@@ -13,23 +13,18 @@ set default_with_oids = false;
 drop table if exists agent_file_owners cascade;
 create table agent_file_owners
 (
-  id bigint not null,
+  id bigserial not null,
   name varchar(256),
   description varchar(512),
 
   constraint pk_agent_file_owners_pkey primary key (id)
 );
 
---seq_agent_file_owners
-drop sequence if exists seq_agent_file_owners;
-create sequence seq_agent_file_owners;
-
-
 --agent_files
 drop table if exists agent_files cascade;
 create table agent_files
 (
-  id bigint not null,
+  id bigserial not null,
   name varchar(1024),
   expression varchar(2048),
   kind varchar(12),
@@ -40,10 +35,6 @@ create table agent_files
     on update cascade on delete cascade
 
 );
-
---seq_agent_files
-drop sequence if exists seq_agent_files;
-create sequence seq_agent_files;
 
 --index
 create index idx_fk_agent_file_owner_id

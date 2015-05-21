@@ -12,7 +12,7 @@
     <task:annotation-driven/>
     <context:component-scan base-package="com.payway.advertising" />
 
-    <bean class="com.payway.advertising.config.AdvertisingVaadinConfiguration" />
+    <bean class="com.payway.advertising.core.bean.config.AdvertisingVaadinConfiguration" />
 
     <!-- Обработчик отказов для TaskExecutor'а -->
     <bean id="rejectPolicy" class = "com.payway.advertising.messaging.RejectExecutionPolicy"/>
@@ -37,7 +37,7 @@
     </bean>
 
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="serviceSender" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
+    <bean id="messageServerSenderService" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
         <!-- сюда уходят запросы-->
         <property name="serverQueue" ref="serverQueue"/>
         <property name="clientQueueName" value="${client.queue.name}"/>
@@ -73,5 +73,5 @@
     <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
         <property name="lock" ref="lockServerAppConfigApply"/>
     </bean>
-    
+
 </beans>

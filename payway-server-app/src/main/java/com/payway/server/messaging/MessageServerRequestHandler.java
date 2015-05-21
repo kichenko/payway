@@ -11,7 +11,7 @@ import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
 import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
-import com.payway.messaging.message.response.configuration.ApplyConfigurationResponse;
+import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.payway.messaging.model.message.settings.SettingsDto;
 import java.util.UUID;
@@ -29,10 +29,10 @@ import org.joda.time.LocalDateTime;
  * @author Sergey Kichenko
  * @created 24.04.15 00:00
  */
-@NoArgsConstructor
+@Slf4j
 @Getter
 @Setter
-@Slf4j
+@NoArgsConstructor
 public class MessageServerRequestHandler implements Runnable {
 
     /**
@@ -85,7 +85,7 @@ public class MessageServerRequestHandler implements Runnable {
                         if (envelope.getBody().getMessage() instanceof AuthCommandRequest) {
                             env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserDto(((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getPassword(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), false, new SettingsDto("server-config")))));
                         } else if (envelope.getBody().getMessage() instanceof ApplyConfigurationRequest) {
-                            env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new ApplyConfigurationResponse(true)));
+                            env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new ApplySuccessConfigurationResponse()));
                         } else {
                             env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new CommonExceptionResponse()));
                         }

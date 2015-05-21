@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.core.servlet;
 
-import com.payway.advertising.core.bus.EventBusBridge;
+import com.payway.advertising.core.app.bus.EventBusBridge;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
@@ -39,10 +39,10 @@ public class AdvertisingVaadinSpringServlet extends SpringVaadinServlet {
                     if (eventBusBridge != null) {
                         eventBusBridge.addSession(event.getSession());
                     } else {
-                        log.error("Error cannot get event bus bridge from web application context");
+                        log.error("Error can not get event bus bridge from web application context");
                     }
                 } else {
-                    log.error("Error cannot get web application context");
+                    log.error("Error can not get web application context");
                 }
             }
         });
@@ -57,10 +57,10 @@ public class AdvertisingVaadinSpringServlet extends SpringVaadinServlet {
                     if (eventBusBridge != null) {
                         eventBusBridge.removeSession(event.getSession());
                     } else {
-                        log.error("Error cannot get event bus bridge from web application context");
+                        log.error("Error can not get event bus bridge from web application context");
                     }
                 } else {
-                    log.error("Error cannot get web application context");
+                    log.error("Error can not get web application context");
                 }
             }
         });

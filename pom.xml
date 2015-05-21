@@ -64,6 +64,7 @@
         <org.apache.commons.commons-lang3.version>3.4</org.apache.commons.commons-lang3.version>
         <org.apache.commons.commons-vfs2.version>2.0</org.apache.commons.commons-vfs2.version>
         <org.apache.commons.commons-codec.version>1.4</org.apache.commons.commons-codec.version>
+        <com.google.guava.version>18.0</com.google.guava.version>
 
         <vaadin.version>7.4.6</vaadin.version>
         <vaadin.addons.clara.version>1.3.0</vaadin.addons.clara.version>
@@ -158,6 +159,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
+                <scope>test</scope>
                 <version>${org.testng.version}</version>
             </dependency>
 
@@ -401,6 +403,12 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${org.apache.commons.commons-codec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${com.google.guava.version}</version>
             </dependency>
 
         </dependencies>

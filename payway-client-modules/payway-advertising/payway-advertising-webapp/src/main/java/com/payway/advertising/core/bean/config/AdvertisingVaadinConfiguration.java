@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.config;
+package com.payway.advertising.core.bean.config;
 
 import com.vaadin.spring.annotation.EnableVaadin;
 import org.springframework.context.annotation.Configuration;

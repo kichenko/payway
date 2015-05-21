@@ -40,9 +40,9 @@ public class ConfigurationApplyLockServiceImpl implements ConfigurationApplyLock
         try {
             busy = lock.tryLock(time, unit);
         } catch (Exception ex) {
-            log.error("Error try to lock", ex);
+            log.error("Error try lock", ex);
         }
-        
+
         return busy;
     }
 }

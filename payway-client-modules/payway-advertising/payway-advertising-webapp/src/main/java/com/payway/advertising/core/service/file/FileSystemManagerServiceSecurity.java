@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.service.file;
 
+import com.payway.advertising.core.service.exception.FileSystemManagerServiceException;
 import java.io.InputStream;
 
 /**
