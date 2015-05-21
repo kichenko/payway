@@ -1,9 +1,12 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.config.apply;
 
 import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.payway.advertising.core.bus.AppBusEventImpl;
+import com.payway.advertising.core.bus.AppEventBus;
+import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemObject;
@@ -22,11 +25,8 @@ import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -83,69 +83,49 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     @Setter(AccessLevel.PRIVATE)
     private volatile ApplyConfigurationStatus status = new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.None);
 
-    @Getter(AccessLevel.PRIVATE)
-    private final Set<ConfigurationApplyCallback> subscribers = new ConcurrentSkipListSet<>(new Comparator<ConfigurationApplyCallback>() {
-        @Override
-        public int compare(ConfigurationApplyCallback o1, ConfigurationApplyCallback o2) {
-            return Integer.compare(o1.hashCode(), o2.hashCode());
-        }
-    });
-
-    @Override
-    public void addSubscriber(final ConfigurationApplyCallback subscriber) {
-        subscribers.add(subscriber);
-    }
-
-    @Override
-    public void removeSubscriber(final ConfigurationApplyCallback subscriber) {
-        subscribers.remove(subscriber);
-    }
+    @Autowired
+    @Qualifier(value = "appEventBus")
+    private AppEventBus appEventBus;
 
     /**
      * Cancel applying configuration, only on step copying files.
      *
-     * @return 
+     * @return
      */
     @Override
     public boolean cancel() {
         if (ApplyConfigurationStatus.Step.Start.equals(getStatus().getStep()) || ApplyConfigurationStatus.Step.CopyFiles.equals(getStatus().getStep())) {
             setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Canceling));
-            notifySubscribers(getStatus());
+            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Canceling)));
             return true;
         }
 
         return false;
     }
 
-    private void notifySubscribers(ApplyConfigurationStatus status) {
-        for (ConfigurationApplyCallback s : subscribers) {
-            s.progress(status);
-        }
-    }
-
     private void notifyFailAndFinish() {
         //status - fail
         setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Fail));
-        notifySubscribers(getStatus());
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Fail)));
 
         //status - finish
         setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
-        notifySubscribers(getStatus());
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish)));
     }
 
     private void notifySuccessAndFinish() {
         //status - fail
         setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Success));
-        notifySubscribers(getStatus());
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Success)));
 
         //status - finish
         setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish));
-        notifySubscribers(getStatus());
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Finish)));
     }
 
     private void notifyCancelAndFinish() {
         setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Cancel));
-        notifySubscribers(getStatus());
+        appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Cancel)));
     }
 
     /**
@@ -160,8 +140,6 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     @Async(value = "serverTaskExecutor")
     public void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
-        Thread th = Thread.currentThread();
-
         //try lock
         if (clientApplyLockService.tryLock(getTime(), getUnit())) {
 
@@ -171,7 +149,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
             //status - start
             setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Start));
-            notifySubscribers(getStatus());
+            appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Start)));
 
             //1. get unique name
             final String serverRootPathName = StringUtils.substringBeforeLast(serverPath.getPath(), "/");
@@ -194,7 +172,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                     //status - copy files
                     setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/")));
-                    notifySubscribers(getStatus());
+                    appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.CopyFiles, files.size(), i, StringUtils.substringAfterLast(src.getPath(), "/"))));
 
                     fileManagerService.copy(src, new FileSystemObject(
                             serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
@@ -209,7 +187,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                 //status - update db
                 setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.UpdateDatabase));
-                notifySubscribers(getStatus());
+                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.UpdateDatabase)));
 
                 //3. send server msg
                 if (serverApplyLockService.tryLock(getTime(), getUnit())) {
@@ -277,7 +255,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                             try {
                                                 //status - сonfirmation
                                                 setStatus(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Confirmation));
-                                                notifySubscribers(getStatus());
+                                                appEventBus.sendNotification(new AppBusEventImpl(new ApplyConfigurationStatus(ApplyConfigurationStatus.Step.Confirmation)));
 
                                                 //3.3.1 rename server folder to tmp
                                                 fileManagerService.rename(serverPath, new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
@@ -374,9 +352,9 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                 } catch (Exception e) {
                     log.error("Error remove tmp local-remote folder", e);
                 }
-                
+
                 notifyCancelAndFinish();
-                
+
                 //free client lock
                 clientApplyLockService.unlock();
             } catch (Exception ex) {

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.config.apply;
 
 import com.payway.advertising.core.service.file.FileSystemObject;
 
@@ -14,10 +14,6 @@ import com.payway.advertising.core.service.file.FileSystemObject;
 public interface ConfigurationApplyService {
 
     void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
-
-    void addSubscriber(final ConfigurationApplyCallback subscriber);
-
-    void removeSubscriber(final ConfigurationApplyCallback subscriber);
 
     boolean cancel();
 }

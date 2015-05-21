@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutApplyWindow" width="300px" height="200px">
+    <VerticalLayout id = "layoutPanel">        
+        <VerticalLayout id = "layoutHeader">
+            <Label id="lblCaption" caption = "Apply configuration"/>
+            <Button id="btnClose" caption = "Close"/>
+        </VerticalLayout>          
+        <VerticalLayout id = "layoutContent">
+            <Label id="lblStatus" caption = "status..."/>
+            <Label id="lblLogin" caption = "login"/>
+            <Label id="lblDate" caption = "date create"/>
+            <Button id="btnShow" caption = "Show"/>
+        </VerticalLayout>         
+        <VerticalLayout id = "layoutFooter"/>                
+    </VerticalLayout>      
+</VerticalLayout>

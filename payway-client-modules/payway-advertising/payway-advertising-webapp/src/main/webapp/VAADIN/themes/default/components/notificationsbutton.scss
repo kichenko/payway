@@ -1,0 +1,55 @@
+@mixin notificationsbutton-component {
+    //
+
+    /*
+     .valo-menu .valo-menu-badge,
+  .dashboard-view .notifications.unread .v-button-caption {
+    @include valo-badge-style;
+    position: absolute;
+    right: round($v-unit-size/3);
+    font-size: round($v-font-size * 0.9);
+    pointer-events: none;
+  }
+
+  .dashboard-view .notifications.unread .v-button-caption {
+    display: block;
+    top: round($v-unit-size / -5);
+    right: round($v-unit-size / -5);
+    display: block;
+    z-index: 1;
+  }
+    
+    
+    .dashboard .valo-menu .valo-menu-badge, .dashboard .dashboard-view .notifications.unread .v-button-caption {
+	
+	-webkit-transition: background-color 300ms;
+	-moz-transition: background-color 300ms;
+	transition: background-color 300ms;
+	line-height: 1;
+	padding: 4px 6px;
+	min-width: 11px;
+	text-align: center;
+	top: 4px;
+	border-radius: 4px;
+	background-color: #197de1;
+	background-image: -webkit-linear-gradient(top, #1b87e3 2%, #166ed5 98%);
+	background-image: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
+	color: #c8dbed;
+	position: absolute;
+	right: 12px;
+	font-size: 14px;
+	pointer-events: none;
+}
+
+.dashboard .dashboard-view .notifications.unread .v-button-caption {
+	display: block;
+	top: -7px;
+	right: -7px;
+	display: block;
+	z-index: 1;
+}
+    
+    
+    
+    */
+}

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.config.apply;
 
 import lombok.Getter;
 
@@ -28,6 +28,8 @@ public final class ApplyConfigurationStatus {
         Finish
     }
 
+    //private final String login;
+    //private final LocalDateTime dateCreated;
     private final Step step;
     private final Object[] args;
 

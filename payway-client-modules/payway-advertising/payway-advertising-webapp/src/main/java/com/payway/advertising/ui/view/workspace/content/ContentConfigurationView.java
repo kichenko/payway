@@ -9,17 +9,19 @@ import com.google.gwt.thirdparty.guava.common.collect.FluentIterable;
 import com.google.gwt.thirdparty.guava.common.collect.Iterables;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
-import com.payway.advertising.core.service.ApplyConfigRunCallback;
 import com.payway.advertising.core.service.BeanService;
-import com.payway.advertising.core.service.ConfigurationApplyService;
 import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.app.utils.SettingsAppService;
+import com.payway.advertising.core.service.config.apply.ApplyConfigRunCallback;
+import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
+import com.payway.advertising.ui.AbstractUI;
+import com.payway.advertising.ui.bus.UIEventBus;
 import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.ConfigurationApplyWindow;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
@@ -916,15 +918,20 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     private void applyConfig() {
 
         String s = "c://1";
-        Thread th = Thread.currentThread();
 
         final ConfigurationApplyWindow wndApply = (ConfigurationApplyWindow) beanService.getBean("configurationApplyWindow");
         wndApply.setCaption("Apply configuration status");
 
+        if (getUI() instanceof AbstractUI) {
+            UIEventBus bus = ((AbstractUI) getUI()).getEventBus();
+            if (bus != null) {
+                bus.addSubscriber(wndApply);
+            }
+        }
+
         FileSystemObject serverPath = new FileSystemObject(s/*settingsAppService.getServerConfigPath()*/, FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
         FileSystemObject localPath = new FileSystemObject(settingsAppService.getLocalConfigPath() + "/" + userAppService.getUser().getLogin(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
 
-        configurationApplyService.addSubscriber(wndApply);
         configurationApplyService.apply(userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override
             public void success() {
@@ -942,7 +949,14 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     @Override
                     public void run() {
                         log.error("Error applying server configuration");
-                        configurationApplyService.removeSubscriber(wndApply);
+
+                        if (getUI() instanceof AbstractUI) {
+                            UIEventBus bus = ((AbstractUI) getUI()).getEventBus();
+                            if (bus != null) {
+                                bus.removeSubscriber(wndApply);
+                            }
+                        }
+
                         UIUtils.showErrorNotification("", "Configuration already applying, try later");
                     }
                 });

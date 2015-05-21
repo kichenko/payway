@@ -4,8 +4,6 @@
 package com.payway.advertising.core.service.app.utils;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Component;
  * @created 10.05.15 00:00
  */
 @Component(value = "settingsAppService")
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SettingsAppServiceImpl implements SettingsAppService {
 
     @Value("${config.local.path}")

@@ -64,14 +64,14 @@
     <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
 
     <!-- Объекты блокировки для использования при обновлении конфигурации -->
-    <bean id="clientApplyLockService" class="com.payway.advertising.core.service.ConfigurationApplyLockServiceImpl">
+    <bean id="clientApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
         <property name="lock">
             <bean class="java.util.concurrent.locks.ReentrantLock"/>
         </property>
     </bean>
 
-    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.ConfigurationApplyLockServiceImpl">
+    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
         <property name="lock" ref="lockServerAppConfigApply"/>
     </bean>
-
+    
 </beans>

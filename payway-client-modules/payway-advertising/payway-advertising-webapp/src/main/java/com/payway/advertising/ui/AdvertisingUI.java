@@ -3,13 +3,17 @@
  */
 package com.payway.advertising.ui;
 
+import com.payway.advertising.core.bus.EventBusBridge;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.app.utils.SettingsAppService;
+import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
+import com.payway.advertising.core.service.notification.NotificationService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
+import com.payway.advertising.ui.bus.UIEventBus;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
@@ -38,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.Cookie;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +59,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Theme("default")
 @PreserveOnRefresh
 @Widgetset("com.payway.advertising.AdvertisingWidgetSet")
-public class AdvertisingUI extends UI implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
+public class AdvertisingUI extends AbstractUI implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
 
     @Autowired
     private MainView mainView;
@@ -78,6 +83,19 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
     @Qualifier(value = "settingsAppService")
     SettingsAppService settingsAppService;
 
+    @Autowired
+    @Qualifier(value = "notificationService")
+    private NotificationService notificationService;
+
+    @Autowired
+    @Qualifier(value = "eventBusBridge")
+    private EventBusBridge eventBusBridge;
+
+    @Getter
+    @Autowired
+    @Qualifier(value = "uiEventBus")
+    private UIEventBus eventBus;
+
     @Override
     protected void init(VaadinRequest request) {
         settingsAppService.setContextPath(request.getContextPath());
@@ -93,16 +111,26 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
 
     private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-          new ImmutableTriple<String, Resource, MenuBar.Command>(
-            "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
-                @Override
-                public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                    VaadinSession.getCurrent().close();
-                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                    VaadinSession.getCurrent().close();
-                    Page.getCurrent().reload();
-                }
-            }));
+                new ImmutableTriple<String, Resource, MenuBar.Command>(
+                        "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
+                            @Override
+                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                                VaadinSession.getCurrent().close();
+                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                                VaadinSession.getCurrent().close();
+                                Page.getCurrent().reload();
+                            }
+                        }));
+    }
+
+    /**
+     * Refresh notifications on user sigin.
+     *
+     * Ex: then user signin and configuration is applying at this time - it's
+     * need to notify user about this action.
+     */
+    private void refreshNotifications() {
+        notificationService.sendNotification(new ApplyConfigurationNotificationEvent());
     }
 
     private void updateContent() {
@@ -110,7 +138,10 @@ public class AdvertisingUI extends UI implements ResponseCallBack<SuccessRespons
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
             mainView.initializeUserMenu(user.getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+            notificationService.addSubscriber(mainView.getBtnNotifications());
             mainView.getSideBarMenu().select(0);
+
+            refreshNotifications();
             setContent(mainView);
         } else {
             loginView.initialize();

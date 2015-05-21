@@ -3,9 +3,11 @@
  */
 package com.payway.advertising.ui.component;
 
-import com.payway.advertising.core.service.ApplyConfigurationStatus;
-import com.payway.advertising.core.service.ConfigurationApplyCallback;
-import com.payway.advertising.core.service.ConfigurationApplyService;
+import com.google.common.eventbus.Subscribe;
+import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
+import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
+import com.payway.advertising.ui.AbstractUI;
+import com.payway.advertising.ui.bus.UIEventBus;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -30,7 +32,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Slf4j
 @Component(value = "configurationApplyWindow")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ConfigurationApplyWindow extends Window implements ConfigurationApplyCallback {
+public class ConfigurationApplyWindow extends Window {
 
     @UiField
     private Label lblDescription;
@@ -48,7 +50,7 @@ public class ConfigurationApplyWindow extends Window implements ConfigurationApp
     public void postConstruct() {
         init();
     }
-    
+
     private void init() {
 
         setModal(false);
@@ -56,7 +58,7 @@ public class ConfigurationApplyWindow extends Window implements ConfigurationApp
         setDraggable(true);
         setResizable(true);
         setContent(Clara.create("ConfigurationApplyWindow.xml", this));
- 
+
         btnCancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -77,17 +79,26 @@ public class ConfigurationApplyWindow extends Window implements ConfigurationApp
     @Override
     public void close() {
         UI.getCurrent().removeWindow(this);
-        configurationApplyService.removeSubscriber(this);
+
+        if (getUI() instanceof AbstractUI) {
+            UIEventBus bus = ((AbstractUI) getUI()).getEventBus();
+            if (bus != null) {
+                bus.removeSubscriber(this);
+            }
+        }
     }
 
-    @Override
-    public void progress(final ApplyConfigurationStatus status) {
-        UI.getCurrent().access(new Runnable() {
-            @Override
-            public void run() {
-                refresh(status);
-            }
-        });
+    @Subscribe
+    public void onNotify(final Object event) {
+
+        if (event instanceof ApplyConfigurationStatus) {
+            UI.getCurrent().access(new Runnable() {
+                @Override
+                public void run() {
+                    refresh((ApplyConfigurationStatus) event);
+                }
+            });
+        }
     }
 
     public void refresh(ApplyConfigurationStatus status) {

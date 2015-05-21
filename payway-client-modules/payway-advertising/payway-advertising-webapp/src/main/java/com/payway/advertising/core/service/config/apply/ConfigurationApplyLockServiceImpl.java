@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service;
+package com.payway.advertising.core.service.config.apply;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
