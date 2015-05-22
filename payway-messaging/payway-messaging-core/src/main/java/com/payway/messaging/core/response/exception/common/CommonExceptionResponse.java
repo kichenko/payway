@@ -15,4 +15,20 @@ public class CommonExceptionResponse extends AbstractExceptionResponse {
 
     private static final long serialVersionUID = 8081837348268102455L;
 
+    public CommonExceptionResponse(Throwable t) {
+        super(t);
+    }
+
+    public CommonExceptionResponse(String message) {
+        this(null, message, null);
+    }
+
+    public CommonExceptionResponse(String code, String message) {
+        this(code, message, null);
+    }
+
+    public CommonExceptionResponse(String code, String message, String description) {
+        super(code, message, description);
+    }
+
 }

@@ -3,39 +3,44 @@
  */
 package com.payway.messaging.core;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.joda.time.LocalDateTime;
+
+import java.util.UUID;
 
 /**
- * Базовый конверт, содержит набор стандартных заголовков (Header) и тело
- * (Body).
- *
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class AbstractEnvelope implements Envelope {
 
-    private static final long serialVersionUID = -7215282596206414479L;
+    /**
+     * Unique message identifier
+     */
+    private String messageId = UUID.randomUUID().toString();
 
     /**
-     * Набор базовых заголовков
+     * The origin of the message
      */
-    private String messageID;
-    private LocalDateTime date;
-    private LocalDateTime dateExpired;
+    private String origin;
 
     /**
-     * Тело конверта, содержит полезные данные.
+     * Timestamp of the message
      */
-    private Body body = new Body();
+    private long timestamp = System.currentTimeMillis();
+
+    /**
+     * Payload
+     */
+    private Message body;
+
+    public AbstractEnvelope(String origin, Message body) {
+        this.origin = origin;
+        this.body = body;
+    }
 
 }

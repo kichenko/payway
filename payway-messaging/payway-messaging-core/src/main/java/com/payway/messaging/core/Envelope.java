@@ -13,4 +13,12 @@ import java.io.Serializable;
  */
 public interface Envelope extends Serializable {
 
+    String getMessageId();
+
+    String getOrigin();
+
+    long getTimestamp();
+
+    Message getBody();
+
 }

@@ -11,11 +11,7 @@ package com.payway.advertising.core.service.notification;
  */
 public interface NotificationEvent {
 
-    public enum EventType {
+    NotificationEventPriorityType getPriority();
 
-        Fixed,
-        Float
-    }
-
-    EventType getKind();
+    NotificationEventType getKind();
 }

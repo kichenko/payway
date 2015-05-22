@@ -47,8 +47,8 @@ public class TextEditDialogWindow extends Window {
         setHeight(150, Unit.PIXELS);
         setContent(Clara.create("TextEditDialogWindow.xml", this));
 
-        btnOk.setIcon(new ThemeResource("images/components/text-edit-dialog-window/btn_ok.png"));
-        btnCancel.setIcon(new ThemeResource("images/components/text-edit-dialog-window/btn_cancel.png"));
+        btnOk.setIcon(new ThemeResource("images/components/text_edit_dialog_window/btn_ok.png"));
+        btnCancel.setIcon(new ThemeResource("images/components/text_edit_dialog_window/btn_cancel.png"));
 
         listener = eventListener;
         editText.setValue(value);

@@ -25,8 +25,9 @@ public class UserDto extends AbstractDto {
     private static final long serialVersionUID = 942608076596562119L;
 
     private String username;
-    private String password;
+
     private String userToken;
+
     private boolean rememberMe;
-    private SettingsDto settings;
+
 }

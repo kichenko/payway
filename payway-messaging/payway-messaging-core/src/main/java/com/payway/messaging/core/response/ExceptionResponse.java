@@ -11,7 +11,7 @@ package com.payway.messaging.core.response;
  */
 public interface ExceptionResponse extends Response {
 
-    Integer getCode();
+    String getCode();
 
     String getMessage();
 

@@ -44,10 +44,10 @@ public class MessageServerResponseHandler implements Runnable {
                 if (log.isDebugEnabled()) {
                     log.debug("Envelope={} ", envelope);
                 }
-                MessageContextImpl msgContext = (MessageContextImpl) serviceContext.remove(envelope.getCorrelationID());
+                MessageContextImpl msgContext = (MessageContextImpl) serviceContext.remove(envelope.getRequestId());
                 if (msgContext != null) {
                     if (msgContext.getCallback() != null) {
-                        Response rsp = (Response) envelope.getBody().getMessage();
+                        Response rsp = (Response) envelope.getBody();
                         if (rsp instanceof SuccessResponse) {
                             msgContext.getCallback().onServerResponse((SuccessResponse) rsp);
                         } else if (rsp instanceof ExceptionResponse) {

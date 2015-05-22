@@ -7,7 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.ui.AbstractUI;
-import com.payway.advertising.ui.bus.UIEventBus;
+import com.payway.advertising.ui.bus.SessionEventBus;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -70,18 +70,29 @@ public class ConfigurationApplyWindow extends Window {
                 }
             }
         });
+
+        addDetachListener(new DetachListener() {
+            @Override
+            public void detach(DetachEvent event) {
+                cleanUp();
+            }
+        });
     }
 
     public void show() {
+        refresh(configurationApplyService.getStatus());
         UI.getCurrent().addWindow(this);
     }
 
     @Override
     public void close() {
         UI.getCurrent().removeWindow(this);
+        cleanUp();
+    }
 
+    private void cleanUp() {
         if (getUI() instanceof AbstractUI) {
-            UIEventBus bus = ((AbstractUI) getUI()).getEventBus();
+            SessionEventBus bus = ((AbstractUI) getUI()).getSessionEventBus();
             if (bus != null) {
                 bus.removeSubscriber(this);
             }
@@ -91,18 +102,25 @@ public class ConfigurationApplyWindow extends Window {
     @Subscribe
     public void onNotify(final Object event) {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Debug notify bus configuration apply window events");
+            log.debug("Current UI - {} ", UI.getCurrent());
+            log.debug("Current thread - {}", Thread.currentThread());
+        }
+
         if (event instanceof ApplyConfigurationStatus) {
             UI.getCurrent().access(new Runnable() {
                 @Override
                 public void run() {
                     refresh((ApplyConfigurationStatus) event);
+                    UI.getCurrent().push();
                 }
             });
         }
     }
 
-    public void refresh(ApplyConfigurationStatus status) {
-        switch (status.getStep()) {
+    private void refresh(ApplyConfigurationStatus status) {
+        switch (status.getStatus()) {
 
             case Prepare: {
                 lblDescription.setCaption("Prepare applying configuration");

@@ -4,10 +4,9 @@
 package com.payway.advertising.core.app.bus;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 /**
  * AppEventBusImpl
@@ -16,10 +15,11 @@ import org.springframework.stereotype.Component;
  * @created 21.05.15 00:00
  */
 @Slf4j
-@Component(value = "appEventBus")
-public class AppEventBusImpl implements AppEventBus, SubscriberExceptionHandler {
+public class AppEventBusImpl implements AppEventBus {
 
-    private final EventBus eventBus = new EventBus(this);
+    @Getter
+    @Setter
+    private EventBus eventBus;
 
     @Override
     public void addSubscriber(Object subscriber) {
@@ -34,10 +34,5 @@ public class AppEventBusImpl implements AppEventBus, SubscriberExceptionHandler 
     @Override
     public void sendNotification(AppBusEvent event) {
         eventBus.post(event);
-    }
-
-    @Override
-    public void handleException(Throwable exception, SubscriberExceptionContext context) {
-        log.error("Error in app event bus", exception);
     }
 }

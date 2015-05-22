@@ -3,10 +3,12 @@
  */
 package com.payway.advertising.ui.component;
 
-import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
-import com.payway.advertising.core.service.notification.NotificationEvent;
+import com.payway.advertising.core.service.config.apply.ApplyStatus;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDateTime;
 import org.vaadin.teemu.clara.Clara;
@@ -31,14 +33,19 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
     private Label lblStatus;
 
     @UiField
+    private Label lblStatusDate;
+
+    @UiField
     private Label lblLogin;
 
     @UiField
-    private Label lblDate;
+    private Label lblStartDate;
 
     @UiField
     private Button btnShow;
 
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
     private NotificationItemAction action;
 
     private void init() {
@@ -46,17 +53,28 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
         addComponent(Clara.create("ApplyConfigurationNotificationItemView.xml", this));
     }
 
-    public ApplyConfigurationNotificationItemView(String caption, NotificationEvent.EventType kind, ApplyConfigurationStatus.Step step, String login, LocalDateTime dateCreate, NotificationItemAction action) {
+    public ApplyConfigurationNotificationItemView(String caption, ApplyStatus status, String login, LocalDateTime dateCreate, LocalDateTime dateStatus, NotificationItemAction action) {
 
-        this.action = action;
         init();
+        setAction(action);
 
         lblCaption.setValue(caption);
-        lblStatus.setValue(step.toString());
+        lblStatus.setValue(status.toString());
         lblLogin.setValue(login);
-        lblDate.setValue(dateCreate.toString("dd.MM.yyyy HH:mm:ss"));
 
-        if (ApplyConfigurationStatus.Step.Fail.equals(step) || ApplyConfigurationStatus.Step.Success.equals(step) || ApplyConfigurationStatus.Step.Cancel.equals(step)) {
+        if (dateCreate != null) {
+            lblStartDate.setValue(dateCreate.toString("dd.MM.yyyy HH:mm:ss"));
+        } else {
+            lblStartDate.setValue("");
+        }
+
+        if (dateStatus != null) {
+            lblStatusDate.setValue(dateStatus.toString("dd.MM.yyyy HH:mm:ss"));
+        } else {
+            lblStatusDate.setValue("");
+        }
+
+        if (ApplyStatus.Fail.equals(status) || ApplyStatus.Success.equals(status) || ApplyStatus.Cancel.equals(status)) {
             btnClose.setEnabled(true);
         } else {
             btnClose.setEnabled(false);
@@ -65,8 +83,8 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
         btnClose.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (ApplyConfigurationNotificationItemView.this.action != null) {
-                    ApplyConfigurationNotificationItemView.this.action.close();
+                if (ApplyConfigurationNotificationItemView.this.getAction() != null) {
+                    ApplyConfigurationNotificationItemView.this.getAction().close();
                 }
             }
         });
@@ -74,8 +92,8 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
         btnShow.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (ApplyConfigurationNotificationItemView.this.action != null) {
-                    ApplyConfigurationNotificationItemView.this.action.click();
+                if (ApplyConfigurationNotificationItemView.this.getAction() != null) {
+                    ApplyConfigurationNotificationItemView.this.getAction().click();
                 }
             }
         });

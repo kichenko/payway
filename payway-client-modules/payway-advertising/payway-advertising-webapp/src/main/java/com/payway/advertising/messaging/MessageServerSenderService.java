@@ -13,5 +13,7 @@ import com.payway.messaging.core.request.Request;
  */
 public interface MessageServerSenderService {
 
+    void auth(String userName, String password, ResponseCallBack callback);
+
     void sendMessage(Request request, ResponseCallBack callback);
 }

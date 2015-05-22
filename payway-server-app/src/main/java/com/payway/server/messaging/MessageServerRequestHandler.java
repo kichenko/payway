@@ -3,25 +3,24 @@
  */
 package com.payway.server.messaging;
 
-import com.payway.messaging.core.Body;
+import com.hazelcast.core.HazelcastInstance;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.response.exception.common.CommonExceptionResponse;
 import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
-import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
+import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.auth.UserDto;
-import com.payway.messaging.model.message.settings.SettingsDto;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
@@ -29,11 +28,14 @@ import org.joda.time.LocalDateTime;
  * @author Sergey Kichenko
  * @created 24.04.15 00:00
  */
-@Slf4j
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
+@Slf4j
 public class MessageServerRequestHandler implements Runnable {
+
+    @Autowired
+    HazelcastInstance hzInstance;
 
     /**
      * Конверт с сообшением
@@ -76,18 +78,15 @@ public class MessageServerRequestHandler implements Runnable {
                     if (clientQueue != null) {
 
                         ResponseEnvelope env = null;
+                        String rid = envelope.getMessageId();
+                        String origin = hzInstance.toString();
 
-                        String msgID = UUID.randomUUID().toString();
-                        LocalDateTime dateCreate = new LocalDateTime();
-                        LocalDateTime dateExpired = new LocalDateTime();
-                        String correlationMsgID = envelope.getMessageID();
-
-                        if (envelope.getBody().getMessage() instanceof AuthCommandRequest) {
-                            env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new AuthSuccessComandResponse<>(new UserDto(((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getPassword(), ((AuthCommandRequest) envelope.getBody().getMessage()).getUser().getUsername(), false, new SettingsDto("server-config")))));
-                        } else if (envelope.getBody().getMessage() instanceof ApplyConfigurationRequest) {
-                            env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new ApplySuccessConfigurationResponse()));
+                        if (envelope.getBody() instanceof AuthCommandRequest) {
+                            env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, false)));
+                        } else if (envelope.getBody() instanceof ApplyConfigurationRequest) {
+                            env = new ResponseEnvelope(rid, origin, new ApplySuccessConfigurationResponse());
                         } else {
-                            env = new ResponseEnvelope(msgID, dateCreate, dateExpired, correlationMsgID, new Body(new CommonExceptionResponse()));
+                            env = new ResponseEnvelope(rid, origin, new CommonExceptionResponse("Bad Request Type: " + envelope.getBody().getClass().getName()));
                         }
 
                         log.info("Sending a response to the client");

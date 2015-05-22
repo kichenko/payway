@@ -16,8 +16,6 @@ import org.joda.time.LocalDateTime;
  * @created 23.04.15 00:00
  */
 @Getter
-@Setter
-@NoArgsConstructor
 @ToString(callSuper = true)
 public class RequestEnvelope extends AbstractEnvelope {
 
@@ -28,8 +26,9 @@ public class RequestEnvelope extends AbstractEnvelope {
      */
     private String replyTo;
 
-    public RequestEnvelope(String messageID, LocalDateTime date, LocalDateTime dateExpired, String replyTo, Body body) {
-        super(messageID, date, dateExpired, body);
-        setReplyTo(replyTo);
+    public RequestEnvelope(String origin, String replyTo, Message body) {
+        super(origin, body);
+        this.replyTo = replyTo;
     }
+
 }

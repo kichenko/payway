@@ -4,11 +4,7 @@
 package com.payway.messaging.message.response.auth;
 
 import com.payway.messaging.model.message.auth.UserDto;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * Команда-ответ успешной аутентификации/авторизации пользователя. Объект
@@ -17,7 +13,6 @@ import lombok.ToString;
  * ответов на команду AuthCommandRequest.
  *
  * @author Sergey Kichenko
- * @param <T>
  * @created 23.04.15 00:00
  */
 @Getter
@@ -25,9 +20,10 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthSuccessComandResponse<T extends UserDto> extends AbstractAuthCommandResponse {
+public class AuthSuccessCommandResponse extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = -4184111918743320984L;
 
-    private T user;
+    private UserDto user;
+
 }

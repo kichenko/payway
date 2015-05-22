@@ -64,14 +64,41 @@
     <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
 
     <!-- Объекты блокировки для использования при обновлении конфигурации -->
-    <bean id="clientApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
-        <property name="lock">
-            <bean class="java.util.concurrent.locks.ReentrantLock"/>
-        </property>
-    </bean>
+    <bean id="clientApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceClientImpl"/>
 
-    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
+    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceServerImpl">
         <property name="lock" ref="lockServerAppConfigApply"/>
     </bean>
-
+        
+    <!-- bus exception handler -->
+    <bean id="subscriberExceptionHandler" class="com.payway.advertising.core.app.bus.SubscriberExceptionHandlerImpl"/>
+         
+    <!-- app bus -->
+    <bean id="appEventBus" class="com.payway.advertising.core.app.bus.AppEventBusImpl">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.AsyncEventBus">
+                <constructor-arg name="executor" ref="serverTaskExecutor"/>
+                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- ui session bus with vaadin scope-->
+    <bean id="sessionEventBus" class="com.payway.advertising.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.EventBus">
+                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- ui notification bus with vaadin scope-->
+    <bean id="notificationService" class="com.payway.advertising.core.service.notification.NotificationServiceImpl" scope="vaadin-ui">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.EventBus">
+                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+    
 </beans>

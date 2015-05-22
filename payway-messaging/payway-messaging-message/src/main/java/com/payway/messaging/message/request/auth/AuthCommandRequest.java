@@ -13,12 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Команда-запрос на аутентификацию/авторизацию пользователя. Токен пользователя
- * игнорируется. Если флаг "isRememberMe == true" объект пользователь
- * заполняется только полем userToken, иначе полями username/password.
- *
  * @author Sergey Kichenko
- * @param <T>
  * @created 23.04.15 00:00
  */
 @Getter
@@ -27,15 +22,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthCommandRequest<T extends UserDto> extends CommandRequest {
+public class AuthCommandRequest extends CommandRequest {
 
     private static final long serialVersionUID = -8380831312004043667L;
 
-    private T user;
+    private String userName;
 
-    /**
-     * Признак аутентификации/авторизации пользователя ч/з "запомнить меня".
-     */
-    private Boolean isRememberMe;
+    private String password;
 
 }

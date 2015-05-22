@@ -3,18 +3,19 @@
  */
 package com.payway.advertising.messaging;
 
-import com.payway.messaging.core.Body;
+import com.hazelcast.core.HazelcastInstance;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Реализация сервиса отправки сообщений на сервер.
@@ -28,6 +29,9 @@ import org.joda.time.LocalDateTime;
 @AllArgsConstructor
 @Slf4j
 public class MessageServerSenderServiceImpl implements MessageServerSenderService {
+
+    @Autowired
+    HazelcastInstance hzInstance;
 
     /**
      * Серверная очередь
@@ -55,25 +59,27 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
     private TimeUnit timeUnit;
 
     @Override
+    public void auth(String userName, String password, ResponseCallBack callback) {
+        sendMessage(new AuthCommandRequest(userName, password), callback);
+    }
+
+    @Override
     public void sendMessage(Request request, ResponseCallBack callback) {
 
-        String msgID = UUID.randomUUID().toString();
-        LocalDateTime dateCreate = new LocalDateTime();
-        LocalDateTime expiredDate = new LocalDateTime();
+        log.info("Preparing a message to send to the server");
+        RequestEnvelope re = new RequestEnvelope(hzInstance.toString(), getClientQueueName(), request);
+        serviceContext.put(re.getMessageId(), new MessageContextImpl(re.getMessageId(), callback));
 
         try {
-            log.info("Preparing a message to send to the server");
-            RequestEnvelope envelope = new RequestEnvelope(msgID, dateCreate, expiredDate, getClientQueueName(), new Body(request));
-            serviceContext.put(envelope.getMessageID(), new MessageContextImpl(envelope.getMessageID(), callback));
             log.info("Sending a message to the server");
             if (log.isDebugEnabled()) {
-                log.debug("Envelope={} ", envelope);
+                log.debug("Envelope={} ", re);
             }
-            serverQueue.offer(envelope, timeOut, timeUnit);
+            serverQueue.offer(re, timeOut, timeUnit);
             log.info("Message sent to the server");
         } catch (Exception ex) {
             try {
-                MessageContextImpl ctx = (MessageContextImpl) serviceContext.remove(msgID);
+                MessageContextImpl ctx = (MessageContextImpl) serviceContext.remove(re.getMessageId());
                 if (ctx != null) {
                     ResponseCallBack cb = ctx.getCallback();
                     if (cb != null) {

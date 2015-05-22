@@ -10,7 +10,6 @@ import java.util.Map;
 /**
  * Интерфес обратного вызова для взаимодействия с UI.
  *
- * @param <S>
  * @param <R>
  * @param <E>
  * @author Sergey Kichenko

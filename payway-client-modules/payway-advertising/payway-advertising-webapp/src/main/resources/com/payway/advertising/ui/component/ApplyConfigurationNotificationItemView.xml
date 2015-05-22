@@ -8,7 +8,8 @@
         <VerticalLayout id = "layoutContent">
             <Label id="lblStatus" caption = "status..."/>
             <Label id="lblLogin" caption = "login"/>
-            <Label id="lblDate" caption = "date create"/>
+            <Label id="lblStartDate" caption = "date create"/>
+            <Label id="lblStatusDate" caption = "date status"/>
             <Button id="btnShow" caption = "Show"/>
         </VerticalLayout>         
         <VerticalLayout id = "layoutFooter"/>                

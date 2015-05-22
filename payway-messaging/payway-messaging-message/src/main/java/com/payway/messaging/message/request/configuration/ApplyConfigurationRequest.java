@@ -15,7 +15,6 @@ import lombok.ToString;
  * ApplyConfigurationRequest - request to apply local->server configuration
  *
  * @author Sergey Kichenko
- * @param <T>
  * @created 19.05.15 00:00
  */
 @Getter
@@ -23,9 +22,10 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplyConfigurationRequest<T extends ConfigurationDto> extends CommandRequest {
+public class ApplyConfigurationRequest extends CommandRequest {
 
     private static final long serialVersionUID = -6600522755359031066L;
 
-    private T config;
+    private ConfigurationDto config;
+
 }

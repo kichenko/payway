@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
  * @author Sergey Kichenko
  * @created 30.04.15 00:00
  */
-@org.springframework.stereotype.Component
+@org.springframework.stereotype.Component(value = "viewFactory")
 public class ViewFactoryImpl implements ViewFactory {
 
     @Autowired

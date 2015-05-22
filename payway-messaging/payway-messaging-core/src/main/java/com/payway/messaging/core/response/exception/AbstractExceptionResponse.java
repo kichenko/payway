@@ -5,6 +5,9 @@ package com.payway.messaging.core.response.exception;
 
 import com.payway.messaging.core.response.ExceptionResponse;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Абстрактный класс ошибки-ответа.
  *
@@ -15,12 +18,24 @@ public abstract class AbstractExceptionResponse implements ExceptionResponse {
 
     private static final long serialVersionUID = -9208397661479988259L;
 
-    private Integer code;
+    private String code;
+
     private String message;
+
     private String description;
 
+    public AbstractExceptionResponse(Throwable t) {
+        this(t.getClass().getName(), t.getMessage(), getStackTrace(t));
+    }
+
+    public AbstractExceptionResponse(String code, String message, String description) {
+        this.code = code;
+        this.message = message;
+        this.description = description;
+    }
+
     @Override
-    public Integer getCode() {
+    public String getCode() {
         return code;
     }
 
@@ -32,6 +47,12 @@ public abstract class AbstractExceptionResponse implements ExceptionResponse {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    private static String getStackTrace(Throwable t) {
+        StringWriter stackTrace = new StringWriter();
+        t.printStackTrace(new PrintWriter(stackTrace));
+        return stackTrace.toString();
     }
 
 }

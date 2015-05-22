@@ -25,7 +25,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
     private final Table gridTasks = new Table();
 
     public UploadTaskPanel() {
-        setIcon(new ThemeResource("images/components/upload-task-panel/upload-task-panel.png"));
+        setIcon(new ThemeResource("images/components/upload_task_panel/upload_task_panel.png"));
         gridTasks.addContainerProperty("File name", String.class, null);
         gridTasks.addContainerProperty("Progress", ProgressBar.class, null);
         gridTasks.addContainerProperty("Status", String.class, null);
@@ -39,7 +39,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
 
         uploadTask.addListener(this);
 
-        Button btnCancel = new Button(new ThemeResource("images/components/upload-task-panel/btn_delete_cancel_upload.png"));
+        Button btnCancel = new Button(new ThemeResource("images/components/upload_task_panel/btn_delete_cancel_upload.png"));
         btnCancel.setStyleName("common-no-space-image-button");
 
         btnCancel.setData(uploadTask);

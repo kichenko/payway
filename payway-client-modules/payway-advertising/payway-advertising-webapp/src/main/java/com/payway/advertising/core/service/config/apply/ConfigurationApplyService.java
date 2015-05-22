@@ -16,4 +16,6 @@ public interface ConfigurationApplyService {
     void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
 
     boolean cancel();
+
+    ApplyConfigurationStatus getStatus();
 }

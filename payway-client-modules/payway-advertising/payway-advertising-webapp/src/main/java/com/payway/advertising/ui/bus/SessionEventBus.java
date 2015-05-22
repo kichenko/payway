@@ -4,12 +4,12 @@
 package com.payway.advertising.ui.bus;
 
 /**
- * UIEventBus
+ * SessionEventBus
  *
  * @author Sergey Kichenko
  * @created 21.05.15 00:00
  */
-public interface UIEventBus {
+public interface SessionEventBus {
 
     void addSubscriber(Object subscriber);
 

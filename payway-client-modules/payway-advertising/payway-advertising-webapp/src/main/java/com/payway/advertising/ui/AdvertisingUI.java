@@ -3,17 +3,20 @@
  */
 package com.payway.advertising.ui;
 
-import com.payway.advertising.core.app.bus.EventBusBridge;
+import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.UserService;
-import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
+import com.payway.advertising.core.service.app.user.UserAppService;
+import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
+import com.payway.advertising.core.service.config.apply.ApplyStatus;
+import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.core.service.notification.NotificationService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import com.payway.advertising.ui.bus.UIEventBus;
+import com.payway.advertising.ui.bus.SessionEventBus;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
@@ -23,30 +26,27 @@ import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
 import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandResponse;
-import com.payway.messaging.message.response.auth.AuthSuccessComandResponse;
+import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Главное UI
@@ -87,19 +87,55 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     @Qualifier(value = "notificationService")
     private NotificationService notificationService;
 
+    @Getter
     @Autowired
-    @Qualifier(value = "eventBusBridge")
-    private EventBusBridge eventBusBridge;
+    @Qualifier(value = "sessionEventBus")
+    private SessionEventBus sessionEventBus;
 
     @Getter
     @Autowired
-    @Qualifier(value = "uiEventBus")
-    private UIEventBus eventBus;
+    @Qualifier(value = "configurationApplyService")
+    private ConfigurationApplyService configurationApplyService;
 
     @Override
     protected void init(VaadinRequest request) {
         settingsAppService.setContextPath(request.getContextPath());
         updateContent();
+
+        addDetachListener(new DetachListener() {
+            @Override
+            public void detach(DetachEvent event) {
+                cleanUp();
+            }
+        });
+
+        sessionEventBus.addSubscriber(this);
+    }
+
+    private void cleanUp() {
+        sessionEventBus.removeSubscriber(this);
+        notificationService.removeSubscriber(mainView.getBtnNotifications());
+    }
+
+    @Subscribe
+    public void processSessionBusEvent(Object event) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Debug ui session bus events");
+            log.debug("Current UI - {} ", UI.getCurrent());
+            log.debug("Current thread - {}", Thread.currentThread());
+        }
+
+        if (event != null) {
+            if (event instanceof ApplyConfigurationStatus) {
+                ApplyConfigurationStatus status = (ApplyConfigurationStatus) event;
+                notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+            } else {
+                log.info("Session bus get unknown event {}", event);
+            }
+        } else {
+            log.error("Session bus get empty (null) event");
+        }
     }
 
     private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
@@ -123,6 +159,14 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                         }));
     }
 
+    private void refreshApplyConfigNotification() {
+        ApplyConfigurationStatus status = configurationApplyService.getStatus();
+
+        if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
+            notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+        }
+    }
+
     /**
      * Refresh notifications on user sigin.
      *
@@ -130,7 +174,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
      * need to notify user about this action.
      */
     private void refreshNotifications() {
-        notificationService.sendNotification(new ApplyConfigurationNotificationEvent());
+        refreshApplyConfigNotification();
     }
 
     private void updateContent() {
@@ -152,10 +196,10 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     @Override
     public void onServerResponse(final SuccessResponse response, final Map<String, Object> data) {
         if (response instanceof AbstractAuthCommandResponse) {
-            if (response instanceof AuthSuccessComandResponse) {
+            if (response instanceof AuthSuccessCommandResponse) {
                 Notification.show("Notification", "onServerResponse, AuthSuccessComandResponse", Notification.Type.WARNING_MESSAGE);
                 try {
-                    UserDto userDto = ((AuthSuccessComandResponse) response).getUser();
+                    UserDto userDto = ((AuthSuccessCommandResponse) response).getUser();
                     if (userDto != null) {
 
                         boolean isRememberMe = false;
@@ -170,13 +214,13 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                             throw new Exception("Error authentication/authorization user");
                         }
 
-                        user.setPassword(userDto.getPassword());
+                        // user.setPassword(userDto.getPassword());
                         user.setToken(userDto.getUserToken());
 
                         //set params to session
                         userAppService.setUser(user);
                         userAppService.setConfiguration(config);
-                        settingsAppService.setServerConfigPath(userDto.getSettings() == null ? "" : userDto.getSettings().getConfigPath());
+                        // settingsAppService.setServerConfigPath(userDto.getSettings() == null ? "" : userDto.getSettings().getConfigPath());
 
                         if (data != null) {
                             isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());

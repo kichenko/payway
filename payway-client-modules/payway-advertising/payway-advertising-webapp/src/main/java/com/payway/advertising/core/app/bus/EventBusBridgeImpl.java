@@ -67,11 +67,25 @@ public class EventBusBridgeImpl implements EventBusBridge {
             log.debug("process event {}", event);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Debug event bridge bus events");
+            log.debug("Current UI - {} ", UI.getCurrent());
+            log.debug("Current thread - {}", Thread.currentThread());
+        }
+
         try {
             for (VaadinSession s : sessions) {
                 for (UI ui : s.getUIs()) {
                     if (ui instanceof AbstractUI) {
-                        ((AbstractUI) ui).getEventBus().sendNotification(event.getData());
+                        UI currentUI = UI.getCurrent();
+                        try {
+                            UI.setCurrent(ui);
+                            ((AbstractUI) ui).getSessionEventBus().sendNotification(event.getData());
+                        } catch (Exception ex) {
+                            throw ex;
+                        } finally {
+                            UI.setCurrent(currentUI);
+                        }
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug("Processed UI is not instance of AbstractUI class {}", ui);

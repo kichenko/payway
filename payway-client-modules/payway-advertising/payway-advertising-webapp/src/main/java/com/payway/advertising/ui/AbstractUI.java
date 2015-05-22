@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.ui;
 
-import com.payway.advertising.ui.bus.UIEventBus;
+import com.payway.advertising.ui.bus.SessionEventBus;
 import com.vaadin.ui.UI;
 
 /**
@@ -14,5 +14,5 @@ import com.vaadin.ui.UI;
  */
 public abstract class AbstractUI extends UI {
 
-    public abstract UIEventBus getEventBus();
+    public abstract SessionEventBus getSessionEventBus();
 }

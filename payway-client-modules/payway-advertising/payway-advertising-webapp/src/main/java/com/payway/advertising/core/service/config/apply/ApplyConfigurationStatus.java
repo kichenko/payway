@@ -15,35 +15,25 @@ import org.joda.time.LocalDateTime;
 @Getter
 public final class ApplyConfigurationStatus {
 
-    public enum Step {
-
-        None,
-        Prepare,
-        Canceling,
-        Cancel,
-        CopyFiles,
-        UpdateDatabase,
-        Confirmation,
-        Success,
-        Fail
-    }
-
     private final String login;
     private final LocalDateTime startTime;
-    private final Step step;
+    private final ApplyStatus status;
+    private final LocalDateTime statusTime;
     private final Object[] args;
 
-    public ApplyConfigurationStatus(String login, LocalDateTime startTime, Step step, Object... args) {
+    public ApplyConfigurationStatus(String login, LocalDateTime startTime, ApplyStatus status, LocalDateTime statusTime, Object... args) {
         this.login = login;
         this.startTime = startTime;
-        this.step = step;
+        this.statusTime = statusTime;
+        this.status = status;
         this.args = args;
     }
 
-    public ApplyConfigurationStatus(String login, LocalDateTime startTime, Step step) {
+    public ApplyConfigurationStatus(String login, LocalDateTime startTime, ApplyStatus status, LocalDateTime statusTime) {
         this.login = login;
         this.startTime = startTime;
-        this.step = step;
+        this.statusTime = statusTime;
+        this.status = status;
         this.args = null;
     }
 }
