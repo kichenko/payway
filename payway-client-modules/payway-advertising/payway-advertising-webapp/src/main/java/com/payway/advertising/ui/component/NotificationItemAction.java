@@ -14,4 +14,6 @@ public interface NotificationItemAction {
     void close();
 
     void click();
+
+    boolean cancel();
 }

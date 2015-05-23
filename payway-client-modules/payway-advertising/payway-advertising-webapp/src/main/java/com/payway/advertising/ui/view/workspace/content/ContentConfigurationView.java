@@ -21,10 +21,7 @@ import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileDeepCopyClonable;
-import com.payway.advertising.ui.AbstractUI;
-import com.payway.advertising.ui.bus.SessionEventBus;
 import com.payway.advertising.ui.component.BreadCrumbs;
-import com.payway.advertising.ui.component.ConfigurationApplyWindow;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.AbstractWorkspaceView;
@@ -254,34 +251,34 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
                 task.addListener(ContentConfigurationView.this);
                 new FileUploadWindow("Choose a file to upload", task,
-                        new FileUploadWindow.FileUploadWindowEvent() {
-                            @Override
-                            public boolean onOk(UploadTaskFileInput uploadTask) {
-                                boolean isOk = false;
-                                if (StringUtils.isBlank(uploadTask.getFileName())) {
-                                    UIUtils.showErrorNotification("", "Please, select file to upload");
-                                } else {
-                                    try {
-                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FILE, 0L, null))) {
-                                            UIUtils.showErrorNotification("", "File already downloaded on server");
-                                        } else {
-                                            getUploadTaskPanel().addUploadTask(uploadTask);
-                                            isOk = true;
-                                        }
-                                    } catch (Exception ex) {
-                                        log.error("Unknown file upload error", ex);
-                                        UIUtils.showErrorNotification("", "Unknown file upload error");
-                                    }
-                                }
+                  new FileUploadWindow.FileUploadWindowEvent() {
+                      @Override
+                      public boolean onOk(UploadTaskFileInput uploadTask) {
+                          boolean isOk = false;
+                          if (StringUtils.isBlank(uploadTask.getFileName())) {
+                              UIUtils.showErrorNotification("", "Please, select file to upload");
+                          } else {
+                              try {
+                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FILE, 0L, null))) {
+                                      UIUtils.showErrorNotification("", "File already downloaded on server");
+                                  } else {
+                                      getUploadTaskPanel().addUploadTask(uploadTask);
+                                      isOk = true;
+                                  }
+                              } catch (Exception ex) {
+                                  log.error("Unknown file upload error", ex);
+                                  UIUtils.showErrorNotification("", "Unknown file upload error");
+                              }
+                          }
 
-                                return isOk;
-                            }
+                          return isOk;
+                      }
 
-                            @Override
-                            public void onCancel() {
-                                //
-                            }
-                        }
+                      @Override
+                      public void onCancel() {
+                          //
+                      }
+                  }
                 ).show();
             }
         });
@@ -397,92 +394,92 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //grid sorting
         ((BeanItemContainer) gridFileExplorer.getContainerDataSource()).setItemSorter(
-                new DefaultItemSorter() {
+          new DefaultItemSorter() {
 
-                    @Override
-                    protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
+              @Override
+              protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
 
-                        FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>) item1).getBean();
-                        FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>) item2).getBean();
+                  FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>) item1).getBean();
+                  FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>) item2).getBean();
 
-                        int result = 0;
+                  int result = 0;
 
-                        if (bean1.getFileType() != null && bean2.getFileType() != null) {
-                            //folder+folder, file+file
-                            if ((FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType()))
-                            || FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType())) {
-                                if (propertyId.equals("name")) {
-                                    result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
-                                } else if (propertyId.equals("size")) {
-                                    //folder
-                                    if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType())) {
-                                        result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
-                                    } else { //file
-                                        result = Long.compare(bean1.getSize(), bean2.getSize());
-                                    }
-                                } else if (propertyId.equals("lastModifiedTime")) {
-                                    result = bean1.getLastModifiedTime().compareTo(bean1.getLastModifiedTime());
-                                }
-                            } //folder+file
-                            else if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
-                                result = -1;
-                            } //file+foder
-                            else if (FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
-                                result = 1;
-                            }
-                        } else {
-                            result = super.compareProperty(propertyId, sortDirection, item1, item2);
-                        }
+                  if (bean1.getFileType() != null && bean2.getFileType() != null) {
+                      //folder+folder, file+file
+                      if ((FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType()))
+                      || FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType())) {
+                          if (propertyId.equals("name")) {
+                              result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                          } else if (propertyId.equals("size")) {
+                              //folder
+                              if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType())) {
+                                  result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                              } else { //file
+                                  result = Long.compare(bean1.getSize(), bean2.getSize());
+                              }
+                          } else if (propertyId.equals("lastModifiedTime")) {
+                              result = bean1.getLastModifiedTime().compareTo(bean1.getLastModifiedTime());
+                          }
+                      } //folder+file
+                      else if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                          result = -1;
+                      } //file+foder
+                      else if (FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                          result = 1;
+                      }
+                  } else {
+                      result = super.compareProperty(propertyId, sortDirection, item1, item2);
+                  }
 
-                        return sortDirection ? result : -1 * result;
-                    }
+                  return sortDirection ? result : -1 * result;
+              }
 
-                    @Override
-                    public int compare(Object o1, Object o2) {
-                        return super.compare(o1, o2);
-                    }
-                });
+              @Override
+              public int compare(Object o1, Object o2) {
+                  return super.compare(o1, o2);
+              }
+          });
 
         //set menu
         gridContextMenu.setAsContextMenuOf(gridFileExplorer);
 
         gridContextMenu.addContextMenuTableListener(
-                this);
+          this);
         gridContextMenu.addContextMenuComponentListener(
-                this);
+          this);
 
         //set double click event handler
         gridFileExplorer.addItemClickListener(
-                new ItemClickEvent.ItemClickListener() {
-                    @Override
-                    public void itemClick(ItemClickEvent event
-                    ) {
-                        if (event.isDoubleClick()) {
-                            processGridDoubleClick(event.getItemId());
-                        }
-                    }
-                });
+          new ItemClickEvent.ItemClickListener() {
+              @Override
+              public void itemClick(ItemClickEvent event
+              ) {
+                  if (event.isDoubleClick()) {
+                      processGridDoubleClick(event.getItemId());
+                  }
+              }
+          });
 
         //set to detect row select change
         gridFileExplorer.addValueChangeListener(
-                new Property.ValueChangeListener() {
-                    @Override
-                    public void valueChange(Property.ValueChangeEvent event
-                    ) {
-                        Object itemId = gridFileExplorer.getValue();
-                        if (itemId != null) {
-                            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
-                            if (container != null) {
-                                FileExplorerItemData bean = container.getItem(itemId).getBean();
-                                if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                                    panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty())));
-                                } else {
-                                    panelFileProperty.clearProperty();
-                                }
-                            }
-                        }
-                    }
-                });
+          new Property.ValueChangeListener() {
+              @Override
+              public void valueChange(Property.ValueChangeEvent event
+              ) {
+                  Object itemId = gridFileExplorer.getValue();
+                  if (itemId != null) {
+                      BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+                      if (container != null) {
+                          FileExplorerItemData bean = container.getItem(itemId).getBean();
+                          if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
+                              panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty())));
+                          } else {
+                              panelFileProperty.clearProperty();
+                          }
+                      }
+                  }
+              }
+          });
 
         //set column name render
         gridFileExplorer.addGeneratedColumn("name", new Table.ColumnGenerator() {
@@ -717,12 +714,12 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 }, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()));
 
                 container.addBean(new FileExplorerItemData(
-                        FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
-                        StringUtils.substringAfterLast(f.getPath(), settingsAppService.getSeparator()), //only name
-                        StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
-                        f.getSize(),
-                        property,
-                        f.getLastModifiedTime()
+                  FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
+                  StringUtils.substringAfterLast(f.getPath(), settingsAppService.getSeparator()), //only name
+                  StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
+                  f.getSize(),
+                  property,
+                  f.getLastModifiedTime()
                 ));
             }
 
@@ -921,32 +918,28 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     /**
-     * Apply local->server configuration
+     * Apply configuration
      */
     private void applyConfig() {
 
         String s = "c://1";
 
-        final ConfigurationApplyWindow wndApply = (ConfigurationApplyWindow) beanService.getBean("configurationApplyWindow");
-        wndApply.setCaption("Apply configuration status");
-
-        if (getUI() instanceof AbstractUI) {
-            SessionEventBus bus = ((AbstractUI) getUI()).getSessionEventBus();
-            if (bus != null) {
-                bus.addSubscriber(wndApply);
-            }
+        if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
+            log.error("Empty application settings, cannot apply configuration");
+            UIUtils.showErrorNotification("", "Empty application settings, cannot apply configuration");
+            return;
         }
 
-        FileSystemObject serverPath = new FileSystemObject(s/*settingsAppService.getServerConfigPath()*/, FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
+        FileSystemObject serverPath = new FileSystemObject(settingsAppService.getServerConfigPath(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
         FileSystemObject localPath = new FileSystemObject(settingsAppService.getLocalConfigPath() + "/" + userAppService.getUser().getLogin(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
 
-        configurationApplyService.apply(userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
+        configurationApplyService.apply(userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override
             public void success() {
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
-                        wndApply.show();
+                        UIUtils.showTrayNotification("", "Configuration applying started...");
                     }
                 });
             }
@@ -957,15 +950,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     @Override
                     public void run() {
                         log.error("Error applying server configuration");
-
-                        if (getUI() instanceof AbstractUI) {
-                            SessionEventBus bus = ((AbstractUI) getUI()).getSessionEventBus();
-                            if (bus != null) {
-                                bus.removeSubscriber(wndApply);
-                            }
-                        }
-
-                        UIUtils.showErrorNotification("", "Configuration already applying, try later");
+                        UIUtils.showErrorNotification("", "Configuration already applying");
                     }
                 });
             }

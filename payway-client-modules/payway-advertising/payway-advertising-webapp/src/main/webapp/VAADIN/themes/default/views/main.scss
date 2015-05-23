@@ -1,7 +1,7 @@
 @mixin main-view {
 
     //var's
-    $panelHeaderHeight: 50px;
+    $panelHeaderHeight: 55px;
     $panelFooterHeight: 10px;
 
     .main-view {
@@ -13,7 +13,6 @@
     .main-panel-left {
         //background: yellowgreen;
         background-color: #3a434d;
-        //padding-top: 10px;
         height: 100%;
         width: 100%;
     }
@@ -61,12 +60,15 @@
     }
 
     .main-user-menu {
-        float:right;
-        margin: 5px;
+        margin: 10px 5px 5px 5px;
     }
 
     .main-panel-full {
         height: 100%;
         width: 100%;
+    }
+
+    .main-panel-header-toolbar-right {
+        float:right;
     }
 }

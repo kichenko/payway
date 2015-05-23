@@ -8,6 +8,7 @@
 @import "components/textdialogwindow";
 @import "components/uploadtaskpanel";
 @import "components/notificationsbutton";
+@import "components/applyconfigurationpanel";
 //
 @import "views/login";
 @import "views/main";
@@ -28,6 +29,7 @@
     @include notificationsbutton-component;
     @include textdialogwindow-component;
     @include uploadtaskpanel-component;
+    @include applyconfigurationpanel-component;
 
     @include login-view;
     @include main-view;

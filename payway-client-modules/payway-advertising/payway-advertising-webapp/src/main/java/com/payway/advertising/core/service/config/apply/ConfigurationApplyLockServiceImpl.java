@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service.config.apply;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,27 +16,31 @@ import lombok.extern.slf4j.Slf4j;
  * @created 19.05.15 00:00
  */
 @Slf4j
-public class ConfigurationApplyLockServiceClientImpl implements ConfigurationApplyLockService {
+public class ConfigurationApplyLockServiceImpl implements ConfigurationApplyLockService {
 
     @Getter
     @Setter
-    private volatile boolean lock;
+    private Lock lock;
 
     @Override
     public void lock() {
-        lock = true;
+        lock.lock();
     }
 
     @Override
     public void unlock() {
-        lock = false;
+        lock.unlock();
     }
 
     @Override
     public boolean tryLock(long time, TimeUnit unit) {
-        if (!lock) {
-            lock = true;
+
+        boolean busy = false;
+        try {
+            busy = lock.tryLock(time, unit);
+        } catch (Exception ex) {
+            log.error("Error try lock", ex);
         }
-        return lock;
+        return busy;
     }
 }

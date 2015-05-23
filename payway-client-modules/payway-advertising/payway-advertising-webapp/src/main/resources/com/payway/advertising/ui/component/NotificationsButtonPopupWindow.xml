@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutMain" sizeFull="true">
+    <Table id="gridNotifications" sizeFull="true" styleName="btn-notifications-grid"/>
+</VerticalLayout>

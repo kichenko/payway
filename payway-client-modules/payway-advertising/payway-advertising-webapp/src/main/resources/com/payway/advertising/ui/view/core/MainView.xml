@@ -17,8 +17,10 @@
 
     <CssLayout id="layoutRight" styleName="main-panel-right">
         <CssLayout id="panelHeader" styleName="main-panel-header">
-            <MenuBar id="userMenu" styleName="main-user-menu"/>
-            <cmp:NotificationsButton id="btnNotifications" styleName="btn-notifications icon-only"/>
+            <HorizontalLayout id = "layoutToolBar" styleName ="main-panel-header-toolbar-right">
+                <cmp:NotificationsButton id="btnNotifications" styleName="btn-notifications icon-only"/>
+                <MenuBar id="userMenu" styleName="main-user-menu"/>
+            </HorizontalLayout>
         </CssLayout>
         <CssLayout id="panelContent" sizeFull="true" styleName="main-panel-content"/>
         <CssLayout id="panelFooter" styleName="main-panel-footer"/>

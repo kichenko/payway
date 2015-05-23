@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutApplyWindow" width="300px" height="200px">
-    <VerticalLayout id = "layoutPanel">        
-        <VerticalLayout id = "layoutHeader">
-            <Label id="lblCaption" caption = "Apply configuration"/>
-            <Button id="btnClose" caption = "Close"/>
-        </VerticalLayout>          
-        <VerticalLayout id = "layoutContent">
-            <Label id="lblStatus" caption = "status..."/>
-            <Label id="lblLogin" caption = "login"/>
-            <Label id="lblStartDate" caption = "date create"/>
-            <Label id="lblStatusDate" caption = "date status"/>
-            <Button id="btnShow" caption = "Show"/>
-        </VerticalLayout>         
-        <VerticalLayout id = "layoutFooter"/>                
-    </VerticalLayout>      
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutMain" styleName="apply-config-panel-main">
+    <VerticalLayout id = "layoutPanel" styleName="apply-config-panel">
+
+        <HorizontalLayout id = "layoutHeader" width="100%" styleName="apply-config-panel-header">
+            <Label id="lblCaption" width="100%" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1" styleName="apply-config-panel-header-caption"/>
+            <Button id="btnClose" caption = "x" p:componentAlignment="MIDDLE_CENTER" styleName="tiny danger apply-config-panel-btn-close"/>
+        </HorizontalLayout>
+
+        <VerticalLayout id = "layoutContent" styleName="apply-config-panel-content">
+
+            <HorizontalLayout id="layoutLogin" width="100%" styleName="apply-config-panel-content-login">
+                <Label id="lblLogin" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="2" styleName="apply-config-panel-login"/>
+                <Label id="lblStartDate" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1" styleName="apply-config-panel-start-date"/>
+            </HorizontalLayout>
+
+            <HorizontalLayout id="layoutStatus" width="100%" styleName="apply-config-panel-content-status">
+                <Label id="lblStatus" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="2" styleName="apply-config-panel-status"/>
+                <Label id="lblStatusDate" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1" styleName="apply-config-panel-status-date"/>
+            </HorizontalLayout>
+
+            <VerticalLayout id="layoutProgress" styleName="apply-config-panel-content-progress">
+                <VerticalLayout id="layoutProgressBar" styleName="apply-config-panel-content-progressbar">
+                    <ProgressBar id="progressBar" p:componentAlignment="MIDDLE_CENTER" sizeFull="true" styleName="apply-config-panel-pb"/>
+                </VerticalLayout>
+                <VerticalLayout id="layoutProgressBarStatus" styleName="apply-config-panel-pb-status">
+                    <Label id="lblProgress" p:componentAlignment="MIDDLE_CENTER" sizeFull="true" styleName="apply-config-panel-progress-status"/>
+                </VerticalLayout>
+            </VerticalLayout>
+
+            <VerticalLayout id="layoutBtnCancel" styleName="apply-config-panel-cancel">
+                <Button id="btnCancel" caption = "Cancel" styleName="tiny primary apply-config-panel-btn-cancel"/>
+            </VerticalLayout>
+        </VerticalLayout>
+
+    </VerticalLayout>
 </VerticalLayout>

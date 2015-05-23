@@ -1,11 +1,34 @@
 @mixin notificationsbutton-component {
-    
-     .btn-notifications {
-        float:right;
-        margin: 5px;
+
+    .btn-notifications {
+        margin: 10px 5px 5px 5px;
     }
-    
+
+    .btn-notifications-window .v-window-header {
+        font-size: round($v-font-size * 0.9);
+        font-weight: $v-font-weight + 200;
+        color: blue;
+    }
+
     .btn-notifications-window {
-        //float:right;
+        right: 1px;
+        width: 500px;
+        height: 300px;
+        left: auto !important;
+        position: absolute;
+    }
+
+    .btn-notifications-unread .v-button-caption {
+        @include valo-badge-style;
+        position: absolute;
+        font-size: round($v-font-size * 0.9);
+        top: round($v-unit-size / -5);
+        right: round($v-unit-size / -5);
+        display: block;
+        z-index: 1;
+    }
+
+    .btn-notifications-grid {
+        //
     }
 }

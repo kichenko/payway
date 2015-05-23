@@ -17,6 +17,9 @@ import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.bus.SessionEventBus;
+import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
+import com.payway.advertising.ui.component.ApplyConfigurationNotificationItemView;
+import com.payway.advertising.ui.component.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
@@ -31,22 +34,27 @@ import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.*;
+import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.servlet.http.Cookie;
+import com.vaadin.ui.Window;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import javax.servlet.http.Cookie;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Главное UI
@@ -117,19 +125,26 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
         notificationService.removeSubscriber(mainView.getBtnNotifications());
     }
 
+    private void closeNotificationsButtonPopupWindow() {
+        for (Window window : getUI().getWindows()) {
+            if (window instanceof NotificationsButtonPopupWindow) {
+                window.close();
+                break;
+            }
+        }
+    }
+
+    private void sendApplyConfigurationStatusNotification(ApplyConfigurationStatus status) {
+        notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+    }
+
     @Subscribe
     public void processSessionBusEvent(Object event) {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Debug ui session bus events");
-            log.debug("Current UI - {} ", UI.getCurrent());
-            log.debug("Current thread - {}", Thread.currentThread());
-        }
-
         if (event != null) {
             if (event instanceof ApplyConfigurationStatus) {
-                ApplyConfigurationStatus status = (ApplyConfigurationStatus) event;
-                notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+                sendApplyConfigurationStatusNotification((ApplyConfigurationStatus) event);
+            } else if (event instanceof CloseNotificationsButtonPopupWindowsEvent) {
+                closeNotificationsButtonPopupWindow();
             } else {
                 log.info("Session bus get unknown event {}", event);
             }
@@ -147,16 +162,16 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
 
     private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-                new ImmutableTriple<String, Resource, MenuBar.Command>(
-                        "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
-                            @Override
-                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                                VaadinSession.getCurrent().close();
-                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                                VaadinSession.getCurrent().close();
-                                Page.getCurrent().reload();
-                            }
-                        }));
+          new ImmutableTriple<String, Resource, MenuBar.Command>(
+            "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
+                @Override
+                public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                    VaadinSession.getCurrent().close();
+                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                    VaadinSession.getCurrent().close();
+                    Page.getCurrent().reload();
+                }
+            }));
     }
 
     private void refreshApplyConfigNotification() {
@@ -189,7 +204,12 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             setContent(mainView);
         } else {
             loginView.initialize();
-            setContent(loginView);
+            //setContent(loginView);
+            Window w = new Window();
+            w.setDraggable(true);
+            w.setCaption("---");
+            w.setContent(new ApplyConfigurationNotificationItemView("Apply configuration", ApplyStatus.Fail, "sergey-k", new LocalDateTime(), new LocalDateTime(), null)/*loginView*/);
+            getUI().addWindow(w);
         }
     }
 

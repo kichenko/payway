@@ -13,7 +13,7 @@ import com.payway.advertising.core.service.file.FileSystemObject;
  */
 public interface ConfigurationApplyService {
 
-    void apply(final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
+    void apply(final String userName, final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
 
     boolean cancel();
 

@@ -1,0 +1,95 @@
+@mixin applyconfigurationpanel-component {
+
+    //var's
+    $paddingRoot: 5px;
+    $borderColor: black;
+    $borderWidth: 1px;
+    $borderStyle: solid;
+    $panelBgColor: white;
+    $headerBgColor: white;
+    $contentBgColor: white;
+
+    .v-window {
+        width: 300px;
+        height: 300px;
+        position: absolute;
+        //margin: 2px;
+    }
+
+    .v-window .v-window-header {
+        //background-color: red;
+    }
+
+    .apply-config-panel-main {
+        padding: $paddingRoot;
+        background-color: $panelBgColor;
+    }
+
+    .apply-config-panel {
+        border: $borderWidth $borderStyle $borderColor;
+    }
+
+    .apply-config-panel-header {
+        width: 100%;
+        border-bottom: $borderWidth $borderStyle $borderColor;
+        background-color: $headerBgColor;
+        padding: 2px;
+    }
+
+    .apply-config-panel-content {
+        background-color: $contentBgColor;
+        padding: 2px;
+    }
+
+    .apply-config-panel-header-caption {
+        width: 100%;
+        font-size: round($v-font-size * 0.8);
+        font-weight: bold;
+        color:blue;
+        white-space:nowrap;
+    }
+
+    .apply-config-panel-btn-close {
+        //
+    }
+
+    .apply-config-panel-btn-cancel {
+        float: right;
+    }
+
+    .apply-config-panel-cancel {
+        //
+    }
+
+    .apply-config-panel-login {
+        width: 100%;
+        font-size: round($v-font-size * 0.8);
+        color:blue;
+        white-space:nowrap;
+    }
+
+    .apply-config-panel-start-date {
+        font-size: round($v-font-size * 0.8);
+        color:blue;
+        white-space:nowrap;
+        text-align:right !important;
+    }
+
+    .apply-config-panel-status {
+        font-size: round($v-font-size * 0.8);
+        font-weight: bold;
+        white-space:nowrap;
+    }
+
+    .apply-config-panel-status-date {
+        font-size: round($v-font-size * 0.8);
+        font-weight: bold;
+        white-space:nowrap;
+        text-align:right !important;
+    }
+
+    .apply-config-panel-progress-status {
+        font-size: round($v-font-size * 0.7);
+        white-space:nowrap;
+    }
+}

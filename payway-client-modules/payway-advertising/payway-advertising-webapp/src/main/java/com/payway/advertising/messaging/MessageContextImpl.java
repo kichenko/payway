@@ -4,7 +4,6 @@
 package com.payway.advertising.messaging;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -13,7 +12,6 @@ import lombok.NoArgsConstructor;
  * @author Sergey Kichenko
  * @created 29.04.15 00:00
  */
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageContextImpl implements MessageContext {
@@ -23,4 +21,8 @@ public class MessageContextImpl implements MessageContext {
     private String messageId;
     private ResponseCallBack callback;
 
+    @Override
+    public ResponseCallBack getCallback() {
+        return callback;
+    }
 }

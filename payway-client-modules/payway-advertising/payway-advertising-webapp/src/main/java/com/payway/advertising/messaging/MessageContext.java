@@ -13,4 +13,5 @@ import java.io.Serializable;
  */
 public interface MessageContext extends Serializable {
 
+    ResponseCallBack getCallback();
 }
