@@ -4,11 +4,14 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
+import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.data.dao.AgentFileDao;
 import com.payway.advertising.model.DbAgentFile;
 import java.util.Collections;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +27,22 @@ public class AgentFileServiceImpl implements AgentFileService {
     @Autowired
     private AgentFileDao agentFileDao;
 
+    @Autowired
+    @Qualifier("fileManagerService")
+    private FileSystemManagerService fileSystemManagerService;
+
     @Override
-    @Transactional
-    public long updateByNamePrefix(String srcName, String dstName) {
-        return agentFileDao.updateByNamePrefix(srcName, dstName);
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateByNamePrefix(String srcName, String dstName, FileSystemObject foOld, FileSystemObject foNew) throws ServiceException {
+        agentFileDao.updateByNamePrefix(srcName, dstName);
+        fileSystemManagerService.rename(foOld, foNew);
     }
 
     @Override
-    @Transactional
-    public long deleteByNamePrefix(String srcName) {
-        return agentFileDao.deleteByNamePrefix(srcName);
+    @Transactional(rollbackFor = {Exception.class})
+    public void deleteByNamePrefix(String srcName, FileSystemObject fo) throws ServiceException {
+        agentFileDao.deleteByNamePrefix(srcName);
+        fileSystemManagerService.delete(fo);
     }
 
     @Override

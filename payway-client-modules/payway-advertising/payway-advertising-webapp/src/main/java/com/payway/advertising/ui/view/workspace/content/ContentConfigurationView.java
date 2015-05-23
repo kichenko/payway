@@ -173,9 +173,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     @Getter
     private String rootUserConfigPath;
 
-    @Getter
     @Setter
-    private String currentRelativePath;
+    private String currentPath;
 
     private boolean isFileGridLoadedOnActivate = false;
 
@@ -193,7 +192,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         splitPanel.setSplitPosition(75, Unit.PERCENTAGE);
 
         initRootUserConfigPath();
-        initCurrentRelativePath();
+        initCurrentPath();
 
         initGridFileExplorerTable();
         initFileUploadButton();
@@ -203,15 +202,15 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void initRootUserConfigPath() {
-        rootUserConfigPath = Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + Helpers.addEndSeparator(userAppService.getUser().getLogin());
+        rootUserConfigPath = Helpers.addEndSeparator(fileSystemManagerService.canonicalization(Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + userAppService.getUser().getLogin()));
     }
 
-    private void initCurrentRelativePath() {
-        currentRelativePath = "";
+    private void initCurrentPath() {
+        currentPath = getRootUserConfigPath();
     }
 
     private String getCurrentPath() {
-        return StringUtils.isBlank(getCurrentRelativePath()) ? getRootUserConfigPath() : Helpers.addEndSeparator(getRootUserConfigPath() + getCurrentRelativePath());
+        return Helpers.addEndSeparator(currentPath);
     }
 
     @Override
@@ -341,13 +340,13 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void initBreadCrumbs() {
-        breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), "");
+        breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), getRootUserConfigPath());
         breadCrumbs.addBreadCrumbSelectListener(new BreadCrumbs.BreadCrumbSelectListener() {
             @Override
             public void selected(int index) {
                 try {
                     showProgressBar();
-                    setCurrentRelativePath((String) breadCrumbs.getCrumbState(index));
+                    setCurrentPath((String) breadCrumbs.getCrumbState(index));
                     fillGridFileExplorer(getCurrentPath());
                 } catch (Exception ex) {
                     log.error("Error load file explorer", ex);
@@ -366,7 +365,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             if (bean != null && FileExplorerItemData.FileType.Folder.equals(bean.getFileType())) {
                 try {
                     showProgressBar();
-                    setCurrentRelativePath(StringUtils.defaultIfBlank(bean.getPath(), ""));
+                    setCurrentPath(StringUtils.defaultIfBlank(bean.getPath(), ""));
                     fillGridFileExplorer(getCurrentPath());
                     breadCrumbs.addCrumb(bean.getName(), new ThemeResource("images/bread_crumb_folder.png"), bean.getPath());
                     breadCrumbs.selectCrumb(breadCrumbs.size() - 1, false);
@@ -712,7 +711,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 container.addBean(new FileExplorerItemData(
                   FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
                   f.getName(), //name
-                  StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
+                  f.getPath(),
                   f.getSize(),
                   property,
                   f.getLastModifiedTime()
@@ -744,7 +743,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentRelativePath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentPath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
                             gridFileExplorer.sort();
                         }
                         isOk = true;
@@ -768,9 +767,10 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void renameFileOrFolder(final Object selectedItemId) {
-        BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+        final BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
         if (container != null) {
             final BeanItem<FileExplorerItemData> item = container.getItem(selectedItemId);
+            final int index = container.indexOfId(selectedItemId);
             if (item != null && item.getBean() != null) {
                 new TextEditDialogWindow("Rename", item.getBean().getName(), new TextEditDialogWindow.TextEditDialogWindowEvent() {
                     @Override
@@ -782,24 +782,21 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                                 FileSystemObject foOld;
                                 FileSystemObject foNew;
 
-                                if (!StringUtils.contains(item.getBean().getPath(), "/")) {
-                                    //root level
-                                    pathNew = text;
-                                } else {
-                                    //child level
-                                    pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
+                                pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
+
+                                if (!StringUtils.contains(pathNew, getRootUserConfigPath())) {
+                                    log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getRootUserConfigPath());
+                                    UIUtils.showErrorNotification("", "Error rename, not equal root file path");
+                                    return isOk;
                                 }
 
-                                foOld = new FileSystemObject(getRootUserConfigPath() + item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
-                                foNew = new FileSystemObject(getRootUserConfigPath() + pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                                foOld = new FileSystemObject(item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                                foNew = new FileSystemObject(pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
                                 showProgressBar();
 
-                                //step-1: refresh properties
-                                agentFileService.updateByNamePrefix(item.getBean().getPath(), pathNew);
-
-                                //step-2: refresh files/folders
-                                fileSystemManagerService.rename(foOld, foNew);
+                                //refresh properties & files/folders
+                                agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getRootUserConfigPath()), StringUtils.substringAfter(pathNew, getRootUserConfigPath()), foOld, foNew);
 
                                 //upd grid item
                                 item.getBean().setName(text);
@@ -842,13 +839,10 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             if (container != null) {
                 FileExplorerItemData bean = container.getItem(selectedItemId).getBean();
                 if (bean != null) {
-                    FileSystemObject fo = new FileSystemObject(getRootUserConfigPath() + bean.getPath(), FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                    FileSystemObject fo = new FileSystemObject(bean.getPath(), FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
-                    //step-1: remove properties from db
-                    agentFileService.deleteByNamePrefix(bean.getPath());
-
-                    //step-2: remove files/folders from file system
-                    fileSystemManagerService.delete(fo);
+                    //remove properties & remove files/folders from file system
+                    agentFileService.deleteByNamePrefix(StringUtils.substringAfter(bean.getPath(), getRootUserConfigPath()), fo);
 
                     //upd grid
                     container.removeItem(selectedItemId);

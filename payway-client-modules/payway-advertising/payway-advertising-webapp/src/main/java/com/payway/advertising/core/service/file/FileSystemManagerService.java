@@ -30,4 +30,6 @@ public interface FileSystemManagerService {
     boolean exist(FileSystemObject src) throws FileSystemManagerServiceException;
 
     InputStream getInputStream(FileSystemObject src) throws FileSystemManagerServiceException;
+
+    String canonicalization(String path);
 }

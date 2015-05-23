@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
@@ -124,11 +125,11 @@ public class FilePropertyPanel extends VerticalLayout {
                     if (dbAgentFileValidator.validate(beanItem.getBean())) {
 
                         //set name only for new object, where id == null
-                        getBeanItem().getBean().setName(getRelativePath());
+                        getBeanItem().getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
 
                         //set digest only for new object, where id == null
-                        if (getBeanItem().getBean().getId() == 0) {
-                            String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRootPath() + getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
+                        if (getBeanItem().getBean().getId() == null) {
+                            String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
                             getBeanItem().getBean().setDigest(digest);
                         }
 

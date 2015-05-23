@@ -6,7 +6,6 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.model.DbAgentFile;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +19,6 @@ import org.joda.time.LocalDateTime;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileExplorerItemData implements Serializable {
@@ -32,7 +30,7 @@ public class FileExplorerItemData implements Serializable {
     }
 
     private static final long serialVersionUID = -3077409807450078907L;
-    
+
     private FileType fileType;
     private String name;
     private String path;

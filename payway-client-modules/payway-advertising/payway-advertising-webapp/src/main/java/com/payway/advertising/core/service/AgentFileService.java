@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
+import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.model.DbAgentFile;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
 
     Set<DbAgentFile> findStartWithByName(String name) throws ServiceException;
 
-    long updateByNamePrefix(String srcName, String dstName);
+    void updateByNamePrefix(String srcName, String dstName, FileSystemObject foOld, FileSystemObject foNew) throws ServiceException;
 
-    long deleteByNamePrefix(String srcName);
+    void deleteByNamePrefix(String srcName, FileSystemObject fo) throws ServiceException;
 }

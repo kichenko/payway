@@ -178,4 +178,15 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
 
         return is;
     }
+
+    @Override
+    public String canonicalization(String path) {
+        try {
+            FileObject fo = fileSystemManager.resolveFile(path);
+            return fo.getURL().toString();
+        } catch (Exception ex) {
+            //
+        }
+        return "";
+    }
 }
