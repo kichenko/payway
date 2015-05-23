@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
@@ -17,7 +15,6 @@ import org.apache.commons.vfs2.Selectors;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,80 +31,14 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
 
-    @Value("file:///")
-    private String fileSchema;
-
-    @Value("webdav://")
-    private String webDavSchema;
-
-    @Value("${webdav.username}")
-    private String webDavUsername;
-
-    @Value("${webdav.password}")
-    private String webDavPassword;
-
-    @Value("${webdav.host}")
-    private String webDavHost;
-
-    @Value("${webdav.port}")
-    private Integer webDavPort;
-
-    //webdav://[ username[: password]@] hostname[: port]/[ absolute-path]
-    private String getWebDavUri(FileSystemObject uri) {
-
-        //webdav://[ username[: password]@] hostname[: port]/[ absolute-path]
-        StringBuilder sb = new StringBuilder(getSchema(uri));
-
-        //user & pswd
-        if (!StringUtils.isBlank(webDavUsername)) {
-            sb.append(webDavUsername);
-        }
-
-        if (!org.codehaus.plexus.util.StringUtils.isBlank(webDavPassword)) {
-            sb.append(":").append(webDavPassword).append("@");
-        }
-
-        //host
-        sb.append(ObjectUtils.defaultIfNull(webDavHost, ""));
-
-        //port
-        if (webDavPort != null) {
-            sb.append(":").append(Integer.toString(webDavPort));
-        }
-
-        sb.append("/");
-
-        //with absolutePath
-        return sb.append(ObjectUtils.defaultIfNull(uri.getPath(), "")).toString();
-    }
-
-    //[file:///] absolute-path
-    private String getFileUri(FileSystemObject uri) {
-        return fileSchema + uri.getPath();
-    }
-
-    private String getSchemaWithoutAbsolutePath(FileSystemObject.FileSystemType fileSystemType) {
-        return getSchema(new FileSystemObject("", fileSystemType, null, 0L, null));
-    }
-
     @Override
-    public String getSchema(FileSystemObject uri) {
-        return FileSystemObject.FileSystemType.WEBDAV.equals(uri.getFileSystemType()) ? webDavSchema : fileSchema;
-    }
-
-    @Override
-    public String getUri(FileSystemObject uri) {
-        return FileSystemObject.FileSystemType.WEBDAV.equals(uri.getFileSystemType()) ? getWebDavUri(uri) : getFileUri(uri);
-    }
-
-    @Override
-    public void create(FileSystemObject srcUri) throws FileSystemManagerServiceException {
+    public void create(FileSystemObject src) throws FileSystemManagerServiceException {
         try {
-            FileObject fo = fileSystemManager.resolveFile(getUri(srcUri));
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
 
-            if (FileSystemObject.FileType.FILE.equals(srcUri.getFileType())) {
+            if (FileSystemObject.FileType.FILE.equals(src.getFileType())) {
                 fo.createFile();
-            } else if (FileSystemObject.FileType.FOLDER.equals(srcUri.getFileType())) {
+            } else if (FileSystemObject.FileType.FOLDER.equals(src.getFileType())) {
                 fo.createFolder();
             } else {
                 throw new Exception("Can't create file system object, unknown type");
@@ -118,10 +49,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public void rename(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException {
+    public void rename(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException {
         try {
-            FileObject foOld = fileSystemManager.resolveFile(getUri(srcUri));
-            FileObject foNew = fileSystemManager.resolveFile(getUri(destUri));
+            FileObject foOld = fileSystemManager.resolveFile(src.getPath());
+            FileObject foNew = fileSystemManager.resolveFile(dst.getPath());
 
             if (foOld.canRenameTo(foNew)) {
                 foOld.moveTo(foNew);
@@ -134,9 +65,9 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public void delete(FileSystemObject srcUri) throws FileSystemManagerServiceException {
+    public void delete(FileSystemObject src) throws FileSystemManagerServiceException {
         try {
-            FileObject fo = fileSystemManager.resolveFile(getUri(srcUri));
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
             fo.delete(Selectors.SELECT_ALL);
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error delete file system object", ex);
@@ -144,37 +75,35 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public void move(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException {
-        if (srcUri.getPath().equals(destUri.getPath())) {
+    public void move(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException {
+        if (src.getPath().equals(dst.getPath())) {
             throw new FileSystemManagerServiceException("Can't move to the same file system object");
         }
 
-        rename(srcUri, destUri);
+        rename(src, dst);
     }
 
     @Override
-    public void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException {
+    public void copy(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException {
         try {
-
-            if (srcUri.getPath().equals(destUri.getPath())) {
+            if (src.getPath().equals(dst.getPath())) {
                 throw new Exception("Can't copy to the same file system object");
             }
 
-            FileObject src = fileSystemManager.resolveFile(getUri(srcUri));
-            FileObject dst = fileSystemManager.resolveFile(getUri(destUri));
-            dst.copyFrom(src, Selectors.SELECT_ALL);
+            FileObject srcFo = fileSystemManager.resolveFile(src.getPath());
+            FileObject dstFo = fileSystemManager.resolveFile(dst.getPath());
+            dstFo.copyFrom(srcFo, Selectors.SELECT_ALL);
 
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
     }
 
-    private void recursiveFilesAndFolders(FileSystemObject.FileSystemType fileSystemType, FileObject file, List<FileSystemObject> list, boolean addFolders) throws Exception {
+    private void recursiveFilesAndFolders(FileObject file, List<FileSystemObject> list, boolean addFolders) throws Exception {
         if (file != null) {
             if ((addFolders && FileType.FOLDER.equals(file.getType())) || (FileType.FILE.equals(file.getType()))) {
                 list.add(new FileSystemObject(
-                  StringUtils.substring(file.getName().getURI(), getSchemaWithoutAbsolutePath(fileSystemType).length()),
-                  fileSystemType,
+                  file.getURL().toString(),
                   FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
                   FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
                   new LocalDateTime(file.getContent().getLastModifiedTime())));
@@ -184,7 +113,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                 FileObject[] childs = file.getChildren();
                 if (childs != null) {
                     for (FileObject f : childs) {
-                        recursiveFilesAndFolders(fileSystemType, f, list, addFolders);
+                        recursiveFilesAndFolders(f, list, addFolders);
                     }
                 }
             }
@@ -192,14 +121,14 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public List<FileSystemObject> list(FileSystemObject srcUri, boolean addFolders, boolean recursive) throws FileSystemManagerServiceException {
+    public List<FileSystemObject> list(FileSystemObject src, boolean addFolders, boolean recursive) throws FileSystemManagerServiceException {
 
         List<FileSystemObject> list = new ArrayList<>(0);
 
         try {
-            FileObject fo = fileSystemManager.resolveFile(getUri(srcUri));
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
             if (recursive) {
-                recursiveFilesAndFolders(srcUri.getFileSystemType(), fo, list, addFolders);
+                recursiveFilesAndFolders(fo, list, addFolders);
             } else {
                 if (FileType.FOLDER.equals(fo.getType())) {
                     FileObject[] childs = fo.getChildren();
@@ -207,8 +136,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                         for (FileObject f : childs) {
                             if ((addFolders && FileType.FOLDER.equals(f.getType())) || (FileType.FILE.equals(f.getType()))) {
                                 list.add(new FileSystemObject(
-                                  StringUtils.substring(f.getName().getURI(), getSchemaWithoutAbsolutePath(srcUri.getFileSystemType()).length()),
-                                  srcUri.getFileSystemType(),
+                                  f.getURL().toString(),
                                   FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
                                   FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
                                   new LocalDateTime(f.getContent().getLastModifiedTime())));
@@ -227,9 +155,9 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException {
+    public boolean exist(FileSystemObject src) throws FileSystemManagerServiceException {
         try {
-            FileObject fo = fileSystemManager.resolveFile(getUri(uri));
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
             return fo.exists();
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error exist file system object", ex);
@@ -237,10 +165,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
-    public InputStream getInputStream(FileSystemObject uri) throws FileSystemManagerServiceException {
+    public InputStream getInputStream(FileSystemObject src) throws FileSystemManagerServiceException {
         InputStream is = null;
         try {
-            FileObject fo = fileSystemManager.resolveFile(getUri(uri));
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
             if (FileType.FILE.equals(fo.getType())) {
                 is = fo.getContent().getInputStream();
             }

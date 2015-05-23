@@ -13,8 +13,6 @@ public interface SettingsAppService {
 
     String getLocalConfigPath();
 
-    String getSeparator();
-
     int getUploadBufferSize();
 
     String getTemporaryFileExt();

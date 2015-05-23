@@ -17,6 +17,7 @@ import com.payway.advertising.core.service.config.apply.ConfigurationApplyServic
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
+import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
@@ -202,14 +203,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void initRootUserConfigPath() {
-
-        rootUserConfigPath = settingsAppService.getLocalConfigPath();
-
-        if (settingsAppService.getLocalConfigPath().charAt(settingsAppService.getLocalConfigPath().length() - 1) != "/".charAt(0)) {
-            rootUserConfigPath += "/";
-        }
-
-        rootUserConfigPath += userAppService.getUser().getLogin() + "/";
+        rootUserConfigPath = Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + Helpers.addEndSeparator(userAppService.getUser().getLogin());
     }
 
     private void initCurrentRelativePath() {
@@ -217,7 +211,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private String getCurrentPath() {
-        return StringUtils.isBlank(getCurrentRelativePath()) ? getRootUserConfigPath() : getRootUserConfigPath() + getCurrentRelativePath() + settingsAppService.getSeparator();
+        return StringUtils.isBlank(getCurrentRelativePath()) ? getRootUserConfigPath() : Helpers.addEndSeparator(getRootUserConfigPath() + getCurrentRelativePath());
     }
 
     @Override
@@ -225,7 +219,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         if (!isFileGridLoadedOnActivate) {
             try {
                 showProgressBar();
-                FileSystemObject fo = new FileSystemObject(getCurrentPath(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
+                FileSystemObject fo = new FileSystemObject(getCurrentPath(), FileSystemObject.FileType.FOLDER, 0L, null);
                 if (!fileSystemManagerService.exist(fo)) {
                     fileSystemManagerService.create(fo);
                 }
@@ -247,6 +241,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         btnFileUpload.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                //###
                 UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsAppService.getUploadBufferSize());
                 task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
                 task.addListener(ContentConfigurationView.this);
@@ -259,7 +254,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                               UIUtils.showErrorNotification("", "Please, select file to upload");
                           } else {
                               try {
-                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FILE, 0L, null))) {
+                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                       UIUtils.showErrorNotification("", "File already downloaded on server");
                                   } else {
                                       getUploadTaskPanel().addUploadTask(uploadTask);
@@ -297,6 +292,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 Html5File files[] = ((DragAndDropWrapper.WrapperTransferable) event.getTransferable()).getFiles();
                 if (files != null) {
                     for (final Html5File file : files) {
+                        //###
                         UploadTask task = new UploadTaskDnD(getCurrentPath(), settingsAppService.getUploadBufferSize());
                         task.addListener(ContentConfigurationView.this);
                         task.setFileName(file.getFileName());
@@ -304,7 +300,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                         task.setFileSize(file.getFileSize());
                         task.setUploadObject(file);
                         try {
-                            if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FILE, 0L, null))) {
+                            if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                 task.interrupt();
                                 UIUtils.showErrorNotification("", "File already downloaded on server");
                             } else {
@@ -679,7 +675,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             container.removeAllItems();
 
             //select all file objects
-            List<FileSystemObject> listAll = fileSystemManagerService.list(new FileSystemObject(path, FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null), true, false);
+            List<FileSystemObject> listAll = fileSystemManagerService.list(new FileSystemObject(path, FileSystemObject.FileType.FOLDER, 0L, null), true, false);
 
             //select only files
             List<FileSystemObject> listFiles = FluentIterable.from(listAll).filter(new Predicate<FileSystemObject>() {
@@ -715,7 +711,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                 container.addBean(new FileExplorerItemData(
                   FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
-                  StringUtils.substringAfterLast(f.getPath(), settingsAppService.getSeparator()), //only name
+                  f.getName(), //name
                   StringUtils.substring(f.getPath(), getRootUserConfigPath().length()), //relative path
                   f.getSize(),
                   property,
@@ -737,7 +733,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     try {
                         showProgressBar();
 
-                        FileSystemObject fo = new FileSystemObject(path + text, FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
+                        FileSystemObject fo = new FileSystemObject(path + text, FileSystemObject.FileType.FOLDER, 0L, null);
 
                         //create new folder
                         if (!fileSystemManagerService.exist(fo)) {
@@ -748,7 +744,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, getCurrentRelativePath() + settingsAppService.getSeparator() + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentRelativePath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
                             gridFileExplorer.sort();
                         }
                         isOk = true;
@@ -786,16 +782,16 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                                 FileSystemObject foOld;
                                 FileSystemObject foNew;
 
-                                if (!StringUtils.contains(item.getBean().getPath(), settingsAppService.getSeparator())) {
+                                if (!StringUtils.contains(item.getBean().getPath(), "/")) {
                                     //root level
                                     pathNew = text;
                                 } else {
                                     //child level
-                                    pathNew = StringUtils.substringBeforeLast(item.getBean().getPath(), settingsAppService.getSeparator()) + settingsAppService.getSeparator() + text;
+                                    pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
                                 }
 
-                                foOld = new FileSystemObject(getRootUserConfigPath() + item.getBean().getPath(), FileSystemObject.FileSystemType.FILE, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
-                                foNew = new FileSystemObject(getRootUserConfigPath() + pathNew, FileSystemObject.FileSystemType.FILE, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                                foOld = new FileSystemObject(getRootUserConfigPath() + item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                                foNew = new FileSystemObject(getRootUserConfigPath() + pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
                                 showProgressBar();
 
@@ -846,7 +842,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             if (container != null) {
                 FileExplorerItemData bean = container.getItem(selectedItemId).getBean();
                 if (bean != null) {
-                    FileSystemObject fo = new FileSystemObject(getRootUserConfigPath() + bean.getPath(), FileSystemObject.FileSystemType.FILE, FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                    FileSystemObject fo = new FileSystemObject(getRootUserConfigPath() + bean.getPath(), FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
                     //step-1: remove properties from db
                     agentFileService.deleteByNamePrefix(bean.getPath());
@@ -922,16 +918,14 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
      */
     private void applyConfig() {
 
-        String s = "c://1";
-
         if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
             log.error("Empty application settings, cannot apply configuration");
             UIUtils.showErrorNotification("", "Empty application settings, cannot apply configuration");
             return;
         }
 
-        FileSystemObject serverPath = new FileSystemObject(settingsAppService.getServerConfigPath(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
-        FileSystemObject localPath = new FileSystemObject(settingsAppService.getLocalConfigPath() + "/" + userAppService.getUser().getLogin(), FileSystemObject.FileSystemType.FILE, FileSystemObject.FileType.FOLDER, 0L, null);
+        FileSystemObject serverPath = new FileSystemObject(settingsAppService.getServerConfigPath(), FileSystemObject.FileType.FOLDER, 0L, null);
+        FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + userAppService.getUser().getLogin(), FileSystemObject.FileType.FOLDER, 0L, null);
 
         configurationApplyService.apply(userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override

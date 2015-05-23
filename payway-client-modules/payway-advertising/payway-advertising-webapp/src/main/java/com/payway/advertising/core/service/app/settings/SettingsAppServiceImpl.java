@@ -37,20 +37,15 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     @Value("${config.upload.tmp.file.ext}")
     private String temporaryFileExt;
 
-    private final String separator = "/";
+    @Value("")
+    private String contextPath;
 
-    private String contextPath = "";
-
+    @Value("${server.config.path}")
     private String serverConfigPath;
 
     @Override
     public String getLocalConfigPath() {
         return localConfigPath;
-    }
-
-    @Override
-    public String getSeparator() {
-        return separator;
     }
 
     @Override
@@ -87,11 +82,10 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     MessageServerSenderService sender;
 
     /*
-    @Autowired
-    @Qualifier("Cluster.Topic.Config")
-    ITopic<ConfigMessage> topic;
-    */
-
+     @Autowired
+     @Qualifier("Cluster.Topic.Config")
+     ITopic<ConfigMessage> topic;
+     */
     @Override
     public void onApplicationEvent(ApplicationStartEvent event) {
         log.debug("Loading settings from cluster");
@@ -106,16 +100,15 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     }
 
     /*
-    @PostConstruct
-    public void onPostConstruct() {
-        topic.addMessageListener(new MessageListener<ConfigMessage>() {
-            @Override
-            public void onMessage(Message<ConfigMessage> message) {
-                ConfigMessage cm = message.getMessageObject();
-                log.debug("Config {} = {} [{}]", cm.getConfigName(), cm.getValueName());
-            }
-        });
-    }
-    */
-
+     @PostConstruct
+     public void onPostConstruct() {
+     topic.addMessageListener(new MessageListener<ConfigMessage>() {
+     @Override
+     public void onMessage(Message<ConfigMessage> message) {
+     ConfigMessage cm = message.getMessageObject();
+     log.debug("Config {} = {} [{}]", cm.getConfigName(), cm.getValueName());
+     }
+     });
+     }
+     */
 }

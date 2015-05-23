@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Helpers {
 
-    public static String addSeparator2End(String value) {
+    public static String addEndSeparator(String value) {
         if (!StringUtils.isBlank(value)) {
             if (value.charAt(value.length() - 1) != "/".charAt(0)) {
                 return value + "/";
@@ -24,4 +24,14 @@ public final class Helpers {
         }
         return value;
     }
+
+    public static String removeEndSeparator(String value) {
+        if (!StringUtils.isBlank(value)) {
+            if (value.charAt(value.length() - 1) == "/".charAt(0)) {
+                return StringUtils.substringBeforeLast(value, "/");
+            }
+        }
+        return value;
+    }
+
 }

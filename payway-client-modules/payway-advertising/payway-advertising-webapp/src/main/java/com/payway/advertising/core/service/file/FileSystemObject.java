@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -21,12 +22,6 @@ import org.joda.time.LocalDateTime;
 @AllArgsConstructor
 public class FileSystemObject {
 
-    public enum FileSystemType {
-
-        FILE,
-        WEBDAV
-    }
-
     public enum FileType {
 
         FILE,
@@ -34,8 +29,19 @@ public class FileSystemObject {
     }
 
     protected String path;
-    protected FileSystemType fileSystemType;
     protected FileType fileType;
     protected Long size;
     protected LocalDateTime lastModifiedTime;
+
+    public String getSchema() {
+        return StringUtils.substringBefore(path, "://");
+    }
+
+    public String getAbsolutePath() {
+        return StringUtils.substringAfter(path, "://");
+    }
+
+    public String getName() {
+        return StringUtils.substringAfterLast(path, "/");
+    }
 }

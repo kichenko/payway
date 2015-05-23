@@ -18,9 +18,9 @@ import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.bus.SessionEventBus;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
-import com.payway.advertising.ui.component.ApplyConfigurationNotificationItemView;
 import com.payway.advertising.ui.component.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
+import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
 import com.payway.advertising.ui.view.core.LoginView;
@@ -41,7 +41,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -156,7 +154,6 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
         items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png")));
-        items.add(new SideBarMenu.MenuItem("reports", "Reports", new ThemeResource("images/sidebar_report.png")));
         return items;
     }
 
@@ -204,12 +201,12 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             setContent(mainView);
         } else {
             loginView.initialize();
-            //setContent(loginView);
-            Window w = new Window();
-            w.setDraggable(true);
-            w.setCaption("---");
-            w.setContent(new ApplyConfigurationNotificationItemView("Apply configuration", ApplyStatus.Fail, "sergey-k", new LocalDateTime(), new LocalDateTime(), null)/*loginView*/);
-            getUI().addWindow(w);
+            setContent(loginView);
+            //Window w = new Window();
+            //w.setDraggable(true);
+            //w.setCaption("---");
+            //w.setContent(new ApplyConfigurationNotificationItemView("Apply configuration", ApplyStatus.Fail, "sergey-k", new LocalDateTime(), new LocalDateTime(), null)/*loginView*/);
+            //getUI().addWindow(w);
         }
     }
 
@@ -217,7 +214,6 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     public void onServerResponse(final SuccessResponse response, final Map<String, Object> data) {
         if (response instanceof AbstractAuthCommandResponse) {
             if (response instanceof AuthSuccessCommandResponse) {
-                Notification.show("Notification", "onServerResponse, AuthSuccessComandResponse", Notification.Type.WARNING_MESSAGE);
                 try {
                     UserDto userDto = ((AuthSuccessCommandResponse) response).getUser();
                     if (userDto != null) {
@@ -260,35 +256,38 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
 
                         updateContent();
                     } else {
-                        throw new Exception("Error authentication/authorization user");
+                        throw new Exception("Authentication/authorization user");
                     }
                 } catch (Exception ex) {
-                    log.error("Error sign in", ex);
-                    Notification.show("Notification", "Error authentication/authorization user", Notification.Type.WARNING_MESSAGE);
+                    log.error("Authentication/authorization user", ex);
+                    UIUtils.showErrorNotification("", "Error authentication/authorization user");
                 }
             } else if (response instanceof AuthBadCredentialsCommandResponse) {
-                Notification.show("Sign In", "Error authentication/authorization user", Notification.Type.WARNING_MESSAGE);
+                UIUtils.showErrorNotification("", "Error authentication/authorization user");
             }
         }
     }
 
     @Override
     public void onServerResponse(final SuccessResponse response) {
-        throw new UnsupportedOperationException("Method is not implemented");
+        //
     }
 
     @Override
     public void onServerException(final ExceptionResponse exception) {
-        Notification.show("Notification", "onServerException", Notification.Type.WARNING_MESSAGE);
+        log.error("Authentication/authorization user {}", exception);
+        UIUtils.showErrorNotification("", "Error authentication/authorization user");
     }
 
     @Override
     public void onLocalException(Exception ex) {
-        Notification.show("Notification", "onLocalException", Notification.Type.WARNING_MESSAGE);
+        log.error("Authentication/authorization user {}", ex);
+        UIUtils.showErrorNotification("", "Error authentication/authorization user");
     }
 
     @Override
     public void onTimeout() {
-        Notification.show("Notification", "onTimeout", Notification.Type.WARNING_MESSAGE);
+        log.error("Timeout authentication/authorization user {}");
+        UIUtils.showErrorNotification("", "Error authentication/authorization user");
     }
 }

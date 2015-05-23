@@ -11,27 +11,23 @@ import java.util.List;
  * FileSystemManagerService
  *
  * @author Sergey Kichenko
- * @created 07.10.15 00:00
+ * @created 07.05.15 00:00
  */
 public interface FileSystemManagerService {
-    
-    String getSchema(FileSystemObject uri);
-    
-    String getUri(FileSystemObject uri);
 
-    void create(FileSystemObject srcUri) throws FileSystemManagerServiceException;
+    void create(FileSystemObject src) throws FileSystemManagerServiceException;
 
-    void rename(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+    void rename(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException;
 
-    void delete(FileSystemObject srcUri) throws FileSystemManagerServiceException;
+    void delete(FileSystemObject src) throws FileSystemManagerServiceException;
 
-    void move(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+    void move(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException;
 
-    void copy(FileSystemObject srcUri, FileSystemObject destUri) throws FileSystemManagerServiceException;
+    void copy(FileSystemObject src, FileSystemObject dst) throws FileSystemManagerServiceException;
 
-    List<FileSystemObject> list(FileSystemObject srcUri, boolean addFolders, boolean recursive) throws FileSystemManagerServiceException;
+    List<FileSystemObject> list(FileSystemObject src, boolean addFolders, boolean recursive) throws FileSystemManagerServiceException;
 
-    boolean exist(FileSystemObject uri) throws FileSystemManagerServiceException;
+    boolean exist(FileSystemObject src) throws FileSystemManagerServiceException;
 
-    InputStream getInputStream(FileSystemObject uri) throws FileSystemManagerServiceException;
+    InputStream getInputStream(FileSystemObject src) throws FileSystemManagerServiceException;
 }

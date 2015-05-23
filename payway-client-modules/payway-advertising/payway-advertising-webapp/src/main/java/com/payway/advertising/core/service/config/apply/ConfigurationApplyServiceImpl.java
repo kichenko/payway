@@ -10,6 +10,7 @@ import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemObject;
+import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.messaging.MessageServerSenderService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbAgentFile;
@@ -210,9 +211,9 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             ApplyConfigurationStatus acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Prepare, new LocalDateTime());
 
             //1. get unique name
-            final String serverRootPathName = StringUtils.substringBeforeLast(serverPath.getPath(), "/");
+            final String serverRootPathName = StringUtils.substringBeforeLast(Helpers.addEndSeparator(serverPath.getPath()), "/");
             final String clientTmpFolderName = configurationService.generateUniqueFolderName("local", configurationName);
-            final String serverTmpFolderName = configurationService.generateUniqueFolderName("server", StringUtils.substringAfterLast(serverPath.getPath(), "/"));
+            final String serverTmpFolderName = configurationService.generateUniqueFolderName("server", StringUtils.substringAfterLast(Helpers.removeEndSeparator(serverPath.getPath()), "/"));
 
             //try lock
             if (clientSemaphore.tryAcquire(getClientTimeOut(), getUnit())) {
@@ -252,8 +253,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                         appEventBus.sendNotification(new AppBusEventImpl(acs));
 
                         fileManagerService.copy(src, new FileSystemObject(
-                          serverRootPathName + "/" + clientTmpFolderName + "/" + StringUtils.substring(src.getPath(), localPath.getPath().length()),
-                          serverPath.getFileSystemType(),
+                          Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()),
                           FileSystemObject.FileType.FILE,
                           0L,
                           null
@@ -300,13 +300,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                                 appEventBus.sendNotification(new AppBusEventImpl(acs));
 
                                                 //3.3.1 rename server folder to tmp
-                                                fileManagerService.rename(serverPath, new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                                                fileManagerService.rename(serverPath, new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
 
                                                 //3.3.2 rename tmp local-server folder to server folder
-                                                fileManagerService.rename(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null), serverPath);
+                                                fileManagerService.rename(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null), serverPath);
 
                                                 //3.3.3 remove tmp server folder
-                                                fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + serverTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                                                fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
 
                                                 acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Success, new LocalDateTime());
                                                 setStatus(acs);
@@ -338,7 +338,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                         log.error("Apply local->server configuration", exception.getMessage());
 
                                         //3.3.1 remove tmp local-server folder
-                                        fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                                        fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception ex) {
                                         log.error("Apply local->server configuration", ex);
                                     } finally {
@@ -352,7 +352,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                     try {
                                         log.error("Apply local->server configuration: Timeout server response");
                                         //3.3.1 remove tmp local-server folder
-                                        fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                                        fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception ex) {
                                         log.error("Apply local->server configuration", ex);
                                     } finally {
@@ -367,7 +367,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                         log.error("Apply local->server configuration: Local server response exception");
 
                                         //3.3.1 remove tmp local-server folder
-                                        fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                                        fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                                     } catch (Exception e) {
                                         log.error("Apply local->server configuration", ex);
                                     } finally {
@@ -402,7 +402,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     log.info("Applying local->server configuration is canceled by user", ex);
                     try {
                         //4. remove tmp local-remote folder
-                        fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                        fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                     } catch (Exception e) {
                         log.error("Remove tmp local-remote folder", e);
                     }
@@ -418,7 +418,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     log.error("Apply local->server configuration", ex);
                     try {
                         //4. remove tmp local-remote folder
-                        fileManagerService.delete(new FileSystemObject(serverRootPathName + "/" + clientTmpFolderName, serverPath.getFileSystemType(), FileSystemObject.FileType.FOLDER, 0L, null));
+                        fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                     } catch (Exception e) {
                         log.error("Remove tmp local-remote folder", e);
                     }

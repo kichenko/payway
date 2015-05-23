@@ -64,10 +64,10 @@
     <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
 
     <!-- Объекты блокировки для использования при обновлении конфигурации -->
-    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceServerImpl">
+    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
         <property name="lock" ref="lockServerAppConfigApply"/>
     </bean>
-        
+
     <!-- Bus exception handler -->
     <bean id="subscriberExceptionHandler" class="com.payway.advertising.core.app.bus.SubscriberExceptionHandlerImpl"/>
 
