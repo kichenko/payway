@@ -11,7 +11,7 @@ import com.payway.advertising.model.DbAgentFile;
  * @author Sergey Kichenko
  * @created 14.05.15 00:00
  */
-public class DbAgentFileValidator implements Validator {
+public class AgentFileValidator implements Validator {
 
     @Override
     public boolean validate(Object data) {

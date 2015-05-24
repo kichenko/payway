@@ -40,15 +40,14 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Html5File;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -106,19 +105,10 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     private FilePropertyPanel panelFileProperty;
 
     @UiField
-    private Button btnFileUpload;
-
-    @UiField
     private BreadCrumbs breadCrumbs;
 
     @UiField
-    private CssLayout layoutFileUpload;
-
-    @UiField
     private HorizontalSplitPanel splitPanel;
-
-    @UiField
-    private VerticalLayout layoutDragDropPanel;
 
     private ContextMenu gridContextMenu = new ContextMenu();
 
@@ -195,8 +185,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         initCurrentPath();
 
         initGridFileExplorerTable();
-        initFileUploadButton();
-        initDragAndDropWrapper();
         initBreadCrumbs();
         initTabSheetProperty();
     }
@@ -225,6 +213,11 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 fillGridFileExplorer(getCurrentPath());
                 panelFileProperty.clearProperty();
                 isFileGridLoadedOnActivate = true;
+
+                activateFileUploadButton();
+                activateDragAndDropWrapper();
+                activateMenuBar();
+
             } catch (Exception ex) {
                 log.error("Error on activate view", ex);
                 UIUtils.showErrorNotification("", "Error loading file explorer on activate");
@@ -234,10 +227,12 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         }
     }
 
-    private void initFileUploadButton() {
-        btnFileUpload.setIcon(new ThemeResource("images/file_attach.png"));
-        btnFileUpload.addStyleName("common-no-space-image-button");
-        btnFileUpload.addClickListener(new Button.ClickListener() {
+    private void activateMenuBar() {
+        buildMenuBar();
+    }
+
+    private void activateFileUploadButton() {
+        getFileUploadPanel().addButtonUploadClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 //###
@@ -278,9 +273,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         });
     }
 
-    private void initDragAndDropWrapper() {
-        DragAndDropWrapper wrapper = new DragAndDropWrapper(layoutDragDropPanel);
-        wrapper.setDropHandler(new DropHandler() {
+    private void activateDragAndDropWrapper() {
+        getFileUploadPanel().addDragAndDropHandler(new DropHandler() {
             @Override
             public AcceptCriterion getAcceptCriterion() {
                 return AcceptAll.get();
@@ -313,9 +307,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 }
             }
         });
-
-        wrapper.setSizeFull();
-        layoutFileUpload.addComponent(wrapper);
     }
 
     @Override
@@ -339,6 +330,88 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         }
     }
 
+    private void buildMenuBar() {
+        if (gridFileExplorer.getValue() == null) {
+            buildTableCommonMenuBarItems();
+        } else {
+            buildTableRowsMenuBarItems();
+        }
+    }
+
+    private void buildTableCommonMenuBarItems() {
+
+        getMenuBar().removeItems();
+
+        //Refresh
+        getMenuBar().addItem("Refresh", new ThemeResource("images/grid_files_menu_item_refresh.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuRefreshFolder();
+            }
+        });
+
+        //New folder
+        getMenuBar().addItem("New folder", new ThemeResource("images/grid_files_menu_item_new_folder.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuNewFolder();
+            }
+        });
+
+        //Apply
+        getMenuBar().addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuApplyConfig();
+            }
+        });
+    }
+
+    private void buildTableRowsMenuBarItems() {
+
+        getMenuBar().removeItems();
+
+        //Refresh
+        getMenuBar().addItem("Refresh", new ThemeResource("images/grid_files_menu_item_refresh.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuRefreshFolder();
+            }
+        });
+
+        //New folder
+        getMenuBar().addItem("New folder", new ThemeResource("images/grid_files_menu_item_new_folder.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuNewFolder();
+            }
+        });
+
+        //Edit
+        getMenuBar().addItem("Edit", new ThemeResource("images/grid_files_menu_item_edit.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuEditFileOrFolder();
+            }
+        });
+
+        //Remove
+        getMenuBar().addItem("Remove", new ThemeResource("images/grid_files_menu_item_remove.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuRemoveFileOrFolder();
+            }
+        });
+
+        //Apply
+        getMenuBar().addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"), new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuApplyConfig();
+            }
+        });
+    }
+
     private void initBreadCrumbs() {
         breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), getRootUserConfigPath());
         breadCrumbs.addBreadCrumbSelectListener(new BreadCrumbs.BreadCrumbSelectListener() {
@@ -352,6 +425,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     log.error("Error load file explorer", ex);
                     UIUtils.showErrorNotification("", "Error load file explorer");
                 } finally {
+                    buildMenuBar();
                     hideProgressBar();
                 }
             }
@@ -447,8 +521,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         gridFileExplorer.addItemClickListener(
           new ItemClickEvent.ItemClickListener() {
               @Override
-              public void itemClick(ItemClickEvent event
-              ) {
+              public void itemClick(ItemClickEvent event) {
                   if (event.isDoubleClick()) {
                       processGridDoubleClick(event.getItemId());
                   }
@@ -459,8 +532,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         gridFileExplorer.addValueChangeListener(
           new Property.ValueChangeListener() {
               @Override
-              public void valueChange(Property.ValueChangeEvent event
-              ) {
+              public void valueChange(Property.ValueChangeEvent event) {
                   Object itemId = gridFileExplorer.getValue();
                   if (itemId != null) {
                       BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
@@ -473,6 +545,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                           }
                       }
                   }
+
+                  buildMenuBar();
               }
           });
 
@@ -668,6 +742,9 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void fillGridFileExplorer(String path) throws Exception {
+
+        gridFileExplorer.setValue(null);
+
         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
         if (container != null) {
 
@@ -856,61 +933,43 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         }
     }
 
-    @Override
-    public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
-        ContextMenu.ContextMenuItem item = (ContextMenu.ContextMenuItem) event.getSource();
-        if (item != null) {
-            ContextMenuItemData data = (ContextMenuItemData) item.getData();
-            if (data != null) {
-                if (ContextMenuItemData.MenuAction.TABLE_REFRESH_FOLDER.equals(data.getAction())) {
-                    try {
-                        showProgressBar();
-                        panelFileProperty.clearProperty();
-                        fillGridFileExplorer(getCurrentPath());
-                    } catch (Exception ex) {
-                        log.error("Error refresh file explorer", ex);
-                        UIUtils.showErrorNotification("", "Error refresh file explorer");
-                    } finally {
-                        hideProgressBar();
-                    }
-                } else if (ContextMenuItemData.MenuAction.ROW_REFRESH_FOLDER.equals(data.getAction())) {
-                    try {
-                        showProgressBar();
-                        panelFileProperty.clearProperty();
-                        fillGridFileExplorer(getCurrentPath());
-                    } catch (Exception ex) {
-                        log.error("Error refresh file explorer", ex);
-                        UIUtils.showErrorNotification("", "Error refresh file explorer");
-                    } finally {
-                        hideProgressBar();
-                    }
-                } else if (ContextMenuItemData.MenuAction.ROW_NEW_FOLDER.equals(data.getAction()) || ContextMenuItemData.MenuAction.TABLE_NEW_FOLDER.equals(data.getAction())) {
-                    createNewFolder(getCurrentPath());
-                } else if (ContextMenuItemData.MenuAction.ROW_EDIT.equals(data.getAction())) {
-                    Object itemId = gridFileExplorer.getValue();
-                    if (itemId != null) {
-                        renameFileOrFolder(gridFileExplorer.getValue());
-                    } else {
-                        UIUtils.showErrorNotification("", "Choose item to rename");
-                    }
-                } else if (ContextMenuItemData.MenuAction.ROW_REMOVE.equals(data.getAction())) {
-                    Object itemId = gridFileExplorer.getValue();
-                    if (itemId != null) {
-                        removeFileOrFolder(gridFileExplorer.getValue());
-                    } else {
-                        UIUtils.showErrorNotification("", "Choose item to remove");
-                    }
-                } else if (ContextMenuItemData.MenuAction.TABLE_CFG_APPLY.equals(data.getAction()) || ContextMenuItemData.MenuAction.ROW_CFG_APPLY.equals(data.getAction())) {
-                    applyConfig();
-                }
-            }
+    private void actionMenuRefreshFolder() {
+        try {
+            showProgressBar();
+            panelFileProperty.clearProperty();
+            fillGridFileExplorer(getCurrentPath());
+        } catch (Exception ex) {
+            log.error("Error refresh file explorer", ex);
+            UIUtils.showErrorNotification("", "Error refresh file explorer");
+        } finally {
+            buildMenuBar();
+            hideProgressBar();
         }
     }
 
-    /**
-     * Apply configuration
-     */
-    private void applyConfig() {
+    private void actionMenuNewFolder() {
+        createNewFolder(getCurrentPath());
+    }
+
+    private void actionMenuEditFileOrFolder() {
+        Object itemId = gridFileExplorer.getValue();
+        if (itemId != null) {
+            renameFileOrFolder(gridFileExplorer.getValue());
+        } else {
+            UIUtils.showErrorNotification("", "Choose item to rename");
+        }
+    }
+
+    private void actionMenuRemoveFileOrFolder() {
+        Object itemId = gridFileExplorer.getValue();
+        if (itemId != null) {
+            removeFileOrFolder(gridFileExplorer.getValue());
+        } else {
+            UIUtils.showErrorNotification("", "Choose item to remove");
+        }
+    }
+
+    private void actionMenuApplyConfig() {
 
         if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
             log.error("Empty application settings, cannot apply configuration");
@@ -924,7 +983,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override
             public void success() {
-
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
@@ -938,13 +996,35 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
-
                         log.error("Error applying server configuration");
                         UIUtils.showErrorNotification("", "Configuration already applying");
                     }
                 });
             }
         });
+    }
+
+    @Override
+    public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
+        ContextMenu.ContextMenuItem item = (ContextMenu.ContextMenuItem) event.getSource();
+        if (item != null) {
+            ContextMenuItemData data = (ContextMenuItemData) item.getData();
+            if (data != null) {
+                if (ContextMenuItemData.MenuAction.TABLE_REFRESH_FOLDER.equals(data.getAction())) {
+                    actionMenuRefreshFolder();
+                } else if (ContextMenuItemData.MenuAction.ROW_REFRESH_FOLDER.equals(data.getAction())) {
+                    actionMenuRefreshFolder();
+                } else if (ContextMenuItemData.MenuAction.ROW_NEW_FOLDER.equals(data.getAction()) || ContextMenuItemData.MenuAction.TABLE_NEW_FOLDER.equals(data.getAction())) {
+                    actionMenuNewFolder();
+                } else if (ContextMenuItemData.MenuAction.ROW_EDIT.equals(data.getAction())) {
+                    actionMenuEditFileOrFolder();
+                } else if (ContextMenuItemData.MenuAction.ROW_REMOVE.equals(data.getAction())) {
+                    actionMenuRemoveFileOrFolder();
+                } else if (ContextMenuItemData.MenuAction.TABLE_CFG_APPLY.equals(data.getAction()) || ContextMenuItemData.MenuAction.ROW_CFG_APPLY.equals(data.getAction())) {
+                    actionMenuApplyConfig();
+                }
+            }
+        }
     }
 
     private void initTabSheetProperty() {

@@ -6,8 +6,8 @@
             <Label id="labelTitle" sizeUndefined="true" styleName="login-label-title" value="Payway Advertising Desktop"/>
         </CssLayout>
         <HorizontalLayout id = "horizontalFieldLayout" spacing="true" styleName="fields">
-            <TextField id = "textUserName" icon="" styleName="" caption = "UserName"/>
-            <PasswordField id = "textPassword" icon="" styleName="" caption = "Password"/>
+            <TextField id = "editUserName" icon="" styleName="" caption = "UserName"/>
+            <PasswordField id = "editPassword" icon="" styleName="" caption = "Password"/>
             <Button id="buttonSignIn" clickShortcut="ENTER" styleName="" p:componentAlignment="BOTTOM_LEFT" caption="Sign In" />
         </HorizontalLayout>
         <CheckBox id="checkBoxRememberMe" value="true" caption = "Remember me"/>

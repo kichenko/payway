@@ -1,0 +1,29 @@
+@mixin fileuploadpanel-component {
+
+    .file-upload-panel-panel-upload-file {
+        //background: red;
+        height: $panelUploadFileHeight;
+        width: 100%;
+        position: relative;
+    }
+
+      .file-upload-panel-upload-file-btn-upload {
+        position: absolute;
+        z-index:1000;
+        top:25px;
+        left:15px;
+    }
+
+     .file-upload-panel-drop-pane {
+        background: cornflowerblue;
+        height: 100%;
+        width: 100%;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        border: 5px dashed #a4a4a2;
+    }
+
+    .file-upload-panel-drop-pane-text {
+        //
+    }
+}

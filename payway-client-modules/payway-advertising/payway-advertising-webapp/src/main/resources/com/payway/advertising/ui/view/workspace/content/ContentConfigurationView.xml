@@ -11,11 +11,4 @@
         <fpp:FilePropertyPanel id="panelFileProperty"/>
     </CssLayout>
 
-    <CssLayout id="layoutFileUpload" styleName="content-cfg-panel-upload-file">
-        <Button id="btnFileUpload" caption="" styleName="content-cfg-panel-upload-file-btn-upload"/>
-        <VerticalLayout id="layoutDragDropPanel" styleName="content-cfg-panel-drop-pane">
-            <!--<Label id="label" styleName="content-cfg-panel-drop-pane-text" caption="Drag and Drop files from desktop here"/>-->
-        </VerticalLayout>
-    </CssLayout>
-
 </CssLayout>

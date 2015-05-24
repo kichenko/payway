@@ -6,6 +6,7 @@ package com.payway.advertising.ui.view.core;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.ui.AbstractUI;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
+import com.payway.advertising.ui.component.FileUploadPanel;
 import com.payway.advertising.ui.component.NotificationsButton;
 import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
@@ -48,7 +49,8 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     }
 
     public static final float SIDEBAR_DEFAULT_WIDTH_PERCENT = 20;
-    public static final float SIDEBAR_DEFAULT_HEIGHT_PERCENT = 80;
+    public static final float UPLOADS_DEFAULT_HEIGHT_PERCENT = 50;
+    public static final float SIDEBAR_DEFAULT_HEIGHT_PERCENT = 50;
 
     @Autowired
     @Qualifier(value = "viewFactory")
@@ -65,6 +67,9 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     private MenuBar userMenu;
 
     @UiField
+    private MenuBar menuBar;
+
+    @UiField
     @Getter
     private NotificationsButton btnNotifications;
 
@@ -76,6 +81,9 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     private UploadTaskPanel uploadTaskPanel;
 
     @UiField
+    private FileUploadPanel fileUploadPanel;
+
+    @UiField
     private CssLayout panelContent;
 
     @UiField
@@ -83,6 +91,12 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
 
     @UiField
     private VerticalSplitPanel splitVerticalPanel;
+
+    @UiField
+    private VerticalSplitPanel splitVerticalPanelUploads;
+
+    @UiField
+    private CssLayout layoutUploads;
 
     @UiField
     private CssLayout layoutLeft;
@@ -95,6 +109,9 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
 
     @UiField
     private CssLayout layoutUploadTasks;
+
+    @UiField
+    private CssLayout layoutFileUpload;
 
     private ProgressBarWindow progressBarWindow;
 
@@ -111,8 +128,12 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         splitHorizontalPanel.setSplitPosition(SIDEBAR_DEFAULT_WIDTH_PERCENT, Unit.PERCENTAGE);
 
         splitVerticalPanel.setFirstComponent(layoutSideBar);
-        splitVerticalPanel.setSecondComponent(layoutUploadTasks);
+        splitVerticalPanel.setSecondComponent(layoutUploads);
         splitVerticalPanel.setSplitPosition(SIDEBAR_DEFAULT_HEIGHT_PERCENT, Unit.PERCENTAGE);
+
+        splitVerticalPanelUploads.setFirstComponent(layoutUploadTasks);
+        splitVerticalPanelUploads.setSecondComponent(layoutFileUpload);
+        splitVerticalPanelUploads.setSplitPosition(UPLOADS_DEFAULT_HEIGHT_PERCENT, Unit.PERCENTAGE);
 
         mainViewLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
@@ -184,6 +205,8 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         if (v != null) {
             v.setUploadTaskPanel(uploadTaskPanel);
             v.setProgressBarWindow(progressBarWindow);
+            v.setFileUploadPanel(fileUploadPanel);
+            v.setMenuBar(menuBar);
             v.activate();
         }
     }

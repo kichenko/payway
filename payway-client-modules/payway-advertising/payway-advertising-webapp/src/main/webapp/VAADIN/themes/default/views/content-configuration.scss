@@ -2,8 +2,6 @@
 
     //var's
     $panelBreadCrumbsHeight: 35px;
-    $panelUploadFileHeight: 80px;
-
 
     .content-cfg-view {
         //background: green;
@@ -23,35 +21,8 @@
         height: 100%;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        padding-bottom: $panelBreadCrumbsHeight + $panelUploadFileHeight;
-        margin-bottom: -1 * ($panelBreadCrumbsHeight + $panelUploadFileHeight);
-    }
-
-    .content-cfg-panel-upload-file {
-        //background: red;
-        height: $panelUploadFileHeight;
-        width: 100%;
-        position: relative;
-    }
-
-    .content-cfg-panel-drop-pane {
-        background: cornflowerblue;
-        height: 100%;
-        width: 100%;
-        border-radius: 10px;
-        -webkit-border-radius: 10px;
-        border: 5px dashed #a4a4a2;
-    }
-
-    .content-cfg-panel-drop-pane-text {
-        //
-    }
-
-    .content-cfg-panel-upload-file-btn-upload {
-        position: absolute;
-        z-index:1000;
-        top:25px;
-        left:15px;
+        padding-bottom: $panelBreadCrumbsHeight;
+        margin-bottom: -1 * $panelBreadCrumbsHeight;
     }
 
     .v-label-grid-file-explorer-row-label-common {

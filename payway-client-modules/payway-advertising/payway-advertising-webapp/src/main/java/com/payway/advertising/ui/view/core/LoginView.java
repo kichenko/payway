@@ -3,13 +3,23 @@
  */
 package com.payway.advertising.ui.view.core;
 
+import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.messaging.MessageServerSenderService;
 import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
+import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -17,11 +27,6 @@ import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Логин
@@ -39,13 +44,21 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
 
     @Autowired
     @Qualifier("messageServerSenderService")
-    MessageServerSenderService service;
+    private MessageServerSenderService service;
+
+    @Autowired
+    @Qualifier("userNameValidator")
+    private Validator userNameValidator;
+
+    @Autowired
+    @Qualifier("userPasswordValidator")
+    private Validator userPasswordValidator;
 
     @UiField
-    private TextField textUserName;
+    private TextField editUserName;
 
     @UiField
-    private PasswordField textPassword;
+    private PasswordField editPassword;
 
     @UiField
     private CheckBox checkBoxRememberMe;
@@ -70,11 +83,22 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
 
     @UiHandler("buttonSignIn")
     public void clickButtonSignIn(Button.ClickEvent event) throws Exception {
+
+        if (!userNameValidator.validate(editUserName.getValue())) {
+            editUserName.setComponentError(new UserError("Invalid username, please correct"));
+            return;
+        }
+
+        if (!userPasswordValidator.validate(editPassword.getValue())) {
+            editPassword.setComponentError(new UserError("Invalid password, please correct"));
+            return;
+        }
+
         progressBarWindow.show();
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.auth(textUserName.getValue(), textPassword.getValue(), LoginView.this);
+                service.auth(editUserName.getValue(), editPassword.getValue(), LoginView.this);
             }
         });
     }

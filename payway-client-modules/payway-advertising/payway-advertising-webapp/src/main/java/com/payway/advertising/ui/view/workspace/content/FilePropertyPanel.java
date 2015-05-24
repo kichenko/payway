@@ -8,7 +8,7 @@ import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
-import com.payway.advertising.core.validator.DbAgentFileValidator;
+import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
@@ -82,7 +82,7 @@ public class FilePropertyPanel extends VerticalLayout {
     private PropertySaveListener listener;
 
     @Getter
-    private final Validator dbAgentFileValidator = new DbAgentFileValidator();
+    private final Validator dbAgentFileValidator = new AgentFileValidator();
 
     @Getter
     @Setter

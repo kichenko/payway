@@ -6,13 +6,13 @@ package com.payway.advertising.core.validator;
 import org.springframework.stereotype.Component;
 
 /**
- * UserNameValidator
+ * UserPasswordValidator
  *
  * @author Sergey Kichenko
- * @created 13.05.15 00:00
+ * @created 24.05.15 00:00
  */
-@Component(value = "userNameValidator")
-public class UserNameValidator implements Validator {
+@Component(value = "userPasswordValidator")
+public class UserPasswordValidator implements Validator {
 
     @Override
     public boolean validate(Object data) {
