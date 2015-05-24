@@ -133,7 +133,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     }
 
     private void sendApplyConfigurationStatusNotification(ApplyConfigurationStatus status) {
-        notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+        notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
     }
 
     @Subscribe
@@ -175,7 +175,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
         ApplyConfigurationStatus status = configurationApplyService.getStatus();
 
         if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
-            notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime()));
+            notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
         }
     }
 
@@ -202,11 +202,6 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
         } else {
             loginView.initialize();
             setContent(loginView);
-            //Window w = new Window();
-            //w.setDraggable(true);
-            //w.setCaption("---");
-            //w.setContent(new ApplyConfigurationNotificationItemView("Apply configuration", ApplyStatus.Fail, "sergey-k", new LocalDateTime(), new LocalDateTime(), null)/*loginView*/);
-            //getUI().addWindow(w);
         }
     }
 

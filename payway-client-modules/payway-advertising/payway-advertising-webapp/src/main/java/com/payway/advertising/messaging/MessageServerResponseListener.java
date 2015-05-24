@@ -32,14 +32,20 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
     private TaskExecutor serverTaskExecutor;
     private BlockingQueue<ResponseEnvelope> clientQueue;
 
+    private volatile boolean interrupt = false;
+
     @Override
     public void setApplicationContext(ApplicationContext context) {
         applicationContext = context;
     }
 
+    public void preDestroy() {
+        interrupt = true;
+    }
+
     @Override
     public void run() {
-        while (true) {
+        while (!interrupt) {
             try {
                 log.info("Waiting for a response message from the server");
                 ResponseEnvelope envelope = clientQueue.take();
@@ -49,5 +55,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                 log.error("Failed to get a response message from the server", ex);
             }
         }
+
+        log.info("Exit from message server response listener");
     }
 }

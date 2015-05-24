@@ -22,19 +22,21 @@ public class ApplyConfigurationNotificationEvent extends AbstractNotificationEve
     private LocalDateTime dateCreate;
     private LocalDateTime dateStatus;
     private ApplyStatus status;
+    private Object[] args;
 
     public ApplyConfigurationNotificationEvent() {
         setKind(NotificationEventType.ApplyConfiguration);
         setPriority(NotificationEventPriorityType.High);
     }
 
-    public ApplyConfigurationNotificationEvent(String userName, LocalDateTime dateCreate, ApplyStatus status, LocalDateTime dateStatus) {
+    public ApplyConfigurationNotificationEvent(String userName, LocalDateTime dateCreate, ApplyStatus status, LocalDateTime dateStatus, Object ... args) {
         setKind(NotificationEventType.ApplyConfiguration);
         setPriority(NotificationEventPriorityType.High);
         setUserName(userName);
         setDateCreate(dateCreate);
         setStatus(status);
         setDateStatus(dateStatus);
+        setArgs(args);
     }
 
     @Override

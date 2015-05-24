@@ -8,7 +8,6 @@ import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.core.service.notification.NotificationEvent;
-import com.payway.advertising.core.service.notification.NotificationEventPriorityType;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
@@ -56,7 +55,7 @@ public class NotificationsButton extends Button {
         this.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                NotificationsButton.this.countUnread = 20;
+                NotificationsButton.this.countUnread = 0;
                 refreshUnreadCount();
                 showPopup(event);
             }
@@ -118,7 +117,8 @@ public class NotificationsButton extends Button {
                                 public void click() {
                                     //
                                 }
-                            }
+                            },
+                            event.getArgs()
                           ));
 
                         return layout;
@@ -164,23 +164,16 @@ public class NotificationsButton extends Button {
                 bean.setStatus(event.getStatus());
                 bean.setDateCreate(event.getDateCreate());
                 bean.setDateStatus(event.getDateStatus());
+                bean.setArgs(event.getArgs());
 
                 wndNotifications.getGridNotifications().refreshRowCache();
             } else {
-                if (NotificationEventPriorityType.High.equals(event.getPriority())) {
-                    if (container.size() > 0) { //add on top
-                        if (container.addItemAt(0, event) == null) {
-                            log.error("Error add notification item");
-                        }
-                    } else {
-                        if (container.addItem(event) == null) {
-                            log.error("Error add notification item");
-                        }
+                if (container.addItem(new ApplyConfigurationNotificationEvent(event.getUserName(), event.getDateCreate(), event.getStatus(), event.getDateStatus(), event.getArgs())) != null) {
+                    if (countUnread == 0) {
+                        countUnread = 1;
                     }
                 } else {
-                    if (container.addItem(event) == null) {
-                        log.error("Error add notification item");
-                    }
+                    log.error("can not add item notification");
                 }
             }
         }
@@ -192,8 +185,6 @@ public class NotificationsButton extends Button {
         UI.getCurrent().access(new Runnable() {
             @Override
             public void run() {
-                countUnread = countUnread + 1;
-                refreshUnreadCount();
 
                 if (event instanceof ApplyConfigurationNotificationEvent) {
                     processAppyConfigurationNotification((ApplyConfigurationNotificationEvent) event);
@@ -201,6 +192,7 @@ public class NotificationsButton extends Button {
                     log.error("Error invalid event type, can not process", event);
                 }
 
+                refreshUnreadCount();
                 UI.getCurrent().push();
             }
         });

@@ -918,12 +918,13 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             return;
         }
 
-        FileSystemObject serverPath = new FileSystemObject(settingsAppService.getServerConfigPath(), FileSystemObject.FileType.FOLDER, 0L, null);
-        FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + userAppService.getUser().getLogin(), FileSystemObject.FileType.FOLDER, 0L, null);
+        FileSystemObject serverPath = new FileSystemObject(fileSystemManagerService.canonicalization(settingsAppService.getServerConfigPath()), FileSystemObject.FileType.FOLDER, 0L, null);
+        FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(fileSystemManagerService.canonicalization(settingsAppService.getLocalConfigPath())) + userAppService.getUser().getLogin(), FileSystemObject.FileType.FOLDER, 0L, null);
 
-        configurationApplyService.apply(userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
+        configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override
             public void success() {
+
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
@@ -937,6 +938,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
+
                         log.error("Error applying server configuration");
                         UIUtils.showErrorNotification("", "Configuration already applying");
                     }

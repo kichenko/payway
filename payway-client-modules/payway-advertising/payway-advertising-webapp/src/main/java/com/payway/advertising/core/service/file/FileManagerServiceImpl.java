@@ -59,6 +59,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             } else {
                 throw new Exception("Can't rename file system object");
             }
+
+            //###
+            Thread.sleep(3000);
+
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
@@ -69,6 +73,9 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
         try {
             FileObject fo = fileSystemManager.resolveFile(src.getPath());
             fo.delete(Selectors.SELECT_ALL);
+
+            //###
+            Thread.sleep(3000);
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error delete file system object", ex);
         }
@@ -93,6 +100,9 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject srcFo = fileSystemManager.resolveFile(src.getPath());
             FileObject dstFo = fileSystemManager.resolveFile(dst.getPath());
             dstFo.copyFrom(srcFo, Selectors.SELECT_ALL);
+
+            //###
+            Thread.sleep(3000);
 
         } catch (Exception ex) {
             throw new FileSystemManagerServiceException("Error rename file system object", ex);

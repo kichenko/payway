@@ -93,12 +93,10 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
             break;
 
             case CopyFiles: {
-                lblStatus.setCaption("Copying files...");
+                lblStatus.setValue("Copying files...");
                 if (args != null && args.length == 3) {
-                    int fileCount = (int) args[0];
-                    int curFileIndex = (int) args[1];
                     lblProgress.setValue(String.format("Files: [%d/%d], %s", args));
-                    progressBar.setValue(new Float(0.1 + (0.6 / fileCount * curFileIndex)));
+                    progressBar.setValue(new Float(0.6));
                     btnCancel.setEnabled(true);
                 }
             }
@@ -130,6 +128,7 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
 
             case Canceling: {
                 lblStatus.setValue("Canceling...");
+                progressBar.setValue(new Float(0));
                 lblProgress.setValue(null);
                 btnCancel.setEnabled(false);
             }
@@ -137,6 +136,7 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
 
             case Cancel: {
                 lblStatus.setValue("Canceled");
+                progressBar.setValue(new Float(0));
                 lblProgress.setValue(null);
                 btnCancel.setEnabled(false);
             }
@@ -144,6 +144,7 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
 
             case Fail: {
                 lblStatus.setValue("Failed");
+                progressBar.setValue(new Float(0));
                 lblProgress.setValue(null);
                 btnCancel.setEnabled(false);
             }
@@ -156,8 +157,6 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
         init();
         setAction(action);
         refresh(caption, login, status, dateCreate, dateStatus, args);
-
-        lblProgress.setValue("Files: [5/24], Max Foooler - Man from the Rain.pdf");
 
         btnClose.addClickListener(new Button.ClickListener() {
             @Override

@@ -25,6 +25,7 @@ import com.payway.messaging.model.message.configuration.AgentFileDto;
 import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
+import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -197,6 +198,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     /**
      * Apply configuration, method execute async!
      *
+     * @param currentUI
      * @param userName
      * @param configurationName
      * @param localPath
@@ -205,13 +207,17 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      */
     @Override
     @Async(value = "serverTaskExecutor")
-    public void apply(final String userName, final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
+    public void apply(final UI currentUI, final String userName, final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
         try {
+
+            //set current thread UI
+            UI.setCurrent(currentUI);
+
             ApplyConfigurationStatus acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Prepare, new LocalDateTime());
 
             //1. get unique name
-            final String serverRootPathName = StringUtils.substringBeforeLast(Helpers.addEndSeparator(serverPath.getPath()), "/");
+            final String serverRootPathName = StringUtils.substringBeforeLast(Helpers.removeEndSeparator(serverPath.getPath()), "/");
             final String clientTmpFolderName = configurationService.generateUniqueFolderName("local", configurationName);
             final String serverTmpFolderName = configurationService.generateUniqueFolderName("server", StringUtils.substringAfterLast(Helpers.removeEndSeparator(serverPath.getPath()), "/"));
 
@@ -248,7 +254,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                         }
 
                         //status - copy files
-                        acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.CopyFiles, new LocalDateTime(), files.size(), counter, StringUtils.substringAfterLast(src.getPath(), "/"));
+                        acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.CopyFiles, new LocalDateTime(), counter, files.size(), StringUtils.substringAfterLast(src.getPath(), "/"));
                         setStatus(acs);
                         appEventBus.sendNotification(new AppBusEventImpl(acs));
 

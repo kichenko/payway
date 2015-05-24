@@ -49,7 +49,7 @@
     </bean>
 
     <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" depends-on="clientQueue">
+    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" depends-on="clientQueue" destroy-method="preDestroy">
         <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
         <!-- отсюда приходят ответы-->
         <property name="clientQueue" ref="clientQueue"/>
