@@ -29,8 +29,9 @@ public class DbAgentFile extends DbAbstractEntity {
     protected String digest;
     protected Boolean isCountHits;
     protected DbConfiguration configuration;
+    protected Integer seqNo;
 
-    public DbAgentFile(Long id, String name, DbFileType kind, DbAgentFileOwner owner, String expression, String digest, Boolean isCountHits, DbConfiguration configuration) {
+    public DbAgentFile(Long id, String name, DbFileType kind, DbAgentFileOwner owner, String expression, String digest, Boolean isCountHits, DbConfiguration configuration, Integer seqNo) {
         super(id);
         setName(name);
         setKind(kind);
@@ -39,5 +40,6 @@ public class DbAgentFile extends DbAbstractEntity {
         setDigest(digest);
         setIsCountHits(isCountHits);
         setConfiguration(configuration);
+        setSeqNo(seqNo);
     }
 }

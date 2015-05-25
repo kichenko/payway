@@ -4,6 +4,7 @@
 package com.payway.messaging.core.service.hz;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IdGenerator;
 import com.payway.messaging.core.service.DistributedObjectService;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class HazelcastDistributedObjectServiceImpl implements DistributedObjectService {
 
+    private IdGenerator idGenerator;
     private HazelcastInstance hazelcastInstance;
 
     /**
@@ -42,5 +44,10 @@ public class HazelcastDistributedObjectServiceImpl implements DistributedObjectS
     @Override
     public Object getQueueByName(String name) {
         return getHazelcastInstance().getQueue(name);
+    }
+
+    @Override
+    public String generateQueueName(String template) {
+        return String.format("%s%d", template, idGenerator.newId());
     }
 }

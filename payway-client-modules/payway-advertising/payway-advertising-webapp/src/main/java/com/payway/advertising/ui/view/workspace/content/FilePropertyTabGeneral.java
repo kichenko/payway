@@ -33,6 +33,9 @@ public class FilePropertyTabGeneral extends VerticalLayout {
     @UiField
     private ComboBox cbFileType;
 
+    @UiField
+    private TextField spinSeqNo;
+
     public FilePropertyTabGeneral() {
         init();
     }

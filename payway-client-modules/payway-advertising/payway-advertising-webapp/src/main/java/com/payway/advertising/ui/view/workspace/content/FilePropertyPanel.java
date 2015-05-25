@@ -114,6 +114,7 @@ public class FilePropertyPanel extends VerticalLayout {
         fieldGroup.setBuffered(false);
         fieldGroup.bind(tabGeneral.getCbOwner(), "owner");
         fieldGroup.bind(tabGeneral.getCbFileType(), "kind");
+        fieldGroup.bind(tabGeneral.getSpinSeqNo(), "seqNo");
         fieldGroup.bind(tabAdditional.getEditExpression(), "expression");
         fieldGroup.bind(tabAdditional.getChCountHints(), "isCountHits");
 
@@ -163,17 +164,17 @@ public class FilePropertyPanel extends VerticalLayout {
         //set custom container for file type combobox
         tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
         tabGeneral.getCbFileType().addItem(DbFileType.Unknown);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "-Unknown-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "Unknown");
         tabGeneral.getCbFileType().addItem(DbFileType.Popup);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Popup, "-Popup-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Popup, "Popup");
         tabGeneral.getCbFileType().addItem(DbFileType.Logo);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Logo, "-Logo-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Logo, "Logo");
         tabGeneral.getCbFileType().addItem(DbFileType.Clip);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Clip, "-Clip-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Clip, "Clip");
         tabGeneral.getCbFileType().addItem(DbFileType.Banner);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Banner, "-Banner-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Banner, "Banner");
         tabGeneral.getCbFileType().addItem(DbFileType.Archive);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Archive, "-Archive-");
+        tabGeneral.getCbFileType().setItemCaption(DbFileType.Archive, "Archive");
     }
 
     public void updateFileName(String fileName) {

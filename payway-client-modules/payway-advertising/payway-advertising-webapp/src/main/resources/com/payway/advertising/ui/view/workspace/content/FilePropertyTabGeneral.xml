@@ -20,4 +20,8 @@
         <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" width="100%"/>
     </VerticalLayout>
 
+    <VerticalLayout id="layoutSpinSeqNo" styleName="tab-general-layout-spin-seq-no">
+        <TextField id="spinSeqNo" caption="Seq No" width="80px"/>
+    </VerticalLayout>
+
 </VerticalLayout>

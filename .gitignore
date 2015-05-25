@@ -12,3 +12,9 @@ nb-configuration.xml
 **/VAADIN/widgetsets/
 .svn/
 /payway-client-modules/payway-advertising/payway-advertising-data/target/
+/payway-client-modules/payway-advertising/payway-advertising-model/target/
+/payway-client-modules/payway-advertising/payway-advertising-webapp/target/
+/payway-messaging/payway-messaging-core/target/
+/payway-messaging/payway-messaging-message/target/
+/payway-messaging/payway-messaging-model/target/
+/payway-messaging/payway-messaging-hazelcast/target/

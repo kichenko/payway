@@ -325,7 +325,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         if (getCurrentPath().equals(task.getPath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), StringUtils.substringAfter(getRootUserConfigPath(), task.getPath()) + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), StringUtils.substringAfter(getRootUserConfigPath(), task.getPath()) + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
             }
         }
     }
@@ -783,7 +783,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     public boolean apply(DbAgentFile file) {
                         return file.getName().equals(StringUtils.substring(f.getPath(), getRootUserConfigPath().length()));
                     }
-                }, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()));
+                }, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0));
 
                 container.addBean(new FileExplorerItemData(
                   FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
@@ -820,7 +820,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentPath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration()), new LocalDateTime()));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentPath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
                             gridFileExplorer.sort();
                         }
                         isOk = true;

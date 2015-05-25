@@ -40,7 +40,7 @@
     <bean id="messageServerSenderService" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
         <!-- сюда уходят запросы-->
         <property name="serverQueue" ref="serverQueue"/>
-        <property name="clientQueueName" value="${client.queue.name}"/>
+        <property name="clientQueueName" ref="clientQueueName"/>
         <property name="serviceContext" ref="serviceContext"/>
         <property name="timeOut" value="20"/>
         <property name="timeUnit">

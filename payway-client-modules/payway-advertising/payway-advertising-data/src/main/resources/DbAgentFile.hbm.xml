@@ -12,6 +12,7 @@
         <property name="expression" column="expression" type="string"/>
         <property name="digest" column="digest" type="string"/>
         <property name="isCountHits" column="is_count_hits" type="boolean"/>
+        <property name="seqNo" column="seq_no" type="integer"/>
         <property name="kind" column="kind">
             <type name="org.hibernate.type.EnumType">
                 <param name="enumClass">com.payway.advertising.model.DbFileType</param>

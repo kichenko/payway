@@ -26,4 +26,12 @@ public interface DistributedObjectService {
      * @return
      */
     Object getQueueByName(String name);
+
+    /**
+     * Получить уникальное имя очереди по шаблону
+     *
+     * @param template
+     * @return
+     */
+    String generateQueueName(String template);
 }
