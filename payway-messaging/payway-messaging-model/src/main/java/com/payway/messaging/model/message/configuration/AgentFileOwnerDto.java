@@ -25,4 +25,10 @@ public class AgentFileOwnerDto extends AbstractDto {
 
     protected String name;
     protected String description;
+
+    public AgentFileOwnerDto(long id, String name, String description) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+    }
 }

@@ -20,9 +20,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfigurationDto extends AbstractDto {
+public class ApplyConfigurationDto extends AbstractDto {
 
     private static final long serialVersionUID = 3476919207290685928L;
 
     private Collection<AgentFileDto> agentFile;
+    private Collection<AgentFileOwnerDto> agentFileOwner;
 }

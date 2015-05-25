@@ -23,7 +23,7 @@ import com.payway.messaging.message.request.configuration.ApplyConfigurationRequ
 import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.configuration.AgentFileDto;
 import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
-import com.payway.messaging.model.message.configuration.ConfigurationDto;
+import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import com.vaadin.ui.UI;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     private ApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
 
         List<AgentFileDto> agentFilesDto;
+        List<AgentFileOwnerDto> agentFileOwnersDto;
         DbConfiguration cfg = configurationService.findConfigurationByNameWithFiles(configurationName);
 
         if (cfg == null) {
@@ -128,20 +130,31 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
         }
 
         agentFilesDto = new ArrayList<>(cfg.getFiles().size());
+        agentFileOwnersDto = new ArrayList<>(cfg.getFiles().size());
+
         for (DbAgentFile f : cfg.getFiles()) {
+
+            //owners
+            if (f.getOwner() != null) {
+                agentFileOwnersDto.add(new AgentFileOwnerDto(f.getOwner().getId(), f.getOwner().getName(), f.getOwner().getDescription()));
+            }
+
+            //files
             agentFilesDto.add(new Function<DbAgentFile, AgentFileDto>() {
                 @Override
                 public AgentFileDto apply(DbAgentFile file) {
+
                     AgentFileDto dto = new AgentFileDto();
+
                     dto.setName(file.getName());
                     dto.setDigest(file.getDigest());
                     dto.setExpression(file.getExpression());
-                    dto.setIsCountHits(file.getIsCountHits());
+                    dto.setCountHits(ObjectUtils.defaultIfNull(file.getIsCountHits(), false));
 
-                    dto.setOwner(new Function<DbAgentFileOwner, AgentFileOwnerDto>() {
+                    dto.setOwnerId(new Function<DbAgentFileOwner, Long>() {
                         @Override
-                        public AgentFileOwnerDto apply(DbAgentFileOwner owner) {
-                            return owner == null ? null : new AgentFileOwnerDto(owner.getName(), owner.getDescription());
+                        public Long apply(DbAgentFileOwner owner) {
+                            return owner == null ? 0 : owner.getId();
                         }
                     }.apply(file.getOwner()));
 
@@ -175,7 +188,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             }.apply(f));
         }
 
-        return new ApplyConfigurationRequest(new ConfigurationDto(agentFilesDto));
+        return new ApplyConfigurationRequest(new ApplyConfigurationDto(agentFilesDto, agentFileOwnersDto));
     }
 
     /**
@@ -259,10 +272,10 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                         appEventBus.sendNotification(new AppBusEventImpl(acs));
 
                         fileManagerService.copy(src, new FileSystemObject(
-                          Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()),
-                          FileSystemObject.FileType.FILE,
-                          0L,
-                          null
+                                Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()),
+                                FileSystemObject.FileType.FILE,
+                                0L,
+                                null
                         ));
 
                         counter++;

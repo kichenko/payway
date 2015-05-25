@@ -25,8 +25,9 @@ public class AgentFileDto extends AbstractDto {
 
     protected String name;
     protected DbFileTypeDto kind;
-    protected AgentFileOwnerDto owner;
+    protected long ownerId;
     protected String expression;
     protected String digest;
-    protected Boolean isCountHits;
+    protected boolean isCountHits;
+    protected int seqNo;
 }

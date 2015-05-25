@@ -4,7 +4,7 @@
 package com.payway.messaging.message.request.configuration;
 
 import com.payway.messaging.core.request.command.CommandRequest;
-import com.payway.messaging.model.message.configuration.ConfigurationDto;
+import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +26,6 @@ public class ApplyConfigurationRequest extends CommandRequest {
 
     private static final long serialVersionUID = -6600522755359031066L;
 
-    private ConfigurationDto config;
+    private ApplyConfigurationDto config;
 
 }
