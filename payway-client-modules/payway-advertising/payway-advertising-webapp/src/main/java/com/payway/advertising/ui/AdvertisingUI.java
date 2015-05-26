@@ -25,6 +25,8 @@ import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
 import com.payway.advertising.ui.view.core.LoginView;
 import com.payway.advertising.ui.view.core.MainView;
+import com.payway.advertising.ui.view.workspace.content.AgentFileOwnerBookWindow;
+import com.payway.advertising.ui.view.workspace.content.AgentFileOwnerCRUDWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
@@ -159,16 +161,16 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
 
     private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
-          new ImmutableTriple<String, Resource, MenuBar.Command>(
-            "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
-                @Override
-                public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                    VaadinSession.getCurrent().close();
-                    UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                    VaadinSession.getCurrent().close();
-                    Page.getCurrent().reload();
-                }
-            }));
+                new ImmutableTriple<String, Resource, MenuBar.Command>(
+                        "Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
+                            @Override
+                            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                                VaadinSession.getCurrent().close();
+                                UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
+                                VaadinSession.getCurrent().close();
+                                Page.getCurrent().reload();
+                            }
+                        }));
     }
 
     private void refreshApplyConfigNotification() {
@@ -200,8 +202,10 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             refreshNotifications();
             setContent(mainView);
         } else {
-            loginView.initialize();
-            setContent(loginView);
+            //loginView.initialize();
+            //setContent(loginView);
+            this.addWindow(new AgentFileOwnerBookWindow("Agent owners book"));
+            this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner"));
         }
     }
 

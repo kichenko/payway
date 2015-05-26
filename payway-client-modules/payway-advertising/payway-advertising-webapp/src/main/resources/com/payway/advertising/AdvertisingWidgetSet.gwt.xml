@@ -19,4 +19,8 @@
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
     
+
+    <inherits name="com.payway.advertising.ui.AppWidgetSet" />
+
+    <inherits name="com.payway.advertising.ui.AppWidgetSet1" />
 </module>

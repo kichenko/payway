@@ -370,8 +370,7 @@
                 <groupId>org.vaadin.addons</groupId>
                 <artifactId>contextmenu</artifactId>
                 <version>${vaadin.addons.contextmenu}</version>
-            </dependency>
-
+            </dependency>                                    
             <!-- vaadin libs end-->
 
             <!-- hazelcast libs-->

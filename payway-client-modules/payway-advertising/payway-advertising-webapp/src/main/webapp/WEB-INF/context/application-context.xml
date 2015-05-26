@@ -42,7 +42,7 @@
         <property name="serverQueue" ref="serverQueue"/>
         <property name="clientQueueName" ref="clientQueueName"/>
         <property name="serviceContext" ref="serviceContext"/>
-        <property name="timeOut" value="20"/>
+        <property name="timeOut" value="5"/>
         <property name="timeUnit">
             <value type="java.util.concurrent.TimeUnit">SECONDS</value>
         </property>

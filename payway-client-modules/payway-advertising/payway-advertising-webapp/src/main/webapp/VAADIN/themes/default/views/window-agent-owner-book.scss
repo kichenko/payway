@@ -1,0 +1,22 @@
+@mixin window-agent-owner-book-view {
+
+    .form-agent-owner-book-layout {
+        padding: 5px;
+    }
+
+    .form-agent-owner-book-layout-controls-up {
+        float:right;
+    }
+
+    .form-agent-owner-book-grid-controls {
+        float:right;
+    }
+
+    .form-agent-owner-book-grid-layout {
+        padding: 5px 0px 5px 0px;
+    }
+
+    .form-agent-owner-book-btn-add-new {
+        margin: 0px 0px 0px 5px;
+    }
+}

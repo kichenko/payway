@@ -1,0 +1,26 @@
+@mixin window-agent-owner-crud-view {
+
+    .form-agent-owner-crud-layout {
+        padding: 5px;
+    }
+
+    .form-agent-owner-crud-layout-name {
+        //
+    }
+    
+    .form-agent-owner-crud-layout-description {
+        //
+    }
+    
+    .form-agent-owner-crud-controls-down {
+        float:right;
+    }
+    
+    .form-agent-owner-crud-btn-save {
+        margin: 0px 0px 0px 5px;
+    }
+    
+    .form-agent-owner-crud-controls-down {
+        margin: 5px 0px 0px 0px;
+    }
+}

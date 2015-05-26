@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent"  xmlns:pt="urn:import:com.payway.advertising.ui.component.pagetable" id="layoutAgentFileOwnerCrud" styleName="form-agent-owner-crud-layout">
+    
+    <VerticalLayout id="layoutName" styleName="form-agent-owner-crud-layout-name">
+        <TextField id="txtName" caption="Name" width="100%" inputPrompt="Enter name" p:componentAlignment="MIDDLE_CENTER" styleName="small form-agent-owner-crud-name"/>
+    </VerticalLayout>  
+    
+    <VerticalLayout id="layoutDesription" styleName="form-agent-owner-crud-layout-description">
+        <TextArea id="txtDescription" width="100%" caption="Description" inputPrompt="Enter description" p:componentAlignment="MIDDLE_CENTER" styleName="small form-agent-owner-crud-description"/>
+    </VerticalLayout>  
+    
+    <HorizontalLayout id="layoutControls" styleName="form-agent-owner-crud-controls-down">
+        <Button id="btnCancel" caption="Cancel" p:componentAlignment="MIDDLE_CENTER" styleName="small"/>
+        <Button id="btnSave" caption="Save" p:componentAlignment="MIDDLE_CENTER" styleName="primary small form-agent-owner-crud-btn-save"/>
+    </HorizontalLayout>  
+           
+</VerticalLayout>

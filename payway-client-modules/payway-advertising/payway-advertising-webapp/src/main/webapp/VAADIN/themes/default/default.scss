@@ -17,7 +17,8 @@
 @import "views/tab-sheet-property";
 @import "views/tab-sheet-property-general";
 @import "views/tab-sheet-property-additional";
-
+@import "views/window-agent-owner-book";
+@import "views/window-agent-owner-crud";
 
 @mixin default {
     @include valo;
@@ -39,4 +40,6 @@
     @include tab-sheet-property-view;
     @include tab-sheet-property-general-view;
     @include tab-sheet-property-additional-view;
+    @include window-agent-owner-book-view;
+    @include window-agent-owner-crud-view;
 }

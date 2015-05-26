@@ -7,15 +7,14 @@ import com.hazelcast.core.HazelcastInstance;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Реализация сервиса отправки сообщений на сервер.
@@ -73,6 +72,8 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
         try {
             log.info("Sending a message to the server");
             if (log.isDebugEnabled()) {
+                log.debug("Server queue={} ", serverQueue);
+                log.debug("Client queue name={} ", clientQueueName);
                 log.debug("Envelope={} ", re);
             }
             serverQueue.offer(re, timeOut, timeUnit);

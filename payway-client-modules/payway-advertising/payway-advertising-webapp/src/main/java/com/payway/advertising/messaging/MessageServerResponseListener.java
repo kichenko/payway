@@ -45,6 +45,11 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
 
     @Override
     public void run() {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Client queue={} ", clientQueue);
+        }
+
         while (!interrupt) {
             try {
                 log.info("Waiting for a response message from the server");

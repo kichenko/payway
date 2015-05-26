@@ -21,9 +21,6 @@
 
     <properties>
 
-        <!-- project settings -->
-        <web.display.name>payway-advertising-webapp</web.display.name>
-
         <!-- vaadin production mode in web.xml -->
         <productionMode>false</productionMode>
 
