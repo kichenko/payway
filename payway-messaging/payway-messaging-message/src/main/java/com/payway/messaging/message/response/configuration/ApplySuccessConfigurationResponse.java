@@ -18,8 +18,8 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class ApplySuccessConfigurationResponse extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = 8810560983127046283L;

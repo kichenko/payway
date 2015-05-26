@@ -6,6 +6,7 @@ package com.payway.messaging.model;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * AbstractDto
@@ -15,6 +16,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public abstract class AbstractDto implements Serializable {
 
     protected long id;

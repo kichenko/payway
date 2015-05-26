@@ -1,8 +1,11 @@
 package com.payway.messaging.message;
 
+import lombok.ToString;
+
 /**
  * Created by mike on 20/05/15.
  */
+@ToString(callSuper = true)
 public class PermissionDeniedException extends RemoteException {
     public PermissionDeniedException() {
     }

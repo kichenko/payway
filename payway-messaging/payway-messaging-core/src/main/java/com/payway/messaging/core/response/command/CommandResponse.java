@@ -4,6 +4,7 @@
 package com.payway.messaging.core.response.command;
 
 import com.payway.messaging.core.response.SuccessResponse;
+import lombok.ToString;
 
 /**
  * Абстрактный базовый класс команда-ответ, хранится в теле (Body) конверта.
@@ -14,6 +15,7 @@ import com.payway.messaging.core.response.SuccessResponse;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
+@ToString
 public abstract class CommandResponse implements SuccessResponse {
 
     private static final long serialVersionUID = -5024389694882350302L;

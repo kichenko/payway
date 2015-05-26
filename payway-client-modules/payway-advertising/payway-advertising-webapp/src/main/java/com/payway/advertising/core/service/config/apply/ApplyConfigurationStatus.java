@@ -4,6 +4,7 @@
 package com.payway.advertising.core.service.config.apply;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.joda.time.LocalDateTime;
 
 /**
@@ -13,6 +14,7 @@ import org.joda.time.LocalDateTime;
  * @created 20.05.15 00:00
  */
 @Getter
+@ToString
 public final class ApplyConfigurationStatus {
 
     private final String login;

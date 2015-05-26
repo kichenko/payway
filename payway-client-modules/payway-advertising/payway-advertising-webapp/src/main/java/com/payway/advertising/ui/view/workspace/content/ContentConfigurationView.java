@@ -48,6 +48,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -80,7 +81,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ContextMenuItemData {
+    public static class ContextMenuItemData implements Serializable {
 
         public enum MenuAction {
 
@@ -240,34 +241,34 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
                 task.addListener(ContentConfigurationView.this);
                 new FileUploadWindow("Choose a file to upload", task,
-                  new FileUploadWindow.FileUploadWindowEvent() {
-                      @Override
-                      public boolean onOk(UploadTaskFileInput uploadTask) {
-                          boolean isOk = false;
-                          if (StringUtils.isBlank(uploadTask.getFileName())) {
-                              UIUtils.showErrorNotification("", "Please, select file to upload");
-                          } else {
-                              try {
-                                  if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
-                                      UIUtils.showErrorNotification("", "File already downloaded on server");
-                                  } else {
-                                      getUploadTaskPanel().addUploadTask(uploadTask);
-                                      isOk = true;
-                                  }
-                              } catch (Exception ex) {
-                                  log.error("Unknown file upload error", ex);
-                                  UIUtils.showErrorNotification("", "Unknown file upload error");
-                              }
-                          }
+                        new FileUploadWindow.FileUploadWindowEvent() {
+                            @Override
+                            public boolean onOk(UploadTaskFileInput uploadTask) {
+                                boolean isOk = false;
+                                if (StringUtils.isBlank(uploadTask.getFileName())) {
+                                    UIUtils.showErrorNotification("", "Please, select file to upload");
+                                } else {
+                                    try {
+                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                                            UIUtils.showErrorNotification("", "File already downloaded on server");
+                                        } else {
+                                            getUploadTaskPanel().addUploadTask(uploadTask);
+                                            isOk = true;
+                                        }
+                                    } catch (Exception ex) {
+                                        log.error("Unknown file upload error", ex);
+                                        UIUtils.showErrorNotification("", "Unknown file upload error");
+                                    }
+                                }
 
-                          return isOk;
-                      }
+                                return isOk;
+                            }
 
-                      @Override
-                      public void onCancel() {
-                          //
-                      }
-                  }
+                            @Override
+                            public void onCancel() {
+                                //
+                            }
+                        }
                 ).show();
             }
         });
@@ -463,92 +464,92 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //grid sorting
         ((BeanItemContainer) gridFileExplorer.getContainerDataSource()).setItemSorter(
-          new DefaultItemSorter() {
+                new DefaultItemSorter() {
 
-              @Override
-              protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
+                    @Override
+                    protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
 
-                  FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>) item1).getBean();
-                  FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>) item2).getBean();
+                        FileExplorerItemData bean1 = ((BeanItem<FileExplorerItemData>) item1).getBean();
+                        FileExplorerItemData bean2 = ((BeanItem<FileExplorerItemData>) item2).getBean();
 
-                  int result = 0;
+                        int result = 0;
 
-                  if (bean1.getFileType() != null && bean2.getFileType() != null) {
-                      //folder+folder, file+file
-                      if ((FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType()))
-                      || FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType())) {
-                          if (propertyId.equals("name")) {
-                              result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
-                          } else if (propertyId.equals("size")) {
-                              //folder
-                              if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType())) {
-                                  result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
-                              } else { //file
-                                  result = Long.compare(bean1.getSize(), bean2.getSize());
-                              }
-                          } else if (propertyId.equals("lastModifiedTime")) {
-                              result = bean1.getLastModifiedTime().compareTo(bean1.getLastModifiedTime());
-                          }
-                      } //folder+file
-                      else if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
-                          result = -1;
-                      } //file+foder
-                      else if (FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
-                          result = 1;
-                      }
-                  } else {
-                      result = super.compareProperty(propertyId, sortDirection, item1, item2);
-                  }
+                        if (bean1.getFileType() != null && bean2.getFileType() != null) {
+                            //folder+folder, file+file
+                            if ((FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType()))
+                            || FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && bean1.getFileType().equals(bean2.getFileType())) {
+                                if (propertyId.equals("name")) {
+                                    result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                                } else if (propertyId.equals("size")) {
+                                    //folder
+                                    if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType())) {
+                                        result = StringUtils.defaultIfBlank(bean1.getName(), "").compareTo(StringUtils.defaultIfBlank(bean2.getName(), ""));
+                                    } else { //file
+                                        result = Long.compare(bean1.getSize(), bean2.getSize());
+                                    }
+                                } else if (propertyId.equals("lastModifiedTime")) {
+                                    result = bean1.getLastModifiedTime().compareTo(bean1.getLastModifiedTime());
+                                }
+                            } //folder+file
+                            else if (FileExplorerItemData.FileType.Folder.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                                result = -1;
+                            } //file+foder
+                            else if (FileExplorerItemData.FileType.File.equals(bean1.getFileType()) && !bean1.getFileType().equals(bean2.getFileType())) {
+                                result = 1;
+                            }
+                        } else {
+                            result = super.compareProperty(propertyId, sortDirection, item1, item2);
+                        }
 
-                  return sortDirection ? result : -1 * result;
-              }
+                        return sortDirection ? result : -1 * result;
+                    }
 
-              @Override
-              public int compare(Object o1, Object o2) {
-                  return super.compare(o1, o2);
-              }
-          });
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        return super.compare(o1, o2);
+                    }
+                });
 
         //set menu
         gridContextMenu.setAsContextMenuOf(gridFileExplorer);
 
         gridContextMenu.addContextMenuTableListener(
-          this);
+                this);
         gridContextMenu.addContextMenuComponentListener(
-          this);
+                this);
 
         //set double click event handler
         gridFileExplorer.addItemClickListener(
-          new ItemClickEvent.ItemClickListener() {
-              @Override
-              public void itemClick(ItemClickEvent event) {
-                  if (event.isDoubleClick()) {
-                      processGridDoubleClick(event.getItemId());
-                  }
-              }
-          });
+                new ItemClickEvent.ItemClickListener() {
+                    @Override
+                    public void itemClick(ItemClickEvent event) {
+                        if (event.isDoubleClick()) {
+                            processGridDoubleClick(event.getItemId());
+                        }
+                    }
+                });
 
         //set to detect row select change
         gridFileExplorer.addValueChangeListener(
-          new Property.ValueChangeListener() {
-              @Override
-              public void valueChange(Property.ValueChangeEvent event) {
-                  Object itemId = gridFileExplorer.getValue();
-                  if (itemId != null) {
-                      BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
-                      if (container != null) {
-                          FileExplorerItemData bean = container.getItem(itemId).getBean();
-                          if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                              panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty())));
-                          } else {
-                              panelFileProperty.clearProperty();
-                          }
-                      }
-                  }
+                new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent event) {
+                        Object itemId = gridFileExplorer.getValue();
+                        if (itemId != null) {
+                            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+                            if (container != null) {
+                                FileExplorerItemData bean = container.getItem(itemId).getBean();
+                                if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
+                                    panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty())));
+                                } else {
+                                    panelFileProperty.clearProperty();
+                                }
+                            }
+                        }
 
-                  buildMenuBar();
-              }
-          });
+                        buildMenuBar();
+                    }
+                });
 
         //set column name render
         gridFileExplorer.addGeneratedColumn("name", new Table.ColumnGenerator() {
@@ -786,12 +787,12 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 }, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0));
 
                 container.addBean(new FileExplorerItemData(
-                  FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
-                  f.getName(), //name
-                  f.getPath(),
-                  f.getSize(),
-                  property,
-                  f.getLastModifiedTime()
+                        FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
+                        f.getName(), //name
+                        f.getPath(),
+                        f.getSize(),
+                        property,
+                        f.getLastModifiedTime()
                 ));
             }
 

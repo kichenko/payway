@@ -4,6 +4,7 @@
 package com.payway.advertising.ui.bus.events;
 
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * CloseWindowsEvent
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
  * @created 22.05.15 00:00
  */
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CloseNotificationsButtonPopupWindowsEvent extends AbstractAdvertisingEvent {
 
 }

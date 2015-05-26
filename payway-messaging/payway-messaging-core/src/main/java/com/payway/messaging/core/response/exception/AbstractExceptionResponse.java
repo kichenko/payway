@@ -4,9 +4,9 @@
 package com.payway.messaging.core.response.exception;
 
 import com.payway.messaging.core.response.ExceptionResponse;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import lombok.ToString;
 
 /**
  * Абстрактный класс ошибки-ответа.
@@ -14,6 +14,7 @@ import java.io.StringWriter;
  * @author Sergey Kichenko
  * @created 23.04.15 00:00
  */
+@ToString
 public abstract class AbstractExceptionResponse implements ExceptionResponse {
 
     private static final long serialVersionUID = -9208397661479988259L;

@@ -4,6 +4,7 @@
 package com.payway.advertising.core.app.bus;
 
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 /**
  * AppBusEventImpl
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
  * @author Sergey Kichenko
  * @created 21.05.15 00:00
  */
+@ToString
 @AllArgsConstructor
 public final class AppBusEventImpl implements AppBusEvent {
 

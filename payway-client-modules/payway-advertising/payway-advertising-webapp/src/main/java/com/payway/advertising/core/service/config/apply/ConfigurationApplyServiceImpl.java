@@ -354,7 +354,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 @Override
                                 public void onServerException(final ExceptionResponse exception) {
                                     try {
-                                        log.error("Apply local->server configuration", exception.getMessage());
+                                        log.error("Apply local->server configuration = {}", exception);
 
                                         //3.3.1 remove tmp local-server folder
                                         fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
