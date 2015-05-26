@@ -19,15 +19,15 @@ import org.codehaus.plexus.util.StringUtils;
  * @created 13.05.15 00:00
  */
 @Slf4j
-public class DbAgentFileOwnerBeanItemContainer extends BeanItemContainer<DbAgentFileOwner> {
+public class AgentFileOwnerBeanItemContainer extends BeanItemContainer<DbAgentFileOwner> {
 
     private AgentFileOwnerService service;
 
-    public DbAgentFileOwnerBeanItemContainer() {
+    public AgentFileOwnerBeanItemContainer() {
         super(DbAgentFileOwner.class);
     }
 
-    public DbAgentFileOwnerBeanItemContainer(AgentFileOwnerService service) {
+    public AgentFileOwnerBeanItemContainer(AgentFileOwnerService service) {
         this();
         this.service = service;
     }

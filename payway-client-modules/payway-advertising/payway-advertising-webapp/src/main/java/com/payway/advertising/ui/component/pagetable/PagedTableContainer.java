@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PagedTableContainer implements Container, Container.Indexed,
-        Container.Sortable {
+  Container.Sortable {
 
     private static final long serialVersionUID = -2134233618583099046L;
 
@@ -105,20 +105,17 @@ public class PagedTableContainer implements Container, Container.Indexed,
     }
 
     @Override
-    public boolean removeItem(Object itemId)
-            throws UnsupportedOperationException {
+    public boolean removeItem(Object itemId) throws UnsupportedOperationException {
         return container.removeItem(itemId);
     }
 
     @Override
-    public boolean addContainerProperty(Object propertyId, Class<?> type,
-            Object defaultValue) throws UnsupportedOperationException {
+    public boolean addContainerProperty(Object propertyId, Class<?> type, Object defaultValue) throws UnsupportedOperationException {
         return container.addContainerProperty(propertyId, type, defaultValue);
     }
 
     @Override
-    public boolean removeContainerProperty(Object propertyId)
-            throws UnsupportedOperationException {
+    public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
         return container.removeContainerProperty(propertyId);
     }
 
@@ -127,50 +124,58 @@ public class PagedTableContainer implements Container, Container.Indexed,
         return container.removeAllItems();
     }
 
+    @Override
     public Object nextItemId(Object itemId) {
         return container.nextItemId(itemId);
     }
 
+    @Override
     public Object prevItemId(Object itemId) {
         return container.prevItemId(itemId);
     }
 
+    @Override
     public Object firstItemId() {
         return container.firstItemId();
     }
 
+    @Override
     public Object lastItemId() {
         return container.lastItemId();
     }
 
+    @Override
     public boolean isFirstId(Object itemId) {
         return container.isFirstId(itemId);
     }
 
+    @Override
     public boolean isLastId(Object itemId) {
         return container.isLastId(itemId);
     }
 
-    public Object addItemAfter(Object previousItemId)
-            throws UnsupportedOperationException {
+    @Override
+    public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
         return container.addItemAfter(previousItemId);
     }
 
-    public Item addItemAfter(Object previousItemId, Object newItemId)
-            throws UnsupportedOperationException {
+    @Override
+    public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
         return container.addItemAfter(previousItemId, newItemId);
     }
 
+    @Override
     public int indexOfId(Object itemId) {
         return container.indexOfId(itemId);
     }
 
+    @Override
     public Object addItemAt(int index) throws UnsupportedOperationException {
         return container.addItemAt(index);
     }
 
-    public Item addItemAt(int index, Object newItemId)
-            throws UnsupportedOperationException {
+    @Override
+    public Item addItemAt(int index, Object newItemId) throws UnsupportedOperationException {
         return container.addItemAt(index, newItemId);
     }
 
@@ -188,7 +193,7 @@ public class PagedTableContainer implements Container, Container.Indexed,
     public Collection<?> getSortableContainerPropertyIds() {
         if (container instanceof Container.Sortable) {
             return ((Container.Sortable) container)
-                    .getSortableContainerPropertyIds();
+              .getSortableContainerPropertyIds();
         }
         return Collections.EMPTY_LIST;
     }

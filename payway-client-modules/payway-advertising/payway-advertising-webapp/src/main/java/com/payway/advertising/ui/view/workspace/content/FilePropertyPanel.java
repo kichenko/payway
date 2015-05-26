@@ -154,7 +154,7 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void initOwnerBeanContainer() {
         //set custom container for owner combobox
-        tabGeneral.getCbOwner().setContainerDataSource(new DbAgentFileOwnerBeanItemContainer(agentFileOwnerService));
+        tabGeneral.getCbOwner().setContainerDataSource(new AgentFileOwnerBeanItemContainer(agentFileOwnerService));
         tabGeneral.getCbOwner().setFilteringMode(FilteringMode.CONTAINS);
         tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
@@ -191,7 +191,7 @@ public class FilePropertyPanel extends VerticalLayout {
 
         tabGeneral.getCbOwner().getContainerDataSource().removeAllItems();
         if (beanItem.getBean().getOwner() != null) {
-            ((DbAgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addItem(beanItem.getBean().getOwner());
+            ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addItem(beanItem.getBean().getOwner());
         }
 
         tabGeneral.getEditFileName().setReadOnly(false);

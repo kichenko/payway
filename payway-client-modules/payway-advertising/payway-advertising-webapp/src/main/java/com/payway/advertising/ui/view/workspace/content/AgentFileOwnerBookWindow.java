@@ -7,6 +7,7 @@ import com.payway.advertising.ui.component.pagetable.PagedTable;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import lombok.NoArgsConstructor;
@@ -44,5 +45,27 @@ public class AgentFileOwnerBookWindow extends Window {
         setContent(Clara.create("AgentFileOwnerBookWindow.xml", this));
         layoutGridControls.addComponent(gridOwners.createControls());
         txtFilter.setIcon(FontAwesome.SEARCH);
+
+        init();
+    }
+
+    private void init() {
+
+        gridOwners.setContainerDataSource(new AgentFileOwnerLazyBeanContainer());
+
+
+        gridOwners.addGeneratedColumn("name", new Table.ColumnGenerator() {
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                return "";
+            }
+        });
+
+        gridOwners.addGeneratedColumn("description", new Table.ColumnGenerator() {
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                return "";
+            }
+        });
     }
 }
