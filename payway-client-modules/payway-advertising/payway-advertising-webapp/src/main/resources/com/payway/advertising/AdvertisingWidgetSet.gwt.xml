@@ -20,7 +20,7 @@
 
     
 
-    <inherits name="com.payway.advertising.ui.AppWidgetSet" />
+    
 
-    <inherits name="com.payway.advertising.ui.AppWidgetSet1" />
+    
 </module>

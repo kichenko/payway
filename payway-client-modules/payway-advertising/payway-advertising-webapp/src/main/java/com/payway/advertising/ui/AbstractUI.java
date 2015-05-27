@@ -4,6 +4,8 @@
 package com.payway.advertising.ui;
 
 import com.payway.advertising.ui.bus.SessionEventBus;
+import com.payway.advertising.ui.component.ProgressBarWindow;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 /**
@@ -12,7 +14,30 @@ import com.vaadin.ui.UI;
  * @author Sergey Kichenko
  * @created 21.05.15 00:00
  */
-public abstract class AbstractUI extends UI {
+public abstract class AbstractUI extends UI implements InteractionUI {
+
+    private static final long serialVersionUID = -6064942685119985127L;
 
     public abstract SessionEventBus getSessionEventBus();
+
+    private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();
+
+    @Override
+    public void showNotification(String caption, String text, Notification.Type kind) {
+        Notification.show(text, kind);
+        UI.getCurrent().push();
+    }
+
+    @Override
+    public void showProgressBar() {
+        progressBarWindow.show();
+        UI.getCurrent().push();
+    }
+
+    @Override
+    public void closeProgressBar() {
+        progressBarWindow.close();
+        UI.getCurrent().push();
+    }
+
 }

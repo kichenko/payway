@@ -4,6 +4,7 @@
 package com.payway.advertising.ui;
 
 import com.google.common.eventbus.Subscribe;
+import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
@@ -26,7 +27,6 @@ import com.payway.advertising.ui.view.core.Constants;
 import com.payway.advertising.ui.view.core.LoginView;
 import com.payway.advertising.ui.view.core.MainView;
 import com.payway.advertising.ui.view.workspace.content.AgentFileOwnerBookWindow;
-import com.payway.advertising.ui.view.workspace.content.AgentFileOwnerCRUDWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
@@ -104,6 +104,11 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     @Autowired
     @Qualifier(value = "configurationApplyService")
     private ConfigurationApplyService configurationApplyService;
+
+    @Getter
+    @Autowired
+    @Qualifier(value = "agentFileOwnerService")
+    private AgentFileOwnerService agentFileOwnerService;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -204,8 +209,8 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
         } else {
             //loginView.initialize();
             //setContent(loginView);
-            this.addWindow(new AgentFileOwnerBookWindow("Agent owners book"));
-            this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner"));
+            this.addWindow(new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService));
+            //this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner"));
         }
     }
 

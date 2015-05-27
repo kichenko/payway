@@ -3,14 +3,26 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import com.payway.advertising.core.service.AgentFileOwnerService;
+import com.payway.advertising.model.DbAgentFileOwner;
+import com.payway.advertising.ui.InteractionUI;
 import com.payway.advertising.ui.component.pagetable.PagedTable;
+import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
@@ -20,6 +32,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @author Sergey Kichenko
  * @created 26.05.15 00:00
  */
+@Slf4j
 @NoArgsConstructor
 public class AgentFileOwnerBookWindow extends Window {
 
@@ -37,24 +50,45 @@ public class AgentFileOwnerBookWindow extends Window {
     @UiField
     private HorizontalLayout layoutGridControls;
 
-    public AgentFileOwnerBookWindow(String caption) {
+    private Container gridContainer;
+
+    @Getter
+    @Setter
+    private AgentFileOwnerService agentFileOwnerService;
+
+    public AgentFileOwnerBookWindow(String caption, AgentFileOwnerService agentFileOwnerService) {
         setCaption(caption);
         setResizable(false);
-        //setDraggable(false);
 
         setContent(Clara.create("AgentFileOwnerBookWindow.xml", this));
         layoutGridControls.addComponent(gridOwners.createControls());
         txtFilter.setIcon(FontAwesome.SEARCH);
+
+        setAgentFileOwnerService(agentFileOwnerService);
+        
+        gridOwners.sort(propertyId, ascending);
 
         init();
     }
 
     private void init() {
 
-        gridOwners.setContainerDataSource(new AgentFileOwnerLazyBeanContainer());
+        gridContainer = new AgentFileOwnerLazyBeanContainer(DbAgentFileOwner.class, agentFileOwnerService, new AgentFileOwnerLazyBeanContainer.LazyLoadExceptionCallback() {
+            @Override
+            public void exception(Exception ex) {
+                log.error("Lazy container load data", ex);
+                ((InteractionUI) UI.getCurrent()).showNotification("Loading agent owners", "Error loading agent owner", Notification.Type.ERROR_MESSAGE);
+            }
+        });
 
+        gridOwners.setContainerDataSource(gridContainer);
+        gridOwners.setPageLength(10);
+        gridOwners.setImmediate(true);
+        gridOwners.setSelectable(true);
 
         gridOwners.addGeneratedColumn("name", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 return "";
@@ -62,9 +96,157 @@ public class AgentFileOwnerBookWindow extends Window {
         });
 
         gridOwners.addGeneratedColumn("description", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 return "";
+            }
+        });
+
+        gridOwners.addGeneratedColumn("edit", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
+            @Override
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+
+                Button btn = new Button(FontAwesome.EDIT);
+                btn.addStyleName("tiny");
+                btn.addStyleName("friendly");
+                btn.addStyleName("icon-only");
+
+                btn.addClickListener(new Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
+
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Edit agent owner", new DbAgentFileOwner());
+                        wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
+                            @Override
+                            public void cancel() {
+                                wnd.close();
+                            }
+
+                            @Override
+                            public void save(DbAgentFileOwner owner) {
+                                //save to DB
+                                try {
+                                    ((InteractionUI) UI.getCurrent()).showProgressBar();
+                                    agentFileOwnerService.save(owner);
+                                    gridOwners.markAsDirtyRecursive();
+                                    wnd.close();
+                                } catch (Exception ex) {
+                                    log.error("Edit agent owner", ex);
+                                    ((InteractionUI) UI.getCurrent()).showNotification("Edit agent owner", "Error edit agent owner", Notification.Type.ERROR_MESSAGE);
+                                } finally {
+                                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                                }
+                            }
+                        });
+
+                        wnd.show();
+                    }
+                });
+
+                HorizontalLayout layout = new HorizontalLayout(btn);
+                layout.setSizeFull();
+                layout.setComponentAlignment(btn, Alignment.MIDDLE_CENTER);
+
+                return layout;
+            }
+        });
+
+        gridOwners.addGeneratedColumn("delete", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
+            @Override
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+
+                Button btn = new Button(FontAwesome.ERASER);
+                btn.addStyleName("tiny");
+                btn.addStyleName("danger");
+                btn.addStyleName("icon-only");
+
+                btn.addClickListener(new Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
+
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        //delete in DB
+                        try {
+                            gridOwners.removeItem(itemId);
+                        } catch (Exception ex) {
+                            //
+                        }
+                    }
+                });
+
+                HorizontalLayout layout = new HorizontalLayout(btn);
+                layout.setSizeFull();
+                layout.setComponentAlignment(btn, Alignment.MIDDLE_CENTER);
+
+                return layout;
+            }
+        });
+
+        //set column view
+        gridOwners.setColumnHeader("name", "Name");
+        gridOwners.setColumnHeader("description", "Description");
+        gridOwners.setColumnHeader("edit", "");
+        gridOwners.setColumnHeader("delete", "");
+
+        gridOwners.setVisibleColumns("name", "description", "edit", "delete");
+
+        gridOwners.setColumnWidth("edit", 40);
+        gridOwners.setColumnWidth("delete", 40);
+
+        //add new
+        btnAddNew.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+
+                final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Create agent owner", new DbAgentFileOwner());
+                wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
+                    @Override
+                    public void cancel() {
+                        wnd.close();
+                    }
+
+                    @Override
+                    public void save(DbAgentFileOwner owner) {
+                        //save to DB
+                        try {
+                            ((InteractionUI) UI.getCurrent()).showProgressBar();
+                            agentFileOwnerService.save(owner);
+                            gridOwners.markAsDirtyRecursive();
+                            wnd.close();
+                        } catch (Exception ex) {
+                            log.error("Create agent owner", ex);
+                            ((InteractionUI) UI.getCurrent()).showNotification("Create agent owner", "Error create agent owner", Notification.Type.ERROR_MESSAGE);
+                        } finally {
+                            ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                        }
+                    }
+                });
+
+                wnd.show();
+            }
+        });
+
+        //filter
+        txtFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            private static final long serialVersionUID = -7737508544027152963L;
+
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                Container.Filterable filterable = (Container.Filterable) gridContainer;
+                if (filterable != null) {
+                    filterable.removeAllContainerFilters();
+                    filterable.addContainerFilter(new SimpleStringFilter("name", event.getText(), true, false));
+                    gridOwners.refreshRowCache();
+                }
             }
         });
     }
