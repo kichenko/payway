@@ -6,9 +6,11 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.ui.InteractionUI;
-import com.payway.advertising.ui.component.pagetable.PagedTable;
-import com.vaadin.data.Container;
-import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.payway.advertising.ui.component.table.paging.AgentFileOwnerPagingBeanContainer;
+import com.payway.advertising.ui.component.table.paging.IPagingContainer;
+import com.payway.advertising.ui.component.table.paging.PagingTableControls;
+import com.payway.advertising.ui.component.table.paging.PagingTableImpl;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
@@ -45,12 +47,12 @@ public class AgentFileOwnerBookWindow extends Window {
     private TextField txtFilter;
 
     @UiField
-    private PagedTable gridOwners;
+    private PagingTableImpl gridOwners;
 
     @UiField
     private HorizontalLayout layoutGridControls;
 
-    private Container gridContainer;
+    private AgentFileOwnerPagingBeanContainer gridContainer;
 
     @Getter
     @Setter
@@ -61,37 +63,37 @@ public class AgentFileOwnerBookWindow extends Window {
         setResizable(false);
 
         setContent(Clara.create("AgentFileOwnerBookWindow.xml", this));
-        layoutGridControls.addComponent(gridOwners.createControls());
         txtFilter.setIcon(FontAwesome.SEARCH);
-
         setAgentFileOwnerService(agentFileOwnerService);
-        
-        gridOwners.sort(propertyId, ascending);
 
         init();
+
+        gridOwners.refresh();
     }
 
     private void init() {
 
-        gridContainer = new AgentFileOwnerLazyBeanContainer(DbAgentFileOwner.class, agentFileOwnerService, new AgentFileOwnerLazyBeanContainer.LazyLoadExceptionCallback() {
+        gridContainer = new AgentFileOwnerPagingBeanContainer(DbAgentFileOwner.class, agentFileOwnerService);
+        gridContainer.setErrorListener(new IPagingContainer.IErrorPagingLoad() {
             @Override
-            public void exception(Exception ex) {
-                log.error("Lazy container load data", ex);
-                ((InteractionUI) UI.getCurrent()).showNotification("Loading agent owners", "Error loading agent owner", Notification.Type.ERROR_MESSAGE);
+            public void error(Exception ex) {
+                log.error("Load agent owners", ex);
+                ((InteractionUI) UI.getCurrent()).showNotification("Load agent owners", "Error load agent owners", Notification.Type.ERROR_MESSAGE);
             }
         });
 
         gridOwners.setContainerDataSource(gridContainer);
-        gridOwners.setPageLength(10);
         gridOwners.setImmediate(true);
         gridOwners.setSelectable(true);
+
+        layoutGridControls.addComponent(new PagingTableControls(gridOwners));
 
         gridOwners.addGeneratedColumn("name", new Table.ColumnGenerator() {
             private static final long serialVersionUID = 2855441121974230973L;
 
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                return "";
+                return ((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean().getName();
             }
         });
 
@@ -100,7 +102,7 @@ public class AgentFileOwnerBookWindow extends Window {
 
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                return "";
+                return ((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean().getDescription();
             }
         });
 
@@ -120,7 +122,7 @@ public class AgentFileOwnerBookWindow extends Window {
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Edit agent owner", new DbAgentFileOwner());
+                        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Edit agent owner", ((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean());
                         wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
                             @Override
                             public void cancel() {
@@ -174,9 +176,15 @@ public class AgentFileOwnerBookWindow extends Window {
                     public void buttonClick(Button.ClickEvent event) {
                         //delete in DB
                         try {
+                            ((InteractionUI) UI.getCurrent()).showProgressBar();
+                            agentFileOwnerService.delete(((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean());
                             gridOwners.removeItem(itemId);
+                            gridOwners.markAsDirtyRecursive();
                         } catch (Exception ex) {
-                            //
+                            log.error("Delete agent owner", ex);
+                            ((InteractionUI) UI.getCurrent()).showNotification("Delete agent owner", "Error delete agent owner", Notification.Type.ERROR_MESSAGE);
+                        } finally {
+                            ((InteractionUI) UI.getCurrent()).closeProgressBar();
                         }
                     }
                 });
@@ -207,7 +215,7 @@ public class AgentFileOwnerBookWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
 
-                final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Create agent owner", new DbAgentFileOwner());
+                final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Create agent owner", new DbAgentFileOwner("", ""));
                 wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
                     @Override
                     public void cancel() {
@@ -241,11 +249,10 @@ public class AgentFileOwnerBookWindow extends Window {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                Container.Filterable filterable = (Container.Filterable) gridContainer;
-                if (filterable != null) {
-                    filterable.removeAllContainerFilters();
-                    filterable.addContainerFilter(new SimpleStringFilter("name", event.getText(), true, false));
-                    gridOwners.refreshRowCache();
+                if (event.getText() != null && !event.getText().isEmpty()) {
+                    gridOwners.addCriteria("name", event.getText());
+                } else {
+                    gridOwners.removeCriteria("name");
                 }
             }
         });

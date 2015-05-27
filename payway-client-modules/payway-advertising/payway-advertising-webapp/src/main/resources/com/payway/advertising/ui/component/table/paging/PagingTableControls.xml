@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutPagingTableControls">
+
+    <Button id="btnRefresh" styleName="small icon-only" width="50px" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+    <ComboBox id="cbPageSize" styleName="small" textInputAllowed="false" width="80px" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+    <Button id="btnFirst" styleName="small icon-only"  p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+    <Button id="btnPrevious" styleName="small icon-only" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+    <TextField id="editPage" styleName="small" width="50px" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+    <Label id="lbSeparator" value="/" styleName="small"  p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+    <Label id="lbPageTotal" styleName="small" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+    <Button id="btnNext" styleName="small icon-only" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+    <Button id="btnLast" styleName="small icon-only" p:componentAlignment="MIDDLE_CENTER" p:expandRatio="1"/>
+
+</HorizontalLayout>

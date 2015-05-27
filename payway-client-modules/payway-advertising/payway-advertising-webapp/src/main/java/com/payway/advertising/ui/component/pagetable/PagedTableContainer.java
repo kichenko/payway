@@ -57,6 +57,7 @@ public class PagedTableContainer implements Container, Container.Indexed,
         return container.size();
     }
 
+    @Override
     public Object getIdByIndex(int index) {
         return container.getIdByIndex(index + startIndex);
     }

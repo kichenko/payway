@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent"  xmlns:pt="urn:import:com.payway.advertising.ui.component.pagetable" id="layoutAgentFileOwnerBook" styleName="form-agent-owner-book-layout">
+<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent"  xmlns:tp="urn:import:com.payway.advertising.ui.component.table.paging" id="layoutAgentFileOwnerBook" styleName="form-agent-owner-book-layout">
 
     <HorizontalLayout id="layoutControls" styleName="form-agent-owner-book-layout-controls-up">
         <TextField id="txtFilter" inputPrompt="Filter" p:componentAlignment="MIDDLE_CENTER" styleName="inline-icon small form-agent-owner-book-txt-filter"/>
         <Button id="btnAddNew" caption="+ Add owner" p:componentAlignment="MIDDLE_CENTER" styleName="friendly small form-agent-owner-book-btn-add-new"/>
-    </HorizontalLayout>  
-      
+    </HorizontalLayout>
+
     <VerticalLayout id="layoutGridOwner" styleName="form-agent-owner-book-grid-layout">
-        <pt:PagedTable id="gridOwners" height="300px" width="100%" styleName=""/>
+        <tp:PagingTableImpl id="gridOwners" height="300px" width="100%" styleName=""/>
     </VerticalLayout>
-            
+
     <HorizontalLayout id="layoutСontrolsDown" styleName="form-agent-owner-book-grid-controls">
         <HorizontalLayout id="layoutGridControls" p:componentAlignment="MIDDLE_CENTER" styleName=""/>
-    </HorizontalLayout>        
-           
+    </HorizontalLayout>
+
 </VerticalLayout>

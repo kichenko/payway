@@ -28,10 +28,4 @@ public interface AgentFileOwnerDao extends JpaRepository<DbAgentFileOwner, Long>
     @Query(value = "select o from DbAgentFileOwner o")
     Page<DbAgentFileOwner> list(Pageable pageable);
 
-    @Query(value = "select count(o.id) from DbAgentFileOwner o where o.name like '%' || :name || '%'")
-    long countFindByName(@Param("name") String name);
-
-    @Query(value = "select count(o.id) from DbAgentFileOwner o")
-    long countList();
-
 }

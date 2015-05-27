@@ -16,8 +16,6 @@ import com.vaadin.ui.UI;
  */
 public abstract class AbstractUI extends UI implements InteractionUI {
 
-    private static final long serialVersionUID = -6064942685119985127L;
-
     public abstract SessionEventBus getSessionEventBus();
 
     private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();

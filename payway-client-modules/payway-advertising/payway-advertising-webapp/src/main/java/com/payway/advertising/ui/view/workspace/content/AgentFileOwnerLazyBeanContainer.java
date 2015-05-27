@@ -7,11 +7,6 @@ import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.data.util.filter.UnsupportedFilterException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,11 +65,11 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
         try {
             if (isDirty()) {
                 log.debug("@@@@");
-                if (getFilterString() != null && getFilterString().isEmpty()) {
-                    count = agentFileOwnerService.countFindByName(getFilterString());
-                } else {
-                    count = agentFileOwnerService.countList();
-                }
+                //if (getFilterString() != null && getFilterString().isEmpty()) {
+                    //count = agentFileOwnerService.countFindByName(getFilterString());
+                //} else {
+                   // count = agentFileOwnerService.countList();
+               // }
                 setDirty(false);
             }
         } catch (Exception ex) {
@@ -92,7 +87,7 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
     public BeanItem getItem(Object itemId) {
         return new BeanItem(itemId);
     }
-
+/*
     @Override
     public List<Long> getItemIds(int startIndex, int numberOfIds) {
 
@@ -105,8 +100,8 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
                     if (filter instanceof SimpleStringFilter) {
                         internalRemoveAllItems();
 
-                        owners = agentFileOwnerService.findByName(((SimpleStringFilter) filter).getFilterString(), startIndex, numberOfIds, getSort());
-                        itemIds = new ArrayList(owners.size());
+                        //owners = agentFileOwnerService.findByName(((SimpleStringFilter) filter).getFilterString(), startIndex, numberOfIds, getSort());
+                        //itemIds = new ArrayList(owners.size());
                         setDirty(false);
                         log.debug("###");
 
@@ -120,15 +115,15 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
             } else {
                 internalRemoveAllItems();
 
-                owners = agentFileOwnerService.list(startIndex, numberOfIds, getSort());
-                itemIds = new ArrayList(owners.size());
+                //owners = agentFileOwnerService.list(startIndex, numberOfIds, getSort());
+                //itemIds = new ArrayList(owners.size());
                 setDirty(false);
                 log.debug("%%%");
 
-                for (DbAgentFileOwner owner : owners) {
-                    internalAddItemAtEnd(owner.getId(), new BeanItem<>(owner), false);
-                    itemIds.add(owner.getId());
-                }
+                //for (DbAgentFileOwner owner : owners) {
+                //    internalAddItemAtEnd(owner.getId(), new BeanItem<>(owner), false);
+                //    itemIds.add(owner.getId());
+                /}
             }
         } catch (Exception ex) {
             log.error("Get items content in lazy container", ex);
@@ -159,9 +154,9 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
 
     @Override
     public void removeAllContainerFilters() {
-        
+
         super.removeAllContainerFilters();
-        
+
         setDirty(true);
         //setFilterString("");
     }
@@ -183,5 +178,5 @@ public class AgentFileOwnerLazyBeanContainer extends BeanContainer<Long, DbAgent
     public boolean containsId(Object itemId) {
         // we need this because of value change listener (otherwise selected item event won't be fired)
         return true;
-    }
+    }*/
 }
