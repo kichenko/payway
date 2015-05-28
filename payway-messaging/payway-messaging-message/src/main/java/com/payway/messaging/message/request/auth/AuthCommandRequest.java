@@ -4,12 +4,7 @@
 package com.payway.messaging.message.request.auth;
 
 import com.payway.messaging.core.request.command.CommandRequest;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author Sergey Kichenko
@@ -19,7 +14,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = "password")
 @EqualsAndHashCode(callSuper = true)
 public class AuthCommandRequest extends CommandRequest {
 

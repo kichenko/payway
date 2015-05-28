@@ -7,7 +7,6 @@ import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileOwnerDeepCopyClonable;
 import com.payway.advertising.ui.InteractionUI;
-import com.payway.advertising.ui.component.table.paging.AgentFileOwnerPagingBeanContainer;
 import com.payway.advertising.ui.component.table.paging.IPagingContainer;
 import com.payway.advertising.ui.component.table.paging.PagingTableControls;
 import com.payway.advertising.ui.component.table.paging.PagingTableImpl;

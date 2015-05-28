@@ -448,6 +448,7 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
     <distributionManagement>
         <repository>
             <id>deployment</id>
@@ -460,4 +461,5 @@
             <url>http://maven.code-stable.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
 </project>
