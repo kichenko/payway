@@ -67,68 +67,68 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @PreserveOnRefresh
 @Widgetset("com.payway.advertising.AdvertisingWidgetSet")
 public class AdvertisingUI extends AbstractUI implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
-
+    
     @Autowired
     private MainView mainView;
-
+    
     @Autowired
     private LoginView loginView;
-
+    
     @Autowired
     @Qualifier(value = "userAppService")
     private UserAppService userAppService;
-
+    
     @Autowired
     @Qualifier(value = "userService")
     private UserService userService;
-
+    
     @Autowired
     @Qualifier(value = "configurationService")
     private ConfigurationService configurationService;
-
+    
     @Autowired
     @Qualifier(value = "settingsAppService")
     SettingsAppService settingsAppService;
-
+    
     @Autowired
     @Qualifier(value = "notificationService")
     private NotificationService notificationService;
-
+    
     @Getter
     @Autowired
     @Qualifier(value = "sessionEventBus")
     private SessionEventBus sessionEventBus;
-
+    
     @Getter
     @Autowired
     @Qualifier(value = "configurationApplyService")
     private ConfigurationApplyService configurationApplyService;
-
+    
     @Getter
     @Autowired
     @Qualifier(value = "agentFileOwnerService")
     private AgentFileOwnerService agentFileOwnerService;
-
+    
     @Override
     protected void init(VaadinRequest request) {
         settingsAppService.setContextPath(request.getContextPath());
         updateContent();
-
+        
         addDetachListener(new DetachListener() {
             @Override
             public void detach(DetachEvent event) {
                 cleanUp();
             }
         });
-
+        
         sessionEventBus.addSubscriber(this);
     }
-
+    
     private void cleanUp() {
         sessionEventBus.removeSubscriber(this);
         notificationService.removeSubscriber(mainView.getBtnNotifications());
     }
-
+    
     private void closeNotificationsButtonPopupWindow() {
         for (Window window : getUI().getWindows()) {
             if (window instanceof NotificationsButtonPopupWindow) {
@@ -137,11 +137,11 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             }
         }
     }
-
+    
     private void sendApplyConfigurationStatusNotification(ApplyConfigurationStatus status) {
         notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
     }
-
+    
     @Subscribe
     public void processSessionBusEvent(Object event) {
         if (event != null) {
@@ -156,13 +156,13 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             log.error("Session bus get empty (null) event");
         }
     }
-
+    
     private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
         items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png")));
         return items;
     }
-
+    
     private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
         return Collections.singletonList(
                 new ImmutableTriple<String, Resource, MenuBar.Command>(
@@ -176,10 +176,10 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                             }
                         }));
     }
-
+    
     private void refreshApplyConfigNotification() {
         ApplyConfigurationStatus status = configurationApplyService.getStatus();
-
+        
         if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
             notificationService.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
         }
@@ -194,7 +194,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     private void refreshNotifications() {
         refreshApplyConfigNotification();
     }
-
+    
     private void updateContent() {
         DbUser user = userAppService.getUser();
         if (user != null) {
@@ -202,17 +202,18 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             mainView.initializeUserMenu(user.getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
             notificationService.addSubscriber(mainView.getBtnNotifications());
             mainView.getSideBarMenu().select(0);
-
+            
             refreshNotifications();
             setContent(mainView);
         } else {
             loginView.initialize();
             setContent(loginView);
+            //this.addWindow(new WindowTest());
             //this.addWindow(new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService));
-            //this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner"));
+            //this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner", null));
         }
     }
-
+    
     @Override
     public void onServerResponse(final SuccessResponse response, final Map<String, Object> data) {
         if (response instanceof AbstractAuthCommandResponse) {
@@ -220,14 +221,14 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                 try {
                     UserDto userDto = ((AuthSuccessCommandResponse) response).getUser();
                     if (userDto != null) {
-
+                        
                         boolean isRememberMe = false;
-
+                        
                         DbUser user = userService.findUserByLogin(userDto.getUsername(), true);
                         if (user == null) {
                             throw new Exception("Error authentication/authorization user");
                         }
-
+                        
                         DbConfiguration config = configurationService.findConfigurationByUser(user, true);
                         if (config == null) {
                             throw new Exception("Error authentication/authorization user");
@@ -244,7 +245,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                         if (data != null) {
                             isRememberMe = data.get(Attributes.REMEMBER_ME.value()) == null ? false : (Boolean) data.get(Attributes.REMEMBER_ME.value());
                         }
-
+                        
                         if (isRememberMe) {
                             Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getToken());
                             cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
@@ -256,7 +257,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
                             //#hack cookie
                             UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
                         }
-
+                        
                         updateContent();
                     } else {
                         throw new Exception("Authentication/authorization user");
@@ -270,24 +271,24 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             }
         }
     }
-
+    
     @Override
     public void onServerResponse(final SuccessResponse response) {
         //
     }
-
+    
     @Override
     public void onServerException(final ExceptionResponse exception) {
         log.error("Authentication/authorization user {}", exception);
         UIUtils.showErrorNotification("", "Error authentication/authorization user");
     }
-
+    
     @Override
     public void onLocalException(Exception ex) {
         log.error("Authentication/authorization user {}", ex);
         UIUtils.showErrorNotification("", "Error authentication/authorization user");
     }
-
+    
     @Override
     public void onTimeout() {
         log.error("Timeout authentication/authorization user {}");

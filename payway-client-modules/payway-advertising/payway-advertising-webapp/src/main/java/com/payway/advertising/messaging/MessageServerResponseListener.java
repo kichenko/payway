@@ -3,8 +3,10 @@
  */
 package com.payway.advertising.messaging;
 
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.payway.messaging.core.ResponseEnvelope;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,9 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
     private TaskExecutor serverTaskExecutor;
     private BlockingQueue<ResponseEnvelope> clientQueue;
 
+    private long timeOut;
+    private TimeUnit timeUnit;
+
     private volatile boolean interrupt = false;
 
     @Override
@@ -53,14 +58,25 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
         while (!interrupt) {
             try {
                 log.info("Waiting for a response message from the server");
-                ResponseEnvelope envelope = clientQueue.take();
+                ResponseEnvelope envelope = clientQueue.poll(timeOut, timeUnit);
                 log.info("Getting the response message from the server, start processing");
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
+            } catch (InterruptedException ex) {
+                log.error("Client queue is interrputed", ex);
+                break;
+            } catch (HazelcastInstanceNotActiveException ex) {
+                log.error("Hazlecast instance is not active", ex);
+                break;
             } catch (Exception ex) {
-                log.error("Failed to get a response message from the server", ex);
+                log.error("Unknown exception on server message processing", ex);
+                break;
             }
         }
 
-        log.info("Exit from message server response listener");
+        if (interrupt) {
+            log.warn("Exit from message server in active status (interrupt==true)");
+        } else {
+            log.info("Exit from message server");
+        }
     }
 }

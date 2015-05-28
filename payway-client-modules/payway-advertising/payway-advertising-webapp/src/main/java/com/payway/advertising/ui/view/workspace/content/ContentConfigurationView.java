@@ -24,6 +24,11 @@ import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileDeepCopyClonable;
 import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
+import com.payway.advertising.ui.component.UploadButtonWrapper;
+import com.payway.advertising.ui.upload.UploadListener;
+import com.payway.advertising.ui.upload.UploadTask;
+import com.payway.advertising.ui.upload.UploadTaskDnD;
+import com.payway.advertising.ui.upload.UploadTaskFileInput;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.AbstractWorkspaceView;
 import com.vaadin.data.Item;
@@ -39,7 +44,6 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Html5File;
@@ -48,6 +52,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -77,11 +82,15 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component(value = "content-configuration")
 public class ContentConfigurationView extends AbstractWorkspaceView implements UploadListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
+    private static final long serialVersionUID = -8149543787791067201L;
+
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ContextMenuItemData implements Serializable {
+
+        private static final long serialVersionUID = -3500210886880680122L;
 
         public enum MenuAction {
 
@@ -167,7 +176,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     @Setter
     private String currentPath;
 
-    private boolean isFileGridLoadedOnActivate = false;
+    private boolean isFileGridLoadedOnActivate;
 
     @PostConstruct
     public void postConstruct() {
@@ -233,49 +242,54 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     }
 
     private void activateFileUploadButton() {
-        getFileUploadPanel().addButtonUploadClickListener(new Button.ClickListener() {
+
+        UploadButtonWrapper.UploadStartedEventProcessor processor = new UploadButtonWrapper.UploadStartedEventProcessor() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                //###
-                UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsAppService.getUploadBufferSize());
-                task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
-                task.addListener(ContentConfigurationView.this);
-                new FileUploadWindow("Choose a file to upload", task,
-                        new FileUploadWindow.FileUploadWindowEvent() {
-                            @Override
-                            public boolean onOk(UploadTaskFileInput uploadTask) {
-                                boolean isOk = false;
-                                if (StringUtils.isBlank(uploadTask.getFileName())) {
-                                    UIUtils.showErrorNotification("", "Please, select file to upload");
-                                } else {
-                                    try {
-                                        if (fileSystemManagerService.exist(new FileSystemObject(uploadTask.getPath() + uploadTask.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
-                                            UIUtils.showErrorNotification("", "File already downloaded on server");
-                                        } else {
-                                            getUploadTaskPanel().addUploadTask(uploadTask);
-                                            isOk = true;
-                                        }
-                                    } catch (Exception ex) {
-                                        log.error("Unknown file upload error", ex);
-                                        UIUtils.showErrorNotification("", "Unknown file upload error");
-                                    }
-                                }
+            public boolean process(Upload upload, Upload.StartedEvent event) {
+                boolean ok = false;
+                if (upload != null) {
+                    UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsAppService.getUploadBufferSize());
 
-                                return isOk;
-                            }
+                    task.setUploadObject(upload);
+                    task.setFileName(event.getFilename());
+                    task.setFileSize(event.getContentLength());
+                    task.addListener(ContentConfigurationView.this);
+                    task.setTmpFileExt(settingsAppService.getTemporaryFileExt());
+                    upload.setReceiver(task);
 
-                            @Override
-                            public void onCancel() {
-                                //
+                    if (StringUtils.isBlank(task.getFileName())) {
+                        UIUtils.showErrorNotification("", "Please, select file to upload");
+                    } else {
+                        try {
+                            if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                                UIUtils.showErrorNotification("", "File already downloaded on server");
+                            } else {
+                                getUploadTaskPanel().addUploadTask(task);
+                                ok = true;
                             }
+                        } catch (Exception ex) {
+                            log.error("Unknown file upload error", ex);
+                            UIUtils.showErrorNotification("", "Unknown file upload error");
                         }
-                ).show();
+                    }
+
+                    if (!ok) {
+                        task.interrupt();
+                    }
+                }
+
+                return ok;
             }
-        });
+        };
+
+        getButtonFileUploadToolBar().setStartedEventProcessorListener(processor);
+        getFileUploadPanel().addButtonUploadStartedEventProcessor(processor);
     }
 
     private void activateDragAndDropWrapper() {
         getFileUploadPanel().addDragAndDropHandler(new DropHandler() {
+            private static final long serialVersionUID = 607722003300263265L;
+
             @Override
             public AcceptCriterion getAcceptCriterion() {
                 return AcceptAll.get();
@@ -286,7 +300,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 Html5File files[] = ((DragAndDropWrapper.WrapperTransferable) event.getTransferable()).getFiles();
                 if (files != null) {
                     for (final Html5File file : files) {
-                        //###
                         UploadTask task = new UploadTaskDnD(getCurrentPath(), settingsAppService.getUploadBufferSize());
                         task.addListener(ContentConfigurationView.this);
                         task.setFileName(file.getFileName());
@@ -345,6 +358,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Refresh
         getMenuBar().addItem("Refresh", new ThemeResource("images/grid_files_menu_item_refresh.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuRefreshFolder();
@@ -353,6 +368,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //New folder
         getMenuBar().addItem("New folder", new ThemeResource("images/grid_files_menu_item_new_folder.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuNewFolder();
@@ -361,6 +378,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Apply
         getMenuBar().addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuApplyConfig();
@@ -374,6 +393,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Refresh
         getMenuBar().addItem("Refresh", new ThemeResource("images/grid_files_menu_item_refresh.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuRefreshFolder();
@@ -382,6 +403,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //New folder
         getMenuBar().addItem("New folder", new ThemeResource("images/grid_files_menu_item_new_folder.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuNewFolder();
@@ -390,6 +413,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Edit
         getMenuBar().addItem("Edit", new ThemeResource("images/grid_files_menu_item_edit.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuEditFileOrFolder();
@@ -398,6 +423,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Remove
         getMenuBar().addItem("Remove", new ThemeResource("images/grid_files_menu_item_remove.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuRemoveFileOrFolder();
@@ -406,6 +433,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //Apply
         getMenuBar().addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuApplyConfig();
@@ -416,6 +445,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     private void initBreadCrumbs() {
         breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), getRootUserConfigPath());
         breadCrumbs.addBreadCrumbSelectListener(new BreadCrumbs.BreadCrumbSelectListener() {
+            private static final long serialVersionUID = 1291962818597591728L;
+
             @Override
             public void selected(int index) {
                 try {
@@ -465,6 +496,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         //grid sorting
         ((BeanItemContainer) gridFileExplorer.getContainerDataSource()).setItemSorter(
                 new DefaultItemSorter() {
+                    private static final long serialVersionUID = 1790648675965489066L;
 
                     @Override
                     protected int compareProperty(Object propertyId, boolean sortDirection, Item item1, Item item2) {
@@ -521,6 +553,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         //set double click event handler
         gridFileExplorer.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
+                    private static final long serialVersionUID = -2318797984292753676L;
+
                     @Override
                     public void itemClick(ItemClickEvent event) {
                         if (event.isDoubleClick()) {
@@ -532,6 +566,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         //set to detect row select change
         gridFileExplorer.addValueChangeListener(
                 new Property.ValueChangeListener() {
+                    private static final long serialVersionUID = -382717228031608542L;
+
                     @Override
                     public void valueChange(Property.ValueChangeEvent event) {
                         Object itemId = gridFileExplorer.getValue();
@@ -553,6 +589,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //set column name render
         gridFileExplorer.addGeneratedColumn("name", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 FileExplorerItemData bean = ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).getItem(itemId).getBean();
@@ -593,6 +631,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //set column size render
         gridFileExplorer.addGeneratedColumn("size", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 FileExplorerItemData bean = ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).getItem(itemId).getBean();
@@ -622,6 +662,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
         //set column date render
         gridFileExplorer.addGeneratedColumn("lastModifiedTime", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 2855441121974230973L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 FileExplorerItemData bean = ((BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource()).getItem(itemId).getBean();

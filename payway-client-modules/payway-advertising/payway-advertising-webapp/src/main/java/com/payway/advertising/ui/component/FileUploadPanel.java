@@ -5,7 +5,6 @@ package com.payway.advertising.ui.component;
 
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Panel;
@@ -21,8 +20,10 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 public class FileUploadPanel extends Panel {
 
+    private static final long serialVersionUID = -6586315769343597136L;
+
     @UiField
-    private Button btnFileUpload;
+    private UploadButtonWrapper btnFileUploadWrapper;
 
     @UiField
     private VerticalLayout layoutDragDropPanel;
@@ -39,19 +40,15 @@ public class FileUploadPanel extends Panel {
     private void init() {
         setSizeFull();
         setContent(Clara.create("FileUploadPanel.xml", this));
-
         setIcon(new ThemeResource("images/components/file_upload_panel/file_upload_panel.png"));
-
-        btnFileUpload.setIcon(new ThemeResource("images/components/file_upload_panel/file_attach.png"));
-        btnFileUpload.addStyleName("common-no-space-image-button");
 
         wrapper = new DragAndDropWrapper(layoutDragDropPanel);
         wrapper.setSizeFull();
         layoutFileUpload.addComponent(wrapper);
     }
 
-    public void addButtonUploadClickListener(Button.ClickListener clickListener) {
-        btnFileUpload.addClickListener(clickListener);
+    public void addButtonUploadStartedEventProcessor(UploadButtonWrapper.UploadStartedEventProcessor listener) {
+        btnFileUploadWrapper.setStartedEventProcessorListener(listener);
     }
 
     public void addDragAndDropHandler(DropHandler handler) {

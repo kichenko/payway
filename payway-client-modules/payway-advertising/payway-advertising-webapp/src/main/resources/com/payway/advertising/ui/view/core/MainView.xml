@@ -29,6 +29,7 @@
         <CssLayout id="panelHeader" styleName="main-panel-header">
             <HorizontalLayout id = "layoutToolBarLeft" styleName ="main-panel-header-toolbar-left">
                 <MenuBar id="menuBar" styleName="main-user-menu"/>
+                <cmp:UploadButtonWrapper id="btnFileUploadToolBar" styleName="main-panel-header-toolbar-left-upload-btn"/>
             </HorizontalLayout>
 
             <HorizontalLayout id = "layoutToolBarRight" styleName ="main-panel-header-toolbar-right">

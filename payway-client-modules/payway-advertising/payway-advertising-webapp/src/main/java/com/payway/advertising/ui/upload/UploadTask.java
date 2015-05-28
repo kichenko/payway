@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.upload;
 
 import java.util.UUID;
 
@@ -9,7 +9,7 @@ import java.util.UUID;
  * UploadTask
  *
  * @author Sergey Kichenko
- * @created 07.10.15 00:00
+ * @created 07.05.15 00:00
  */
 public interface UploadTask {
 

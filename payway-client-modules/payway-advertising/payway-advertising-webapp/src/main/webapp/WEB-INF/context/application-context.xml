@@ -52,7 +52,11 @@
     <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" depends-on="clientQueue" destroy-method="preDestroy">
         <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
         <!-- отсюда приходят ответы-->
-        <property name="clientQueue" ref="clientQueue"/>
+        <property name="clientQueue" ref="clientQueue"/>        
+        <property name="timeOut" value="20"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
     </bean>
 
     <!-- Обработчик полученных ответов с сервера -->

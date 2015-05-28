@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.upload;
 
 import com.vaadin.server.StreamVariable;
 import com.vaadin.ui.Html5File;
@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
  * UploadTaskDnD
  *
  * @author Sergey Kichenko
- * @created 07.10.15 00:00
+ * @created 07.05.15 00:00
  */
 @Slf4j
 public class UploadTaskDnD extends AbstractUploadTask implements StreamVariable {
+
+    private static final long serialVersionUID = 398825927146938884L;
 
     private Html5File html5File;
 
@@ -67,7 +69,7 @@ public class UploadTaskDnD extends AbstractUploadTask implements StreamVariable 
 
         if (listeners != null) {
             for (UploadListener l : listeners) {
-                l.uploadFailed(this, this.isInterrupted);
+                l.uploadFailed(this, interrupted);
             }
         }
     }

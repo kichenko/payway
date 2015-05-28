@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.upload;
 
 import java.io.IOException;
 import java.io.OutputStream;

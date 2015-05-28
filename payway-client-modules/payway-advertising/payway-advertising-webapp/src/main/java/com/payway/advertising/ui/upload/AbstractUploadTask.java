@@ -1,13 +1,16 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.upload;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
@@ -21,25 +24,56 @@ import org.apache.commons.vfs2.VFS;
 @Slf4j
 public abstract class AbstractUploadTask implements UploadTask {
 
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(AccessLevel.PROTECTED)
     protected UUID taskId;
-    protected int bufSize;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(onMethod = @_({
+        @Override}))
+    protected int bufferSize;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(onMethod = @_({
+        @Override}))
     protected String path;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(onMethod = @_({
+        @Override}))
     protected long fileSize;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(onMethod = @_({
+        @Override}))
     protected String fileName;
-    protected String fileTmpExt;
-    protected boolean isInterrupted;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    @Setter(onMethod = @_({
+        @Override}))
+    protected String tmpFileExt;
+
+    @Getter(onMethod = @_({
+        @Override}))
+    protected boolean interrupted;
+
     protected final List<UploadListener> listeners = new ArrayList<>();
 
     public AbstractUploadTask() {
-        taskId = UUID.randomUUID();
-        bufSize = 2048;
+        setBufferSize(2048);
+        setTaskId(UUID.randomUUID());
     }
 
-    public AbstractUploadTask(String path, int bufSize) {
-        taskId = UUID.randomUUID();
-        bufSize = 2048;
-        this.path = path;
-        this.bufSize = bufSize;
+    public AbstractUploadTask(String path, int bufferSize) {
+        setPath(path);
+        setBufferSize(bufferSize);
+        setTaskId(UUID.randomUUID());
     }
 
     protected OutputStream createOutputStream() {
@@ -109,73 +143,12 @@ public abstract class AbstractUploadTask implements UploadTask {
     }
 
     @Override
-    public UUID getTaskId() {
-        return taskId;
-    }
-
-    @Override
     public void addListener(UploadListener listener) {
         listeners.add(listener);
     }
 
     @Override
     public void interrupt() {
-        isInterrupted = true;
+        interrupted = true;
     }
-
-    @Override
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    @Override
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    @Override
-    public String getPath() {
-        return path;
-    }
-
-    @Override
-    public int getBufferSize() {
-        return bufSize;
-    }
-
-    @Override
-    public void setBufferSize(int bufSize) {
-        this.bufSize = bufSize;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
-    }
-
-    @Override
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    @Override
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    @Override
-    public void setTmpFileExt(String ext) {
-        fileTmpExt = ext;
-    }
-
-    @Override
-    public String getTmpFileExt() {
-        return fileTmpExt;
-    }
-
-    @Override
-    public boolean isInterrupted() {
-        return isInterrupted;
-    }
-
 }

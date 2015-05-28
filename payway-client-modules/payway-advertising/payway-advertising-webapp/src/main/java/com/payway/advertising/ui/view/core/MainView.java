@@ -10,6 +10,7 @@ import com.payway.advertising.ui.component.FileUploadPanel;
 import com.payway.advertising.ui.component.NotificationsButton;
 import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
+import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Resource;
@@ -68,6 +69,9 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
 
     @UiField
     private MenuBar menuBar;
+
+    @UiField
+    private UploadButtonWrapper btnFileUploadToolBar;
 
     @UiField
     @Getter
@@ -203,6 +207,7 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
 
         AbstractWorkspaceView v = (AbstractWorkspaceView) view;
         if (v != null) {
+            v.setButtonFileUploadToolBar(btnFileUploadToolBar);
             v.setUploadTaskPanel(uploadTaskPanel);
             v.setProgressBarWindow(progressBarWindow);
             v.setFileUploadPanel(fileUploadPanel);

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.view.workspace.content;
+package com.payway.advertising.ui.upload;
 
 import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.Upload;
@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
  * UploadTaskFileInput
  *
  * @author Sergey Kichenko
- * @created 07.10.15 00:00
+ * @created 07.05.15 00:00
  */
 @Slf4j
 public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Receiver, Upload.ProgressListener, Upload.FailedListener, Upload.SucceededListener {
+
+    private static final long serialVersionUID = 643021712128469321L;
 
     private Upload upload;
 
@@ -23,8 +25,8 @@ public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Re
         super();
     }
 
-    public UploadTaskFileInput(String path, int bufSize) {
-        super(path, bufSize);
+    public UploadTaskFileInput(String path, int bufferSize) {
+        super(path, bufferSize);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Re
     @Override
     public void interrupt() {
         if (upload != null) {
-            isInterrupted = true;
+            interrupted = true;
             upload.interruptUpload();
         }
     }
