@@ -21,7 +21,9 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -148,6 +150,18 @@ public class FilePropertyPanel extends VerticalLayout {
                 } finally {
                     workspaceView.hideProgressBar();
                 }
+            }
+        });
+
+        tabGeneral.getBtnOwnerBook().addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Window wnd = new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService);
+                wnd.setModal(true);
+                UI.getCurrent().addWindow(wnd);
+                wnd.markAsDirtyRecursive();
             }
         });
     }

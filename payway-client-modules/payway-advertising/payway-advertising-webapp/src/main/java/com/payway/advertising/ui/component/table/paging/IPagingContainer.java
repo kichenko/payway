@@ -11,8 +11,13 @@ package com.payway.advertising.ui.component.table.paging;
  */
 public interface IPagingContainer {
 
-    public interface IErrorPagingLoad {
-        void error(Exception ex);
+    public interface IPagingLoadCallback {
+
+        void start();
+
+        void finish();
+
+        void exception(Exception ex);
     }
 
     boolean nextPage();

@@ -20,6 +20,8 @@ public abstract class AbstractUI extends UI implements InteractionUI {
 
     private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();
 
+    private int progressCounter;
+
     @Override
     public void showNotification(String caption, String text, Notification.Type kind) {
         Notification.show(text, kind);
@@ -28,14 +30,20 @@ public abstract class AbstractUI extends UI implements InteractionUI {
 
     @Override
     public void showProgressBar() {
-        progressBarWindow.show();
-        UI.getCurrent().push();
+        progressCounter += 1;
+        if (!progressBarWindow.isAttached()) {
+            progressBarWindow.show();
+            UI.getCurrent().push();
+        }
     }
 
     @Override
     public void closeProgressBar() {
-        progressBarWindow.close();
-        UI.getCurrent().push();
+        progressCounter -= 1;
+        if (progressBarWindow.isAttached() && progressCounter == 0) {
+            progressBarWindow.close();
+            UI.getCurrent().push();
+        }
     }
 
 }

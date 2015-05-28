@@ -26,7 +26,6 @@ import com.payway.advertising.ui.view.core.Attributes;
 import com.payway.advertising.ui.view.core.Constants;
 import com.payway.advertising.ui.view.core.LoginView;
 import com.payway.advertising.ui.view.core.MainView;
-import com.payway.advertising.ui.view.workspace.content.AgentFileOwnerBookWindow;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
@@ -207,9 +206,9 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             refreshNotifications();
             setContent(mainView);
         } else {
-            //loginView.initialize();
-            //setContent(loginView);
-            this.addWindow(new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService));
+            loginView.initialize();
+            setContent(loginView);
+            //this.addWindow(new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService));
             //this.addWindow(new AgentFileOwnerCRUDWindow("Create agent owner"));
         }
     }

@@ -9,9 +9,9 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
@@ -21,7 +21,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @author Sergey Kichenko
  * @created 27.05.15 00:00
  */
-public class PagingTableControls extends HorizontalLayout {
+public class PagingTableControls extends VerticalLayout {
 
     @UiField
     private Button btnRefresh;
@@ -46,22 +46,29 @@ public class PagingTableControls extends HorizontalLayout {
     @UiField
     private Button btnLast;
 
-    private final IPagingTable table;
+    private IPagingTable table;
 
     private IntegerRangeValidator pageNumberValidator;
 
-    public PagingTableControls(IPagingTable table) {
-        this.table = table;
+    public PagingTableControls() {
         init();
+    }
+
+    public void setPagingTable(IPagingTable table) {
+        this.table = table;
+        initControls();
     }
 
     private void init() {
         setSizeFull();
         addComponent(Clara.create("PagingTableControls.xml", this));
-        initControls();
     }
 
     private void initControls() {
+
+        if (table == null) {
+            return;
+        }
 
         pageNumberValidator = new IntegerRangeValidator("Invalid page number", 1, table.getTotalPages() <= 0 ? 1 : table.getTotalPages());
 

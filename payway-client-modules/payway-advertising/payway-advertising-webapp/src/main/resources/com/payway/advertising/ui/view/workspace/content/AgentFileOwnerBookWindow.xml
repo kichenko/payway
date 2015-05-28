@@ -11,7 +11,7 @@
     </VerticalLayout>
 
     <HorizontalLayout id="layoutСontrolsDown" styleName="form-agent-owner-book-grid-controls">
-        <HorizontalLayout id="layoutGridControls" p:componentAlignment="MIDDLE_CENTER" styleName=""/>
+        <tp:PagingTableControls id="pagingTableControls" />
     </HorizontalLayout>
 
 </VerticalLayout>

@@ -10,6 +10,7 @@
 @import "components/notificationsbutton";
 @import "components/applyconfigurationpanel";
 @import "components/fileuploadpanel";
+@import "components/pagingtablecontrols";
 //
 @import "views/login";
 @import "views/main";
@@ -33,6 +34,7 @@
     @include uploadtaskpanel-component;
     @include applyconfigurationpanel-component;
     @include fileuploadpanel-component;
+    @include paging-table-controls-component;
 
     @include login-view;
     @include main-view;

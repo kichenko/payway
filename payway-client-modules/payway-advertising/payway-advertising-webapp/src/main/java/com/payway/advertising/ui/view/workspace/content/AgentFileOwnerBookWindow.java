@@ -5,6 +5,7 @@ package com.payway.advertising.ui.view.workspace.content;
 
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
+import com.payway.advertising.model.helpers.clonable.DbAgentFileOwnerDeepCopyClonable;
 import com.payway.advertising.ui.InteractionUI;
 import com.payway.advertising.ui.component.table.paging.AgentFileOwnerPagingBeanContainer;
 import com.payway.advertising.ui.component.table.paging.IPagingContainer;
@@ -12,6 +13,7 @@ import com.payway.advertising.ui.component.table.paging.PagingTableControls;
 import com.payway.advertising.ui.component.table.paging.PagingTableImpl;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -50,7 +52,7 @@ public class AgentFileOwnerBookWindow extends Window {
     private PagingTableImpl gridOwners;
 
     @UiField
-    private HorizontalLayout layoutGridControls;
+    private PagingTableControls pagingTableControls;
 
     private AgentFileOwnerPagingBeanContainer gridContainer;
 
@@ -59,8 +61,11 @@ public class AgentFileOwnerBookWindow extends Window {
     private AgentFileOwnerService agentFileOwnerService;
 
     public AgentFileOwnerBookWindow(String caption, AgentFileOwnerService agentFileOwnerService) {
+
         setCaption(caption);
         setResizable(false);
+        setWidth(740, Unit.PIXELS);
+        setHeight(420, Unit.PIXELS);
 
         setContent(Clara.create("AgentFileOwnerBookWindow.xml", this));
         txtFilter.setIcon(FontAwesome.SEARCH);
@@ -68,26 +73,109 @@ public class AgentFileOwnerBookWindow extends Window {
 
         init();
 
+        gridOwners.sort(new Object[]{"name"}, new boolean[]{true});
         gridOwners.refresh();
+    }
+
+    private void actionNew() {
+        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Create agent owner", new DbAgentFileOwner("", ""));
+        wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
+            @Override
+            public void cancel() {
+                wnd.close();
+            }
+
+            @Override
+            public void save(DbAgentFileOwner owner) {
+                //save to DB
+                try {
+                    ((InteractionUI) UI.getCurrent()).showProgressBar();
+                    agentFileOwnerService.save(owner);
+                    gridOwners.refresh();
+                    gridOwners.select(owner.getId());
+                    wnd.close();
+                } catch (Exception ex) {
+                    log.error("Create agent owner", ex);
+                    ((InteractionUI) UI.getCurrent()).showNotification("Create agent owner", "Error create agent owner", Notification.Type.ERROR_MESSAGE);
+                } finally {
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                }
+            }
+        });
+
+        wnd.show();
+    }
+
+    private void actionEdit(Object itemId) {
+        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Edit agent owner", new DbAgentFileOwnerDeepCopyClonable().clone(((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean()));
+        wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
+            @Override
+            public void cancel() {
+                wnd.close();
+            }
+
+            @Override
+            public void save(DbAgentFileOwner owner) {
+                //save to DB
+                try {
+                    ((InteractionUI) UI.getCurrent()).showProgressBar();
+                    agentFileOwnerService.save(owner);
+                    gridOwners.refresh();
+                    wnd.close();
+                } catch (Exception ex) {
+                    log.error("Edit agent owner", ex);
+                    ((InteractionUI) UI.getCurrent()).showNotification("Edit agent owner", "Error edit agent owner", Notification.Type.ERROR_MESSAGE);
+                } finally {
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                }
+            }
+        });
+
+        wnd.show();
+    }
+
+    private void actionDelete(Object itemId) {
+        //delete in DB
+        try {
+            ((InteractionUI) UI.getCurrent()).showProgressBar();
+            agentFileOwnerService.delete(((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean());
+            gridOwners.removeItem(itemId);
+            gridOwners.refresh();
+        } catch (Exception ex) {
+            log.error("Delete agent owner", ex);
+            ((InteractionUI) UI.getCurrent()).showNotification("Delete agent owner", "Error delete agent owner", Notification.Type.ERROR_MESSAGE);
+        } finally {
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
+        }
     }
 
     private void init() {
 
         gridContainer = new AgentFileOwnerPagingBeanContainer(DbAgentFileOwner.class, agentFileOwnerService);
-        gridContainer.setErrorListener(new IPagingContainer.IErrorPagingLoad() {
+        gridContainer.setErrorListener(new IPagingContainer.IPagingLoadCallback() {
             @Override
-            public void error(Exception ex) {
+            public void exception(Exception ex) {
                 log.error("Load agent owners", ex);
                 ((InteractionUI) UI.getCurrent()).showNotification("Load agent owners", "Error load agent owners", Notification.Type.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void start() {
+                ((InteractionUI) UI.getCurrent()).showProgressBar();
+            }
+
+            @Override
+            public void finish() {
+                ((InteractionUI) UI.getCurrent()).closeProgressBar();
             }
         });
 
         gridOwners.setContainerDataSource(gridContainer);
         gridOwners.setImmediate(true);
         gridOwners.setSelectable(true);
-
-        layoutGridControls.addComponent(new PagingTableControls(gridOwners));
-
+       
+        pagingTableControls.setPagingTable(gridOwners);
+               
         gridOwners.addGeneratedColumn("name", new Table.ColumnGenerator() {
             private static final long serialVersionUID = 2855441121974230973L;
 
@@ -122,31 +210,7 @@ public class AgentFileOwnerBookWindow extends Window {
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Edit agent owner", ((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean());
-                        wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
-                            @Override
-                            public void cancel() {
-                                wnd.close();
-                            }
-
-                            @Override
-                            public void save(DbAgentFileOwner owner) {
-                                //save to DB
-                                try {
-                                    ((InteractionUI) UI.getCurrent()).showProgressBar();
-                                    agentFileOwnerService.save(owner);
-                                    gridOwners.markAsDirtyRecursive();
-                                    wnd.close();
-                                } catch (Exception ex) {
-                                    log.error("Edit agent owner", ex);
-                                    ((InteractionUI) UI.getCurrent()).showNotification("Edit agent owner", "Error edit agent owner", Notification.Type.ERROR_MESSAGE);
-                                } finally {
-                                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                                }
-                            }
-                        });
-
-                        wnd.show();
+                        actionEdit(itemId);
                     }
                 });
 
@@ -174,18 +238,7 @@ public class AgentFileOwnerBookWindow extends Window {
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        //delete in DB
-                        try {
-                            ((InteractionUI) UI.getCurrent()).showProgressBar();
-                            agentFileOwnerService.delete(((BeanItem<DbAgentFileOwner>) gridContainer.getItem(itemId)).getBean());
-                            gridOwners.removeItem(itemId);
-                            gridOwners.markAsDirtyRecursive();
-                        } catch (Exception ex) {
-                            log.error("Delete agent owner", ex);
-                            ((InteractionUI) UI.getCurrent()).showNotification("Delete agent owner", "Error delete agent owner", Notification.Type.ERROR_MESSAGE);
-                        } finally {
-                            ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                        }
+                        actionDelete(itemId);
                     }
                 });
 
@@ -194,6 +247,18 @@ public class AgentFileOwnerBookWindow extends Window {
                 layout.setComponentAlignment(btn, Alignment.MIDDLE_CENTER);
 
                 return layout;
+            }
+        });
+
+        //set double click event handler
+        gridOwners.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            private static final long serialVersionUID = -2318797984292753676L;
+
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    actionEdit(event.getItemId());
+                }
             }
         });
 
@@ -214,32 +279,7 @@ public class AgentFileOwnerBookWindow extends Window {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-
-                final AgentFileOwnerCRUDWindow wnd = new AgentFileOwnerCRUDWindow("Create agent owner", new DbAgentFileOwner("", ""));
-                wnd.setListener(new AgentFileOwnerCRUDWindow.CrudEventListener() {
-                    @Override
-                    public void cancel() {
-                        wnd.close();
-                    }
-
-                    @Override
-                    public void save(DbAgentFileOwner owner) {
-                        //save to DB
-                        try {
-                            ((InteractionUI) UI.getCurrent()).showProgressBar();
-                            agentFileOwnerService.save(owner);
-                            gridOwners.markAsDirtyRecursive();
-                            wnd.close();
-                        } catch (Exception ex) {
-                            log.error("Create agent owner", ex);
-                            ((InteractionUI) UI.getCurrent()).showNotification("Create agent owner", "Error create agent owner", Notification.Type.ERROR_MESSAGE);
-                        } finally {
-                            ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                        }
-                    }
-                });
-
-                wnd.show();
+                actionNew();
             }
         });
 

@@ -36,7 +36,7 @@ public class AgentFileOwnerPagingBeanContainer extends BeanContainer<Long, DbAge
 
     @Setter
     @Getter
-    private IErrorPagingLoad errorListener;
+    private IPagingLoadCallback errorListener;
 
     private final Map<String, Object> criteries = new HashMap<>();
 
@@ -54,14 +54,22 @@ public class AgentFileOwnerPagingBeanContainer extends BeanContainer<Long, DbAge
         boolean success = false;
         try {
 
-            internalRemoveAllItems();
-
             Page<DbAgentFileOwner> page;
+
+            if (errorListener != null) {
+                errorListener.start();
+            }
+
+            internalRemoveAllItems();
 
             if (criteries.containsKey("name")) {
                 page = agentFileOwnerService.findByName((String) criteries.get("name"), new PageRequest(currentPage, pageSize, sort));
             } else {
                 page = agentFileOwnerService.list(new PageRequest(currentPage, pageSize, sort));
+            }
+
+            if (page == null) {
+                throw new Exception("Fail load items from database");
             }
 
             total = page.getTotalElements();
@@ -81,7 +89,11 @@ public class AgentFileOwnerPagingBeanContainer extends BeanContainer<Long, DbAge
             log.error("Load container data", ex);
 
             if (errorListener != null) {
-                errorListener.error(ex);
+                errorListener.exception(ex);
+            }
+        } finally {
+            if (errorListener != null) {
+                errorListener.finish();
             }
         }
 

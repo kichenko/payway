@@ -99,6 +99,9 @@ public class AgentFileOwnerCRUDWindow extends Window {
         fieldGroup.bind(txtName, "name");
         fieldGroup.bind(txtDescription, "description");
         fieldGroup.setItemDataSource(new BeanItem(getOwner()));
+
+        txtName.setNullRepresentation("");
+        txtDescription.setNullRepresentation("");
     }
 
     public void show() {
