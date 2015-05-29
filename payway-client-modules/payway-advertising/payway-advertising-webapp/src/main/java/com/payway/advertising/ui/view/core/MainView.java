@@ -8,7 +8,6 @@ import com.payway.advertising.ui.AbstractUI;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.FileUploadPanel;
 import com.payway.advertising.ui.component.NotificationsButton;
-import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
@@ -43,6 +42,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component
 @NoArgsConstructor
 public class MainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuButton.SideBarMenuButtonClickListener {
+
+    private static final long serialVersionUID = -4825092972126420478L;
 
     public interface SlideBarMenuButtonClickCallback {
 
@@ -117,15 +118,12 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     @UiField
     private CssLayout layoutFileUpload;
 
-    private ProgressBarWindow progressBarWindow;
-
     private SlideBarMenuButtonClickCallback sbMenuButtonClickCallback;
 
     @PostConstruct
     void init() {
         setSizeFull();
         setCompositionRoot(Clara.create("MainView.xml", this));
-        progressBarWindow = new ProgressBarWindow();
 
         splitHorizontalPanel.setFirstComponent(layoutLeft);
         splitHorizontalPanel.setSecondComponent(layoutRight);
@@ -209,7 +207,6 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         if (v != null) {
             v.setButtonFileUploadToolBar(btnFileUploadToolBar);
             v.setUploadTaskPanel(uploadTaskPanel);
-            v.setProgressBarWindow(progressBarWindow);
             v.setFileUploadPanel(fileUploadPanel);
             v.setMenuBar(menuBar);
             v.activate();

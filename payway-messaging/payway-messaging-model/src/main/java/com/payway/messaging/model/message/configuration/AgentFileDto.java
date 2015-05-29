@@ -5,6 +5,7 @@ package com.payway.messaging.model.message.configuration;
 
 import com.payway.messaging.model.AbstractDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class AgentFileDto extends AbstractDto {
 
     private static final long serialVersionUID = -8855396010847579468L;

@@ -10,13 +10,7 @@
     <!-- spring context -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>
-            /WEB-INF/context/root-context.xml,
-            /WEB-INF/context/data-source-context.xml,
-            /WEB-INF/context/spring-data-context.xml,
-            /WEB-INF/context/hazelcast-client-context.xml,
-            /WEB-INF/context/application-context.xml
-        </param-value>
+        <param-value>/WEB-INF/context/root-context.xml</param-value>
     </context-param>
     <servlet>
         <servlet-name>VaadinSampleServlet</servlet-name>
@@ -51,4 +45,5 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
 </web-app>

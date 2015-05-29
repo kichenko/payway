@@ -4,7 +4,6 @@
 package com.payway.advertising.ui.view.core;
 
 import com.payway.advertising.ui.component.FileUploadPanel;
-import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.vaadin.ui.MenuBar;
@@ -30,14 +29,6 @@ public interface WorkspaceView {
     void setUploadTaskPanel(UploadTaskPanel uploadTaskPanel);
 
     UploadTaskPanel getUploadTaskPanel();
-
-    void setProgressBarWindow(ProgressBarWindow progressBarWindow);
-
-    ProgressBarWindow getProgressBarWindow();
-
-    void showProgressBar();
-
-    void hideProgressBar();
 
     void setButtonFileUploadToolBar(UploadButtonWrapper btnFileUploadToolBar);
 

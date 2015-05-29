@@ -3,8 +3,6 @@
  */
 package com.payway.advertising.ui.utils;
 
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -16,21 +14,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIUtils {
-
-    public static void showErrorNotification(String title, String message) {
-        Notification.show(message, Notification.Type.ERROR_MESSAGE);
-        UI.getCurrent().push();
-    }
-
-    public static void showWarningNotification(String title, String message) {
-        Notification.show(message, Notification.Type.WARNING_MESSAGE);
-        UI.getCurrent().push();
-    }
-
-    public static void showTrayNotification(String title, String message) {
-        Notification.show(message, Notification.Type.TRAY_NOTIFICATION);
-        UI.getCurrent().push();
-    }
 
     public static String formatFileSize(long fileSize) {
         if (fileSize >= 1000000000) {

@@ -62,21 +62,21 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                 log.info("Getting the response message from the server, start processing");
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
             } catch (InterruptedException ex) {
-                log.error("Client queue is interrputed", ex);
+                log.error("Server message listener thread is interrupted", ex);
                 break;
             } catch (HazelcastInstanceNotActiveException ex) {
-                log.error("Hazlecast instance is not active", ex);
+                log.error("Hazelcast instance is not active", ex);
                 break;
             } catch (Exception ex) {
-                log.error("Unknown exception on server message processing", ex);
-                break;
+                log.error("Unknown exception in server message listener", ex);
             }
         }
 
         if (interrupt) {
-            log.warn("Exit from message server in active status (interrupt==true)");
+            log.warn("Exit from message server listener in active status");
+            interrupt = false;
         } else {
-            log.info("Exit from message server");
+            log.info("Exit from message server listener ");
         }
     }
 }

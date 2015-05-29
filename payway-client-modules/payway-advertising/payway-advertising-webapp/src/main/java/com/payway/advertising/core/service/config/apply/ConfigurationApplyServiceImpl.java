@@ -26,9 +26,10 @@ import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import com.vaadin.ui.UI;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -121,16 +122,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
     private ApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
 
-        List<AgentFileDto> agentFilesDto;
-        List<AgentFileOwnerDto> agentFileOwnersDto;
+        Set<AgentFileDto> agentFilesDto = new HashSet<>();
+        Set<AgentFileOwnerDto> agentFileOwnersDto = new HashSet<>();
         DbConfiguration cfg = configurationService.findConfigurationByNameWithFiles(configurationName);
 
         if (cfg == null) {
             throw new Exception(String.format("Can not find local database configuration with name [%s]", configurationName));
         }
-
-        agentFilesDto = new ArrayList<>(cfg.getFiles().size());
-        agentFileOwnersDto = new ArrayList<>(cfg.getFiles().size());
 
         for (DbAgentFile f : cfg.getFiles()) {
 

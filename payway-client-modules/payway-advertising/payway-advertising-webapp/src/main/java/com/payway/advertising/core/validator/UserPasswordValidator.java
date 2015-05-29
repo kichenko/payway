@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,6 @@ public class UserPasswordValidator implements Validator {
 
     @Override
     public boolean validate(Object data) {
-        return true; //return StringUtils.isNotBlank((String) data);
+        return StringUtils.isNotBlank((String) data);
     }
 }

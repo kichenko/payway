@@ -17,7 +17,7 @@ public interface MessageRequestContextHolderService {
      * Кладем данные запроса в карту
      *
      * @param id
-     * @param ui
+     * @param context
      */
     void put(String id, MessageContext context);
 

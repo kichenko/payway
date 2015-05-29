@@ -6,9 +6,11 @@ package com.payway.advertising.ui.view.core;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.messaging.MessageServerSenderService;
 import com.payway.advertising.messaging.ResponseCallBack;
-import com.payway.advertising.ui.component.ProgressBarWindow;
+import com.payway.advertising.ui.InteractionUI;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
@@ -29,7 +31,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
- * Логин
+ * LoginView
  *
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
@@ -37,6 +39,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 @UIScope
 @Component
 public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
+
+    private static final long serialVersionUID = -8709373681721076425L;
 
     @Autowired
     @Qualifier("serverTaskExecutor")
@@ -61,14 +65,37 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     private PasswordField editPassword;
 
     @UiField
-    private CheckBox checkBoxRememberMe;
+    private Button buttonSignIn;
 
-    private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();
+    @UiField
+    private CheckBox checkBoxRememberMe;
 
     @PostConstruct
     public void postConstruct() {
         setSizeFull();
         setCompositionRoot(Clara.create("LoginView.xml", this));
+        init();
+    }
+
+    private void init() {
+
+        editUserName.addShortcutListener(new ShortcutListener("Sign in (Enter)", ShortcutAction.KeyCode.ENTER, null) {
+            private static final long serialVersionUID = -7690864248678996551L;
+
+            @Override
+            public void handleAction(Object sender, Object target) {
+                buttonSignIn.click();
+            }
+        });
+
+        editPassword.addShortcutListener(new ShortcutListener("Sign in (Enter)", ShortcutAction.KeyCode.ENTER, null) {
+            private static final long serialVersionUID = -7690864248678996551L;
+
+            @Override
+            public void handleAction(Object sender, Object target) {
+                buttonSignIn.click();
+            }
+        });
     }
 
     @Override
@@ -94,7 +121,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             return;
         }
 
-        progressBarWindow.show();
+        ((InteractionUI) UI.getCurrent()).showProgressBar();
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -110,7 +137,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    progressBarWindow.close();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                     Map<String, Object> map = new HashMap<>();
                     map.put(Attributes.REMEMBER_ME.value(), checkBoxRememberMe.getValue());
                     ((ResponseCallBack) UI.getCurrent()).onServerResponse(response, map);
@@ -126,7 +153,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    progressBarWindow.close();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                     ((ResponseCallBack) UI.getCurrent()).onServerException(exception);
                 }
             });
@@ -140,7 +167,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    progressBarWindow.close();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                     ((ResponseCallBack) UI.getCurrent()).onLocalException(ex);
                 }
             });
@@ -154,7 +181,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    progressBarWindow.close();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                     ((ResponseCallBack) UI.getCurrent()).onTimeout();
                 }
             });

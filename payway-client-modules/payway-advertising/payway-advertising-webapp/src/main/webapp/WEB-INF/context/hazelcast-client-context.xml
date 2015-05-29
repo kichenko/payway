@@ -2,27 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:hz="http://www.hazelcast.com/schema/spring"
-       xmlns:jee="http://www.springframework.org/schema/jee"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd
-                            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
-
-    <hz:hazelcast id="hazelcastInstance">
-        <hz:config>
-            <!-- Sometimes I need to clusters in the same network: Production and Test clusters -->
-            <hz:group name="${avs.cluster.name}" password="${avs.cluster.password:AvsPass}"/>
-            <hz:queue name="${client.queue.template.name}*"/>
-        </hz:config>
-    </hz:hazelcast>
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd
+        ">
 
     <hz:lock id="lockServerAppConfigApply" instance-ref="hazelcastInstance" name="${server.lock.app.config.apply}"/>
     <hz:topic instance-ref="hazelcastInstance" id="Cluster.Topic.Config" name="Topic.Config"/>
     <hz:idGenerator id="clientIdGenerator" instance-ref="hazelcastInstance" name="${client.id.generator.name}"/>
 
     <!-- сервис для работы с распределенными объектами-->
-    <bean id="dosService" class="com.payway.messaging.core.service.hz.HazelcastDistributedObjectServiceImpl" depends-on="hazelcastInstance">
-        <property name="idGenerator" ref="clientIdGenerator"/>
-        <property name="hazelcastInstance" ref="hazelcastInstance"/>
-    </bean>
+    <bean id="dosService" class="com.payway.messaging.core.service.hz.HazelcastDistributedObjectServiceImpl" autowire="byType"/>
 
     <!-- сгенерированное сервисом имя очереди клиента, куда сервер отправляет ответы-->
     <bean id="clientQueueName" class="java.lang.String" factory-bean="dosService" factory-method="generateQueueName" depends-on="dosService">

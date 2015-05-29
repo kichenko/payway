@@ -4,11 +4,9 @@
 package com.payway.advertising.ui.view.core;
 
 import com.payway.advertising.ui.component.FileUploadPanel;
-import com.payway.advertising.ui.component.ProgressBarWindow;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -20,7 +18,6 @@ import com.vaadin.ui.VerticalLayout;
 public abstract class AbstractWorkspaceView extends VerticalLayout implements WorkspaceView {
 
     protected UploadTaskPanel uploadTaskPanel;
-    protected ProgressBarWindow progressBarWindow;
     protected FileUploadPanel fileUploadPanel;
     protected MenuBar menuBar;
     protected UploadButtonWrapper btnFileUploadToolBar;
@@ -53,28 +50,6 @@ public abstract class AbstractWorkspaceView extends VerticalLayout implements Wo
     @Override
     public UploadTaskPanel getUploadTaskPanel() {
         return uploadTaskPanel;
-    }
-
-    @Override
-    public void setProgressBarWindow(ProgressBarWindow progressBarWindow) {
-        this.progressBarWindow = progressBarWindow;
-    }
-
-    @Override
-    public ProgressBarWindow getProgressBarWindow() {
-        return progressBarWindow;
-    }
-
-    @Override
-    public void showProgressBar() {
-        progressBarWindow.show();
-        UI.getCurrent().push();
-    }
-
-    @Override
-    public void hideProgressBar() {
-        progressBarWindow.close();
-        UI.getCurrent().push();
     }
 
     @Override

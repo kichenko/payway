@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.core.validator;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,8 +15,15 @@ import org.springframework.stereotype.Component;
 @Component(value = "fileNameValidator")
 public class FileNameValidator implements Validator {
 
+    private final static Pattern pattern = Pattern.compile("^[^*&%\\s]+$");
+
     @Override
     public boolean validate(Object data) {
-        return StringUtils.isNotBlank((String) data);
+
+        if (data instanceof String) {
+            return !((String) data).isEmpty();
+        }
+
+        return false;
     }
 }

@@ -4,6 +4,7 @@
 package com.payway.messaging.model;
 
 import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,6 +18,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
+@EqualsAndHashCode
 public abstract class AbstractDto implements Serializable {
 
     protected long id;

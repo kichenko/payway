@@ -12,14 +12,14 @@ import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
-import com.payway.advertising.ui.utils.UIUtils;
-import com.payway.advertising.ui.view.core.WorkspaceView;
+import com.payway.advertising.ui.InteractionUI;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -39,6 +39,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 public class FilePropertyPanel extends VerticalLayout {
+
+    private static final long serialVersionUID = 6751364138726607005L;
 
     public interface PropertySaveListener {
 
@@ -93,11 +95,7 @@ public class FilePropertyPanel extends VerticalLayout {
     @Getter
     @Setter
     private String relativePath;
-
-    @Getter
-    @Setter
-    private WorkspaceView workspaceView;
-
+   
     public FilePropertyPanel() {
         init();
     }
@@ -121,10 +119,12 @@ public class FilePropertyPanel extends VerticalLayout {
         fieldGroup.bind(tabAdditional.getChCountHints(), "isCountHits");
 
         btnOk.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
-                    workspaceView.showProgressBar();
+                    ((InteractionUI) UI.getCurrent()).showProgressBar();
                     if (dbAgentFileValidator.validate(beanItem.getBean())) {
 
                         //set name only for new object, where id == null
@@ -142,13 +142,13 @@ public class FilePropertyPanel extends VerticalLayout {
                             getListener().onSave(beanItem.getBean());
                         }
                     } else {
-                        UIUtils.showErrorNotification("", "Error validate data");
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Invalid file property values", Notification.Type.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    log.error("Error saving file property data", ex);
-                    UIUtils.showErrorNotification("", "Error saving file property data");
+                    log.error("Can't save file property", ex);
+                    ((InteractionUI) UI.getCurrent()).showNotification("", "Can't save file property", Notification.Type.ERROR_MESSAGE);
                 } finally {
-                    workspaceView.hideProgressBar();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                 }
             }
         });

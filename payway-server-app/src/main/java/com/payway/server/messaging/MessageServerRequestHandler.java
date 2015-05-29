@@ -8,19 +8,21 @@ import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.response.exception.common.CommonExceptionResponse;
 import com.payway.messaging.core.service.DistributedObjectService;
+import com.payway.messaging.message.SettingsRequest;
+import com.payway.messaging.message.SettingsResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
 import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
 import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.message.settings.SettingsDto;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
@@ -85,6 +87,8 @@ public class MessageServerRequestHandler implements Runnable {
                             env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, false)));
                         } else if (envelope.getBody() instanceof ApplyConfigurationRequest) {
                             env = new ResponseEnvelope(rid, origin, new ApplySuccessConfigurationResponse());
+                        } else if (envelope.getBody() instanceof SettingsRequest) {
+                            env = new ResponseEnvelope(rid, origin, new SettingsResponse(new SettingsDto("file:///${user.home}/var/apps/server/original-cfg")));
                         } else {
                             env = new ResponseEnvelope(rid, origin, new CommonExceptionResponse("Bad Request Type: " + envelope.getBody().getClass().getName()));
                         }

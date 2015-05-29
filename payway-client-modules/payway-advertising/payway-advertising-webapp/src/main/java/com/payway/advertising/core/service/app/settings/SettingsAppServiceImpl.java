@@ -40,7 +40,7 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     @Value("")
     private String contextPath;
 
-    @Value("${server.config.path}")
+    @Value("")
     private String serverConfigPath;
 
     @Override

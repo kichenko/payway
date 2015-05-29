@@ -22,6 +22,7 @@ import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileDeepCopyClonable;
+import com.payway.advertising.ui.InteractionUI;
 import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
@@ -215,7 +216,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
     public void activate() {
         if (!isFileGridLoadedOnActivate) {
             try {
-                showProgressBar();
+                ((InteractionUI) UI.getCurrent()).showProgressBar();
                 FileSystemObject fo = new FileSystemObject(getCurrentPath(), FileSystemObject.FileType.FOLDER, 0L, null);
                 if (!fileSystemManagerService.exist(fo)) {
                     fileSystemManagerService.create(fo);
@@ -229,10 +230,10 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 activateMenuBar();
 
             } catch (Exception ex) {
-                log.error("Error on activate view", ex);
-                UIUtils.showErrorNotification("", "Error loading file explorer on activate");
+                log.error("Bad activating configuration workspace", ex);
+                ((InteractionUI) UI.getCurrent()).showNotification("", "Can't activate configuration workspace", Notification.Type.ERROR_MESSAGE);
             } finally {
-                hideProgressBar();
+                ((InteractionUI) UI.getCurrent()).closeProgressBar();
             }
         }
     }
@@ -243,7 +244,9 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
     private void activateFileUploadButton() {
 
-        UploadButtonWrapper.UploadStartedEventProcessor processor = new UploadButtonWrapper.UploadStartedEventProcessor() {
+        UploadButtonWrapper.UploadStartedEventProcessor processor;
+
+        processor = new UploadButtonWrapper.UploadStartedEventProcessor() {
             @Override
             public boolean process(Upload upload, Upload.StartedEvent event) {
                 boolean ok = false;
@@ -258,18 +261,18 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                     upload.setReceiver(task);
 
                     if (StringUtils.isBlank(task.getFileName())) {
-                        UIUtils.showErrorNotification("", "Please, select file to upload");
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Select file to upload", Notification.Type.ERROR_MESSAGE);
                     } else {
                         try {
                             if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
-                                UIUtils.showErrorNotification("", "File already downloaded on server");
+                                ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                             } else {
                                 getUploadTaskPanel().addUploadTask(task);
                                 ok = true;
                             }
                         } catch (Exception ex) {
                             log.error("Unknown file upload error", ex);
-                            UIUtils.showErrorNotification("", "Unknown file upload error");
+                            ((InteractionUI) UI.getCurrent()).showNotification("", "Unknown file upload error", Notification.Type.ERROR_MESSAGE);
                         }
                     }
 
@@ -309,13 +312,13 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                         try {
                             if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                 task.interrupt();
-                                UIUtils.showErrorNotification("", "File already downloaded on server");
+                                ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                             } else {
                                 getUploadTaskPanel().addUploadTask(task);
                             }
                         } catch (Exception ex) {
                             log.error("Unknown file upload error", ex);
-                            UIUtils.showErrorNotification("", "Unknown file upload error");
+                            ((InteractionUI) UI.getCurrent()).showNotification("", "Unknown file upload error", Notification.Type.ERROR_MESSAGE);
                         }
                     }
                 }
@@ -339,7 +342,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         if (getCurrentPath().equals(task.getPath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), StringUtils.substringAfter(getRootUserConfigPath(), task.getPath()) + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
             }
         }
     }
@@ -450,15 +453,15 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             @Override
             public void selected(int index) {
                 try {
-                    showProgressBar();
+                    ((InteractionUI) UI.getCurrent()).showProgressBar();
                     setCurrentPath((String) breadCrumbs.getCrumbState(index));
                     fillGridFileExplorer(getCurrentPath());
                 } catch (Exception ex) {
-                    log.error("Error load file explorer", ex);
-                    UIUtils.showErrorNotification("", "Error load file explorer");
+                    log.error("Bad refresh file explorer", ex);
+                    ((InteractionUI) UI.getCurrent()).showNotification("", "Can't refresh file explorer", Notification.Type.ERROR_MESSAGE);
                 } finally {
                     buildMenuBar();
-                    hideProgressBar();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                 }
             }
         });
@@ -470,16 +473,16 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
             FileExplorerItemData bean = container.getItem(itemId).getBean();
             if (bean != null && FileExplorerItemData.FileType.Folder.equals(bean.getFileType())) {
                 try {
-                    showProgressBar();
+                    ((InteractionUI) UI.getCurrent()).showProgressBar();
                     setCurrentPath(StringUtils.defaultIfBlank(bean.getPath(), ""));
                     fillGridFileExplorer(getCurrentPath());
                     breadCrumbs.addCrumb(bean.getName(), new ThemeResource("images/bread_crumb_folder.png"), bean.getPath());
                     breadCrumbs.selectCrumb(breadCrumbs.size() - 1, false);
                 } catch (Exception ex) {
-                    log.error("Error load file explorer", ex);
-                    UIUtils.showErrorNotification("", "Error load file explorer");
+                    log.error("Bad refresh file explorer", ex);
+                    ((InteractionUI) UI.getCurrent()).showNotification("", "Can't refresh file explorer", Notification.Type.ERROR_MESSAGE);
                 } finally {
-                    hideProgressBar();
+                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
                 }
             }
         }
@@ -850,7 +853,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 boolean isOk = false;
                 if (fileNameValidator.validate(text)) {
                     try {
-                        showProgressBar();
+                        ((InteractionUI) UI.getCurrent()).showProgressBar();
 
                         FileSystemObject fo = new FileSystemObject(path + text, FileSystemObject.FileType.FOLDER, 0L, null);
 
@@ -869,12 +872,12 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                         isOk = true;
                     } catch (Exception ex) {
                         log.error("Error create new folder", ex);
-                        UIUtils.showErrorNotification("", "Error create new folder");
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Can't create new folder", Notification.Type.ERROR_MESSAGE);
                     } finally {
-                        hideProgressBar();
+                        ((InteractionUI) UI.getCurrent()).closeProgressBar();
                     }
                 } else {
-                    Notification.show("Please, enter correct folder name", Notification.Type.WARNING_MESSAGE);
+                    ((InteractionUI) UI.getCurrent()).showNotification("", "Invalid folder name", Notification.Type.WARNING_MESSAGE);
                 }
                 return isOk;
             }
@@ -890,7 +893,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         final BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
         if (container != null) {
             final BeanItem<FileExplorerItemData> item = container.getItem(selectedItemId);
-            final int index = container.indexOfId(selectedItemId);
             if (item != null && item.getBean() != null) {
                 new TextEditDialogWindow("Rename", item.getBean().getName(), new TextEditDialogWindow.TextEditDialogWindowEvent() {
                     @Override
@@ -906,14 +908,14 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
                                 if (!StringUtils.contains(pathNew, getRootUserConfigPath())) {
                                     log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getRootUserConfigPath());
-                                    UIUtils.showErrorNotification("", "Error rename, not equal root file path");
+                                    ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder, not equal root file path", Notification.Type.ERROR_MESSAGE);
                                     return isOk;
                                 }
 
                                 foOld = new FileSystemObject(item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
                                 foNew = new FileSystemObject(pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
-                                showProgressBar();
+                                ((InteractionUI) UI.getCurrent()).showProgressBar();
 
                                 //refresh properties & files/folders
                                 agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getRootUserConfigPath()), StringUtils.substringAfter(pathNew, getRootUserConfigPath()), foOld, foNew);
@@ -931,13 +933,13 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                                 gridFileExplorer.refreshRowCache();
                                 isOk = true;
                             } catch (Exception ex) {
-                                log.error("Error rename", ex);
-                                UIUtils.showErrorNotification("", "Error rename");
+                                log.error("Bad rename file/folder", ex);
+                                ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder", Notification.Type.ERROR_MESSAGE);
                             } finally {
-                                hideProgressBar();
+                                ((InteractionUI) UI.getCurrent()).closeProgressBar();
                             }
                         } else {
-                            Notification.show("Please, enter correct folder name", Notification.Type.WARNING_MESSAGE);
+                            ((InteractionUI) UI.getCurrent()).showNotification("", "Enter correct file/folder name", Notification.Type.WARNING_MESSAGE);
                         }
                         return isOk;
                     }
@@ -953,7 +955,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
     private void removeFileOrFolder(final Object selectedItemId) {
         try {
-            showProgressBar();
+            ((InteractionUI) UI.getCurrent()).showProgressBar();
 
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
@@ -969,24 +971,24 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 }
             }
         } catch (Exception ex) {
-            log.error("Error remove", ex);
-            UIUtils.showErrorNotification("", "Error remove");
+            log.error("Bad remove file/folder", ex);
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Can't remove file/folder", Notification.Type.ERROR_MESSAGE);
         } finally {
-            hideProgressBar();
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
         }
     }
 
     private void actionMenuRefreshFolder() {
         try {
-            showProgressBar();
+            ((InteractionUI) UI.getCurrent()).showProgressBar();
             panelFileProperty.clearProperty();
             fillGridFileExplorer(getCurrentPath());
         } catch (Exception ex) {
-            log.error("Error refresh file explorer", ex);
-            UIUtils.showErrorNotification("", "Error refresh file explorer");
+            log.error("Bad refresh file explorer", ex);
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Can't refresh file explore", Notification.Type.ERROR_MESSAGE);
         } finally {
             buildMenuBar();
-            hideProgressBar();
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
         }
     }
 
@@ -999,7 +1001,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         if (itemId != null) {
             renameFileOrFolder(gridFileExplorer.getValue());
         } else {
-            UIUtils.showErrorNotification("", "Choose item to rename");
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Choose object to rename", Notification.Type.ERROR_MESSAGE);
         }
     }
 
@@ -1008,15 +1010,15 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
         if (itemId != null) {
             removeFileOrFolder(gridFileExplorer.getValue());
         } else {
-            UIUtils.showErrorNotification("", "Choose item to remove");
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Choose object to remove", Notification.Type.ERROR_MESSAGE);
         }
     }
 
     private void actionMenuApplyConfig() {
 
         if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
-            log.error("Empty application settings, cannot apply configuration");
-            UIUtils.showErrorNotification("", "Empty application settings, cannot apply configuration");
+            log.error("Bad application settings (empty), cannot apply configuration");
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Empty application settings, cannot apply configuration", Notification.Type.ERROR_MESSAGE);
             return;
         }
 
@@ -1029,7 +1031,7 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
-                        UIUtils.showTrayNotification("", "Configuration applying started...");
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration applying started", Notification.Type.TRAY_NOTIFICATION);
                     }
                 });
             }
@@ -1039,8 +1041,8 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
                 UI.getCurrent().access(new Runnable() {
                     @Override
                     public void run() {
-                        log.error("Error applying server configuration");
-                        UIUtils.showErrorNotification("", "Configuration already applying");
+                        log.error("Bad applying server configuration (already applying)");
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration already applying", Notification.Type.ERROR_MESSAGE);
                     }
                 });
             }
@@ -1072,7 +1074,6 @@ public class ContentConfigurationView extends AbstractWorkspaceView implements U
 
     private void initTabSheetProperty() {
 
-        panelFileProperty.setWorkspaceView(this);
         panelFileProperty.setAgentFileOwnerService(getAgentFileOwnerService());
         panelFileProperty.setAgentFileService(getAgentFileService());
         panelFileProperty.setFileSystemManagerService(getFileSystemManagerService());

@@ -44,6 +44,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                 throw new Exception("Can't create file system object, unknown type");
             }
         } catch (Exception ex) {
+            log.error("Bad create", ex);
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
     }
@@ -59,11 +60,8 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             } else {
                 throw new Exception("Can't rename file system object");
             }
-
-            //###
-            Thread.sleep(3000);
-
         } catch (Exception ex) {
+            log.error("Bad file rename", ex);
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
     }
@@ -73,10 +71,8 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
         try {
             FileObject fo = fileSystemManager.resolveFile(src.getPath());
             fo.delete(Selectors.SELECT_ALL);
-
-            //###
-            Thread.sleep(3000);
         } catch (Exception ex) {
+            log.error("Bad file delete", ex);
             throw new FileSystemManagerServiceException("Error delete file system object", ex);
         }
     }
@@ -101,10 +97,8 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject dstFo = fileSystemManager.resolveFile(dst.getPath());
             dstFo.copyFrom(srcFo, Selectors.SELECT_ALL);
 
-            //###
-            Thread.sleep(3000);
-
         } catch (Exception ex) {
+            log.error("Bad file copy", ex);
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
         }
     }
@@ -113,10 +107,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
         if (file != null) {
             if ((addFolders && FileType.FOLDER.equals(file.getType())) || (FileType.FILE.equals(file.getType()))) {
                 list.add(new FileSystemObject(
-                  file.getURL().toString(),
-                  FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                  FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
-                  new LocalDateTime(file.getContent().getLastModifiedTime())));
+                        file.getURL().toString(),
+                        FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                        FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
+                        new LocalDateTime(file.getContent().getLastModifiedTime())));
             }
 
             if (FileType.FOLDER.equals(file.getType())) {
@@ -146,10 +140,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                         for (FileObject f : childs) {
                             if ((addFolders && FileType.FOLDER.equals(f.getType())) || (FileType.FILE.equals(f.getType()))) {
                                 list.add(new FileSystemObject(
-                                  f.getURL().toString(),
-                                  FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                                  FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                  new LocalDateTime(f.getContent().getLastModifiedTime())));
+                                        f.getURL().toString(),
+                                        FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                                        FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                                        new LocalDateTime(f.getContent().getLastModifiedTime())));
                             }
                         }
                     }
@@ -158,6 +152,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                 }
             }
         } catch (Exception ex) {
+            log.error("Bad file list", ex);
             throw new FileSystemManagerServiceException("Error list file system object", ex);
         }
 
@@ -170,6 +165,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject fo = fileSystemManager.resolveFile(src.getPath());
             return fo.exists();
         } catch (Exception ex) {
+            log.error("Bad file exist check", ex);
             throw new FileSystemManagerServiceException("Error exist file system object", ex);
         }
     }
@@ -183,6 +179,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                 is = fo.getContent().getInputStream();
             }
         } catch (Exception ex) {
+            log.error("Bad file input stream", ex);
             throw new FileSystemManagerServiceException("Error receive file system object input stream", ex);
         }
 
@@ -195,7 +192,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject fo = fileSystemManager.resolveFile(path);
             return fo.getURL().toString();
         } catch (Exception ex) {
-            //
+            log.error("Bad file uri canonicalization", ex);
         }
         return "";
     }

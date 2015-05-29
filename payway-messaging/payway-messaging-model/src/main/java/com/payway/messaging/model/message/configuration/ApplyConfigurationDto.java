@@ -4,7 +4,7 @@
 package com.payway.messaging.model.message.configuration;
 
 import com.payway.messaging.model.AbstractDto;
-import java.util.Collection;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +26,6 @@ public class ApplyConfigurationDto extends AbstractDto {
 
     private static final long serialVersionUID = 3476919207290685928L;
 
-    private Collection<AgentFileDto> agentFile;
-    private Collection<AgentFileOwnerDto> agentFileOwner;
+    private Set<AgentFileDto> agentFile;
+    private Set<AgentFileOwnerDto> agentFileOwner;
 }
