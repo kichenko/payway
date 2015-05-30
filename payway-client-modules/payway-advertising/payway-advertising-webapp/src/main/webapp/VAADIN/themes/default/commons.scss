@@ -7,8 +7,10 @@
         padding-right: 10px;
     }
 
-    .gwt-FileUpload .v-button {
-        color: red;
-        padding: 100px;
+    .v-upload .v-button {
+        background-image: url(images/components/file_upload_panel/file_attach.png);
+        margin: 0px 5px 0px 5px;
+        background-position: center;
+        background-repeat: no-repeat;
     }
 }
