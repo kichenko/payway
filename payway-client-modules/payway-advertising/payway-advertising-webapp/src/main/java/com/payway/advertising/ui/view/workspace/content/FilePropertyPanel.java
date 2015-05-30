@@ -8,6 +8,7 @@ import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
+import com.payway.advertising.core.validator.AgentFileExpressionValidator;
 import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
@@ -86,7 +87,10 @@ public class FilePropertyPanel extends VerticalLayout {
     private PropertySaveListener listener;
 
     @Getter
-    private final Validator dbAgentFileValidator = new AgentFileValidator();
+    private final Validator agentFileExpressionValidator;
+
+    @Getter
+    private final Validator agentFileValidator;
 
     @Getter
     @Setter
@@ -95,8 +99,12 @@ public class FilePropertyPanel extends VerticalLayout {
     @Getter
     @Setter
     private String relativePath;
-   
+
     public FilePropertyPanel() {
+
+        agentFileExpressionValidator = new AgentFileExpressionValidator();
+        agentFileValidator = new AgentFileValidator(agentFileExpressionValidator);
+
         init();
     }
 
@@ -125,7 +133,7 @@ public class FilePropertyPanel extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     ((InteractionUI) UI.getCurrent()).showProgressBar();
-                    if (dbAgentFileValidator.validate(beanItem.getBean())) {
+                    if (agentFileValidator.validate(beanItem.getBean())) {
 
                         //set name only for new object, where id == null
                         getBeanItem().getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));

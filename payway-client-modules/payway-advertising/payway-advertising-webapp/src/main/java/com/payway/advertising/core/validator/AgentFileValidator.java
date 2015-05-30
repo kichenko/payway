@@ -4,6 +4,9 @@
 package com.payway.advertising.core.validator;
 
 import com.payway.advertising.model.DbAgentFile;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * DbAgentFileValidator
@@ -11,11 +14,20 @@ import com.payway.advertising.model.DbAgentFile;
  * @author Sergey Kichenko
  * @created 14.05.15 00:00
  */
+@NoArgsConstructor
+@AllArgsConstructor
 public class AgentFileValidator implements Validator {
+
+    private Validator expressionValidator;
 
     @Override
     public boolean validate(Object data) {
-        DbAgentFile file = (DbAgentFile) data;
-        return (file != null && file.getKind() != null /*&& !StringUtils.isBlank(file.getDigest())*/);
+
+        if (data instanceof DbAgentFile) {
+            DbAgentFile file = (DbAgentFile) data;
+            return (expressionValidator != null ? expressionValidator.validate(file.getExpression()) : false) && !StringUtils.isBlank(file.getName()) && file.getConfiguration() != null && file.getSeqNo() != null && file.getKind() != null && !StringUtils.isBlank(file.getDigest());
+        }
+
+        return false;
     }
 }

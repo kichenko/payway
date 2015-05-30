@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.validator;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @author Sergey Kichenko
  * @created 24.05.15 00:00
  */
+@AllArgsConstructor
 @Component(value = "userPasswordValidator")
 public class UserPasswordValidator implements Validator {
 

@@ -19,6 +19,20 @@ import org.testng.annotations.Test;
  */
 public class AllValidatorsTest {
 
+    private final Validator agentFileExpressionValidator;
+    private final Validator agentFileValidator;
+    private final Validator fileNameValidator;
+    private final Validator userNameValidator;
+    private final Validator userPasswordValidator;
+
+    public AllValidatorsTest() {
+        fileNameValidator = new FileNameValidator();
+        userNameValidator = new UserNameValidator();
+        userPasswordValidator = new UserPasswordValidator();
+        agentFileExpressionValidator = new AgentFileExpressionValidator();
+        agentFileValidator = new AgentFileValidator(agentFileExpressionValidator);
+    }
+
     private void validateString(Validator validator, String[] values, boolean result) {
         for (String value : values) {
             assertEquals(validator.validate(value), result);
@@ -32,50 +46,62 @@ public class AllValidatorsTest {
     }
 
     @Test
+    public void testAgentFileExpressionValidatorAllOk() {
+        String values[] = {""};
+        validateString(agentFileExpressionValidator, values, true);
+    }
+
+    @Test
+    public void testAgentFileExpressionValidatorAllBad() {
+        String values[] = {null};
+        validateString(agentFileExpressionValidator, values, false);
+    }
+
+    @Test
     public void testAgentFileValidatorAllOk() {
-        DbAgentFile values[] = {new DbAgentFile("", DbFileType.Logo, new DbAgentFileOwner(), "", "", false, new DbConfiguration(), 0)};
-        validateDbAbstractEntity(new AgentFileValidator(), values, true);
+        DbAgentFile values[] = {new DbAgentFile("1/2/file.txt", DbFileType.Logo, new DbAgentFileOwner(), "", "digest", false, new DbConfiguration(), 0)};
+        validateDbAbstractEntity(agentFileValidator, values, true);
     }
 
     @Test
     public void testAgentFileValidatorAllBad() {
         DbAgentFile values[] = {new DbAgentFile()};
-        validateDbAbstractEntity(new AgentFileValidator(), values, false);
+        validateDbAbstractEntity(agentFileValidator, values, false);
     }
 
     @Test
     public void testFileNameValidatorAllOk() {
-        String values[] = {"1.txt"};
-        validateString(new FileNameValidator(), values, true);
+        String values[] = {"file-name.txt", "hello.pdf",};
+        validateString(fileNameValidator, values, true);
     }
 
     @Test
     public void testFileNameValidatorBadAllBad() {
-        String values[] = {""};
-        validateString(new FileNameValidator(), values, false);
+        String values[] = {"", "", "$file.pdf", "^{}*.exe", "   \\/*{}&,;'\"()|:<>?#$@!%"};
+        validateString(fileNameValidator, values, false);
     }
 
     @Test
     public void testUserNameValidatorAllOk() {
-        String values[] = {"sergey"};
-        validateString(new UserNameValidator(), values, true);
+        String values[] = {"sergey", "ivan-k", "marius"};
+        validateString(userNameValidator, values, true);
     }
 
     @Test
     public void testUserNameValidatorAllBad() {
-        String values[] = {""};
-        validateString(new UserNameValidator(), values, false);
+        String values[] = {"", "sergey kichenko", "$sergey", "  \\/*{}&,;'\"()|:<>?#$@!%"};
+        validateString(userNameValidator, values, false);
     }
 
     @Test
     public void testUserPasswordValidatorAllOk() {
         String values[] = {"qwerty"};
-        validateString(new UserPasswordValidator(), values, true);
+        validateString(userPasswordValidator, values, true);
     }
 
     @Test
     public void testUserPasswordValidatorAllBad() {
         String values[] = {""};
-        validateString(new UserPasswordValidator(), values, false);
+        validateString(userPasswordValidator, values, false);
     }
 }
