@@ -283,7 +283,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
 
     @Override
     public void onLocalException(Exception ex) {
-        log.error("Bad user sign in user {}", ex);
+        log.error("Bad user sign in {}", ex);
         ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
     }
 

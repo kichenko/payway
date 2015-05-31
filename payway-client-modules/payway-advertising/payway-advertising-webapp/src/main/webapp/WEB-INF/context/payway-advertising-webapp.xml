@@ -10,12 +10,11 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
             http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd">
 
-    <!--
-   <hz:client id="hazelcastInstance">
+   <!--<hz:client id="hazelcastInstance">
        <hz:group name="${avs.cluster.name}" password="${avs.cluster.password}"/>
-   </hz:client>
-    -->
-    
+   </hz:client>-->
+
+    <!--
     <util:properties id="local">
         <prop key="avs.node">node4</prop>
         <prop key="avs.role">payway-advertising-webapp</prop>
@@ -33,5 +32,6 @@
             <hz:member>192.168.1.7</hz:member>
         </hz:network>
     </hz:client>
-   
+    -->
+
 </beans>

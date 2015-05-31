@@ -3,7 +3,9 @@
  */
 package com.payway.advertising.messaging;
 
+import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.nio.serialization.HazelcastSerializationException;
 import com.payway.messaging.core.ResponseEnvelope;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -62,13 +64,16 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                 log.info("Getting the response message from the server, start processing");
                 serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
             } catch (InterruptedException ex) {
-                log.error("Server message listener thread is interrupted", ex);
+                log.error("Server message listener - Thread is interrupted", ex);
                 break;
             } catch (HazelcastInstanceNotActiveException ex) {
-                log.error("Hazelcast instance is not active", ex);
-                break;
+                log.error("Server message listener - Hazelcast instance is not active", ex);
+            } catch (HazelcastSerializationException ex) {
+                log.error("Server message listener - Hazelcast serialization exception", ex);
+            } catch (HazelcastException ex) {
+                log.error("Server message listener - Hazelcast exception", ex);
             } catch (Exception ex) {
-                log.error("Unknown exception in server message listener", ex);
+                log.error("Server message listener - Unknown exception", ex);
             }
         }
 
