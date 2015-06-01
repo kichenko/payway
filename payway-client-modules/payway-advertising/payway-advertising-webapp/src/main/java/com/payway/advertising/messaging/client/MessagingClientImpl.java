@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.Setter;
@@ -70,19 +69,22 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
 
     @PreDestroy
     public void preDestroy() {
+        log.info("$&&&&&&&&");
         shutdown();
+        log.info("$&&&&&&&&");
     }
 
     @Override
     public boolean construct() {
         try {
-            semaphore.tryAcquire(1, TimeUnit.SECONDS);
+            log.info("$%#");
+            //semaphore.tryAcquire(1, TimeUnit.SECONDS);
             construct = true;
 
-            if (client != null) {
-                client.shutdown();
-                client = null;
-            }
+            //if (client != null) {
+            //    client.shutdown();
+            //    client = null;
+            //}
 
             client = HazelcastClient.newHazelcastClient(new XmlClientConfigBuilder(new File(new URI(configFileName))).build());
             client.getLifecycleService().addLifecycleListener(this);
@@ -93,10 +95,19 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
         } catch (Exception ex) {
             log.error("Bad constructing messaging client", ex);
             setState(IMessagingClient.State.Disconnected);
+
+            //if (client != null) {
+                //log.info("$$$$$$$$$$$$");
+                //client.shutdown();
+                //log.info("@#@$$");
+            //}
+
         } finally {
-            semaphore.release();
+            //semaphore.release();
             construct = false;
         }
+
+        log.info("@@!");
 
         return false;
     }

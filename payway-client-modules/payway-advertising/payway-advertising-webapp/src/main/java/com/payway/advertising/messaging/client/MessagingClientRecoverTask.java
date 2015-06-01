@@ -53,6 +53,7 @@ public class MessagingClientRecoverTask implements Runnable {
     @Override
     public void run() {
         try {
+            log.info("r###");
             while (running) {
 
                 if (log.isDebugEnabled()) {
@@ -84,10 +85,18 @@ public class MessagingClientRecoverTask implements Runnable {
                     log.debug("Waiting for running recover messaging client task");
                 }
 
+                if (Thread.currentThread().isInterrupted()) {
+                    log.info("blyaaa");
+                }
+
+                log.info("QQQQ");
                 Thread.sleep(recoverPeriod);
+                log.info("WWWW");
             }
         } catch (Exception ex) {
             log.error("Bad messaging client recover task", ex);
         }
+
+        log.info("e###");
     }
 }
