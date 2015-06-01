@@ -13,6 +13,8 @@ import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.messaging.MessageServerSenderService;
 import com.payway.advertising.messaging.ResponseCallBack;
+import com.payway.advertising.messaging.client.IMessagingClient;
+import com.payway.advertising.messaging.client.IMessagingLock;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbConfiguration;
@@ -64,9 +66,12 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     @Qualifier(value = "configurationService")
     private ConfigurationService configurationService;
 
+    @Value("${server.lock.app.config.apply}")
+    private String serverApplyLockName;
+
     @Autowired
-    @Qualifier(value = "serverApplyLockService")
-    private ConfigurationApplyLockService serverApplyLockService;
+    @Qualifier(value = "messagingClient")
+    private IMessagingClient messagingClient;
 
     @Getter
     @Setter
@@ -289,7 +294,8 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     appEventBus.sendNotification(new AppBusEventImpl(acs));
 
                     //3. send server msg
-                    if (serverApplyLockService.tryLock(getApplyLockTimeOut(), getUnit())) {
+                    IMessagingLock serverApplyLock = messagingClient.getLock(serverApplyLockName);
+                    if (serverApplyLock.tryLock(getApplyLockTimeOut(), getUnit())) {
                         try {
                             final CountDownLatch latch = new CountDownLatch(1);
 
@@ -401,11 +407,11 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                             }
 
                             //must free server lock
-                            serverApplyLockService.unlock();
+                            serverApplyLock.unlock();
 
                         } catch (Exception ex) {
                             //must free server lock
-                            serverApplyLockService.unlock();
+                            serverApplyLock.unlock();
                             throw ex;
                         }
                     } else {

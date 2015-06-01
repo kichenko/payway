@@ -3,11 +3,9 @@
  */
 package com.payway.advertising.messaging;
 
-import com.hazelcast.core.HazelcastException;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.nio.serialization.HazelcastSerializationException;
+import com.payway.advertising.messaging.client.IMessagingClient;
+import com.payway.advertising.messaging.client.IMessagingQueue;
 import com.payway.messaging.core.ResponseEnvelope;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +31,12 @@ import org.springframework.core.task.TaskExecutor;
 public class MessageServerResponseListener implements Runnable, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+    private IMessagingClient messagingClient;
     private TaskExecutor serverTaskExecutor;
-    private BlockingQueue<ResponseEnvelope> clientQueue;
 
     private long timeOut;
     private TimeUnit timeUnit;
-
-    private volatile boolean interrupt = false;
+    private volatile boolean running = true;
 
     @Override
     public void setApplicationContext(ApplicationContext context) {
@@ -47,39 +44,39 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
     }
 
     public void preDestroy() {
-        interrupt = true;
+        running = false;
     }
 
     @Override
     public void run() {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Client queue={} ", clientQueue);
-        }
-
-        while (!interrupt) {
+        while (running) {
             try {
-                log.info("Waiting for a response message from the server");
-                ResponseEnvelope envelope = clientQueue.poll(timeOut, timeUnit);
-                log.info("Getting the response message from the server, start processing");
-                serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
+                if (IMessagingClient.State.Connected.equals(messagingClient.getState())) {
+                    IMessagingQueue<ResponseEnvelope> clientQueue = messagingClient.<ResponseEnvelope>getClientQueue();
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Client queue={} ", clientQueue);
+                    }
+
+                    log.info("Waiting for a response message from the server");
+                    ResponseEnvelope envelope = clientQueue.poll(timeOut, timeUnit);
+                    log.info("Getting the response message from the server, start processing");
+                    serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
+                } else {
+                    Thread.sleep(5000);
+                }
             } catch (InterruptedException ex) {
                 log.error("Server message listener - Thread is interrupted", ex);
                 break;
-            } catch (HazelcastInstanceNotActiveException ex) {
-                log.error("Server message listener - Hazelcast instance is not active", ex);
-            } catch (HazelcastSerializationException ex) {
-                log.error("Server message listener - Hazelcast serialization exception", ex);
-            } catch (HazelcastException ex) {
-                log.error("Server message listener - Hazelcast exception", ex);
             } catch (Exception ex) {
                 log.error("Server message listener - Unknown exception", ex);
             }
         }
 
-        if (interrupt) {
+        if (running) {
             log.warn("Exit from message server listener in active status");
-            interrupt = false;
+            running = false;
         } else {
             log.info("Exit from message server listener ");
         }

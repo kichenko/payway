@@ -5,7 +5,7 @@ package com.payway.advertising.core.service.app.settings;
 
 import com.payway.advertising.messaging.MessageServerSenderService;
 import com.payway.advertising.messaging.ResponseCallbackSupport;
-import com.payway.advertising.web.ApplicationStartEvent;
+import com.payway.advertising.web.ApplicationOnStartClientConnectedEvent;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsRequest;
 import com.payway.messaging.message.SettingsResponse;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component(value = "settingsAppService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationStartEvent> {
+public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationOnStartClientConnectedEvent> {
 
     @Value("${config.local.path}")
     private String localConfigPath;
@@ -87,7 +87,7 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
      ITopic<ConfigMessage> topic;
      */
     @Override
-    public void onApplicationEvent(ApplicationStartEvent event) {
+    public void onApplicationEvent(ApplicationOnStartClientConnectedEvent event) {
         log.debug("Loading settings from cluster");
         sender.sendMessage(new SettingsRequest(), new ResponseCallbackSupport<SettingsResponse, ExceptionResponse>() {
             @Override

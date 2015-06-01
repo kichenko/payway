@@ -16,11 +16,4 @@ public class SpringContextInitializer extends ContextLoaderListener {
         WebApplicationContext wac = initWebApplicationContext(event.getServletContext());
         wac.publishEvent(new ApplicationStartEvent(this));
     }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        log.debug("xxx ### contextDestroyed");
-        super.contextDestroyed(event);
-    }
-
 }

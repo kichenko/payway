@@ -37,10 +37,8 @@
     </bean>
 
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="messageServerSenderService" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl" depends-on="serverQueue">
-        <!-- сюда уходят запросы-->
-        <property name="serverQueue" ref="serverQueue"/>
-        <property name="clientQueueName" ref="clientQueueName"/>
+    <bean id="messageServerSenderService" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl">
+        <property name="messagingClient" ref="messagingClient"/>
         <property name="serviceContext" ref="serviceContext"/>
         <property name="timeOut" value="5"/>
         <property name="timeUnit">
@@ -49,10 +47,9 @@
     </bean>
 
     <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" depends-on="clientQueue" destroy-method="preDestroy">
-        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
-        <!-- отсюда приходят ответы-->
-        <property name="clientQueue" ref="clientQueue"/>        
+    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" destroy-method="preDestroy">
+        <property name="messagingClient" ref="messagingClient"/>
+        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>     
         <property name="timeOut" value="20"/>
         <property name="timeUnit">
             <value type="java.util.concurrent.TimeUnit">SECONDS</value>
@@ -66,12 +63,7 @@
 
     <!-- Объект для работы с файловой системой -->
     <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
-
-    <!-- Объекты блокировки для использования при обновлении конфигурации -->
-    <bean id="serverApplyLockService" class="com.payway.advertising.core.service.config.apply.ConfigurationApplyLockServiceImpl">
-        <property name="lock" ref="lockServerAppConfigApply"/>
-    </bean>
-
+   
     <!-- Bus exception handler -->
     <bean id="subscriberExceptionHandler" class="com.payway.advertising.core.app.bus.SubscriberExceptionHandlerImpl"/>
 

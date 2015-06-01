@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ApplicationStartEvent extends ApplicationEvent {
 
+    private static final long serialVersionUID = 6522902249554515731L;
+
     /**
      * Create a new ApplicationEvent.
      *

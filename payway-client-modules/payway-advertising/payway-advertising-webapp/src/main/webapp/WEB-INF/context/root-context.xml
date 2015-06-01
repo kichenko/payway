@@ -7,12 +7,11 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder location="classpath:config.properties" order="999"/>
-
-    <import resource="${payway-advertising-webapp.xml:payway-advertising-webapp.xml}"/>
+    <!-- property file -->
+    <context:property-placeholder location="classpath:config.properties,file://${avs.conf:/etc/avs.conf}" ignore-resource-not-found="true"/>
+    
     <import resource="data-source-context.xml"/>
     <import resource="spring-data-context.xml"/>
-    <import resource="hazelcast-client-context.xml"/>
     <import resource="application-context.xml"/>
 
 </beans>
