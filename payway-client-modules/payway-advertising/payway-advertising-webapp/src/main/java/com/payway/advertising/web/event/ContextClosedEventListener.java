@@ -1,9 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.messaging.client;
+package com.payway.advertising.web.event;
 
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +13,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
+ * ContextClosedEventListener
  *
- * @author Admin
+ * @author Sergey Kichenko
+ * @created 01.06.15 00:00
  */
 @Slf4j
-@Component
+@Component(value = "contextClosedEventListener")
 class ContextClosedEventListener implements ApplicationListener<ContextClosedEvent> {
 
     @Autowired
@@ -28,13 +28,18 @@ class ContextClosedEventListener implements ApplicationListener<ContextClosedEve
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
-        log.debug("****");
         try {
             serverTaskExecutor.getThreadPoolExecutor().shutdown();
             serverTaskExecutor.getThreadPoolExecutor().awaitTermination(20, TimeUnit.SECONDS);
+
+            if (serverTaskExecutor.getThreadPoolExecutor().isTerminated()) {
+                log.info("Server task executor on context closed event terminated success");
+            } else {
+                log.warn("Server task executor on context closed event terminated failed");
+            }
+
         } catch (Exception ex) {
-            //
+            log.warn("Bad shutdown server task executor on context closed event", ex);
         }
-        log.debug("%%%%%%%");
     }
 }

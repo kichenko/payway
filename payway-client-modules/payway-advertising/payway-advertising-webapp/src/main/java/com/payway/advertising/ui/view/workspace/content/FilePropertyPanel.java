@@ -133,19 +133,18 @@ public class FilePropertyPanel extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     ((InteractionUI) UI.getCurrent()).showProgressBar();
-                    if (agentFileValidator.validate(beanItem.getBean())) {
 
+                    if (getBeanItem().getBean().getId() == null) {
                         //set name only for new object, where id == null
                         getBeanItem().getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
 
                         //set digest only for new object, where id == null
-                        if (getBeanItem().getBean().getId() == null) {
-                            String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
-                            getBeanItem().getBean().setDigest(digest);
-                        }
+                        String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
+                        getBeanItem().getBean().setDigest(digest);
+                    }
 
+                    if (agentFileValidator.validate(beanItem.getBean())) {
                         agentFileService.save(getBeanItem().getBean());
-
                         if (getListener() != null) {
                             getListener().onSave(beanItem.getBean());
                         }

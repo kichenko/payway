@@ -27,7 +27,7 @@
     </hz:hazelcast>
 
     <!-- Сервис для работы с распределенными объектами-->
-    <bean id="dosService" class="com.payway.messaging.core.service.hz.HazelcastDistributedObjectServiceImpl">
+    <bean id="dosService" class="com.payway.server.messaging.HazelcastDistributedObjectServiceImpl">
         <property name="hazelcastInstance" ref="hazelcastInstance"/>
     </bean>
 

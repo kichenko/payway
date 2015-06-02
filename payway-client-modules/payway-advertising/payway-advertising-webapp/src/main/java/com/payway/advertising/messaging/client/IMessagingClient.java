@@ -25,7 +25,7 @@ public interface IMessagingClient {
 
     void shutdown();
 
-    boolean construct();
+    void construct() throws Exception;
 
     <E extends Serializable> IMessagingQueue getClientQueue() throws MessagingException;
 

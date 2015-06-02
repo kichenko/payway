@@ -2,30 +2,14 @@
                   xmlns="http://www.hazelcast.com/schema/client-config"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <!--cluster name to connect-->
     <group>
         <name>advertising-kichenko-test-hz-cluster</name>
         <password>qwerty</password>
     </group>
-
-    <!--client properties-->
-    <properties>
-        <property name="hazelcast.client.connection.timeout">10000</property>
-        <property name="hazelcast.client.retry.count">2</property>
-    </properties>
-
-    <!--network configuration details-->
+    
     <network>
         <cluster-members>
-            <!--initial cluster members to connect-->
-            <address>192.168.177.77</address>
+            <address>177.77.77.77</address>
         </cluster-members>
-
-        <smart-routing>true</smart-routing>
-        <redo-operation>true</redo-operation>
-      
-        <aws enabled="true" connection-timeout-seconds="11">
-            <!--aws configuration details-->
-        </aws>
     </network>
 </hazelcast-client>

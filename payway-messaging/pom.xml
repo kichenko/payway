@@ -17,8 +17,7 @@
         
     <modules>       
         <module>payway-messaging-model</module>
-        <module>payway-messaging-message</module>
-        <module>payway-messaging-hazelcast</module>   
+        <module>payway-messaging-message</module>   
     </modules>  
     
 </project>

@@ -34,30 +34,34 @@ public class MessagingClientRecoverTask implements Runnable {
     @Qualifier(value = "messagingClient")
     private IMessagingClient messagingClient;
 
-    @Value("5000")
+    @Value("${client.recover.task.period}")
     private long recoverPeriod;
 
     @Value("true")
     private boolean running;
 
-    private ApplicationEvent publishedEvent;
+    private ApplicationEvent event;
 
     public MessagingClientRecoverTask() {
         //
     }
 
-    public MessagingClientRecoverTask(boolean publishEvent, ApplicationEvent publishedEvent) {
-        this.publishedEvent = publishedEvent;
+    public MessagingClientRecoverTask(ApplicationEvent event) {
+        this.event = event;
     }
 
     @Override
     public void run() {
         try {
-            log.info("r###");
+
+            if (log.isDebugEnabled()) {
+                log.debug("Start recover task executing");
+            }
+
             while (running) {
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Try to recover messaging client...");
+                    log.debug("Execute recover messaging client task");
                 }
 
                 if (IMessagingClient.State.Connected.equals(messagingClient.getState())) {
@@ -65,38 +69,48 @@ public class MessagingClientRecoverTask implements Runnable {
                     break;
                 }
 
-                if (messagingClient.construct()) {
+                try {
+
+                    messagingClient.construct();
+
                     if (log.isDebugEnabled()) {
-                        log.debug("Recover messaging client success");
+                        log.debug("Recover messaging client task executing success");
                     }
 
-                    if (publishedEvent != null) {
-                        applicationContext.publishEvent(publishedEvent);
+                    if (event != null) {
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Recover messaging client task publish event {}", event);
+                        }
+
+                        applicationContext.publishEvent(event);
                     }
 
                     break;
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Recover messaging client failed");
+                } catch (Exception ex) {
+                    log.error("Recover messaging client task failed", ex);
+                    if (ex.getCause() != null && ex.getCause().getClass().getName().equals(InterruptedException.class.getName())) {
+                        Thread.currentThread().interrupt();
                     }
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Waiting for running recover messaging client task");
+                    log.debug("Start waiting for running recover messaging client task");
                 }
 
-                if (Thread.currentThread().isInterrupted()) {
-                    log.info("blyaaa");
-                }
-
-                log.info("QQQQ");
                 Thread.sleep(recoverPeriod);
-                log.info("WWWW");
+
+                if (log.isDebugEnabled()) {
+                    log.debug("End waiting for running recover messaging client task");
+                }
+
             }
         } catch (Exception ex) {
-            log.error("Bad messaging client recover task", ex);
+            log.error("Bad executing messaging client recover task", ex);
         }
 
-        log.info("e###");
+        if (log.isDebugEnabled()) {
+            log.debug("End recover task executing");
+        }
     }
 }

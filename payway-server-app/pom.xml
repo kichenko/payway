@@ -21,14 +21,12 @@
 
     <!-- dependencies-->
     <dependencies>
-
+        
         <dependency>
-            <groupId>com.payway</groupId>
-            <artifactId>payway-messaging-hazelcast</artifactId>
-            <scope>compile</scope>
-            <version>${project.parent.version}</version>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-all</artifactId>
         </dependency>
-
+       
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>

@@ -7,7 +7,6 @@ import com.hazelcast.core.HazelcastInstance;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.response.exception.common.CommonExceptionResponse;
-import com.payway.messaging.core.service.DistributedObjectService;
 import com.payway.messaging.message.SettingsRequest;
 import com.payway.messaging.message.SettingsResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
@@ -23,13 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-/**
- * Обработчик входящих сообщений. Прототип т.к. хранит в себе конверт сообщения.
- *
- * @author Sergey Kichenko
- * @created 24.04.15 00:00
- */
 @NoArgsConstructor
 @Getter
 @Setter

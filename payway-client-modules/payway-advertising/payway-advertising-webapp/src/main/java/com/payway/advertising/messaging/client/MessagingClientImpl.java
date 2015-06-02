@@ -8,10 +8,9 @@ import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
-import java.io.File;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.Setter;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +36,12 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     private HazelcastInstance client;
 
     private final Semaphore semaphore = new Semaphore(1);
-    private boolean construct;
-    private boolean shutdown;
+
+    private volatile boolean construct;
+    private volatile boolean shutdown;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Value("${server.queue.name}")
     private String serverQueueName;
@@ -51,70 +55,56 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     @Value("${client.queue.template.name}")
     private String clientQueueTemplateName;
 
+    @Value("${client.config.hz:classpath:hazelcast-client.xml}")
+    private Resource config;
+
     @Setter(AccessLevel.PRIVATE)
     public volatile IMessagingClient.State state = IMessagingClient.State.Disconnected;
 
-    @Value("${client.messaging.config.file.name}")
-    private String configFileName;
-
     @Value("true")
-    private boolean autoRecover;
+    private volatile boolean autoRecover;
 
     @Autowired
     @Qualifier(value = "serverTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
     @PreDestroy
     public void preDestroy() {
-        log.info("$&&&&&&&&");
         shutdown();
-        log.info("$&&&&&&&&");
     }
 
     @Override
-    public boolean construct() {
+    public void construct() throws Exception {
         try {
-            log.info("$%#");
-            //semaphore.tryAcquire(1, TimeUnit.SECONDS);
-            construct = true;
+            if (log.isDebugEnabled()) {
+                log.debug("Start constructing messaging client");
+            }
 
-            //if (client != null) {
-            //    client.shutdown();
-            //    client = null;
-            //}
+            if (semaphore.tryAcquire(1, TimeUnit.SECONDS)) {
+                construct = true;
+                client = HazelcastClient.newHazelcastClient(new XmlClientConfigBuilder(config.getInputStream()).build());
+                client.getLifecycleService().addLifecycleListener(this);
+                clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());
+                setState(IMessagingClient.State.Connected);
+            } else {
+                throw new Exception("Can't get permits for semaphore");
+            }
 
-            client = HazelcastClient.newHazelcastClient(new XmlClientConfigBuilder(new File(new URI(configFileName))).build());
-            client.getLifecycleService().addLifecycleListener(this);
-            clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());
-            setState(IMessagingClient.State.Connected);
-
-            return true;
+            if (log.isDebugEnabled()) {
+                log.debug("End constructing messaging client");
+            }
         } catch (Exception ex) {
             log.error("Bad constructing messaging client", ex);
             setState(IMessagingClient.State.Disconnected);
-
-            //if (client != null) {
-                //log.info("$$$$$$$$$$$$");
-                //client.shutdown();
-                //log.info("@#@$$");
-            //}
-
+            throw ex;
         } finally {
-            //semaphore.release();
             construct = false;
+            semaphore.release();
         }
-
-        log.info("@@!");
-
-        return false;
     }
 
     @Override
     public void stateChanged(LifecycleEvent event) {
-        log.debug("client state ==== {}", event);
         if (autoRecover && !construct && !shutdown && LifecycleEvent.LifecycleState.SHUTDOWN.equals(event.getState())) {
             setState(IMessagingClient.State.Connecting);
             try {

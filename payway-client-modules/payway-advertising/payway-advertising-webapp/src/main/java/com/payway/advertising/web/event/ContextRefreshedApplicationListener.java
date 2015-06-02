@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.bean;
+package com.payway.advertising.web.event;
 
 import com.payway.advertising.messaging.MessageServerResponseListener;
 import lombok.extern.slf4j.Slf4j;

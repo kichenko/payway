@@ -54,7 +54,7 @@ public class AllValidatorsTest {
     @Test
     public void testAgentFileExpressionValidatorAllBad() {
         String values[] = {null};
-        validateString(agentFileExpressionValidator, values, false);
+        validateString(agentFileExpressionValidator, values, true);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class AllValidatorsTest {
 
     @Test
     public void testFileNameValidatorAllOk() {
-        String values[] = {"file-name.txt", "hello.pdf",};
+        String values[] = {"file-name.txt", "hello.pdf", "payway-advertising-webapp.war"};
         validateString(fileNameValidator, values, true);
     }
 

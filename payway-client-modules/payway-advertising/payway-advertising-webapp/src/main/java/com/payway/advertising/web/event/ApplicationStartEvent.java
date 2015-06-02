@@ -1,4 +1,4 @@
-package com.payway.advertising.web;
+package com.payway.advertising.web.event;
 
 import org.springframework.context.ApplicationEvent;
 

@@ -1,9 +1,9 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.messaging.client;
+package com.payway.advertising.web.event;
 
-import com.payway.advertising.web.ApplicationStartEvent;
+import com.payway.advertising.messaging.client.MessagingClientRecoverTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -12,11 +12,13 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
+ * ApplicationStartEventListener
  *
- * @author sergey
+ * @author Sergey Kichenko
+ * @created 01.06.15 00:00
  */
-@Component(value = "messagingApplicationStart")
-public class MessagingApplicationStart implements ApplicationListener<ApplicationStartEvent> {
+@Component(value = "applicationStartEventListener")
+public class ApplicationStartEventListener implements ApplicationListener<ApplicationStartEvent> {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -27,6 +29,6 @@ public class MessagingApplicationStart implements ApplicationListener<Applicatio
 
     @Override
     public void onApplicationEvent(ApplicationStartEvent event) {
-        serverTaskExecutor.execute((MessagingClientRecoverTask) applicationContext.getBean("messagingClientRecoverTask"));
+        serverTaskExecutor.execute((MessagingClientRecoverTask) applicationContext.getBean("messagingClientRecoverTask", new ApplicationStartClientConnectedEvent(this)));
     }
 }

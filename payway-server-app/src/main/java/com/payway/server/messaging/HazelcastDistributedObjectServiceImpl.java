@@ -1,11 +1,10 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.messaging.core.service.hz;
+package com.payway.server.messaging;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IdGenerator;
-import com.payway.messaging.core.service.DistributedObjectService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

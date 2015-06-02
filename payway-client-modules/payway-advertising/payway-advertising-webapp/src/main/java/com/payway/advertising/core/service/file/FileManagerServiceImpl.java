@@ -55,11 +55,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject foOld = fileSystemManager.resolveFile(src.getPath());
             FileObject foNew = fileSystemManager.resolveFile(dst.getPath());
 
-            if (foOld.canRenameTo(foNew)) {
-                foOld.moveTo(foNew);
-            } else {
+            if (exist(dst)) {
                 throw new Exception("Can't rename file system object");
             }
+            foOld.moveTo(foNew);
         } catch (Exception ex) {
             log.error("Bad file rename", ex);
             throw new FileSystemManagerServiceException("Error rename file system object", ex);
