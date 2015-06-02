@@ -54,7 +54,7 @@
             <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
-      
+
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
@@ -119,7 +119,7 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
         </dependency>
-  
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -136,25 +136,24 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-vfs2</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-webdav</artifactId>
-        </dependency>  
-        
+        </dependency>
+
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-        </dependency>  
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+        </dependency>
 
         <!--
         <dependency>
@@ -168,17 +167,17 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-client</artifactId>
         </dependency>
-        
+
     </dependencies>
 
     <!-- build -->
