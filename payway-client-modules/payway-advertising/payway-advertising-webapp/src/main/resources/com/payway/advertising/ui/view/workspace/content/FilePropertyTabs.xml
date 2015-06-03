@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tb="urn:import:com.payway.advertising.ui.view.workspace.content" id="layoutTabsProperty" styleName="" sizeFull="true">
 
-    <CssLayout id="layoutTab" styleName="tab-property-layout-tabs">
+    <CssLayout id="layoutTab" styleName="tab-property-layout-tabs" width="100%">
         <TabSheet id="tabSheetFileProperty" styleName="framed padded-tabbar"/>
         <tb:FilePropertyTabGeneral id="tabGeneral"/>
         <tb:FilePropertyTabAdditional id="tabAdditional"/>

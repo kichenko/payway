@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view" width="100%">
 
     <HorizontalSplitPanel id="splitHorizontalPanel"/>
 
-    <CssLayout id="layoutLeft" styleName="main-panel-left">
+    <CssLayout id="layoutLeft" styleName="main-panel-left" width="100%" height="100%" sizeFull="true">
 
         <VerticalSplitPanel id="splitVerticalPanel"/>
 
-        <CssLayout id="layoutSideBar" styleName="main-panel-left-layout-side-bar">
+        <CssLayout id="layoutSideBar" styleName="main-panel-left-layout-side-bar" width="100%" height="100%" >
             <cmp:SideBarMenu id="sideBarMenu" sizeFull="true"/>
         </CssLayout>
 
-        <CssLayout id="layoutUploads" styleName="main-panel-left-layout-uploads">
+        <CssLayout id="layoutUploads" styleName="main-panel-left-layout-uploads" width="100%" height="100%">
             <VerticalSplitPanel id="splitVerticalPanelUploads"/>
 
-            <CssLayout id="layoutUploadTasks" styleName="main-panel-left-layout-upload-tasks">
+            <CssLayout id="layoutUploadTasks" styleName="main-panel-left-layout-upload-tasks" width="100%" height="100%">
                 <cmp:UploadTaskPanel id="uploadTaskPanel" caption="Upload tasks" sizeFull="true"/>
             </CssLayout>
 
-            <CssLayout id="layoutFileUpload" styleName="main-panel-left-layout-file-upload">
+            <CssLayout id="layoutFileUpload" styleName="main-panel-left-layout-file-upload" width="100%" height="100%">
                 <cmp:FileUploadPanel id="fileUploadPanel" caption="File upload zone"  sizeFull="true"/>
             </CssLayout>
         </CssLayout>
 
     </CssLayout>
 
-    <CssLayout id="layoutRight" styleName="main-panel-right">
+    <CssLayout id="layoutRight" styleName="main-panel-right" width="100%" height="100%">
         <CssLayout id="panelHeader" styleName="main-panel-header">
             <HorizontalLayout id = "layoutToolBarLeft" styleName ="main-panel-header-toolbar-left">
                 <MenuBar id="menuBar" styleName="main-user-menu"/>

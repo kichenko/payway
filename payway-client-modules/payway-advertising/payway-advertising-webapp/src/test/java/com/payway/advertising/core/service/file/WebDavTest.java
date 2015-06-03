@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.Selectors;
-import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,25 +28,16 @@ public class WebDavTest {
         ((StandardFileSystemManager) fileSystemManager).init();
 
         webDavPath = "webdav://mike:ekimka@test.pwypp.com:9988/WebApps/shared/";
-
-        //to prevent bug https://issues.apache.org/jira/browse/VFS-467, https://issues.apache.org/jira/browse/VFS-465
-        //use last 2.1-SNAPSHOT
-        VFS.setUriStyle(true);
     }
 
     @Test(enabled = false)
     public void testCreateAndRemove() throws Exception {
-
-        VFS.setUriStyle(true);
-
-        String folderName = webDavPath + UUID.randomUUID().toString() + "/";
+        String folderName = webDavPath + UUID.randomUUID().toString() + "/1 2 3 4 5 6";
 
         FileObject foCreate;
         FileObject foDelete;
 
         foCreate = fileSystemManager.resolveFile(folderName);
-        foCreate.createFolder();
-        foCreate = fileSystemManager.resolveFile(folderName + "/" + UUID.randomUUID().toString());
         foCreate.createFolder();
 
         foDelete = fileSystemManager.resolveFile(folderName);

@@ -7,13 +7,11 @@ import com.payway.advertising.core.service.exception.FileSystemManagerServiceExc
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.Selectors;
-import org.apache.commons.vfs2.VFS;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,22 +30,6 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     @Autowired
     @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
-
-    @PostConstruct
-    public void postConstruct() {
-
-        /**
-         * Add to prevent bug with web dav list child dir's (it's include parent
-         * dir to chiild list). See bug
-         * https://issues.apache.org/jira/browse/VFS-467) Also use snapshot
-         * build apache commons vfs
-         */
-        try {
-            VFS.setUriStyle(true);
-        } catch (Exception ex) {
-            log.warn("Bad set VFS URI style", ex);
-        }
-    }
 
     @Override
     public void create(FileSystemObject src) throws FileSystemManagerServiceException {
@@ -124,10 +106,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
         if (file != null) {
             if ((addFolders && FileType.FOLDER.equals(file.getType())) || (FileType.FILE.equals(file.getType()))) {
                 list.add(new FileSystemObject(
-                  file.getURL().toString(),
-                  FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                  FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
-                  new LocalDateTime(file.getContent().getLastModifiedTime())));
+                        file.getURL().toString(),
+                        FileType.FILE.equals(file.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                        FileType.FILE.equals(file.getType()) ? file.getContent().getSize() : 0,
+                        new LocalDateTime(file.getContent().getLastModifiedTime())));
             }
 
             if (FileType.FOLDER.equals(file.getType())) {
@@ -157,10 +139,10 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
                         for (FileObject f : childs) {
                             if ((addFolders && FileType.FOLDER.equals(f.getType())) || (FileType.FILE.equals(f.getType()))) {
                                 list.add(new FileSystemObject(
-                                  f.getURL().toString(),
-                                  FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
-                                  FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
-                                  new LocalDateTime(f.getContent().getLastModifiedTime())));
+                                        f.getURL().toString(),
+                                        FileType.FILE.equals(f.getType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER,
+                                        FileType.FILE.equals(f.getType()) ? f.getContent().getSize() : 0,
+                                        new LocalDateTime(f.getContent().getLastModifiedTime())));
                             }
                         }
                     }

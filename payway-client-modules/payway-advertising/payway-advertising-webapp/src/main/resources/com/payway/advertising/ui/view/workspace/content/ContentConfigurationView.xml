@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:bc="urn:import:com.payway.advertising.ui.component" xmlns:fpp="urn:import:com.payway.advertising.ui.view.workspace.content" id="layoutContentConfiguration" styleName="content-cfg-view">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:bc="urn:import:com.payway.advertising.ui.component" xmlns:fpp="urn:import:com.payway.advertising.ui.view.workspace.content" id="layoutContentConfiguration" width="100%" height="100%" sizeFull="true" styleName="content-cfg-view">
 
-    <CssLayout id="layoutBreadCrumbs" styleName="content-cfg-panel-bread-crumbs">
+    <CssLayout id="layoutBreadCrumbs" styleName="content-cfg-panel-bread-crumbs"  width="100%">
         <bc:BreadCrumbs id = "breadCrumbs" sizeFull="true"/>
     </CssLayout>
 
-    <CssLayout id="layoutExplorerContent" styleName="content-cfg-panel-file-grid">
+    <CssLayout id="layoutExplorerContent" styleName="content-cfg-panel-file-grid" width="100%" height="100%">
         <HorizontalSplitPanel id="splitPanel"/>
-        <Table id="gridFileExplorer" sizeFull="true"/>
+        <Table id="gridFileExplorer" sizeFull="true" width="100%" height="100%"/>
         <fpp:FilePropertyPanel id="panelFileProperty"/>
     </CssLayout>
 

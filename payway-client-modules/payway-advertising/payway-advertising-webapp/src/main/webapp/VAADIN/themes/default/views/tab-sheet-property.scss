@@ -6,12 +6,6 @@
     $btnSavePropertyRightPadding: 5px;
     $panelBtnPropertyHeight: $btnSavePropertyHeight + $btnSavePropertyBottomPadding;
 
-
-    .tab-property-layout-tabs {
-        padding: 1px;
-        background-color: white;
-    }
-
     .tab-property-layout-btn-save {
         float: right;
         height: 40px;
@@ -25,7 +19,10 @@
     }
 
     .tab-property-layout-tabs {
-        //background: yellow;
+
+        padding: 1px;
+        background-color: white;
+
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         width: 100%;
