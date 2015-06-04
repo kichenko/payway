@@ -1,0 +1,44 @@
+@mixin sidebar-menu-component {
+
+    .sidebar {
+        background-color: #3a434d;
+        height: 100%;
+        width: 100%;
+    }
+
+    .sidebar-menu-item {
+        width: 100%;
+        cursor: pointer;
+        outline: none;
+        font-weight: 400;
+        font-size: 14px;
+        color: #9ca5af;
+        line-height: 30px;
+        white-space: nowrap;
+        padding: 0 37px 0 19px;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+        -webkit-transition: background-color 300ms, color 60ms;
+        -moz-transition: background-color 300ms, color 60ms;
+        transition: background-color 300ms, color 60ms;
+    }
+
+    .sidebar-menu-item span.v-icon {
+        min-width: 1em;
+        margin-right: 19px;
+        text-align: center;
+        vertical-align: middle;
+        -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(black), to(rgba(0, 0, 0, 0.75)));
+    }
+
+    .sidebar-menu-item:focus, .sidebar-menu-item:hover, .sidebar-menu-item.selected {
+        color: white;
+    }
+
+    .sidebar-menu-item.selected {
+        background: none repeat scroll 0 0 #38414b;
+    }
+
+    .sidebar-menu-item.selected .v-icon {
+        color: #197de1;
+    }
+}

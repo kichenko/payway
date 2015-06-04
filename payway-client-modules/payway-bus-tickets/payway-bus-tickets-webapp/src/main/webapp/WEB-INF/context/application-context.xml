@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.payway"/>
+    
+    <bean class="com.payway.commons.webapp.config.PaywayCommonVaadinConfiguration"/>  
+    
+    <!-- Обработчик отказов для TaskExecutor'а -->
+    <bean id="rejectPolicy" class = "com.payway.commons.webapp.messaging.RejectExecutionPolicy"/>
+
+    <!--
+        TaskExecutor для обработки серверных задач.
+        Один поток выделяется для получения входящих сообщений.
+        Другие потоки - обработка сообщений.
+    -->
+    <bean id="serverTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10" />
+        <property name="maxPoolSize" value="25" />
+        <property name="queueCapacity" value="5" />
+        <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
+    </bean>
+
+    <!-- Сервис хранения карты с контекстами -->
+    <bean id="serviceContext" class = "com.payway.commons.webapp.messaging.MessageRequestContextHolderServiceImpl">
+        <property name="map">
+            <bean class="java.util.concurrent.ConcurrentHashMap"/>
+        </property>
+    </bean>
+
+    <!-- Сервис отправки сообщений на сервер -->
+    <bean id="messageServerSenderService" class = "com.payway.commons.webapp.messaging.MessageServerSenderServiceImpl">
+        <property name="messagingClient" ref="messagingClient"/>
+        <property name="serviceContext" ref="serviceContext"/>
+        <property name="timeOut" value="5"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
+    </bean>
+    
+    <!-- Bus exception handler -->
+    <bean id="subscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
+    
+    <!-- app bus -->
+    <bean id="appEventBus" class="com.payway.commons.webapp.bus.AppEventBusImpl">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.AsyncEventBus">
+                <constructor-arg name="executor" ref="serverTaskExecutor"/>
+                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- ui session bus with vaadin scope-->
+    <bean id="sessionEventBus" class="com.payway.commons.webapp.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.EventBus">
+                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+        
+</beans>

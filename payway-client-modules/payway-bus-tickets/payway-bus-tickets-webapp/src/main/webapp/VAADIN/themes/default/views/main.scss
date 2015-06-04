@@ -1,0 +1,72 @@
+@mixin main-view {
+
+    //var's
+    $panelHeaderHeight: 55px;
+    $panelFooterHeight: 10px;
+
+    .main-view {
+        height: 100%;
+        width: 100%;
+        //background: green;
+    }
+
+    .main-panel-left {
+        background: yellowgreen;
+        background-color: #3a434d;
+        height: 100%;
+        width: 100%;
+    }
+
+    .main-panel-right {
+        background: aqua;
+        height: 100%;
+        width: 100%;
+    }
+
+    .main-panel-left-layout-side-bar {
+        //background: darkorange;
+        width: 100%;
+        height: 100%;
+        padding: 20px 0px 0px 0px;
+    }
+
+    .main-panel-header
+    {
+        background: gray;
+        height: $panelHeaderHeight;
+        width: 100%;
+    }
+
+    .main-panel-content {
+        //background: darkorange;
+        width: 100%;
+        height: 100%;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-bottom: $panelHeaderHeight + $panelFooterHeight;
+        margin-bottom: -1 * ($panelHeaderHeight + $panelFooterHeight);
+    }
+
+    .main-panel-footer {
+        background: gray;
+        height: $panelFooterHeight;
+        width: 100%;
+    }
+
+    .main-user-menu {
+        margin: 10px 5px 5px 5px;
+    }
+
+    .main-panel-full {
+        height: 100%;
+        width: 100%;
+    }
+
+    .main-panel-header-toolbar-right {
+        float:right;
+    }
+
+    .main-panel-header-toolbar-left {
+        float:left;
+    }
+}
