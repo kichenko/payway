@@ -5,7 +5,7 @@ package com.payway.advertising.ui.view.workspace.content;
 
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
-import com.payway.advertising.ui.component.table.paging.IPagingContainer;
+import com.payway.commons.webapp.ui.components.table.paging.IPagingContainer;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;

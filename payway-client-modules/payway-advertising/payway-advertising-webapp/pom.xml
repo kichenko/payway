@@ -27,19 +27,13 @@
     </properties>
 
     <!-- dependencies-->
-    <dependencies>
-
-        <!-- db connection pool -->
+    <dependencies>      
+        
         <dependency>
-            <groupId>com.jolbox</groupId>
-            <artifactId>bonecp</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-commons-webapp</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>      
 
         <dependency>
             <groupId>com.payway</groupId>
@@ -176,6 +170,18 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-client</artifactId>
+        </dependency>
+        
+        <!-- db connection pool -->
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

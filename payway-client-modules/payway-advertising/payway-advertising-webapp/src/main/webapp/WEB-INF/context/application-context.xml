@@ -10,12 +10,12 @@
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <task:annotation-driven/>
-    <context:component-scan base-package="com.payway.advertising" />
+    <context:component-scan base-package="com.payway.advertising com.payway.commons.webapp" />
 
-    <bean class="com.payway.advertising.core.bean.config.AdvertisingVaadinConfiguration" />
+    <bean class="com.payway.commons.webapp.config.PaywayCommonVaadinConfiguration" />
 
     <!-- Обработчик отказов для TaskExecutor'а -->
-    <bean id="rejectPolicy" class = "com.payway.advertising.messaging.RejectExecutionPolicy"/>
+    <bean id="rejectPolicy" class = "com.payway.commons.webapp.messaging.RejectExecutionPolicy"/>
 
     <!--
         TaskExecutor для обработки серверных задач.
@@ -30,14 +30,14 @@
     </bean>
 
     <!-- Сервис хранения карты с контекстами -->
-    <bean id="serviceContext" class = "com.payway.advertising.messaging.MessageRequestContextHolderServiceImpl">
+    <bean id="serviceContext" class = "com.payway.commons.webapp.messaging.MessageRequestContextHolderServiceImpl">
         <property name="map">
             <bean class="java.util.concurrent.ConcurrentHashMap"/>
         </property>
     </bean>
 
     <!-- Сервис отправки сообщений на сервер -->
-    <bean id="messageServerSenderService" class = "com.payway.advertising.messaging.MessageServerSenderServiceImpl">
+    <bean id="messageServerSenderService" class = "com.payway.commons.webapp.messaging.MessageServerSenderServiceImpl">
         <property name="messagingClient" ref="messagingClient"/>
         <property name="serviceContext" ref="serviceContext"/>
         <property name="timeOut" value="5"/>
@@ -47,7 +47,7 @@
     </bean>
 
     <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.advertising.messaging.MessageServerResponseListener" destroy-method="preDestroy">
+    <bean id="messageServerResponseListener" class = "com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
         <property name="messagingClient" ref="messagingClient"/>
         <property name="serverTaskExecutor" ref="serverTaskExecutor"/>     
         <property name="timeOut" value="20"/>
@@ -57,7 +57,7 @@
     </bean>
 
     <!-- Обработчик полученных ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.advertising.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
+    <bean id="messageServerResponseHandler" class = "com.payway.commons.webapp.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
         <property name="serviceContext" ref="serviceContext"/>
     </bean>
 
@@ -65,10 +65,10 @@
     <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
    
     <!-- Bus exception handler -->
-    <bean id="subscriberExceptionHandler" class="com.payway.advertising.core.app.bus.SubscriberExceptionHandlerImpl"/>
+    <bean id="subscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
 
     <!-- app bus -->
-    <bean id="appEventBus" class="com.payway.advertising.core.app.bus.AppEventBusImpl">
+    <bean id="appEventBus" class="com.payway.commons.webapp.bus.AppEventBusImpl">
         <property name="eventBus">
             <bean class="com.google.common.eventbus.AsyncEventBus">
                 <constructor-arg name="executor" ref="serverTaskExecutor"/>
@@ -78,7 +78,7 @@
     </bean>
 
     <!-- ui session bus with vaadin scope-->
-    <bean id="sessionEventBus" class="com.payway.advertising.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
+    <bean id="sessionEventBus" class="com.payway.commons.webapp.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
         <property name="eventBus">
             <bean class="com.google.common.eventbus.EventBus">
                 <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>

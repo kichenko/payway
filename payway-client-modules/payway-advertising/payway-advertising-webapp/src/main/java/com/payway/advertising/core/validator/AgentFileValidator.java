@@ -4,6 +4,7 @@
 package com.payway.advertising.core.validator;
 
 import com.payway.advertising.model.DbAgentFile;
+import com.payway.commons.webapp.validator.Validator;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

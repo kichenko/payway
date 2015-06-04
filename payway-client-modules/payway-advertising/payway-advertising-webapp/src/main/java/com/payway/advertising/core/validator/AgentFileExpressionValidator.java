@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.validator;
 
+import com.payway.commons.webapp.validator.Validator;
 import lombok.NoArgsConstructor;
 
 /**

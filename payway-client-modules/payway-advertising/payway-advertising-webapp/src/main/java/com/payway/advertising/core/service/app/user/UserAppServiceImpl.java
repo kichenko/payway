@@ -5,7 +5,7 @@ package com.payway.advertising.core.service.app.user;
 
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import com.payway.advertising.ui.view.core.Attributes;
+import com.payway.commons.webapp.core.Attributes;
 import com.vaadin.server.VaadinSession;
 import org.springframework.stereotype.Component;
 

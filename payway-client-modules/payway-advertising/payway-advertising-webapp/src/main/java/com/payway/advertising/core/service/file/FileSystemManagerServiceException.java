@@ -12,6 +12,8 @@ import com.payway.advertising.core.service.exception.ServiceException;
  * @created 08.10.15 00:00
  */
 public class FileSystemManagerServiceException extends ServiceException {
+    
+    private static final long serialVersionUID = -5415950541787253695L;
 
     public FileSystemManagerServiceException() {
         super();

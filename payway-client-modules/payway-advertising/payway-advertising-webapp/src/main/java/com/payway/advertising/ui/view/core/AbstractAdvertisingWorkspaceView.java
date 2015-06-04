@@ -10,16 +10,16 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * AbstractWorkspaceView
+ * AbstractAdvertisingWorkspaceView
  *
  * @author Sergey Kichenko
  * @created 17.05.15 00:00
  */
-public abstract class AbstractWorkspaceView extends VerticalLayout implements WorkspaceView {
+public abstract class AbstractAdvertisingWorkspaceView extends VerticalLayout implements AdvertisingWorkspaceView {
 
+    protected MenuBar menuBar;
     protected UploadTaskPanel uploadTaskPanel;
     protected FileUploadPanel fileUploadPanel;
-    protected MenuBar menuBar;
     protected UploadButtonWrapper btnFileUploadToolBar;
 
     @Override

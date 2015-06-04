@@ -3,9 +3,9 @@
  */
 package com.payway.advertising.core.service.app.settings;
 
-import com.payway.advertising.messaging.MessageServerSenderService;
-import com.payway.advertising.messaging.ResponseCallbackSupport;
 import com.payway.advertising.web.event.ApplicationStartClientConnectedEvent;
+import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsRequest;
 import com.payway.messaging.message.SettingsResponse;

@@ -14,7 +14,7 @@
     </context-param>
     <servlet>
         <servlet-name>VaadinSampleServlet</servlet-name>
-        <servlet-class>com.payway.advertising.core.servlet.AdvertisingVaadinSpringServlet</servlet-class>
+        <servlet-class>com.payway.commons.webapp.core.servlet.PaywayCommonVaadinSpringServlet</servlet-class>
         <init-param>
             <description>Vaadin pushmode</description>
             <param-name>pushmode</param-name>

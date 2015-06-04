@@ -19,6 +19,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 public class TextEditDialogWindow extends Window {
 
+    private static final long serialVersionUID = -2523315774088405157L;
+
     public interface TextEditDialogWindowEvent {
 
         boolean onOk(String text);

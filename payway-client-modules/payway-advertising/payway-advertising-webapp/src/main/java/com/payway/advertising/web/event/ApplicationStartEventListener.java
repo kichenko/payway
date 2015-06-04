@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.web.event;
 
-import com.payway.advertising.messaging.client.MessagingClientRecoverTask;
+import com.payway.commons.webapp.messaging.client.MessagingClientRecoverTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;

@@ -6,10 +6,10 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileOwnerDeepCopyClonable;
-import com.payway.advertising.ui.InteractionUI;
-import com.payway.advertising.ui.component.table.paging.IPagingContainer;
-import com.payway.advertising.ui.component.table.paging.PagingTableControls;
-import com.payway.advertising.ui.component.table.paging.PagingTableImpl;
+import com.payway.commons.webapp.ui.components.table.paging.IPagingContainer;
+import com.payway.commons.webapp.ui.components.table.paging.PagingTableControls;
+import com.payway.commons.webapp.ui.components.table.paging.PagingTableImpl;
+import com.payway.commons.webapp.ui.InteractionUI;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
@@ -172,9 +172,9 @@ public class AgentFileOwnerBookWindow extends Window {
         gridOwners.setContainerDataSource(gridContainer);
         gridOwners.setImmediate(true);
         gridOwners.setSelectable(true);
-       
+
         pagingTableControls.setPagingTable(gridOwners);
-               
+
         gridOwners.addGeneratedColumn("name", new Table.ColumnGenerator() {
             private static final long serialVersionUID = 2855441121974230973L;
 

@@ -18,6 +18,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 public class NotificationsButtonPopupWindow extends Window {
 
+    private static final long serialVersionUID = 1817415202432008138L;
+
     private static final String STYLE_WINDOW_NOTIFICATIONS = "btn-notifications-window";
 
     @UiField

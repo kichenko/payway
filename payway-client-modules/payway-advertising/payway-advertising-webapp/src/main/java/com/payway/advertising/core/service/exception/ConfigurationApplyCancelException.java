@@ -11,6 +11,8 @@ package com.payway.advertising.core.service.exception;
  */
 public class ConfigurationApplyCancelException extends ServiceException {
 
+    private static final long serialVersionUID = -768482583826251441L;
+
     public ConfigurationApplyCancelException() {
         super();
     }

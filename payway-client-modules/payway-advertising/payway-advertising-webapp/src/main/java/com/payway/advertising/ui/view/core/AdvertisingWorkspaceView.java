@@ -6,21 +6,15 @@ package com.payway.advertising.ui.view.core;
 import com.payway.advertising.ui.component.FileUploadPanel;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
-import com.vaadin.ui.MenuBar;
+import com.payway.commons.webapp.ui.view.core.WorkspaceView;
 
 /**
- * WorkspaceView
+ * AdvertisingWorkspaceView
  *
  * @author Sergey Kichenko
  * @created 17.05.15 00:00
  */
-public interface WorkspaceView {
-
-    void activate();
-
-    void setMenuBar(MenuBar menuBar);
-
-    MenuBar getMenuBar();
+public interface AdvertisingWorkspaceView extends WorkspaceView {
 
     void setFileUploadPanel(FileUploadPanel fileUploadPanel);
 

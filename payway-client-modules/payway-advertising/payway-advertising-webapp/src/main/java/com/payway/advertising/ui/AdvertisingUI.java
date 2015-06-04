@@ -14,17 +14,19 @@ import com.payway.advertising.core.service.config.apply.ApplyStatus;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.core.service.notification.NotificationService;
-import com.payway.advertising.messaging.ResponseCallBack;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import com.payway.advertising.ui.bus.SessionEventBus;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.NotificationsButtonPopupWindow;
-import com.payway.advertising.ui.component.SideBarMenu;
-import com.payway.advertising.ui.view.core.Attributes;
-import com.payway.advertising.ui.view.core.Constants;
-import com.payway.advertising.ui.view.core.LoginView;
-import com.payway.advertising.ui.view.core.MainView;
+import com.payway.advertising.ui.view.core.AdvertisingMainView;
+import com.payway.commons.webapp.core.Attributes;
+import com.payway.commons.webapp.core.Constants;
+import com.payway.commons.webapp.messaging.ResponseCallBack;
+import com.payway.commons.webapp.ui.AbstractUI;
+import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.ui.bus.SessionEventBus;
+import com.payway.commons.webapp.ui.components.SideBarMenu;
+import com.payway.commons.webapp.ui.view.core.LoginView;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
@@ -34,24 +36,18 @@ import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -68,8 +64,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Widgetset("com.payway.advertising.AdvertisingWidgetSet")
 public class AdvertisingUI extends AbstractUI implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
 
+    private static final long serialVersionUID = -2447415985839871519L;
+
     @Autowired
-    private MainView mainView;
+    private AdvertisingMainView mainView;
 
     @Autowired
     private LoginView loginView;
@@ -159,25 +157,11 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
         }
     }
 
-    private Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
+    @Override
+    protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
         items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png")));
         return items;
-    }
-
-    private Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
-        return Collections.singletonList(
-                new ImmutableTriple<String, Resource, MenuBar.Command>("Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
-                    private static final long serialVersionUID = 7160936162824727503L;
-
-                    @Override
-                    public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                        VaadinSession.getCurrent().close();
-                        UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                        VaadinSession.getCurrent().close();
-                        Page.getCurrent().reload();
-                    }
-                }));
     }
 
     private void refreshApplyConfigNotification() {
@@ -189,7 +173,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
     }
 
     /**
-     * Refresh notifications on user sigin.
+     * Refresh notifications on user sig in.
      *
      * Ex: then user signin and configuration is applying at this time - it's
      * need to notify user about this action.
@@ -209,6 +193,7 @@ public class AdvertisingUI extends AbstractUI implements ResponseCallBack<Succes
             refreshNotifications();
             setContent(mainView);
         } else {
+            loginView.setTitle("Payway Advertising Desktop");
             loginView.initialize();
             setContent(loginView);
         }

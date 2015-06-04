@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.web.event;
 
-import com.payway.advertising.messaging.MessageServerResponseListener;
+import com.payway.commons.webapp.messaging.MessageServerResponseListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +32,6 @@ public class ContextRefreshedApplicationListener implements ApplicationListener<
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        log.debug("#####");
         serverTaskExecutor.execute(messageServerResponseListener);
     }
 }

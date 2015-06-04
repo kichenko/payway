@@ -4,28 +4,21 @@
 package com.payway.advertising.ui.view.core;
 
 import com.payway.advertising.core.service.bean.BeanService;
-import com.payway.advertising.ui.AbstractUI;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.FileUploadPanel;
 import com.payway.advertising.ui.component.NotificationsButton;
-import com.payway.advertising.ui.component.SideBarMenu;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
+import com.payway.commons.webapp.ui.AbstractUI;
+import com.payway.commons.webapp.ui.view.core.AbstractMainView;
+import com.payway.commons.webapp.ui.view.core.WorkspaceView;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalSplitPanel;
-import java.util.Collection;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -33,7 +26,7 @@ import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
- * Главное окно
+ * AdvertisingMainView
  *
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
@@ -41,35 +34,17 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @UIScope
 @Component
 @NoArgsConstructor
-public class MainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuButton.SideBarMenuButtonClickListener {
+public class AdvertisingMainView extends AbstractMainView {
 
     private static final long serialVersionUID = -4825092972126420478L;
-
-    public interface SlideBarMenuButtonClickCallback {
-
-        void onClick(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event);
-    }
 
     public static final float SIDEBAR_DEFAULT_WIDTH_PERCENT = 20;
     public static final float UPLOADS_DEFAULT_HEIGHT_PERCENT = 50;
     public static final float SIDEBAR_DEFAULT_HEIGHT_PERCENT = 50;
 
     @Autowired
-    @Qualifier(value = "viewFactory")
-    private ViewFactory viewFactory;
-
-    @Autowired
     @Qualifier(value = "beanService")
     private BeanService beanService;
-
-    @UiField
-    private CssLayout mainViewLayout;
-
-    @UiField
-    private MenuBar userMenu;
-
-    @UiField
-    private MenuBar menuBar;
 
     @UiField
     private UploadButtonWrapper btnFileUploadToolBar;
@@ -79,20 +54,10 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     private NotificationsButton btnNotifications;
 
     @UiField
-    @Getter
-    private SideBarMenu sideBarMenu;
-
-    @UiField
     private UploadTaskPanel uploadTaskPanel;
 
     @UiField
     private FileUploadPanel fileUploadPanel;
-
-    @UiField
-    private CssLayout panelContent;
-
-    @UiField
-    private HorizontalSplitPanel splitHorizontalPanel;
 
     @UiField
     private VerticalSplitPanel splitVerticalPanel;
@@ -104,12 +69,6 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     private CssLayout layoutUploads;
 
     @UiField
-    private CssLayout layoutLeft;
-
-    @UiField
-    private CssLayout layoutRight;
-
-    @UiField
     private CssLayout layoutSideBar;
 
     @UiField
@@ -118,12 +77,10 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
     @UiField
     private CssLayout layoutFileUpload;
 
-    private SlideBarMenuButtonClickCallback sbMenuButtonClickCallback;
-
     @PostConstruct
-    void init() {
+    public void init() {
         setSizeFull();
-        setCompositionRoot(Clara.create("MainView.xml", this));
+        setCompositionRoot(Clara.create("AdvertisingMainView.xml", this));
 
         splitHorizontalPanel.setFirstComponent(layoutLeft);
         splitHorizontalPanel.setSecondComponent(layoutRight);
@@ -138,6 +95,8 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         splitVerticalPanelUploads.setSplitPosition(UPLOADS_DEFAULT_HEIGHT_PERCENT, Unit.PERCENTAGE);
 
         mainViewLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+            private static final long serialVersionUID = -6131089921825563746L;
+
             @Override
             public void layoutClick(final LayoutEvents.LayoutClickEvent event) {
                 if (btnNotifications.isPopup()) {
@@ -157,59 +116,13 @@ public class MainView extends CustomComponent implements CustomComponentInitiali
         //
     }
 
-    /**
-     * Создать меню пользователя
-     *
-     * @param caption
-     * @param icon
-     * @param items
-     */
-    public void initializeUserMenu(String caption, Resource icon, Collection<ImmutableTriple<String, Resource, MenuBar.Command>> items) {
-        MenuBar.MenuItem settingsItem = userMenu.addItem(caption, icon, null);
-        for (Triple<String, Resource, MenuBar.Command> i : items) {
-            settingsItem.addItem(i.getLeft(), i.getMiddle(), i.getRight());
-        }
-    }
-
-    /**
-     * Создать меню в SideBar
-     *
-     * @param items
-     * @param sbButtonclick
-     */
-    public void initializeSideBarMenu(Collection<SideBarMenu.MenuItem> items, SlideBarMenuButtonClickCallback sbButtonclick) {
-        for (SideBarMenu.MenuItem i : items) {
-            sideBarMenu.addMenuItem(i, this);
-        }
-
-        sbMenuButtonClickCallback = sbButtonclick;
-    }
-
-    /**
-     * Обработчик клика по меню в SideBar
-     *
-     * @param button
-     * @param event
-     */
     @Override
-    public void onClickSideBarMenuItemButton(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event) {
-
-        if (sbMenuButtonClickCallback != null) {
-            sbMenuButtonClickCallback.onClick(button, event);
-        }
-
-        panelContent.removeAllComponents();
-
-        com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(button.getTag());
-        panelContent.addComponent(view);
-
-        AbstractWorkspaceView v = (AbstractWorkspaceView) view;
+    public void setUpCustomWorkspaceView(WorkspaceView workspaceView) {
+        AbstractAdvertisingWorkspaceView v = (AbstractAdvertisingWorkspaceView) workspaceView;
         if (v != null) {
             v.setButtonFileUploadToolBar(btnFileUploadToolBar);
             v.setUploadTaskPanel(uploadTaskPanel);
             v.setFileUploadPanel(fileUploadPanel);
-            v.setMenuBar(menuBar);
-            v.activate();
         }
     }
 }

@@ -18,11 +18,9 @@ import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.utils.Helpers;
-import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileDeepCopyClonable;
-import com.payway.advertising.ui.InteractionUI;
 import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
@@ -31,7 +29,9 @@ import com.payway.advertising.ui.upload.UploadTask;
 import com.payway.advertising.ui.upload.UploadTaskDnD;
 import com.payway.advertising.ui.upload.UploadTaskFileInput;
 import com.payway.advertising.ui.utils.UIUtils;
-import com.payway.advertising.ui.view.core.AbstractWorkspaceView;
+import com.payway.advertising.ui.view.core.AbstractAdvertisingWorkspaceView;
+import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
@@ -81,7 +81,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Slf4j
 @UIScope
 @Component(value = "content-configuration")
-public class ContentConfigurationView extends AbstractWorkspaceView implements UploadListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
+public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView implements UploadListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
     private static final long serialVersionUID = -8149543787791067201L;
 

@@ -8,6 +8,9 @@ import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbFileType;
+import com.payway.commons.webapp.validator.Validator;
+import com.payway.commons.webapp.validator.impl.UserNameValidator;
+import com.payway.commons.webapp.validator.impl.UserPasswordValidator;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 

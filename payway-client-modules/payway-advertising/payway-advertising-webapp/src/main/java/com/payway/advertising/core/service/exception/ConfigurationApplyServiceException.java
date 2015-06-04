@@ -11,6 +11,8 @@ package com.payway.advertising.core.service.exception;
  */
 public class ConfigurationApplyServiceException extends ServiceException {
 
+    private static final long serialVersionUID = -838029649895734316L;
+
     public ConfigurationApplyServiceException() {
         super();
     }

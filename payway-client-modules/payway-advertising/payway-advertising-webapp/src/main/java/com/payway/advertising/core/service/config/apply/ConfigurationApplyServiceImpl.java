@@ -4,21 +4,21 @@
 package com.payway.advertising.core.service.config.apply;
 
 import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.payway.advertising.core.app.bus.AppBusEventImpl;
-import com.payway.advertising.core.app.bus.AppEventBus;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.utils.Helpers;
-import com.payway.advertising.messaging.MessageServerSenderService;
-import com.payway.advertising.messaging.ResponseCallBack;
-import com.payway.advertising.messaging.client.IMessagingClient;
-import com.payway.advertising.messaging.client.IMessagingLock;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbFileType;
+import com.payway.commons.webapp.bus.AppBusEventImpl;
+import com.payway.commons.webapp.bus.AppEventBus;
+import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.messaging.ResponseCallBack;
+import com.payway.commons.webapp.messaging.client.IMessagingClient;
+import com.payway.commons.webapp.messaging.client.IMessagingLock;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;

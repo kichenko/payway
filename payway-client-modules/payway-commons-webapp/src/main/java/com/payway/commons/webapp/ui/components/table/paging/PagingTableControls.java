@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.component.table.paging;
+package com.payway.commons.webapp.ui.components.table.paging;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerRangeValidator;

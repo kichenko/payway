@@ -10,10 +10,10 @@ import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.AgentFileExpressionValidator;
 import com.payway.advertising.core.validator.AgentFileValidator;
-import com.payway.advertising.core.validator.Validator;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbFileType;
-import com.payway.advertising.ui.InteractionUI;
+import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.ThemeResource;

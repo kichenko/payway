@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.validator;
 
+import com.payway.commons.webapp.validator.Validator;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

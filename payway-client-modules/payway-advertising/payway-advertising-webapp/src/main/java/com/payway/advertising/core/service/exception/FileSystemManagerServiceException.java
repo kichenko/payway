@@ -3,8 +3,6 @@
  */
 package com.payway.advertising.core.service.exception;
 
-import com.payway.advertising.core.service.exception.ServiceException;
-
 /**
  * FileSystemManagerServiceException
  *
@@ -12,6 +10,8 @@ import com.payway.advertising.core.service.exception.ServiceException;
  * @created 08.10.15 00:00
  */
 public class FileSystemManagerServiceException extends ServiceException {
+
+    private static final long serialVersionUID = 1353240347139245079L;
 
     public FileSystemManagerServiceException() {
         super();
