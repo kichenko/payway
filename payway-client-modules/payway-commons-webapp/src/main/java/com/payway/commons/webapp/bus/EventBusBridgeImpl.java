@@ -5,15 +5,12 @@ package com.payway.commons.webapp.bus;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import java.util.Set;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,24 +20,11 @@ import org.springframework.stereotype.Component;
  * @created 21.05.15 00:00
  */
 @Slf4j
+@SubscribeOnAppEventBus
 @Component(value = "eventBusBridge")
 public class EventBusBridgeImpl implements EventBusBridge {
 
     private final Set<VaadinSession> sessions = Sets.newConcurrentHashSet();
-
-    @Autowired
-    @Qualifier(value = "appEventBus")
-    private AppEventBus appEventBus;
-
-    @PostConstruct
-    public void postConstruct() {
-        appEventBus.addSubscriber(this);
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-        appEventBus.removeSubscriber(this);
-    }
 
     @Override
     public void addSession(VaadinSession session) {
@@ -61,7 +45,7 @@ public class EventBusBridgeImpl implements EventBusBridge {
     }
 
     @Subscribe
-    public void processEvent(AppBusEvent event) {
+    public void processEvent(Object event) {
 
         if (log.isDebugEnabled()) {
             log.debug("process event {}", event);
@@ -80,7 +64,7 @@ public class EventBusBridgeImpl implements EventBusBridge {
                         UI currentUI = UI.getCurrent();
                         try {
                             UI.setCurrent(ui);
-                            ((AbstractUI) ui).getSessionEventBus().sendNotification(event.getData());
+                            ((AbstractUI) ui).getSessionEventBus().sendNotification(event);
                         } catch (Exception ex) {
                             throw ex;
                         } finally {

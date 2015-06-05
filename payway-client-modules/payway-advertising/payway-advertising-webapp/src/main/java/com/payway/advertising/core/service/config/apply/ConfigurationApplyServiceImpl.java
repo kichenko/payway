@@ -13,8 +13,7 @@ import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbFileType;
-import com.payway.commons.webapp.bus.AppBusEventImpl;
-import com.payway.commons.webapp.bus.AppEventBus;
+import com.payway.commons.webapp.bus.AppEventPublisher;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallBack;
 import com.payway.commons.webapp.messaging.client.IMessagingClient;
@@ -28,13 +27,6 @@ import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import com.vaadin.ui.UI;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +39,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ConfigurationApplyService - apply local->server configuration
@@ -116,13 +116,12 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     private volatile ApplyConfigurationStatus status = new ApplyConfigurationStatus("", new LocalDateTime(), ApplyStatus.None, new LocalDateTime());
 
     @Autowired
-    @Qualifier(value = "appEventBus")
-    private AppEventBus appEventBus;
+    private AppEventPublisher appEventPublisher;
 
     private void notifyFail() {
         ApplyConfigurationStatus acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Fail, new LocalDateTime());
         setStatus(acs);
-        appEventBus.sendNotification(new AppBusEventImpl(acs));
+        appEventPublisher.sendNotification(acs);
     }
 
     private ApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
@@ -204,7 +203,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
         if (ApplyStatus.Prepare.equals(getStatus().getStatus()) || ApplyStatus.CopyFiles.equals(getStatus().getStatus())) {
             ApplyConfigurationStatus acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Canceling, new LocalDateTime());
             setStatus(acs);
-            appEventBus.sendNotification(new AppBusEventImpl(acs));
+            appEventPublisher.sendNotification(acs);
             return true;
         }
 
@@ -254,7 +253,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                     //status - prepare
                     setStatus(acs);
-                    appEventBus.sendNotification(new AppBusEventImpl(acs));
+                    appEventPublisher.sendNotification(acs);
 
                     //2. copy files
                     List<FileSystemObject> files = fileManagerService.list(localPath, false, true);
@@ -272,7 +271,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                         //status - copy files
                         acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.CopyFiles, new LocalDateTime(), counter, files.size(), StringUtils.substringAfterLast(src.getPath(), "/"));
                         setStatus(acs);
-                        appEventBus.sendNotification(new AppBusEventImpl(acs));
+                        appEventPublisher.sendNotification(acs);
 
                         fileManagerService.copy(src, new FileSystemObject(
                                 Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()),
@@ -291,7 +290,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     //status - update db
                     acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.UpdateDatabase, new LocalDateTime());
                     setStatus(acs);
-                    appEventBus.sendNotification(new AppBusEventImpl(acs));
+                    appEventPublisher.sendNotification(acs);
 
                     //3. send server msg
                     IMessagingLock serverApplyLock = messagingClient.getLock(serverApplyLockName);
@@ -320,10 +319,12 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                                 //status - сonfirmation
                                                 acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Confirmation, new LocalDateTime());
                                                 setStatus(acs);
-                                                appEventBus.sendNotification(new AppBusEventImpl(acs));
+                                                appEventPublisher.sendNotification(acs);
 
                                                 //3.3.1 rename server folder to tmp
-                                                fileManagerService.rename(serverPath, new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
+                                                if (fileManagerService.exist(serverPath)) {
+                                                    fileManagerService.rename(serverPath, new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
+                                                }
 
                                                 //3.3.2 rename tmp local-server folder to server folder
                                                 fileManagerService.rename(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null), serverPath);
@@ -333,7 +334,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                                                 acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Success, new LocalDateTime());
                                                 setStatus(acs);
-                                                appEventBus.sendNotification(new AppBusEventImpl(acs));
+                                                appEventPublisher.sendNotification(acs);
                                             } catch (Exception ex) {
                                                 throw new Exception("CAN NOT RENAME ORIGINAL SERVER FOLDER");
                                             }
@@ -344,15 +345,10 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                         log.error("Apply local->server configuration", ex);
                                         acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Fail, new LocalDateTime());
                                         setStatus(acs);
-                                        appEventBus.sendNotification(new AppBusEventImpl(acs));
+                                        appEventPublisher.sendNotification(acs);
                                     } finally {
                                         latch.countDown();
                                     }
-                                }
-
-                                @Override
-                                public void onServerResponse(final SuccessResponse response, final Map data) {
-                                    //never called
                                 }
 
                                 @Override
@@ -432,7 +428,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
                     acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Cancel, new LocalDateTime());
                     setStatus(acs);
-                    appEventBus.sendNotification(new AppBusEventImpl(acs));
+                    appEventPublisher.sendNotification(acs);
 
                     //must free client lock
                     clientSemaphore.release();

@@ -1,13 +1,15 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.component;
+package com.payway.advertising.ui.component.notification;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
-import com.payway.advertising.core.service.notification.ApplyConfigurationNotificationEvent;
-import com.payway.advertising.core.service.notification.NotificationEvent;
+import com.payway.advertising.ui.component.ApplyConfigurationNotificationItemView;
+import com.payway.advertising.ui.component.NotificationItemAction;
+import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
+import com.payway.advertising.ui.component.notification.events.NotificationEvent;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;

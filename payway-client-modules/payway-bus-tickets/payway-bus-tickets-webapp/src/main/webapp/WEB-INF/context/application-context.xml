@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.payway"/>
+    <context:component-scan base-package="com.payway.bustickets com.payway.commons.webapp"/>
     
     <bean class="com.payway.commons.webapp.config.PaywayCommonVaadinConfiguration"/>  
     
@@ -41,6 +41,21 @@
         <property name="timeUnit">
             <value type="java.util.concurrent.TimeUnit">SECONDS</value>
         </property>
+    </bean>
+    
+    <!-- Обработчик получения ответов с сервера -->
+    <bean id="messageServerResponseListener" class = "com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
+        <property name="messagingClient" ref="messagingClient"/>
+        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>     
+        <property name="timeOut" value="20"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
+    </bean>
+
+    <!-- Обработчик полученных ответов с сервера -->
+    <bean id="messageServerResponseHandler" class = "com.payway.commons.webapp.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
+        <property name="serviceContext" ref="serviceContext"/>
     </bean>
     
     <!-- Bus exception handler -->

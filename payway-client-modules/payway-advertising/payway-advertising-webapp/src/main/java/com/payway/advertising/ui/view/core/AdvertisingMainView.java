@@ -6,7 +6,7 @@ package com.payway.advertising.ui.view.core;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.FileUploadPanel;
-import com.payway.advertising.ui.component.NotificationsButton;
+import com.payway.advertising.ui.component.notification.NotificationsButton;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.payway.commons.webapp.ui.AbstractUI;

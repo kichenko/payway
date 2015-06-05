@@ -3,10 +3,13 @@
  */
 package com.payway.advertising.core.service.app.settings;
 
+import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.web.event.ApplicationStartClientConnectedEvent;
+import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
 import com.payway.messaging.core.response.ExceptionResponse;
+import com.payway.messaging.message.SettingsChangedMessage;
 import com.payway.messaging.message.SettingsRequest;
 import com.payway.messaging.message.SettingsResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Component;
  * @created 10.05.15 00:00
  */
 @Slf4j
+@SubscribeOnAppEventBus
 @Component(value = "settingsAppService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationStartClientConnectedEvent> {
@@ -81,13 +85,12 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     @Autowired
     MessageServerSenderService sender;
 
-    /*
-     @Autowired
-     @Qualifier("Cluster.Topic.Config")
-     ITopic<ConfigMessage> topic;
-     */
     @Override
     public void onApplicationEvent(ApplicationStartClientConnectedEvent event) {
+        loadRemoteConfiguration();
+    }
+
+    private void loadRemoteConfiguration() {
         log.debug("Loading settings from cluster");
         sender.sendMessage(new SettingsRequest(), new ResponseCallbackSupport<SettingsResponse, ExceptionResponse>() {
             @Override
@@ -99,16 +102,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         });
     }
 
-    /*
-     @PostConstruct
-     public void onPostConstruct() {
-     topic.addMessageListener(new MessageListener<ConfigMessage>() {
-     @Override
-     public void onMessage(Message<ConfigMessage> message) {
-     ConfigMessage cm = message.getMessageObject();
-     log.debug("Config {} = {} [{}]", cm.getConfigName(), cm.getValueName());
-     }
-     });
-     }
-     */
+    @Subscribe
+    public void onMessage(SettingsChangedMessage message) {
+        loadRemoteConfiguration();
+    }
+
 }

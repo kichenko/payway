@@ -24,4 +24,6 @@ public class AuthCommandRequest extends CommandRequest {
 
     private String password;
 
+    private String appId;
+
 }

@@ -85,14 +85,5 @@
             </bean>
         </property>
     </bean>
-
-    <!-- ui notification bus with vaadin scope-->
-    <bean id="notificationService" class="com.payway.advertising.core.service.notification.NotificationServiceImpl" scope="vaadin-ui">
-        <property name="eventBus">
-            <bean class="com.google.common.eventbus.EventBus">
-                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
-            </bean>
-        </property>
-    </bean>
-
+    
 </beans>

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.core.service.notification;
+package com.payway.advertising.ui.component.notification.events;
 
 import lombok.AccessLevel;
 import lombok.Setter;

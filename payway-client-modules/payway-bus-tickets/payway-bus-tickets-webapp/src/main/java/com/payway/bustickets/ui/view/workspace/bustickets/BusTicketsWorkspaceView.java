@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 @UIScope
 @Component(value = "bus-tickets")
 public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
+    
+    private static final long serialVersionUID = 4111225080130198518L;
 
     @Override
     public void activate() {

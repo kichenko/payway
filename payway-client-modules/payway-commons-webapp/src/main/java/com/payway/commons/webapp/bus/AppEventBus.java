@@ -15,5 +15,4 @@ public interface AppEventBus {
 
     void removeSubscriber(Object subscriber);
 
-    void sendNotification(AppBusEvent event);
 }

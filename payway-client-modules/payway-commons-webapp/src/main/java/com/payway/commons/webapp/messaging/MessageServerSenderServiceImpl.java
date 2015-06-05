@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Реализация сервиса отправки сообщений на сервер.
@@ -36,9 +37,12 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
 
     private TimeUnit timeUnit;
 
+    @Value("${app.id}")
+    private String appId;
+
     @Override
     public void auth(String userName, String password, ResponseCallBack callback) {
-        sendMessage(new AuthCommandRequest(userName, password), callback);
+        sendMessage(new AuthCommandRequest(userName, password, appId), callback);
     }
 
     @Override

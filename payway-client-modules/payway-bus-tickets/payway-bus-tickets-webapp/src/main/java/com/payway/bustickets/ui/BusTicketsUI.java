@@ -3,19 +3,31 @@
  */
 package com.payway.bustickets.ui;
 
+import com.google.common.eventbus.Subscribe;
+import com.payway.bustickets.service.app.user.UserAppService;
+import com.payway.commons.webapp.core.Attributes;
+import com.payway.commons.webapp.core.Constants;
 import com.payway.commons.webapp.ui.AbstractUI;
+import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
+import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
+import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
+import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.LoginView;
+import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +55,10 @@ public class BusTicketsUI extends AbstractUI {
     private SessionEventBus sessionEventBus;
 
     @Autowired
+    @Qualifier(value = "userAppService")
+    private UserAppService userAppService;
+
+    @Autowired
     private AbstractMainView mainView;
 
     @Autowired
@@ -62,7 +78,6 @@ public class BusTicketsUI extends AbstractUI {
         });
 
         sessionEventBus.addSubscriber(this);
-
     }
 
     private void cleanUp() {
@@ -78,12 +93,66 @@ public class BusTicketsUI extends AbstractUI {
 
     private void updateContent() {
 
-        //loginView.setTitle("Payway BusTickets Desktop");
-        //loginView.initialize();
-        //setContent(loginView);
-        mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-        mainView.initializeUserMenu("hello", new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
-        mainView.getSideBarMenu().select(0);
-        setContent(mainView);
+        UserDto user = userAppService.getUser();
+        if (user != null) {
+            mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+            mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+            mainView.getSideBarMenu().select(0);
+
+            setContent(mainView);
+        } else {
+            loginView.setTitle("Payway BusTickets Desktop");
+            loginView.initialize();
+            setContent(loginView);
+        }
+    }
+   
+    @Subscribe
+    public void processSessionBusEvent(LoginFailSessionBusEvent event) {
+        log.error("Bad user sign in (bad auth)");
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+        ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
+    }
+
+    @Subscribe
+    public void processSessionBusEvent(LoginExceptionSessionBusEvent event) {
+        log.error("Bad user sign in (exception)");
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+        ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
+    }
+
+    @Subscribe
+    public void processSessionBusEvent(LoginSuccessSessionBusEvent event) {
+
+        try {
+
+            UserDto user = event.getUser();
+            if (user == null) {
+                throw new Exception("User sign in");
+            }
+
+            //set params to session
+            userAppService.setUser(event.getUser());
+
+            if (loginView.isRememberMe()) {
+                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getUserToken());
+                cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
+                //#hack cookie
+                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
+            } else {
+                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), "");
+                cookie.setMaxAge(0);
+                //#hack cookie
+                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
+            }
+
+            updateContent();
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
+
+        } catch (Exception ex) {
+            log.error("Bad user sign in", ex);
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
+            ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
+        }
     }
 }

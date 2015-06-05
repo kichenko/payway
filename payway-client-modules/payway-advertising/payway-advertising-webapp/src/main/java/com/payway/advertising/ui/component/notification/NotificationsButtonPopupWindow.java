@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.component;
+package com.payway.advertising.ui.component.notification;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Table;

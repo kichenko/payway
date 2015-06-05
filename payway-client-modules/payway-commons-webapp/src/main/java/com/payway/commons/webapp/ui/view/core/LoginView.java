@@ -7,9 +7,16 @@ import com.payway.commons.webapp.core.Attributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallBack;
 import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.ui.bus.SessionEventBus;
+import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
+import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
+import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.validator.Validator;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
+import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
+import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandResponse;
+import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.UserError;
@@ -20,10 +27,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -38,6 +44,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
+@Slf4j
 @UIScope
 @Component
 public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
@@ -51,6 +58,10 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     @Autowired
     @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
+
+    @Autowired
+    @Qualifier(value = "sessionEventBus")
+    private SessionEventBus sessionEventBus;
 
     @Autowired
     @Qualifier("userNameValidator")
@@ -112,9 +123,13 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             checkBoxRememberMe.setValue(false);
         }
     }
-    
+
     public void setTitle(String title) {
         labelTitle.setValue(title);
+    }
+
+    public boolean isRememberMe() {
+        return checkBoxRememberMe.getValue();
     }
 
     @UiHandler("buttonSignIn")
@@ -146,24 +161,30 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                    Map<String, Object> map = new HashMap<>();
-                    map.put(Attributes.REMEMBER_ME.value(), checkBoxRememberMe.getValue());
-                    ((ResponseCallBack) UI.getCurrent()).onServerResponse(response, map);
+                    if (response instanceof AbstractAuthCommandResponse) {
+                        if (response instanceof AuthSuccessCommandResponse) {
+                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(((AuthSuccessCommandResponse) response).getUser()));
+                        } else if (response instanceof AuthBadCredentialsCommandResponse) {
+                            sessionEventBus.sendNotification(new LoginFailSessionBusEvent());
+                        }
+                    } else {
+                        log.error("Bad auth server response (unknown type) - {}", response);
+                        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
+                    }
                 }
             });
         }
     }
 
     @Override
-    public void onServerException(final ExceptionResponse exception) {
+    public void onServerException(final ExceptionResponse ex) {
         UI ui = getUI();
         if (ui != null) {
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                    ((ResponseCallBack) UI.getCurrent()).onServerException(exception);
+                    log.error("Bad auth server response (server exception) - {}", ex);
+                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
                 }
             });
         }
@@ -176,8 +197,8 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                    ((ResponseCallBack) UI.getCurrent()).onLocalException(ex);
+                    log.error("Bad auth server response (local exception) - {}", ex);
+                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
                 }
             });
         }
@@ -190,16 +211,10 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
-                    ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                    ((ResponseCallBack) UI.getCurrent()).onTimeout();
+                    log.error("Bad auth server response (timeout)");
+                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
                 }
             });
         }
     }
-
-    @Override
-    public void onServerResponse(SuccessResponse response, Map<String, Object> data) {
-        throw new UnsupportedOperationException("Method is not implemented");
-    }
-
 }

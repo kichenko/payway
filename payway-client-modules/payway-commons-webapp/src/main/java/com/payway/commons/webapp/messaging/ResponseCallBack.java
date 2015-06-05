@@ -5,7 +5,6 @@ package com.payway.commons.webapp.messaging;
 
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
-import java.util.Map;
 
 /**
  * Интерфес обратного вызова для взаимодействия с UI.
@@ -23,15 +22,6 @@ public interface ResponseCallBack<R extends SuccessResponse, E extends Exception
      *
      */
     void onServerResponse(final R response);
-
-    /**
-     * Любой корректный ответ от сервера, например успешная/неуспешная
-     * аутентификация/авторизация и доп. данные
-     *
-     * @param response
-     * @param data
-     */
-    void onServerResponse(final R response, final Map<String, Object> data);
 
     /**
      * Информирование об ошибке на сервере, например ошибка обращения к БД при

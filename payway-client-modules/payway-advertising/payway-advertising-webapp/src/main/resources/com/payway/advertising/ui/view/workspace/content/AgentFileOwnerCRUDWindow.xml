@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent"  xmlns:pt="urn:import:com.payway.advertising.ui.component.pagetable" id="layoutAgentFileOwnerCrud" styleName="form-agent-owner-crud-layout">
+<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent"  xmlns:pt="urn:import:com.payway.commons.webapp.ui.components.table.paging" id="layoutAgentFileOwnerCrud" styleName="form-agent-owner-crud-layout">
     
     <VerticalLayout id="layoutName" styleName="form-agent-owner-crud-layout-name">
         <TextField id="txtName" caption="Name" width="100%" inputPrompt="Enter name" p:componentAlignment="MIDDLE_CENTER" styleName="small form-agent-owner-crud-name"/>

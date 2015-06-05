@@ -45,7 +45,7 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             }
         } catch (Exception ex) {
             log.error("Bad create", ex);
-            throw new FileSystemManagerServiceException("Error rename file system object", ex);
+            throw new FileSystemManagerServiceException("Error create file system object", ex);
         }
     }
 

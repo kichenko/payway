@@ -3,17 +3,18 @@
  */
 package com.payway.advertising.ui.upload;
 
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
+
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * AbstractUploadTask

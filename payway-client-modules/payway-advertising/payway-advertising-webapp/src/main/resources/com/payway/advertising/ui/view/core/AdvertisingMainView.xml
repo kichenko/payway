@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:sb="urn:import:com.payway.commons.webapp.ui.components" xmlns:cmp="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view" width="100%">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:ntf="urn:import:com.payway.advertising.ui.component.notification" xmlns:sb="urn:import:com.payway.commons.webapp.ui.components" xmlns:cmp="urn:import:com.payway.advertising.ui.component" id="mainViewLayout" styleName="main-view" width="100%">
 
     <HorizontalSplitPanel id="splitHorizontalPanel"/>
 
@@ -33,7 +33,7 @@
             </HorizontalLayout>
 
             <HorizontalLayout id = "layoutToolBarRight" styleName ="main-panel-header-toolbar-right">
-                <cmp:NotificationsButton id="btnNotifications" styleName="btn-notifications icon-only"/>
+                <ntf:NotificationsButton id="btnNotifications" styleName="btn-notifications icon-only"/>
                 <MenuBar id="userMenu" styleName="main-user-menu"/>
             </HorizontalLayout>
         </CssLayout>

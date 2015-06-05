@@ -5,13 +5,8 @@ package com.payway.commons.webapp.messaging.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.LifecycleEvent;
-import com.hazelcast.core.LifecycleListener;
-import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PreDestroy;
+import com.hazelcast.core.*;
+import com.payway.commons.webapp.bus.AppEventPublisher;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +17,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PreDestroy;
+import java.io.Serializable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MessagingClientImpl
@@ -68,6 +68,9 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     @Qualifier(value = "serverTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
+    @Value("${app.id}")
+    private String appTopicName;
+
     @PreDestroy
     public void preDestroy() {
         shutdown();
@@ -84,6 +87,7 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
                 construct = true;
                 client = HazelcastClient.newHazelcastClient(new XmlClientConfigBuilder(config.getInputStream()).build());
                 client.getLifecycleService().addLifecycleListener(this);
+                client.getTopic(appTopicName).addMessageListener(messageListener);
                 clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());
                 setState(IMessagingClient.State.Connected);
             } else {
@@ -170,4 +174,15 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
         }
         return "";
     }
+
+    @Autowired
+    AppEventPublisher appEventPublisher;
+
+    private MessageListener messageListener = new MessageListener() {
+        @Override public void onMessage(Message message) {
+            log.debug("Incoming message: %s [%s]", message.getMessageObject().getClass().getName(), message.getPublishingMember());
+            appEventPublisher.sendNotification(message.getMessageObject());
+        }
+    };
+
 }
