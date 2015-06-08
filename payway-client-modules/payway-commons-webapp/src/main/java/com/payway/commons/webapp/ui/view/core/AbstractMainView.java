@@ -5,7 +5,6 @@ package com.payway.commons.webapp.ui.view.core;
 
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.vaadin.server.Resource;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -24,11 +23,11 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @author Sergey Kichenko
  * @created 20.04.15 00:00
  */
-public abstract class AbstractMainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuButton.SideBarMenuButtonClickListener {
+public abstract class AbstractMainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuItemClickListener {
 
-    public interface SlideBarMenuButtonClickCallback {
+    public interface SlideBarMenuItemClickCallback {
 
-        void onClick(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event);
+        void onClick(SideBarMenu.MenuItem menuItem);
     }
 
     @Autowired
@@ -60,7 +59,7 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
     @UiField
     protected CssLayout layoutRight;
 
-    protected SlideBarMenuButtonClickCallback sbMenuButtonClickCallback;
+    protected SlideBarMenuItemClickCallback sbMenuButtonClickCallback;
 
     /**
      * Create user menu
@@ -82,7 +81,7 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
      * @param items
      * @param sbButtonclick
      */
-    public void initializeSideBarMenu(Collection<SideBarMenu.MenuItem> items, SlideBarMenuButtonClickCallback sbButtonclick) {
+    public void initializeSideBarMenu(Collection<SideBarMenu.MenuItem> items, SlideBarMenuItemClickCallback sbButtonclick) {
         for (SideBarMenu.MenuItem i : items) {
             sideBarMenu.addMenuItem(i, this);
         }
@@ -93,19 +92,18 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
     /**
      * Sidebar menu click listener
      *
-     * @param button
-     * @param event
+     * @param menuItem
      */
     @Override
-    public void onClickSideBarMenuItemButton(SideBarMenu.SideBarMenuButton button, Button.ClickEvent event) {
+    public void onClickSideBarMenuItem(SideBarMenu.MenuItem menuItem) {
 
         if (sbMenuButtonClickCallback != null) {
-            sbMenuButtonClickCallback.onClick(button, event);
+            sbMenuButtonClickCallback.onClick(menuItem);
         }
 
         panelContent.removeAllComponents();
 
-        com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(button.getTag());
+        com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(menuItem.getTag());
         panelContent.addComponent(view);
 
         WorkspaceView v = (WorkspaceView) view;

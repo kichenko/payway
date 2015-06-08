@@ -1,0 +1,19 @@
+@mixin airport-express-bus-tickets-wizard-component {
+
+    .airport-express-bus-ticket-wizard {
+        //background-color: white;
+        padding: 5px;
+    }
+
+    .airport-express-bus-ticket-wizard-footer {
+        //background-color: green;
+    }
+
+    .airport-express-bus-ticket-wizard-btn-left {
+        float:left;
+    }
+
+    .airport-express-bus-ticket-wizard-btn-right {
+        float:right;
+    }
+}

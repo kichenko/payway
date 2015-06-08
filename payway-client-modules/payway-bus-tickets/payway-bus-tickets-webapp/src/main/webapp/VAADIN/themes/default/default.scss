@@ -35,14 +35,15 @@
 @import "views/main";
 
 @import "components/sidebarmenu";
+@import "components/airport-express-bus-tickets-wizard";
 
 @mixin default {
 
     @include valo;
-
     @include addons;
 
     @include sidebar-menu-component;
+    @include airport-express-bus-tickets-wizard-component;
 
     @include login-view;
     @include main-view;

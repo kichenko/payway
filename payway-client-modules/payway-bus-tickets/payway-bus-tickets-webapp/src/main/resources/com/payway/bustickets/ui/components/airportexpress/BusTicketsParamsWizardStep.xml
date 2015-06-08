@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsParamsWizardStep" sizeFull="true">
+    <TextField id="editContactNo" required="true" caption="Contact No" styleName="" width="100%"/>
+    <ComboBox id="cbDirection" required="true" caption="Direction" allowTextInput="false" styleName="" width="100%"/>    
+    <ComboBox id="cbDay" required="true" caption="Day" allowTextInput="false" styleName="" width="100%"/>   
+    <ComboBox id="cbTime" required="true" caption="Time" allowTextInput="false" styleName="" width="100%"/> 
+    <Slider id="pbQuantity" required="true" min="1" max="100" caption="Quantity" styleName="" width="100%"/>    
+</VerticalLayout>

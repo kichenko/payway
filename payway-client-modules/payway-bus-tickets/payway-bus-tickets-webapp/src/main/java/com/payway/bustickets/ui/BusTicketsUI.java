@@ -27,6 +27,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -87,26 +88,33 @@ public class BusTicketsUI extends AbstractUI {
     @Override
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("bus-tickets", "Bus tickets", new ThemeResource("images/sidebar_bus_tickets.png")));
+        items.add(new SideBarMenu.MenuItem("bus-ticket-empty-workspace-view", "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), Collections.singletonList(new SideBarMenu.MenuItem("airport-express-bus-tickets-workspace-view", "Airport Express Bus Tickets", new ThemeResource("images/sidebar_airport_express_bus_tickets.png"), null))));
         return items;
     }
 
     private void updateContent() {
 
-        UserDto user = userAppService.getUser();
-        if (user != null) {
-            mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-            mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
-            mainView.getSideBarMenu().select(0);
+        mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+        mainView.initializeUserMenu("", new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+        mainView.getSideBarMenu().select(0);
+        setContent(mainView);
 
-            setContent(mainView);
-        } else {
-            loginView.setTitle("Payway BusTickets Desktop");
-            loginView.initialize();
-            setContent(loginView);
-        }
+        /*
+         UserDto user = userAppService.getUser();
+         if (user != null) {
+         mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+         mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+         mainView.getSideBarMenu().select(0);
+
+         setContent(mainView);
+         } else {
+         loginView.setTitle("Payway BusTickets Desktop");
+         loginView.initialize();
+         setContent(loginView);
+         }
+         */
     }
-   
+
     @Subscribe
     public void processSessionBusEvent(LoginFailSessionBusEvent event) {
         log.error("Bad user sign in (bad auth)");

@@ -12,11 +12,11 @@ import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
 import com.payway.advertising.core.service.config.apply.ApplyStatus;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
-import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
+import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
 import com.payway.commons.webapp.core.Attributes;
 import com.payway.commons.webapp.core.Constants;
@@ -137,7 +137,7 @@ public class AdvertisingUI extends AbstractUI {
     @Override
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png")));
+        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png"), null));
         return items;
     }
 
@@ -160,6 +160,7 @@ public class AdvertisingUI extends AbstractUI {
     }
 
     private void updateContent() {
+
         DbUser user = userAppService.getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);

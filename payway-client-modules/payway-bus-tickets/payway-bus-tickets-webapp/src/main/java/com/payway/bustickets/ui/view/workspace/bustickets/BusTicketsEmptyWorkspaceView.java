@@ -5,21 +5,29 @@ package com.payway.bustickets.ui.view.workspace.bustickets;
 
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.vaadin.spring.annotation.UIScope;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.vaadin.teemu.clara.Clara;
 
 /**
- * BusTicketsWorkspaceView
+ * BusTicketsEmptyWorkspaceView
  *
  * @author Sergey Kichenko
- * @created 22.04.15 00:00
+ * @created 08.06.15 00:00
  */
 @Slf4j
 @UIScope
-@Component(value = "bus-tickets")
-public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
-    
+@Component(value = "bus-ticket-empty-workspace-view")
+public class BusTicketsEmptyWorkspaceView extends AbstractBusTicketsWorkspaceView {
+
     private static final long serialVersionUID = 4111225080130198518L;
+
+    @PostConstruct
+    public void postConstruct() {
+        setSizeFull();
+        addComponent(Clara.create("BusTicketsEmptyWorkspaceView.xml", this));
+    }
 
     @Override
     public void activate() {

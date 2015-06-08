@@ -3,14 +3,18 @@
  */
 package com.payway.commons.webapp.ui.components;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.server.Resource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Tree;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * SideBarMenu
@@ -22,8 +26,10 @@ public final class SideBarMenu extends CustomComponent {
 
     private static final long serialVersionUID = 7791705742904164938L;
 
-    private final CssLayout menuContent = new CssLayout();
-    private SideBarMenuButton selectedButton;
+    private final Tree tree = new Tree();
+    private final HierarchicalContainer container = new HierarchicalContainer();
+    private final Map<String, MenuItem> items = new HashMap<>();
+    private SideBarMenuItemClickListener clickListener;
 
     @Getter
     @AllArgsConstructor
@@ -33,69 +39,71 @@ public final class SideBarMenu extends CustomComponent {
         private String tag;
         private String caption;
         private Resource icon;
+        private List<MenuItem> childs;
     }
 
-    @NoArgsConstructor
-    public static class SideBarMenuButton extends Button {
+    public interface SideBarMenuItemClickListener {
 
-        private static final long serialVersionUID = -1739353046736625232L;
-
-        @Getter
-        @Setter
-        private String tag;
-
-        public interface SideBarMenuButtonClickListener {
-
-            void onClickSideBarMenuItemButton(final SideBarMenuButton button, final Button.ClickEvent event);
-        }
-
-        public SideBarMenuButton(final String tag, final String caption, final Resource icon, final SideBarMenuButtonClickListener listener) {
-            setTag(tag);
-            setIcon(icon);
-            setCaption(caption);
-            setPrimaryStyleName("sidebar-menu-item");
-
-            addClickListener(new ClickListener() {
-                private static final long serialVersionUID = 5019806363620874205L;
-
-                @Override
-                public void buttonClick(final ClickEvent event) {
-
-                    SideBarMenuButton btn = ((SideBarMenu) SideBarMenuButton.this.getParent().getParent()).selectedButton;
-                    if (btn != null) {
-                        btn.removeStyleName("selected");
-                    }
-
-                    if (listener != null) {
-                        listener.onClickSideBarMenuItemButton(SideBarMenuButton.this, event);
-                    }
-
-                    SideBarMenuButton.this.addStyleName("selected");
-                    ((SideBarMenu) SideBarMenuButton.this.getParent().getParent()).selectedButton = SideBarMenuButton.this;
-                }
-            });
-        }
+        void onClickSideBarMenuItem(MenuItem menuItem);
     }
 
     public SideBarMenu() {
         setSizeFull();
+        tree.setSizeFull();
         addStyleName("sidebar");
-        setCompositionRoot(menuContent);
+        setCompositionRoot(tree);
+
+        container.addContainerProperty("caption", String.class, "");
+        tree.setContainerDataSource(container);
+
+        tree.setItemCaptionPropertyId("caption");
+        tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+
+        tree.addValueChangeListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = -382717228031608542L;
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (clickListener != null && event.getProperty().getValue() != null) {
+                    clickListener.onClickSideBarMenuItem(items.get((String) event.getProperty().getValue()));
+                }
+            }
+        });
     }
 
-    public void addMenuItem(final SideBarMenu.MenuItem item, final SideBarMenuButton.SideBarMenuButtonClickListener listener) {
-        menuContent.addComponent(new SideBarMenuButton(item.getTag(), item.getCaption(), item.icon, listener));
+    public void addMenuItem(final SideBarMenu.MenuItem item, final SideBarMenuItemClickListener listener) {
+        clickListener = listener;
+        recursiveAdd(null, item);
+    }
+
+    private void recursiveAdd(Object parentItemId, final SideBarMenu.MenuItem item) {
+
+        container.addItem(item.getTag());
+        container.getItem(item.getTag()).getItemProperty("caption").setValue(item.getCaption());
+        container.setParent(item.getTag(), parentItemId);
+
+        tree.setItemIcon(item.getTag(), item.getIcon());
+        tree.setChildrenAllowed(item.getTag(), item.getChilds() == null ? false : item.getChilds().size() > 0);
+
+        items.put(item.getTag(), item);
+
+        if (item.getChilds() != null) {
+            for (int i = 0; i < item.getChilds().size(); i++) {
+                recursiveAdd(item.getTag(), item.getChilds().get(i));
+            }
+        }
     }
 
     public void clearMenuItems() {
-        menuContent.removeAllComponents();
+        tree.removeAllItems();
     }
 
     public boolean select(int index) {
-        if (index >= 0 && index < menuContent.getComponentCount()) {
-            SideBarMenuButton btn = (SideBarMenuButton) menuContent.getComponent(index);
-            if (btn != null) {
-                btn.click();
+
+        if (index >= 0 && index < container.size()) {
+            Object itemId = container.getIdByIndex(index);
+            if (itemId != null) {
+                tree.select(itemId);
                 return true;
             }
         }
