@@ -22,4 +22,5 @@ import lombok.ToString;
 public abstract class AbstractDto implements Serializable {
 
     protected long id;
+
 }

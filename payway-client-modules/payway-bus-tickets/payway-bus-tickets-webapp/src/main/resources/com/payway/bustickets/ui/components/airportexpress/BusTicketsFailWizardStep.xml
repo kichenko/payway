@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsFailWizardStep" sizeFull="true">
+    <Label id="lbFail" value="Fail" styleName="failure common-text-center"/>
+    <Label id="lbReason" value="Error message here" styleName="colored common-text-center"/>
+</VerticalLayout>

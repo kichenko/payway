@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsWizard" styleName="airport-express-bus-ticket-wizard">
+<HorizontalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsWizard" sizeFull="true" styleName="airport-express-bus-ticket-wizard">
     
-    <VerticalLayout id="layoutContent" width="100%" height="500px"/>  
+    <Image id="imgLogo" width="160px" height="120px" p:expandRatio="1"/>
     
-    <HorizontalLayout id="layoutFooter" width="100%" styleName="airport-express-bus-ticket-wizard-footer">
-        <Button id="btnLeft" p:componentAlignment="MIDDLE_CENTER" styleName="friendly airport-express-bus-ticket-wizard-btn-left"/>
-        <Button id="btnRight" p:componentAlignment="MIDDLE_CENTER" styleName="primary airport-express-bus-ticket-wizard-btn-right"/>
-    </HorizontalLayout>
+    <VerticalLayout id = "lfd" p:expandRatio="3">    
+        <VerticalLayout id="layoutContent" width="100%" height="500px"/>      
+        <HorizontalLayout id="layoutFooter" width="100%" styleName="airport-express-bus-ticket-wizard-footer">
+            <Button id="btnLeft" p:componentAlignment="MIDDLE_CENTER" styleName="friendly airport-express-bus-ticket-wizard-btn-left"/>
+            <Button id="btnRight" p:componentAlignment="MIDDLE_CENTER" styleName="primary airport-express-bus-ticket-wizard-btn-right"/>
+        </HorizontalLayout>
+    </VerticalLayout>
     
-</VerticalLayout>
+</HorizontalLayout>

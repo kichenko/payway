@@ -15,6 +15,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * SideBarMenu
@@ -31,6 +32,7 @@ public final class SideBarMenu extends CustomComponent {
     private final Map<String, MenuItem> items = new HashMap<>();
     private SideBarMenuItemClickListener clickListener;
 
+    @Setter
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -52,10 +54,11 @@ public final class SideBarMenu extends CustomComponent {
         tree.setSizeFull();
         addStyleName("sidebar");
         setCompositionRoot(tree);
-
+        
         container.addContainerProperty("caption", String.class, "");
         tree.setContainerDataSource(container);
 
+        tree.setNullSelectionAllowed(false);
         tree.setItemCaptionPropertyId("caption");
         tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 

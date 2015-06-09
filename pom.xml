@@ -36,7 +36,7 @@
 
         <!-- версии библиотек -->
         <joda.time.version>2.3</joda.time.version>
-        <org.projectlombok.lombok.version>1.12.6</org.projectlombok.lombok.version>
+        <org.projectlombok.lombok.version>1.16.4</org.projectlombok.lombok.version>
         <org.testng.version>6.1.1</org.testng.version>
         <postgresql.version>9.3-1101-jdbc41</postgresql.version>
         <spring.version>4.0.3.RELEASE</spring.version>

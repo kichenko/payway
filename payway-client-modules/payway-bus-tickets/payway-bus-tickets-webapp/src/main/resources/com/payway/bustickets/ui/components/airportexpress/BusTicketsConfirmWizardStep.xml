@@ -4,6 +4,7 @@
     <TextField id="editDirection" enabled="false" caption="Direction" styleName="" width="100%"/>  
     <TextField id="editDay" enabled="false" caption="Day" styleName="" width="100%"/>  
     <TextField id="editTime" enabled="false" caption="Time" styleName="" width="100%"/>
+    <TextField id="editBaggage" enabled="false" caption="Baggage" styleName="" width="100%"/>
     <TextField id="editQuantity" enabled="false" caption="Quantity" styleName="" width="100%"/>
     <TextField id="editTotalCost" enabled="false" caption="Total cost" styleName="" width="100%"/>
 </VerticalLayout>

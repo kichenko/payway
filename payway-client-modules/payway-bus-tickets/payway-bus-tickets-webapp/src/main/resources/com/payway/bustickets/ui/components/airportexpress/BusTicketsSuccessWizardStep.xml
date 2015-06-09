@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsSuccessWizardStep" sizeFull="true">
+    <Label id="lbSuccess" value="Success" styleName="success common-text-center"/>
+    <Label id="lbTip" value="Please, don't forget to save your ticket check" styleName="bold colored common-text-center"/> 
+</VerticalLayout>
