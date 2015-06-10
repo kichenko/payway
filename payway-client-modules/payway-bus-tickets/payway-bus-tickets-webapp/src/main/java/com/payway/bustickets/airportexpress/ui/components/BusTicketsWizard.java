@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.ui.components.airportexpress;
+package com.payway.bustickets.airportexpress.ui.components;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
@@ -31,7 +31,7 @@ public class BusTicketsWizard extends AbstractWizard {
 
     @UiField
     private VerticalLayout layoutContent;
-    
+
     @UiField
     private Image imgLogo;
 
@@ -44,16 +44,15 @@ public class BusTicketsWizard extends AbstractWizard {
         setSizeFull();
         setIcon(new ThemeResource("images/sidebar_airport_express_bus_tickets.png"));
         setContent(Clara.create("BusTicketsWizard.xml", this));
-        
+
         imgLogo.setSource(new ThemeResource("images/airport_express_logo.gif"));
 
-        setStep(0);
         getSteps().add(new BusTicketsParamsWizardStep());
         getSteps().add(new BusTicketsConfirmWizardStep());
         getSteps().add(new BusTicketsSuccessWizardStep());
         getSteps().add(new BusTicketsFailWizardStep());
 
-        decorateStep();
+        setStep(BusTicketsParamsWizardStep.STEP_NO);
 
         //
         btnLeft.addClickListener(new Button.ClickListener() {
@@ -79,7 +78,7 @@ public class BusTicketsWizard extends AbstractWizard {
     }
 
     private void decorateStep() {
-        if (getStep() == 0) { //begin            
+        if (getStep() == BusTicketsParamsWizardStep.STEP_NO) { //begin            
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
@@ -90,7 +89,7 @@ public class BusTicketsWizard extends AbstractWizard {
 
             btnRight.setVisible(true);
             btnRight.setCaption("Next");
-        } else if (getStep() == 1) { //checkout  
+        } else if (getStep() == BusTicketsConfirmWizardStep.STEP_NO) { //checkout  
 
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
@@ -103,7 +102,7 @@ public class BusTicketsWizard extends AbstractWizard {
             btnRight.setVisible(true);
             btnRight.setCaption("Checkout");
 
-        } else if (getStep() == 2) { //success
+        } else if (getStep() == BusTicketsSuccessWizardStep.STEP_NO) { //success
 
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
@@ -116,7 +115,7 @@ public class BusTicketsWizard extends AbstractWizard {
             btnRight.setVisible(true);
             btnRight.setCaption("Save ticket");
 
-        } else if (getStep() == 3) { //fail
+        } else if (getStep() == BusTicketsFailWizardStep.STEP_NO) { //fail
 
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
@@ -132,27 +131,38 @@ public class BusTicketsWizard extends AbstractWizard {
     }
 
     private void handleStepLeft() {
-        switch (getStep()) {
-            case 1: //checkout    
-                setStep(0);
-                break;
-            case 2: //success    
-                setStep(0);
-                break;
+        if (BusTicketsConfirmWizardStep.STEP_NO == getStep()) {
+            setStep(BusTicketsParamsWizardStep.STEP_NO);
+        } else if (BusTicketsSuccessWizardStep.STEP_NO == getStep()) {
+            setStep(BusTicketsParamsWizardStep.STEP_NO);
         }
     }
 
     private void handleStepRight() {
-        switch (getStep()) {
-            case 0: //begin 
-                setStep(1);
-                break;
-            case 1: //checkout  
-                setStep(2);
-                break;
-            case 3: //fail    
-                setStep(0);
-                break;
+        if (BusTicketsParamsWizardStep.STEP_NO == getStep()) {
+            processParams2ConfirmStep();
+        } else if (BusTicketsConfirmWizardStep.STEP_NO == getStep()) {
+            setStep(BusTicketsSuccessWizardStep.STEP_NO);
+        } else if (BusTicketsFailWizardStep.STEP_NO == getStep()) {
+            setStep(BusTicketsParamsWizardStep.STEP_NO);
         }
+    }
+
+    private void processParams2ConfirmStep() {
+        BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(getStep());
+        if (wizardStep != null) {
+            if (wizardStep.validate()) {
+                setStep(BusTicketsConfirmWizardStep.STEP_NO);
+            }
+        }
+    }
+
+    @Override
+    public boolean setStep(int step) {
+        if (super.setStep(step)) {
+            decorateStep();
+            return true;
+        }
+        return false;
     }
 }

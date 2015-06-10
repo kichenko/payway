@@ -3,6 +3,7 @@
  */
 package com.payway.commons.webapp.ui.view.core;
 
+import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.vaadin.ui.MenuBar;
 
 /**
@@ -18,4 +19,8 @@ public interface WorkspaceView {
     void setMenuBar(MenuBar menuBar);
 
     MenuBar getMenuBar();
+
+    void setSideBarMenu(SideBarMenu sideBarMenu);
+
+    SideBarMenu getSideBarMenu();
 }

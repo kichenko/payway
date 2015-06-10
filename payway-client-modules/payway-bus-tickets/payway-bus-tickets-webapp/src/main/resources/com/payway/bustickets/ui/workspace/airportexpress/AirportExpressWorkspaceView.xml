@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.bustickets.ui.components.airportexpress" id="layoutAirportExpressWorkspaceView" sizeFull="true">
-    <cmp:BusTicketsWizard id="wizard"  width="700px" height="600px" p:componentAlignment="MIDDLE_CENTER"/>
-</VerticalLayout>

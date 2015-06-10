@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.ui.view.workspace.bustickets;
+package com.payway.bustickets.ui.view.workspace;
 
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.vaadin.spring.annotation.UIScope;

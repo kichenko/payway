@@ -38,14 +38,13 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.servlet.http.Cookie;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * AdvertisingUI
@@ -138,7 +137,7 @@ public class AdvertisingUI extends AbstractUI {
     @Override
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
         Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png"), null));
+        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
         return items;
     }
 

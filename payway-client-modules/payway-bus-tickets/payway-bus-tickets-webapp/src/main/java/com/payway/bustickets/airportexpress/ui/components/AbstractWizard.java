@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.ui.components.airportexpress;
+package com.payway.bustickets.airportexpress.ui.components;
 
 import com.vaadin.ui.Panel;
 import java.util.ArrayList;
@@ -34,9 +34,19 @@ public abstract class AbstractWizard extends Panel {
         steps = new ArrayList<>(stepCount);
     }
 
-    public void setStep(int step) {
+    public boolean setStep(int step) {
         if (step >= 0 && step < stepCount) {
             this.step = step;
+            return true;
         }
+
+        return false;
+    }
+
+    public AbstractWizardStep getWizardStep(int step) {
+        if (step >= 0 && step < stepCount) {
+            return steps.get(step);
+        }
+        return null;
     }
 }

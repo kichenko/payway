@@ -4,7 +4,14 @@
 package com.payway.messaging.message.response.auth;
 
 import com.payway.messaging.model.message.auth.UserDto;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Команда-ответ успешной аутентификации/авторизации пользователя. Объект
@@ -16,14 +23,20 @@ import lombok.*;
  * @created 23.04.15 00:00
  */
 @Getter
-@Setter
 @ToString
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class AuthSuccessCommandResponse extends AbstractAuthCommandResponse {
 
     private static final long serialVersionUID = -4184111918743320984L;
 
-    private UserDto user;
+    final private UserDto user;
+
+    private List<Serializable> extensions;
+
+    public void addExtension(Serializable extension) {
+        if (extensions == null) extensions = new LinkedList<>();
+        extensions.add(extension);
+    }
 
 }

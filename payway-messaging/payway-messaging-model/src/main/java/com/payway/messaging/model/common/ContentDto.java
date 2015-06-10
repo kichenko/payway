@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString(callSuper = true, exclude = "content")
 @EqualsAndHashCode(callSuper = true)
-public class ContentDto extends AbstractDto implements Serializable {
+public class ContentDto extends AbstractDto {
 
     String name;
 

@@ -34,13 +34,14 @@ public final class SideBarMenu extends CustomComponent {
 
     @Setter
     @Getter
-    @AllArgsConstructor
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class MenuItem {
 
         private String tag;
         private String caption;
         private Resource icon;
+        private Object data;
         private List<MenuItem> childs;
     }
 
@@ -54,7 +55,7 @@ public final class SideBarMenu extends CustomComponent {
         tree.setSizeFull();
         addStyleName("sidebar");
         setCompositionRoot(tree);
-        
+
         container.addContainerProperty("caption", String.class, "");
         tree.setContainerDataSource(container);
 
@@ -112,5 +113,9 @@ public final class SideBarMenu extends CustomComponent {
         }
 
         return false;
+    }
+
+    public MenuItem getSelectedMenuItem() {
+        return items.get((String) tree.getValue());
     }
 }

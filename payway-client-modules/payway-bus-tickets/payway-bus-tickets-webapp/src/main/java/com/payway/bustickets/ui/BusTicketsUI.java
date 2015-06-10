@@ -104,7 +104,7 @@ public class BusTicketsUI extends AbstractUI {
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
         List<OperatorDto> operators = appService.getUserBusTicketOperators();
-        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem("bus-ticket-empty-workspace-view", "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null);
+        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem("bus-ticket-empty-workspace-view", "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
 
         if (operators != null) {
             List<SideBarMenu.MenuItem> childs = new LinkedList<>();
@@ -112,7 +112,7 @@ public class BusTicketsUI extends AbstractUI {
                 //STALWART <-> airport-express-bus-tickets-workspace-view
                 String workspaceViewName = appService.getBusTicketOperatorWorkspaceViewName(operator.getShortName());
                 if (!StringUtils.isBlank(workspaceViewName)) {
-                    childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), null));
+                    childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getShortName(), null));
                 }
             }
             menu.setChilds(childs);
