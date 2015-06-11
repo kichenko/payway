@@ -68,7 +68,7 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     @Qualifier(value = "serverTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
-    @Value("${app.id}")
+    @Value("${app.id}.Topic")
     private String appTopicName;
 
     @PreDestroy

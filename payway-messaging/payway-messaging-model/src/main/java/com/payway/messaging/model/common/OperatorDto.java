@@ -14,10 +14,10 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class OperatorDto extends AbstractDto {
 
-    String shortName;
+    private String shortName;
 
-    String name;
+    private String name;
 
-    ContentDto logo;
+    private ContentDto logo;
 
 }

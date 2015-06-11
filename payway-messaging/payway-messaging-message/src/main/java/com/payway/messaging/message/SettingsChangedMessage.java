@@ -13,6 +13,8 @@ import lombok.*;
 @ToString(callSuper = true)
 public class SettingsChangedMessage implements Message {
 
+    private static final long serialVersionUID = 8047599227972230869L;
+
     private String appName;
 
 }

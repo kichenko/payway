@@ -81,11 +81,5 @@
                 <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
             </bean>
         </property>
-    </bean>
-    
-    <!-- Mapping id's: operator <-> workspace view bean -->       
-    <util:map id="mapBusTicketsWorkspaces" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
-        <entry key="STALWART" value="airport-express-bus-tickets-workspace-view"/>
-    </util:map>
-            
+    </bean>            
 </beans>

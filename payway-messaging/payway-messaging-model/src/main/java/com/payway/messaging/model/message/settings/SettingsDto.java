@@ -4,11 +4,7 @@
 package com.payway.messaging.model.message.settings;
 
 import com.payway.messaging.model.AbstractDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * SettingsDto
@@ -22,6 +18,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString(callSuper = true)
 public class SettingsDto extends AbstractDto {
+
+    private static final long serialVersionUID = -2060521815298015163L;
 
     /**
      * Path to server config, ex. 1/2/3/server-config-folder-name

@@ -15,13 +15,14 @@ import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.payway.messaging.model.message.settings.SettingsDto;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @Getter
 @Setter
@@ -76,7 +77,7 @@ public class MessageServerRequestHandler implements Runnable {
                         String origin = hzInstance.toString();
 
                         if (envelope.getBody() instanceof AuthCommandRequest) {
-                            env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, false)));
+                            env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, null), null));
                         } else if (envelope.getBody() instanceof ApplyConfigurationRequest) {
                             env = new ResponseEnvelope(rid, origin, new ApplySuccessConfigurationResponse());
                         } else if (envelope.getBody() instanceof SettingsRequest) {

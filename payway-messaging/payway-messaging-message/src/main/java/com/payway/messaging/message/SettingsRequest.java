@@ -9,4 +9,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class SettingsRequest extends CommandRequest {
 
+    private static final long serialVersionUID = 3131799104289428802L;
+
 }

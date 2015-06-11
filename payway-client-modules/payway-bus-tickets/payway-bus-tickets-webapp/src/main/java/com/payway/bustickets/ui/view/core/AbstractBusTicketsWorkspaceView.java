@@ -12,5 +12,6 @@ import com.payway.commons.webapp.ui.view.core.AbstractWorkspaceView;
  * @created 17.05.15 00:00
  */
 public abstract class AbstractBusTicketsWorkspaceView extends AbstractWorkspaceView {
-    //
+
+    public static final String WORKSPACE_VIEW_ID_PREFIX = "bus-ticket-workspace-view-";
 }

@@ -37,6 +37,7 @@
 
 @import "components/sidebarmenu";
 @import "components/airport-express-bus-tickets-wizard";
+@import "components/retailer-terminal-panel";
 
 @mixin default {
 
@@ -46,6 +47,7 @@
 
     @include sidebar-menu-component;
     @include airport-express-bus-tickets-wizard-component;
+    @include retailer-terminal-panel-component;
 
     @include login-view;
     @include main-view;

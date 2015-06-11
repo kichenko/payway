@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HorizontalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsWizard" sizeFull="true" styleName="airport-express-bus-ticket-wizard">
+<HorizontalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.bustickets.airportexpress.ui.components" id="layoutBusTicketsWizard" sizeFull="true" styleName="airport-express-bus-ticket-wizard">
     
-    <Image id="imgLogo" width="160px" height="120px" p:expandRatio="1"/>
+    <VerticalLayout id = "layoutLeft" p:expandRatio="1">   
+        <Image id="imgLogo" width="160px" height="120px"/>
+        <cmp:RetailerTerminalPanel id="retailerTerminalPanel" width="160px" styleName="retailer-terminal-panel-cmp"/>
+    </VerticalLayout>
     
-    <VerticalLayout id = "lfd" p:expandRatio="3">    
+    <VerticalLayout id = "layoutRight" p:expandRatio="3">    
         <VerticalLayout id="layoutContent" width="100%" height="500px"/>      
         <HorizontalLayout id="layoutFooter" width="100%" styleName="airport-express-bus-ticket-wizard-footer">
             <Button id="btnLeft" p:componentAlignment="MIDDLE_CENTER" styleName="friendly airport-express-bus-ticket-wizard-btn-left"/>

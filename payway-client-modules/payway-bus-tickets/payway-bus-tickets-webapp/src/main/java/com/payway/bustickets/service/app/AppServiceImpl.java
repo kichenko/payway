@@ -8,8 +8,6 @@ import com.payway.messaging.model.common.OperatorDto;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.server.VaadinSession;
 import java.util.List;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,9 +18,6 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "appService")
 public class AppServiceImpl implements AppService {
-
-    @Value("#{mapBusTicketsWorkspaces}")
-    private Map<String, String> mapBusTicketsWorkspaces;
 
     @Override
     public UserDto getUser() {
@@ -74,10 +69,5 @@ public class AppServiceImpl implements AppService {
         }
 
         return isOk;
-    }
-
-    @Override
-    public String getBusTicketOperatorWorkspaceViewName(String operatorId) {
-        return mapBusTicketsWorkspaces.get(operatorId);
     }
 }

@@ -21,14 +21,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
+import com.vaadin.ui.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,6 +30,9 @@ import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 
 /**
  * LoginView
@@ -146,10 +142,11 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
         }
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
+        final String remoteAddress = null; // TODO: provide remote address here (it can be proxied !!!)
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.auth(editUserName.getValue(), editPassword.getValue(), LoginView.this);
+                service.auth(editUserName.getValue(), editPassword.getValue(), remoteAddress, LoginView.this);
             }
         });
     }
@@ -163,7 +160,8 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
                 public void run() {
                     if (response instanceof AbstractAuthCommandResponse) {
                         if (response instanceof AuthSuccessCommandResponse) {
-                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(((AuthSuccessCommandResponse) response).getUser()));
+                            AuthSuccessCommandResponse ap = (AuthSuccessCommandResponse) response;
+                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(ap.getUser(), ap.getSessionId()));
                         } else if (response instanceof AuthBadCredentialsCommandResponse) {
                             sessionEventBus.sendNotification(new LoginFailSessionBusEvent());
                         }

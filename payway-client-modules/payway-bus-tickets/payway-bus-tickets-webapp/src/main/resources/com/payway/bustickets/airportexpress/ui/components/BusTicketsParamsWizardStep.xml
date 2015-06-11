@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsParamsWizardStep" sizeFull="true">
-    <TextField id="editContactNo" required="true" caption="Contact No" styleName="" width="100%"/>
-    <ComboBox id="cbDirection" nullSelectionAllowed="false" required="true" caption="Direction" textInputAllowed="false" styleName="" width="100%"/>    
-    <ComboBox id="cbRoute" nullSelectionAllowed="false" required="true" caption="Route" textInputAllowed="false" styleName="" width="100%"/>   
-    <ComboBox id="cbTripDate" nullSelectionAllowed="false" required="true" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
-    <ComboBox id="cbBaggage" nullSelectionAllowed="false" required="true" caption="Baggage" textInputAllowed="false" styleName="" width="100%"/>   
-    <Slider id="sliderQuantity" required="true" min="1" max="100" caption="Quantity" styleName="" width="100%"/>   
+    <TextField id="editContactNo" immediate="true" caption="Contact No" styleName="" width="100%"/>
+    <ComboBox id="cbDirection" nullSelectionAllowed="false" caption="Direction" textInputAllowed="false" styleName="" width="100%"/>    
+    <ComboBox id="cbRoute" nullSelectionAllowed="false" caption="Route" textInputAllowed="false" styleName="" width="100%"/>   
+    <ComboBox id="cbTripDate" nullSelectionAllowed="false" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
+    <ComboBox id="cbBaggage"  nullSelectionAllowed="false" caption="Baggage" textInputAllowed="false" styleName="" width="100%"/>   
+    <Slider id="sliderQuantity" caption="Quantity" styleName="" width="100%"/>   
     <Label id="lblSlider" sizeUndefined="true" p:componentAlignment="TOP_RIGHT"/> 
 </VerticalLayout>

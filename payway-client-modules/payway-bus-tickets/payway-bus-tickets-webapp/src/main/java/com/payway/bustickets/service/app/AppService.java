@@ -22,6 +22,4 @@ public interface AppService {
     public List<OperatorDto> getUserBusTicketOperators();
 
     public boolean setUserBusTicketOperators(List<OperatorDto> operators);
-
-    public String getBusTicketOperatorWorkspaceViewName(String operatorId);
 }

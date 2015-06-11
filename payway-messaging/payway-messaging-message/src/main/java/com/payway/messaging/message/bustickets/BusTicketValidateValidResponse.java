@@ -14,6 +14,8 @@ import lombok.*;
 @EqualsAndHashCode
 public class BusTicketValidateValidResponse implements SuccessResponse {
 
+    private static final long serialVersionUID = 8505041655082246771L;
+
     String routeName;
 
     Double amount;

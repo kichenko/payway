@@ -18,6 +18,8 @@ import java.util.List;
 @ToString(callSuper = true)
 public class BusTicketOperatorsResponse implements SuccessResponse {
 
+    private static final long serialVersionUID = 5871072749412792622L;
+
     List<OperatorDto> operators = new LinkedList<>();
 
     public void add(String shortName, String name, ContentDto logo) {

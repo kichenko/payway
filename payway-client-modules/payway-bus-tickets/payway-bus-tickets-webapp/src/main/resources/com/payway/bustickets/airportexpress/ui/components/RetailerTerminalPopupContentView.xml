@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutRetailerTerminalPopupContent" sizeFull="true" styleName="retailer-terminal-panel-content-popup">
+    
+    <Label id="lbRetailerTerminal" value="Retailer terminals" styleName="tiny bold"/>
+    <ComboBox id="cbRetailerTerminal" nullSelectionAllowed="false" textInputAllowed="false" styleName="small" width="250px"/>    
+    
+    <HorizontalLayout id="layoutButtonsRetailerTerminalPopupContent" styleName="retailer-terminal-panel-content-popup-buttons">
+        <Button id="btnCancel" caption="Cancel" styleName="small"/>
+        <Button id="btnSave" caption="Save" styleName="small primary retailer-terminal-panel-content-popup-buttons-save"/>
+    </HorizontalLayout>
+    
+</VerticalLayout>

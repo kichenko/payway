@@ -8,13 +8,14 @@ import com.payway.commons.webapp.messaging.client.IMessagingQueue;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
-import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Реализация сервиса отправки сообщений на сервер.
@@ -41,8 +42,8 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
     private String appId;
 
     @Override
-    public void auth(String userName, String password, ResponseCallBack callback) {
-        sendMessage(new AuthCommandRequest(userName, password, appId), callback);
+    public void auth(String userName, String password, String remoteAddress, ResponseCallBack callback) {
+        sendMessage(new AuthCommandRequest(userName, password, appId, remoteAddress), callback);
     }
 
     @Override

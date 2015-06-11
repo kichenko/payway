@@ -1,0 +1,27 @@
+@mixin retailer-terminal-panel-component {
+
+    .retailer-terminal-panel-cmp {
+        margin: 10px 0px 0px 0px;
+    }
+
+    .retailer-terminal-panel {
+        padding: 5px 5px 5px 5px;
+    }
+
+    .retailer-terminal-panel-content-popup {
+        padding: 5px 5px 5px 5px;
+    }
+
+    .retailer-terminal-panel-content-right {
+        float:right;
+    }
+
+    .retailer-terminal-panel-content-popup-buttons {
+        float:right;
+        padding: 5px 0px 0px 0px;
+    }
+
+    .retailer-terminal-panel-content-popup-buttons-save {
+        margin: 0px 0px 0px 5px;
+    }
+}

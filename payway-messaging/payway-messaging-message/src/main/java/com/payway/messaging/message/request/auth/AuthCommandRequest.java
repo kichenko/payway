@@ -11,7 +11,6 @@ import lombok.*;
  * @created 23.04.15 00:00
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true, exclude = "password")
@@ -25,5 +24,7 @@ public class AuthCommandRequest extends CommandRequest {
     private String password;
 
     private String appId;
+
+    private String remoteAddress;
 
 }

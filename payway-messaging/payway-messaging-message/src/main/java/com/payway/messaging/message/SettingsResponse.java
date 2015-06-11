@@ -10,6 +10,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class SettingsResponse implements SuccessResponse {
 
+    private static final long serialVersionUID = -8060686512584612365L;
+
     private SettingsDto settings;
 
     public SettingsResponse(SettingsDto settings) {

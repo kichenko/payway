@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutRetailerTerminal" sizeFull="true" styleName="retailer-terminal-panel">
+    
+    <Label id="lbTerminalNameCaption" value="Terminal name" styleName="tiny colored" width="100%"/>
+    <Label id="lbTerminalName" value="Terminal name" styleName="tiny bold" width="100%"/>
+    
+    <Label id="lbTerminalLocationCaption"  value="Terminal location" styleName="tiny colored" width="100%"/>
+    <Label id="lbTerminalLocation"  value="Terminal location" styleName="tiny bold" width="100%"/>
+    
+    <Label id="lbRetailerNameCaption" value="Retailer name"  styleName="tiny colored" width="100%"/>
+    <Label id="lbRetailerName"  value="Retailer name" styleName="tiny bold" width="100%"/>
+        
+    <HorizontalLayout id ="layoutPopupRetailerTerminal" styleName="retailer-terminal-panel-content-right"/>
+   
+</VerticalLayout>

@@ -14,6 +14,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class BusTicketValidateRequest extends CommandRequest {
 
+    private static final long serialVersionUID = 4144648146040100002L;
+
     String serviceProviderId;
 
     String contactNumber;

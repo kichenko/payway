@@ -5,7 +5,10 @@ package com.payway.messaging.message;
  */
 public class RemoteException extends RuntimeException {
 
+    private static final long serialVersionUID = 4463730368938416220L;
+
     public RemoteException() {
+        // ~~
     }
 
     public RemoteException(String message) {

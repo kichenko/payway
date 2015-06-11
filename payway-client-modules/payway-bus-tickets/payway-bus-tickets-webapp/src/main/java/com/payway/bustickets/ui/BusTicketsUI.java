@@ -4,13 +4,15 @@
 package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
+import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.bustickets.service.app.AppService;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
+import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
+import com.payway.bustickets.ui.view.workspace.BusTicketsEmptyWorkspaceView;
 import com.payway.commons.webapp.core.Attributes;
 import com.payway.commons.webapp.core.Constants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.messaging.ResponseCallBack;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
@@ -34,16 +36,17 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.servlet.http.Cookie;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * BusTicketsUI
@@ -104,14 +107,14 @@ public class BusTicketsUI extends AbstractUI {
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
         List<OperatorDto> operators = appService.getUserBusTicketOperators();
-        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem("bus-ticket-empty-workspace-view", "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
+        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem(BusTicketsEmptyWorkspaceView.BUS_TICKET_EMPTY_WORKSPACE_VIEW_ID, "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
 
         if (operators != null) {
             List<SideBarMenu.MenuItem> childs = new LinkedList<>();
             for (OperatorDto operator : operators) {
-                //STALWART <-> airport-express-bus-tickets-workspace-view
-                String workspaceViewName = appService.getBusTicketOperatorWorkspaceViewName(operator.getShortName());
-                if (!StringUtils.isBlank(workspaceViewName)) {
+                //STALWART <-> bus-tickets-workspace-view-stalwart
+                if (!StringUtils.isBlank(operator.getShortName())) {
+                    String workspaceViewName = AbstractBusTicketsWorkspaceView.WORKSPACE_VIEW_ID_PREFIX + operator.getShortName().toLowerCase();
                     childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getShortName(), null));
                 }
             }
@@ -122,68 +125,36 @@ public class BusTicketsUI extends AbstractUI {
     }
 
     private void sendBusTicketOperatorsRequest() {
-        service.sendMessage(new BusTicketOperatorsRequest(), new ResponseCallBack() {
+        service.sendMessage(new BusTicketOperatorsRequest(), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
 
             @Override
-            public void onServerResponse(final SuccessResponse response) {
-                UI ui = getUI();
-                if (ui != null) {
-                    ui.access(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (response instanceof BusTicketOperatorsResponse) {
-                                sessionEventBus.sendNotification(new BusTicketOperatorsSuccessBusEvent(((BusTicketOperatorsResponse) response).getOperators()));
-                            } else {
-                                log.error("Bad bus tickets operators server response (unknown type) - {}", response);
-                                sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
-                            }
-                        }
-                    });
+            public void doServerResponse(SuccessResponse response) {
+                if (response instanceof BusTicketOperatorsResponse) {
+                    sessionEventBus.sendNotification(new BusTicketOperatorsSuccessBusEvent(((BusTicketOperatorsResponse) response).getOperators()));
+                } else {
+                    log.error("Bad bus tickets operators server response (unknown type) - {}", response);
+                    sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
                 }
             }
 
             @Override
-            public void onServerException(final ExceptionResponse exception) {
-                UI ui = getUI();
-                if (ui != null) {
-                    ui.access(new Runnable() {
-                        @Override
-                        public void run() {
-                            log.error("Bad bus tickets operators server response (server exception) - {}", exception);
-                            sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
-                        }
-                    });
-                }
+            public void doServerException(ExceptionResponse exception) {
+                log.error("Bad bus tickets operators server response (server exception) - {}", exception);
+                sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
             }
 
             @Override
-            public void onLocalException(final Exception exception) {
-                UI ui = getUI();
-                if (ui != null) {
-                    ui.access(new Runnable() {
-                        @Override
-                        public void run() {
-                            log.error("Bad bus tickets operators server response (local exception) - {}", exception);
-                            sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
-                        }
-                    });
-                }
+            public void doLocalException(Exception exception) {
+                log.error("Bad bus tickets operators server response (local exception) - {}", exception);
+                sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
             }
 
             @Override
-            public void onTimeout() {
-                UI ui = getUI();
-                if (ui != null) {
-                    ui.access(new Runnable() {
-                        @Override
-                        public void run() {
-                            log.error("Bad bus tickets operators server response (timeout exception)");
-                            sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
-                        }
-                    });
-                }
+            public void doTimeout() {
+                log.error("Bad bus tickets operators server response (timeout exception)");
+                sessionEventBus.sendNotification(new BusTicketOperatorsFailBusEvent());
             }
-        });
+        }));
     }
 
     private void updateContent() {
@@ -234,7 +205,7 @@ public class BusTicketsUI extends AbstractUI {
             appService.setUser(event.getUser());
 
             if (loginView.isRememberMe()) {
-                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getUserToken());
+                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), event.getSessionId());
                 cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
                 //#hack cookie
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());

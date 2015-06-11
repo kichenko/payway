@@ -38,13 +38,14 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * AdvertisingUI
@@ -221,7 +222,7 @@ public class AdvertisingUI extends AbstractUI {
                 throw new Exception("Bad user sign in");
             }
 
-            user.setToken(userDto.getUserToken());
+            user.setToken(event.getSessionId());
 
             //set params to session
             userAppService.setUser(user);

@@ -32,6 +32,8 @@ public class AuthSuccessCommandResponse extends AbstractAuthCommandResponse {
 
     final private UserDto user;
 
+    final private String sessionId;
+
     private List<Serializable> extensions;
 
     public void addExtension(Serializable extension) {

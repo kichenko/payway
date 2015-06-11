@@ -3,8 +3,20 @@
     .common-text-center {
         text-align: center;
     }
-    
-     .common-text-right {
+
+    .common-text-right {
         text-align: right;
+    }
+
+    .v-popupview {
+        //color: red;
+    }
+    .v-popupview:hover {
+        //color: red;
+    }
+
+    .v-popupview-popup {
+        //background: #fff;
+        //padding: 3px;
     }
 }

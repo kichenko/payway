@@ -7,6 +7,9 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 public class PermissionDeniedException extends RemoteException {
+
+    private static final long serialVersionUID = -6785446579422578080L;
+
     public PermissionDeniedException() {
     }
 

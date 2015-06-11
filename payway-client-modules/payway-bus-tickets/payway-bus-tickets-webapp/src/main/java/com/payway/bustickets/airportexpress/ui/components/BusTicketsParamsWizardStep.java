@@ -11,9 +11,10 @@ import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
 import com.vaadin.data.Property;
+import com.vaadin.data.validator.DoubleRangeValidator;
+import com.vaadin.data.validator.NullValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -21,7 +22,9 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -61,13 +64,30 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
     @UiField
     private Label lblSlider;
 
+    @Setter(AccessLevel.PRIVATE)
+    private String operatorId;
+
     public BusTicketsParamsWizardStep() {
         init();
     }
 
     private void initValidators() {
-        getEditContactNo().addValidator(new RegexpValidator("[0-9]+", "Invalid telephone number"));
-        getEditContactNo().addValidator(new StringLengthValidator("Invalid telephone number", 10, 10, false));
+
+        getEditContactNo().setValidationVisible(false);
+        getCbDirection().setValidationVisible(false);
+        getCbRoute().setValidationVisible(false);
+        getCbTripDate().setValidationVisible(false);
+        getCbBaggage().setValidationVisible(false);
+        getSliderQuantity().setValidationVisible(false);
+
+        getEditContactNo().addValidator(new RegexpValidator("[0-9]+", "Only digits allowed"));
+        getEditContactNo().addValidator(new StringLengthValidator("Length is not equal 10", 10, 10, false));
+        getEditContactNo().addValidator(new NullValidator("Empty number", false));
+        getCbDirection().addValidator(new NullValidator("Empty direction", false));
+        getCbRoute().addValidator(new NullValidator("Empty route", false));
+        getCbTripDate().addValidator(new NullValidator("Empty trip date", false));
+        getCbBaggage().addValidator(new NullValidator("Empty baggage", false));
+        getSliderQuantity().addValidator(new DoubleRangeValidator("Invalid quantity", 1.0, Double.MAX_VALUE));
     }
 
     private void init() {
@@ -128,11 +148,6 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
                         getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
                     }
                 }
-
-                getCbTripDate().select(null);
-                getCbBaggage().select(null);
-                getSliderQuantity().setValue(0.0);
-                getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
             }
         });
 
@@ -147,7 +162,9 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
         });
     }
 
-    public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
+    public void setUp(String operatorId, List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
+
+        setOperatorId(operatorId);
 
         getEditContactNo().setValue("");
         getSliderQuantity().setMin(0.0);
@@ -168,32 +185,19 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
         try {
             getEditContactNo().validate();
+            getCbDirection().validate();
+            getCbRoute().validate();
+            getCbTripDate().validate();
+            getCbBaggage().validate();
+            getSliderQuantity().validate();
         } catch (Exception ex) {
-            ok = false;
-        }
+            getEditContactNo().setValidationVisible(true);
+            getCbDirection().setValidationVisible(true);
+            getCbRoute().setValidationVisible(true);
+            getCbTripDate().setValidationVisible(true);
+            getCbBaggage().setValidationVisible(true);
+            getSliderQuantity().setValidationVisible(true);
 
-        if (getCbDirection().getValue() == null) {
-            getCbDirection().setComponentError(new UserError("Select direction"));
-            ok = false;
-        }
-
-        if (getCbRoute().getValue() == null) {
-            getCbRoute().setComponentError(new UserError("Select route"));
-            ok = false;
-        }
-
-        if (getCbTripDate().getValue() == null) {
-            getCbTripDate().setComponentError(new UserError("Select trip date"));
-            ok = false;
-        }
-
-        if (getCbBaggage().getValue() == null) {
-            getCbBaggage().setComponentError(new UserError("Select baggage"));
-            ok = false;
-        }
-
-        if (getSliderQuantity().getValue() <= 0) {
-            getSliderQuantity().setComponentError(new UserError("Select quantity"));
             ok = false;
         }
 

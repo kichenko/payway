@@ -49,4 +49,6 @@ public abstract class AbstractWizard extends Panel {
         }
         return null;
     }
+    
+    public abstract void setLogoImage(byte [] content);
 }

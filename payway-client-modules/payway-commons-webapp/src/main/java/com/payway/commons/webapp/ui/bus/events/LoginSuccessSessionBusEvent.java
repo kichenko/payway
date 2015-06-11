@@ -4,9 +4,8 @@
 package com.payway.commons.webapp.ui.bus.events;
 
 import com.payway.messaging.model.message.auth.UserDto;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * SessionBusEventLoginSuccess
@@ -15,9 +14,11 @@ import lombok.NoArgsConstructor;
  * @created 06.06.15 00:00
  */
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LoginSuccessSessionBusEvent extends AbstractSessionBusEvent {
 
-    private UserDto user;
+    final private UserDto user;
+
+    final private String sessionId;
+
 }
