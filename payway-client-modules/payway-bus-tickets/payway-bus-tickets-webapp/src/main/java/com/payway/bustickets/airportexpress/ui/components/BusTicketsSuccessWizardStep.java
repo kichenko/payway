@@ -15,8 +15,6 @@ import org.vaadin.teemu.clara.Clara;
 @Slf4j
 public class BusTicketsSuccessWizardStep extends AbstractWizardStep {
 
-    public static final int STEP_NO = 2;
-
     private static final long serialVersionUID = 9042170733083703085L;
 
     public BusTicketsSuccessWizardStep() {

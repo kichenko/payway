@@ -4,11 +4,13 @@
 package com.payway.commons.webapp.ui.bus.events;
 
 import com.payway.messaging.model.message.auth.UserDto;
+import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SessionBusEventLoginSuccess
+ * LoginSuccessSessionBusEvent
  *
  * @author Sergey Kichenko
  * @created 06.06.15 00:00
@@ -17,8 +19,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginSuccessSessionBusEvent extends AbstractSessionBusEvent {
 
-    final private UserDto user;
+    private final UserDto user;
 
-    final private String sessionId;
+    private final String sessionId;
+
+    private final List<Serializable> extensions;
 
 }

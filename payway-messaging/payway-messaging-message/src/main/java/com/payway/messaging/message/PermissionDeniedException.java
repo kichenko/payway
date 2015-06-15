@@ -17,7 +17,11 @@ public class PermissionDeniedException extends RemoteException {
         super(message);
     }
 
-    public PermissionDeniedException(String message, Throwable cause) {
+    public PermissionDeniedException(String message, Object ... args) {
+        super(String.format(message, args));
+    }
+
+    public PermissionDeniedException(Throwable cause, String message) {
         super(message, cause);
     }
 

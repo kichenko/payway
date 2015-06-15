@@ -18,8 +18,8 @@ import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindows
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
-import com.payway.commons.webapp.core.Attributes;
-import com.payway.commons.webapp.core.Constants;
+import com.payway.commons.webapp.core.CommonAttributes;
+import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
@@ -229,12 +229,12 @@ public class AdvertisingUI extends AbstractUI {
             userAppService.setConfiguration(config);
 
             if (loginView.isRememberMe()) {
-                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), user.getToken());
-                cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
+                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), user.getToken());
+                cookie.setMaxAge(CommonConstants.REMEMBER_ME_COOKIE_MAX_AGE);
                 //#hack cookie
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
             } else {
-                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), "");
+                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
                 cookie.setMaxAge(0);
                 //#hack cookie
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());

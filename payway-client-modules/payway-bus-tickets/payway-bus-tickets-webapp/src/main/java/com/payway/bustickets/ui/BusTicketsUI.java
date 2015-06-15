@@ -4,15 +4,15 @@
 package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.bustickets.service.app.AppService;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.bustickets.ui.view.workspace.BusTicketsEmptyWorkspaceView;
-import com.payway.commons.webapp.core.Attributes;
-import com.payway.commons.webapp.core.Constants;
+import com.payway.commons.webapp.core.CommonAttributes;
+import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
@@ -27,6 +27,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsRequest;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsResponse;
 import com.payway.messaging.model.common.OperatorDto;
+import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -36,17 +37,17 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.servlet.http.Cookie;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * BusTicketsUI
@@ -106,7 +107,7 @@ public class BusTicketsUI extends AbstractUI {
     @Override
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
-        List<OperatorDto> operators = appService.getUserBusTicketOperators();
+        List<OperatorDto> operators = appService.getBusTicketsSettings().getOperators();
         SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem(BusTicketsEmptyWorkspaceView.BUS_TICKET_EMPTY_WORKSPACE_VIEW_ID, "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
 
         if (operators != null) {
@@ -163,7 +164,7 @@ public class BusTicketsUI extends AbstractUI {
         //mainView.initializeUserMenu("", new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
         //mainView.getSideBarMenu().select(0);
         //setContent(mainView);
-        UserDto user = appService.getUser();
+        UserDto user = appService.getBusTicketsSettings().getUser();
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
             mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
@@ -201,16 +202,31 @@ public class BusTicketsUI extends AbstractUI {
                 throw new Exception("User sign in");
             }
 
-            //set params to session
-            appService.setUser(event.getUser());
+            //set params to session  
+            //user
+            appService.getBusTicketsSettings().setUser(event.getUser());
+
+            //session id
+            appService.getBusTicketsSettings().setSessionId(event.getSessionId());
+
+            //terminals
+            if (event.getExtensions() != null && event.getExtensions().size() > 0) {
+                List<RetailerTerminalDto> terminals = new ArrayList<>();
+                for (Object ext : event.getExtensions()) {
+                    if (ext instanceof RetailerTerminalDto) {
+                        terminals.add((RetailerTerminalDto) ext);
+                    }
+                }
+                appService.getBusTicketsSettings().setTerminals(terminals);
+            }
 
             if (loginView.isRememberMe()) {
-                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), event.getSessionId());
-                cookie.setMaxAge(Constants.REMEMBER_ME_COOKIE_MAX_AGE);
+                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
+                cookie.setMaxAge(CommonConstants.REMEMBER_ME_COOKIE_MAX_AGE);
                 //#hack cookie
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
             } else {
-                Cookie cookie = new Cookie(Attributes.REMEMBER_ME.value(), "");
+                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
                 cookie.setMaxAge(0);
                 //#hack cookie
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
@@ -237,7 +253,7 @@ public class BusTicketsUI extends AbstractUI {
     public void processSessionBusEvent(BusTicketOperatorsSuccessBusEvent event) {
 
         //set params to session
-        appService.setUserBusTicketOperators(event.getOperators());
+        appService.getBusTicketsSettings().setOperators(event.getOperators());
 
         updateContent();
         ((InteractionUI) UI.getCurrent()).closeProgressBar();

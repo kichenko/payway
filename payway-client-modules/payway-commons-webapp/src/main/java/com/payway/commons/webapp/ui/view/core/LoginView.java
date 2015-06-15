@@ -3,7 +3,7 @@
  */
 package com.payway.commons.webapp.ui.view.core;
 
-import com.payway.commons.webapp.core.Attributes;
+import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallBack;
 import com.payway.commons.webapp.ui.InteractionUI;
@@ -21,7 +21,14 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,9 +37,6 @@ import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 
 /**
  * LoginView
@@ -112,7 +116,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
 
     @Override
     public void initialize() {
-        Cookie rememberMeCookie = getCookieByName(Attributes.REMEMBER_ME.value());
+        Cookie rememberMeCookie = getCookieByName(CommonAttributes.REMEMBER_ME.value());
         if (rememberMeCookie != null && rememberMeCookie.getValue() != null) {
             checkBoxRememberMe.setValue(true);
         } else {
@@ -161,7 +165,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
                     if (response instanceof AbstractAuthCommandResponse) {
                         if (response instanceof AuthSuccessCommandResponse) {
                             AuthSuccessCommandResponse ap = (AuthSuccessCommandResponse) response;
-                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(ap.getUser(), ap.getSessionId()));
+                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(ap.getUser(), ap.getSessionId(), ap.getExtensions()));
                         } else if (response instanceof AuthBadCredentialsCommandResponse) {
                             sessionEventBus.sendNotification(new LoginFailSessionBusEvent());
                         }

@@ -19,8 +19,6 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Getter
 public class BusTicketsFailWizardStep extends AbstractWizardStep {
 
-    public static final int STEP_NO = 3;
-
     private static final long serialVersionUID = 8060109602379331780L;
 
     @UiField

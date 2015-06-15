@@ -3,11 +3,9 @@
  */
 package com.payway.messaging.model;
 
+import lombok.*;
+
 import java.io.Serializable;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * AbstractDto
@@ -18,9 +16,11 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 public abstract class AbstractDto implements Serializable {
 
-    protected long id;
+    protected long id = 0;
 
 }

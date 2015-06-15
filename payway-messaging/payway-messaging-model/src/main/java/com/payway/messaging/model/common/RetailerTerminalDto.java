@@ -1,16 +1,15 @@
 package com.payway.messaging.model.common;
 
 import com.payway.messaging.model.AbstractDto;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * Created by mike on 11/06/15.
  */
 @Getter
-@RequiredArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class RetailerTerminalDto extends AbstractDto {
@@ -22,5 +21,12 @@ public class RetailerTerminalDto extends AbstractDto {
     final private String terminalLocation;
 
     final private String retailerName;
+
+    public RetailerTerminalDto(long id, String terminalName, String terminalLocation, String retailerName) {
+        super(id);
+        this.terminalName = terminalName;
+        this.terminalLocation = terminalLocation;
+        this.retailerName = retailerName;
+    }
 
 }

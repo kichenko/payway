@@ -14,6 +14,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class OperatorDto extends AbstractDto {
 
+    private static final long serialVersionUID = -5820831317958391388L;
+
     private String shortName;
 
     private String name;

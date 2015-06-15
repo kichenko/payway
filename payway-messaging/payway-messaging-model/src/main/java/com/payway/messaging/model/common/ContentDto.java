@@ -13,6 +13,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class ContentDto extends AbstractDto {
 
+    private static final long serialVersionUID = 3350347387882308342L;
+
     private String name;
 
     private byte[] content;

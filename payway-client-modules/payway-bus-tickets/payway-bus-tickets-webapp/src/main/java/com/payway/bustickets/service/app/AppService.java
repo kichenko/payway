@@ -3,9 +3,7 @@
  */
 package com.payway.bustickets.service.app;
 
-import com.payway.messaging.model.common.OperatorDto;
-import com.payway.messaging.model.message.auth.UserDto;
-import java.util.List;
+import com.payway.bustickets.core.BusTicketsSettings;
 
 /**
  * AppService
@@ -15,11 +13,5 @@ import java.util.List;
  */
 public interface AppService {
 
-    public UserDto getUser();
-
-    public boolean setUser(UserDto user);
-
-    public List<OperatorDto> getUserBusTicketOperators();
-
-    public boolean setUserBusTicketOperators(List<OperatorDto> operators);
+    BusTicketsSettings getBusTicketsSettings();
 }

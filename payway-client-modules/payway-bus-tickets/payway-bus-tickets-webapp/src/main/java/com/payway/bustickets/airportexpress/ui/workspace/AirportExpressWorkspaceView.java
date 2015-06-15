@@ -5,10 +5,10 @@ package com.payway.bustickets.airportexpress.ui.workspace;
 
 import com.payway.bustickets.airportexpress.ui.components.BusTicketsParamsWizardStep;
 import com.payway.bustickets.airportexpress.ui.components.BusTicketsWizard;
-import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.bustickets.service.app.AppService;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.messaging.core.response.ExceptionResponse;
@@ -16,9 +16,11 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketPaymentStartRequest;
 import com.payway.messaging.message.bustickets.BusTicketPaymentStartResponse;
 import com.payway.messaging.model.common.OperatorDto;
+import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,9 +67,45 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
     public void activate() {
 
         setWizardLogoImage();
-        if (wizard.setStep(BusTicketsParamsWizardStep.STEP_NO)) {
+        setWizardTerminals();
+        setWizardOperatorId();
+        setWizardSessionId();
+
+        if (wizard.setStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID)) {
             sendBusTicketPaymentStartRequest();
         }
+    }
+
+    private void setWizardOperatorId() {
+
+        SideBarMenu.MenuItem menu = this.getSideBarMenu().getSelectedMenuItem();
+        if (menu == null) {
+            return;
+        }
+
+        wizard.setOperatorId((String) menu.getData());
+    }
+
+    private void setWizardTerminals() {
+
+        List<RetailerTerminalDto> terminals = appService.getBusTicketsSettings().getTerminals();
+        if (terminals == null || terminals.isEmpty()) {
+            log.warn("Empty terminals in session storage");
+            return;
+        }
+
+        wizard.setUpTerminals(terminals);
+    }
+
+    private void setWizardSessionId() {
+
+        String sessionId = appService.getBusTicketsSettings().getSessionId();
+        if (StringUtils.isBlank(sessionId)) {
+            log.warn("Empty sessionId in session storage");
+            return;
+        }
+
+        wizard.setSessionId(sessionId);
     }
 
     private void setWizardLogoImage() {
@@ -77,7 +115,7 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
             return;
         }
 
-        for (OperatorDto operator : appService.getUserBusTicketOperators()) {
+        for (OperatorDto operator : appService.getBusTicketsSettings().getOperators()) {
             if (!StringUtils.isBlank(operator.getShortName())) {
                 if (operator.getShortName().equals((String) menuItem.getData())) {
                     if (operator.getLogo() != null && operator.getLogo().getContent() != null) {
@@ -130,10 +168,9 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
 
     private void processSuccessBusTicketPaymentStartRequest(BusTicketPaymentStartResponse response) {
 
-        SideBarMenu.MenuItem menuItem = this.getSideBarMenu().getSelectedMenuItem();
-        BusTicketsParamsWizardStep step = (BusTicketsParamsWizardStep) wizard.getWizardStep(BusTicketsParamsWizardStep.STEP_NO);
-        if (step != null && (menuItem != null && menuItem.getData() instanceof String)) {
-            step.setUp((String) menuItem.getData(), response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
+        BusTicketsParamsWizardStep step = (BusTicketsParamsWizardStep) wizard.getWizardStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
+        if (step != null) {
+            step.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
         }
 
         ((InteractionUI) UI.getCurrent()).closeProgressBar();

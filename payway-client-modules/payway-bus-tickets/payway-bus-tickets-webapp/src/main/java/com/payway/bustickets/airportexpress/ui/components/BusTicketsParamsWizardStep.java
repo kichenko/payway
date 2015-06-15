@@ -22,9 +22,7 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -38,8 +36,6 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Slf4j
 @Getter
 public class BusTicketsParamsWizardStep extends AbstractWizardStep {
-
-    public static final int STEP_NO = 0;
 
     private static final long serialVersionUID = -3017619450081339095L;
 
@@ -63,9 +59,6 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     @UiField
     private Label lblSlider;
-
-    @Setter(AccessLevel.PRIVATE)
-    private String operatorId;
 
     public BusTicketsParamsWizardStep() {
         init();
@@ -162,9 +155,7 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
         });
     }
 
-    public void setUp(String operatorId, List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
-
-        setOperatorId(operatorId);
+    public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
 
         getEditContactNo().setValue("");
         getSliderQuantity().setMin(0.0);
@@ -205,4 +196,29 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
         return ok;
     }
+
+    public int getQuantity() {
+        return getSliderQuantity().getValue().intValue();
+    }
+
+    public String getContactNo() {
+        return getEditContactNo().getValue();
+    }
+
+    public DirectionDto getDirection() {
+        return ((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).getItem(getCbDirection().getValue()).getBean();
+    }
+
+    public ChoiceDto getBaggage() {
+        return ((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).getItem(getCbBaggage().getValue()).getBean();
+    }
+
+    public RouteDto getRoute() {
+        return ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getItem(getCbRoute().getValue()).getBean();
+    }
+
+    public ChoiceDto getTripDate() {
+        return ((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).getItem(getCbTripDate().getValue()).getBean();
+    }
+
 }

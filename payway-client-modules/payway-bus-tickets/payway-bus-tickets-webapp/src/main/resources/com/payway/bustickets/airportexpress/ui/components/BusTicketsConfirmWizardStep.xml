@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsConfirmWizardStep" sizeFull="true">
-    <TextField id="editContactNo" enabled="false" caption="Contact No" styleName="" width="100%"/>
-    <TextField id="editDirection" enabled="false" caption="Direction" styleName="" width="100%"/>  
-    <TextField id="editRoute" enabled="false" caption="Time" styleName="" width="100%"/>
-    <TextField id="editTripDate" enabled="false" caption="Day" styleName="" width="100%"/>  
-    <TextField id="editBaggage" enabled="false" caption="Baggage" styleName="" width="100%"/>
-    <TextField id="editQuantity" enabled="false" caption="Quantity" styleName="" width="100%"/>
-    <TextField id="editTotalCost" enabled="false" caption="Total cost" styleName="" width="100%"/>
+    <FormLayout id="layoutConfirmForm">
+        <TextField id="editContactNo" enabled="false" caption="Contact No" styleName="" width="100%"/>
+        <TextField id="editDirection" enabled="false" caption="Direction" styleName="" width="100%"/>  
+        <TextField id="editRoute" enabled="false" caption="Time" styleName="" width="100%"/>
+        <TextField id="editTripDate" enabled="false" caption="Day" styleName="" width="100%"/>  
+        <TextField id="editBaggage" enabled="false" caption="Baggage" styleName="" width="100%"/>
+        <TextField id="editQuantity" enabled="false" caption="Quantity" styleName="" width="100%"/>
+        <TextField id="editTotalCost" enabled="false" caption="Total cost" styleName="" width="100%"/>
+        <Label id="lbRouteName" caption="Route name" styleName="bold colored"/>    
+    </FormLayout>    
 </VerticalLayout>

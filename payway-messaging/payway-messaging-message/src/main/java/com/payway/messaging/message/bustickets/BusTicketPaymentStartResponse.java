@@ -4,14 +4,10 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
+import lombok.*;
+
 import java.util.LinkedList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Created by mike on 05/06/15.
@@ -27,8 +23,11 @@ public class BusTicketPaymentStartResponse implements SuccessResponse {
     private static final long serialVersionUID = -4078176497129051908L;
 
     List<DirectionDto> directions = new LinkedList<>();
+
     List<RouteDto> routes = new LinkedList<>();
+
     List<ChoiceDto> dates = new LinkedList<>();
+
     List<ChoiceDto> baggages = new LinkedList<>();
 
     public DirectionDto addDirection(String mnemonics, String name) {

@@ -3,9 +3,10 @@
  */
 package com.payway.advertising.core.service.app.user;
 
+import com.payway.advertising.core.AdvertisingAttributes;
 import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
-import com.payway.commons.webapp.core.Attributes;
+import com.payway.commons.webapp.core.CommonAttributes;
 import com.vaadin.server.VaadinSession;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class UserAppServiceImpl implements UserAppService {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            user = (DbUser) session.getAttribute(Attributes.USER.value());
+            user = (DbUser) session.getAttribute(CommonAttributes.USER.value());
         }
 
         return user;
@@ -38,7 +39,7 @@ public class UserAppServiceImpl implements UserAppService {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            session.setAttribute(Attributes.USER.value(), user);
+            session.setAttribute(CommonAttributes.USER.value(), user);
             isOk = true;
         }
 
@@ -51,7 +52,7 @@ public class UserAppServiceImpl implements UserAppService {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            config = (DbConfiguration) session.getAttribute(Attributes.CONFIG.value());
+            config = (DbConfiguration) session.getAttribute(AdvertisingAttributes.CONFIG.value());
         }
 
         return config;
@@ -64,7 +65,7 @@ public class UserAppServiceImpl implements UserAppService {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            session.setAttribute(Attributes.CONFIG.value(), config);
+            session.setAttribute(AdvertisingAttributes.CONFIG.value(), config);
             isOk = true;
         }
 

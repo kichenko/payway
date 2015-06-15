@@ -3,11 +3,9 @@
  */
 package com.payway.bustickets.service.app;
 
-import com.payway.commons.webapp.core.Attributes;
-import com.payway.messaging.model.common.OperatorDto;
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.bustickets.core.BusTicketAttributes;
+import com.payway.bustickets.core.BusTicketsSettings;
 import com.vaadin.server.VaadinSession;
-import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,54 +18,19 @@ import org.springframework.stereotype.Component;
 public class AppServiceImpl implements AppService {
 
     @Override
-    public UserDto getUser() {
+    public BusTicketsSettings getBusTicketsSettings() {
 
-        UserDto user = null;
-
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            user = (UserDto) session.getAttribute(Attributes.USER.value());
-        }
-
-        return user;
-    }
-
-    @Override
-    public boolean setUser(UserDto user) {
-
-        boolean isOk = false;
+        BusTicketsSettings settings = null;
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            session.setAttribute(Attributes.USER.value(), user);
-            isOk = true;
+            settings = (BusTicketsSettings) session.getAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value());
+            if (settings == null) {
+                settings = new BusTicketsSettings();
+                session.setAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value(), settings);
+            }
         }
 
-        return isOk;
-    }
-
-    @Override
-    public List<OperatorDto> getUserBusTicketOperators() {
-        List<OperatorDto> operators = null;
-
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            operators = (List<OperatorDto>) session.getAttribute(Attributes.BUS_TICKET_OPERATORS.value());
-        }
-
-        return operators;
-    }
-
-    @Override
-    public boolean setUserBusTicketOperators(List<OperatorDto> operators) {
-        boolean isOk = false;
-
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            session.setAttribute(Attributes.BUS_TICKET_OPERATORS.value(), operators);
-            isOk = true;
-        }
-
-        return isOk;
+        return settings;
     }
 }
