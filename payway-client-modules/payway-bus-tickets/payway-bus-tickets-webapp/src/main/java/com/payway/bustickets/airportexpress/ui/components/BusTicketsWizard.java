@@ -7,23 +7,32 @@ import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
+import com.payway.messaging.message.bustickets.BusTicketPaymentStartRequest;
+import com.payway.messaging.message.bustickets.BusTicketPaymentStartResponse;
 import com.payway.messaging.message.bustickets.BusTicketPurchaseRequest;
 import com.payway.messaging.message.bustickets.BusTicketPurchaseResponse;
 import com.payway.messaging.message.bustickets.BusTicketValidateInvalidResponse;
 import com.payway.messaging.message.bustickets.BusTicketValidateRequest;
 import com.payway.messaging.message.bustickets.BusTicketValidateValidResponse;
+import com.payway.messaging.message.common.TransactionReceiptRequest;
+import com.payway.messaging.message.common.TransactionReceiptResponse;
 import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +54,8 @@ public class BusTicketsWizard extends AbstractWizard {
 
     public static final int BUS_TICKETS_PARAMS_WIZARD_STEP_ID = 0;
     public static final int BUS_TICKETS_CONFIRM_WIZARD_STEP_ID = 1;
-    public static final int BUS_TICKETS_FAIL_WIZARD_STEP_ID = 2;
-    public static final int BUS_TICKETS_SUCCESS_WIZARD_STEP_ID = 3;
+    public static final int BUS_TICKETS_SUCCESS_WIZARD_STEP_ID = 2;
+    public static final int BUS_TICKETS_FAIL_WIZARD_STEP_ID = 3;
 
     @UiField
     private Button btnLeft;
@@ -71,6 +80,22 @@ public class BusTicketsWizard extends AbstractWizard {
     @Setter
     private String operatorId;
 
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private double totalCost;
+
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private Date paymentStart;
+
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private Date paymentStop;
+
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private long checkId;
+
     public BusTicketsWizard() {
         super(STEP_COUNT);
         init();
@@ -82,11 +107,7 @@ public class BusTicketsWizard extends AbstractWizard {
         setIcon(new ThemeResource("images/sidebar_airport_express_bus_tickets.png"));
         setContent(Clara.create("BusTicketsWizard.xml", this));
 
-        getSteps().add(new BusTicketsParamsWizardStep());
-        getSteps().add(new BusTicketsConfirmWizardStep());
-        getSteps().add(new BusTicketsSuccessWizardStep());
-        getSteps().add(new BusTicketsFailWizardStep());
-
+        setUpSteps();
         setStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
 
         //
@@ -110,6 +131,17 @@ public class BusTicketsWizard extends AbstractWizard {
                 decorateStep();
             }
         });
+
+        setTotalCost(0);
+        setPaymentStart(null);
+        setPaymentStop(null);
+    }
+
+    private void setUpSteps() {
+        getSteps().add(new BusTicketsParamsWizardStep());
+        getSteps().add(new BusTicketsConfirmWizardStep());
+        getSteps().add(new BusTicketsSuccessWizardStep());
+        getSteps().add(new BusTicketsFailWizardStep());
     }
 
     private void decorateStep() {
@@ -140,7 +172,7 @@ public class BusTicketsWizard extends AbstractWizard {
             btnRight.setVisible(true);
             btnRight.setCaption("Checkout");
 
-        } else if (getStep() == BUS_TICKETS_FAIL_WIZARD_STEP_ID) { //success
+        } else if (getStep() == BUS_TICKETS_SUCCESS_WIZARD_STEP_ID) { //success
 
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
@@ -148,11 +180,11 @@ public class BusTicketsWizard extends AbstractWizard {
             setCaption("Step 3 - Successful order");
             retailerTerminalPanel.setEnabled(false);
 
-            btnLeft.setVisible(true);
-            btnLeft.setCaption("New Buy");
+            btnLeft.setVisible(false);
+            btnLeft.setCaption("");
 
             btnRight.setVisible(true);
-            btnRight.setCaption("Save ticket");
+            btnRight.setCaption("New Buy");
 
         } else if (getStep() == BUS_TICKETS_FAIL_WIZARD_STEP_ID) { //fail
 
@@ -184,9 +216,9 @@ public class BusTicketsWizard extends AbstractWizard {
         if (BUS_TICKETS_PARAMS_WIZARD_STEP_ID == getStep()) {
             processParams2ConfirmStep();
         } else if (BUS_TICKETS_CONFIRM_WIZARD_STEP_ID == getStep()) {
-            processConfirm2PayStep();
-        } else if (BUS_TICKETS_FAIL_WIZARD_STEP_ID == getStep()) {
             processConfirmToPurchase();
+        } else if (BUS_TICKETS_FAIL_WIZARD_STEP_ID == getStep() || BUS_TICKETS_SUCCESS_WIZARD_STEP_ID == getStep()) {
+            setStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
         }
     }
 
@@ -213,17 +245,10 @@ public class BusTicketsWizard extends AbstractWizard {
             return;
         }
 
-        //WebBrowser wb = new WebBrowser();
-        //wb.
-                /*
-         SimpleTimeZone timeZone = new SimpleTimeZone(browser.getTimezoneOffset(), "Fake client time zone");
-         DateFormat format = DateFormat.getDateTimeInstance();
-         format.setTimeZone(timeZone);
-         myLabel.setValue(format.format(browser.getCurrentDate()));
-         */
+        setPaymentStop(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity(), null, null), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity(), getPaymentStart(), getPaymentStop(), getTotalCost()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -256,7 +281,89 @@ public class BusTicketsWizard extends AbstractWizard {
     }
 
     private void processBusTicketPurchaseResponse(BusTicketPurchaseResponse response) {
-        setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
+        setCheckId(response.getTxId());
+        setStep(BUS_TICKETS_SUCCESS_WIZARD_STEP_ID);
+        sendDownloadCheckRequest();
+    }
+
+    private void sendDownloadCheckRequest() {
+
+        getService().sendMessage(new TransactionReceiptRequest(getSessionId(), getCheckId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+
+            @Override
+            public void doServerResponse(SuccessResponse response) {
+
+                if (response instanceof TransactionReceiptResponse) {
+                    TransactionReceiptResponse rsp = (TransactionReceiptResponse) response;
+                    if (rsp.getContent() != null) {
+                        processDownloadCheckRequest((TransactionReceiptResponse) response);
+                    } else {
+                        log.error("Bad server response (content is empty)");
+                        processBusTicketCheckDownloadExceptionResponse();
+                    }
+                } else {
+                    log.error("Bad server response (unknown type) - {}", response);
+                    processBusTicketCheckDownloadExceptionResponse();
+                }
+            }
+
+            @Override
+            public void doServerException(final ExceptionResponse exception) {
+                log.error("Bad exception response (server exception) - {}", exception);
+                processBusTicketCheckDownloadExceptionResponse();
+            }
+
+            @Override
+            public void doLocalException(final Exception exception) {
+                log.error("Bad exception response (local exception) - {}", exception);
+                processBusTicketCheckDownloadExceptionResponse();
+            }
+
+            @Override
+            public void doTimeout() {
+                log.error("Bad exception response (time out)");
+                processBusTicketCheckDownloadExceptionResponse();
+            }
+        }));
+    }
+
+    private void processDownloadCheckRequest(final TransactionReceiptResponse response) {
+
+        try {
+            FileOutputStream st = new FileOutputStream(new File("c://users//sergey//1.pdf"));
+            st.write(response.getContent());
+            st.close();
+        } catch (Exception ex) {
+            int k = 900;
+        }
+
+        final StreamResource streamResource = new StreamResource(
+                new StreamResource.StreamSource() {
+                    private static final long serialVersionUID = -2480723276190894707L;
+
+                    @Override
+                    public InputStream getStream() {
+                        return new ByteArrayInputStream(response.getContent());
+                    }
+                },
+                response.getLabel()
+        );
+
+        streamResource.setMIMEType(response.getContentType());
+
+        BusTicketsSuccessWizardStep stepWizard = (BusTicketsSuccessWizardStep) getWizardStep(BUS_TICKETS_SUCCESS_WIZARD_STEP_ID);
+        if (stepWizard != null) {
+            stepWizard.setSource(streamResource);
+        } else {
+            log.warn("Bad step wizard step");
+        }
+
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+    }
+
+    private void processBusTicketCheckDownloadExceptionResponse() {
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+        ((InteractionUI) UI.getCurrent()).showNotification("Download bus ticket check", "Bad downloading bus ticket check...", Notification.Type.ERROR_MESSAGE);
     }
 
     private void sendValidateRequest() {
@@ -310,15 +417,14 @@ public class BusTicketsWizard extends AbstractWizard {
         try {
             if (wizardStepParams != null && wizardStepConfirm != null) {
 
-                Double price = response.getAmount();
-
-                //if amount is null use [TotalCost=Price*Quantity] else [TotalCost=Amount]
-                if (price == null) {
-                    price = wizardStepParams.getRoute().getPrice() * wizardStepParams.getQuantity();
+                //set total price: [TotalPrice=Price*Quantity] else [TotalPrice=Amount]
+                if (response.getAmount() == null) {
+                    setTotalCost(wizardStepParams.getRoute().getPrice() * wizardStepParams.getQuantity());
+                } else {
+                    setTotalCost(response.getAmount());
                 }
 
                 setStep(BUS_TICKETS_CONFIRM_WIZARD_STEP_ID);
-
                 wizardStepConfirm.setDirection(wizardStepParams.getDirection().getName());
                 wizardStepConfirm.setRoute(wizardStepParams.getRoute().getDepartureTime());
                 wizardStepConfirm.setTripDate(wizardStepParams.getTripDate().getLabel());
@@ -327,7 +433,7 @@ public class BusTicketsWizard extends AbstractWizard {
                 wizardStepConfirm.setQuantity(wizardStepParams.getQuantity());
                 wizardStepConfirm.setRouteName(response.getRouteName());
                 wizardStepConfirm.setHasDiscount(response.getAmount() != null);
-                wizardStepConfirm.setTotalCost(price);
+                wizardStepConfirm.setTotalCost(getTotalCost());
             }
         } finally {
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
@@ -356,14 +462,6 @@ public class BusTicketsWizard extends AbstractWizard {
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 
-    private void processConfirm2PayStep() {
-        sendPayRequest();
-    }
-
-    private void sendPayRequest() {
-        setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
-    }
-
     @Override
     public boolean setStep(int step) {
 
@@ -387,7 +485,7 @@ public class BusTicketsWizard extends AbstractWizard {
                         return new ByteArrayInputStream(content);
                     }
                 },
-                "bus_tickets_wizard_logo.png"
+                "bus_tickets_wizard_logo_" + getOperatorId() + ".png"
         );
 
         streamResource.setCacheTime(0);
@@ -397,5 +495,51 @@ public class BusTicketsWizard extends AbstractWizard {
 
     public void setUpTerminals(List<RetailerTerminalDto> terminals) {
         retailerTerminalPanel.setUpTerminals(terminals);
+    }
+
+    public void setUpBusTicketsPaymentParams() {
+
+        setPaymentStart(new WebBrowser().getCurrentDate());
+
+        ((InteractionUI) UI.getCurrent()).showProgressBar();
+        getService().sendMessage(new BusTicketPaymentStartRequest(getOperatorId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+
+            @Override
+            public void doServerResponse(SuccessResponse response) {
+                if (response instanceof BusTicketPaymentStartResponse) {
+                    processSuccessBusTicketPaymentStartRequest((BusTicketPaymentStartResponse) response);
+                } else {
+                    log.error("Bad server response (unknown type) - {}", response);
+                }
+            }
+
+            @Override
+            public void doServerException(ExceptionResponse exception) {
+                log.error("Bad server response (server exception) - {}", exception);
+                processBusTicketExceptionResponse();
+            }
+
+            @Override
+            public void doLocalException(Exception exception) {
+                log.error("Bad server response (local exception) - {}", exception);
+                processBusTicketExceptionResponse();
+            }
+
+            @Override
+            public void doTimeout() {
+                log.error("Bad server response (timeout)");
+                processBusTicketExceptionResponse();
+            }
+        }));
+    }
+
+    private void processSuccessBusTicketPaymentStartRequest(BusTicketPaymentStartResponse response) {
+
+        BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
+        if (wizardStep != null) {
+            wizardStep.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
+        }
+
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 }

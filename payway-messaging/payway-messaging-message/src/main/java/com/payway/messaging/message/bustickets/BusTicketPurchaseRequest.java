@@ -40,4 +40,6 @@ public class BusTicketPurchaseRequest extends CommandRequest {
 
     Date paymentStop;
 
+    double amount;
+
 }

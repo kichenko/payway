@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class TransactionReceiptRequest extends CommandRequest implements IWebAppSessionAware {

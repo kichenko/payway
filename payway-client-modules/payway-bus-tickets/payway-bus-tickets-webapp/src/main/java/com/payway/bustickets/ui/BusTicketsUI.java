@@ -27,7 +27,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsRequest;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsResponse;
 import com.payway.messaging.model.common.OperatorDto;
-import com.payway.messaging.model.common.RetailerTerminalDto;
+import com.payway.messaging.model.common.RetailerTerminalsDto;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -37,7 +37,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -211,13 +210,12 @@ public class BusTicketsUI extends AbstractUI {
 
             //terminals
             if (event.getExtensions() != null && event.getExtensions().size() > 0) {
-                List<RetailerTerminalDto> terminals = new ArrayList<>();
                 for (Object ext : event.getExtensions()) {
-                    if (ext instanceof RetailerTerminalDto) {
-                        terminals.add((RetailerTerminalDto) ext);
+                    if (ext instanceof RetailerTerminalsDto) {
+                        appService.getBusTicketsSettings().setTerminals(((RetailerTerminalsDto) ext).getRetailerTerminals());
+                        break;
                     }
                 }
-                appService.getBusTicketsSettings().setTerminals(terminals);
             }
 
             if (loginView.isRememberMe()) {

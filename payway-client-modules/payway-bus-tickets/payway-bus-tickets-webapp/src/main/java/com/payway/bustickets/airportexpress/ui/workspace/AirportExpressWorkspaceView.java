@@ -3,24 +3,13 @@
  */
 package com.payway.bustickets.airportexpress.ui.workspace;
 
-import com.payway.bustickets.airportexpress.ui.components.BusTicketsParamsWizardStep;
 import com.payway.bustickets.airportexpress.ui.components.BusTicketsWizard;
 import com.payway.bustickets.service.app.AppService;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
-import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
-import com.payway.messaging.core.response.ExceptionResponse;
-import com.payway.messaging.core.response.SuccessResponse;
-import com.payway.messaging.message.bustickets.BusTicketPaymentStartRequest;
-import com.payway.messaging.message.bustickets.BusTicketPaymentStartResponse;
 import com.payway.messaging.model.common.OperatorDto;
-import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,14 +54,14 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
 
     @Override
     public void activate() {
-
-        setWizardLogoImage();
+        
         setWizardTerminals();
         setWizardOperatorId();
         setWizardSessionId();
+        setWizardLogoImage();
 
         if (wizard.setStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID)) {
-            sendBusTicketPaymentStartRequest();
+            wizard.setUpBusTicketsPaymentParams();
         }
     }
 
@@ -87,14 +76,7 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
     }
 
     private void setWizardTerminals() {
-
-        List<RetailerTerminalDto> terminals = appService.getBusTicketsSettings().getTerminals();
-        if (terminals == null || terminals.isEmpty()) {
-            log.warn("Empty terminals in session storage");
-            return;
-        }
-
-        wizard.setUpTerminals(terminals);
+        wizard.setUpTerminals(appService.getBusTicketsSettings().getTerminals());
     }
 
     private void setWizardSessionId() {
@@ -126,59 +108,4 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
             }
         }
     }
-
-    private void sendBusTicketPaymentStartRequest() {
-
-        SideBarMenu.MenuItem menuItem = this.getSideBarMenu().getSelectedMenuItem();
-        if (menuItem != null && menuItem.getData() instanceof String) {
-            ((InteractionUI) UI.getCurrent()).showProgressBar();
-            service.sendMessage(new BusTicketPaymentStartRequest((String) menuItem.getData()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
-
-                @Override
-                public void doServerResponse(SuccessResponse response) {
-                    if (response instanceof BusTicketPaymentStartResponse) {
-                        processSuccessBusTicketPaymentStartRequest((BusTicketPaymentStartResponse) response);
-                    } else {
-                        log.error("Bad server response (unknown type) - {}", response);
-                    }
-                }
-
-                @Override
-                public void doServerException(ExceptionResponse exception) {
-                    log.error("Bad server response (server exception) - {}", exception);
-                    processFailBusTicketPaymentStartRequest();
-                }
-
-                @Override
-                public void doLocalException(Exception exception) {
-                    log.error("Bad server response (local exception) - {}", exception);
-                    processFailBusTicketPaymentStartRequest();
-                }
-
-                @Override
-                public void doTimeout() {
-                    log.error("Bad server response (timeout)");
-                    processFailBusTicketPaymentStartRequest();
-                }
-            }));
-        } else {
-            log.warn("Empty selected sidebar menu item");
-        }
-    }
-
-    private void processSuccessBusTicketPaymentStartRequest(BusTicketPaymentStartResponse response) {
-
-        BusTicketsParamsWizardStep step = (BusTicketsParamsWizardStep) wizard.getWizardStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
-        if (step != null) {
-            step.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
-        }
-
-        ((InteractionUI) UI.getCurrent()).closeProgressBar();
-    }
-
-    private void processFailBusTicketPaymentStartRequest() {
-        ((InteractionUI) UI.getCurrent()).closeProgressBar();
-        ((InteractionUI) UI.getCurrent()).showNotification("Receive bus tickets configuration params", "Bad receive bus tickets configuration params from server", Notification.Type.ERROR_MESSAGE);
-    }
-
 }

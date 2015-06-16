@@ -85,7 +85,10 @@ public class RetailerTerminalPanel extends Panel implements RetailerTerminalPopu
         if (terminals == null || terminals.isEmpty()) {
             if (log.isDebugEnabled()) {
                 log.debug("Empty terminal list on set up");
-            }
+            }    
+            
+            refresh(); 
+            popupRetailerTerminal.setVisible(false);
             
             return;
         }
