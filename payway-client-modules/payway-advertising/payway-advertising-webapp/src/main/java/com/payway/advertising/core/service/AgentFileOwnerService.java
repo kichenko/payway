@@ -5,6 +5,7 @@ package com.payway.advertising.core.service;
 
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.DbAgentFileOwner;
+import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,6 @@ public interface AgentFileOwnerService extends CrudEntityService<Long, DbAgentFi
     Page<DbAgentFileOwner> findByName(String name, Pageable pageable) throws ServiceException;
 
     Page<DbAgentFileOwner> list(Pageable pageable) throws ServiceException;
+    
+    List<DbAgentFileOwner> list() throws ServiceException;
 }

@@ -4,6 +4,7 @@
 package com.payway.advertising.data.dao;
 
 import com.payway.advertising.model.DbAgentFileOwner;
+import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +20,16 @@ import org.springframework.data.repository.query.Param;
  */
 public interface AgentFileOwnerDao extends JpaRepository<DbAgentFileOwner, Long> {
 
-    @Query(value = "select o from DbAgentFileOwner o where o.name like '%' || :name || '%'")
+    @Query(value = "select o from DbAgentFileOwner o where lower(o.name) like '%' || lower(:name) || '%'")
     Set<DbAgentFileOwner> findByName(@Param("name") String name);
 
-    @Query(value = "select o from DbAgentFileOwner o where o.name like '%' || :name || '%'")
+    @Query(value = "select o from DbAgentFileOwner o where lower(o.name) like '%' || lower(:name) || '%'")
     Page<DbAgentFileOwner> findByName(@Param("name") String name, Pageable pageable);
 
     @Query(value = "select o from DbAgentFileOwner o")
     Page<DbAgentFileOwner> list(Pageable pageable);
+
+    @Query(value = "select o from DbAgentFileOwner o order by o.name")
+    List<DbAgentFileOwner> list();
 
 }

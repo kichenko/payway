@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import com.payway.advertising.ui.view.workspace.content.container.AgentFileOwnerPagingBeanContainer;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.helpers.clonable.DbAgentFileOwnerDeepCopyClonable;

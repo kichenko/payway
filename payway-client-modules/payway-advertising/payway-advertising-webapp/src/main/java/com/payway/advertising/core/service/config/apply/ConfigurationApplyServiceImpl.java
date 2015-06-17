@@ -27,6 +27,12 @@ import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
 import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
 import com.payway.messaging.model.message.configuration.DbFileTypeDto;
 import com.vaadin.ui.UI;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,14 +45,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ConfigurationApplyService - apply local->server configuration
@@ -226,6 +224,10 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
         try {
 
+            if (log.isDebugEnabled()) {
+                log.debug("Applying configuration - start");
+            }
+
             //set current thread UI
             UI.setCurrent(currentUI);
 
@@ -236,15 +238,24 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             final String clientTmpFolderName = configurationService.generateUniqueFolderName("local", configurationName);
             final String serverTmpFolderName = configurationService.generateUniqueFolderName("server", StringUtils.substringAfterLast(Helpers.removeEndSeparator(serverPath.getPath()), "/"));
 
+            if (log.isDebugEnabled()) {
+                log.debug("Applying configuration - try get semaphore permission");
+            }
+
             //try lock
             if (clientSemaphore.tryAcquire(getClientTimeOut(), getUnit())) {
                 try {
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Applying configuration - successful get semaphore permission");
+                    }
+
                     try {
                         if (result != null) {
                             result.success();
                         }
                     } catch (Exception ex) {
-                        //
+                        log.error("Applying configuration - exception on success callback [{}]", ex);
                     }
 
                     //set info
@@ -255,14 +266,30 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     setStatus(acs);
                     appEventPublisher.sendNotification(acs);
 
+                    if (log.isDebugEnabled()) {
+                        log.debug("Applying configuration - list files...");
+                    }
+
                     //2. copy files
                     List<FileSystemObject> files = fileManagerService.list(localPath, false, true);
                     if (files == null || files.isEmpty()) {
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Apply configuration - files not found");
+                        }
+
                         throw new Exception("Apply configuration - files not found");
+                    }
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Apply configuration - successful list files: [{}]", files);
+                        log.debug("Apply configuration - start copy files...");
                     }
 
                     int counter = 1;
                     for (FileSystemObject src : files) {
+
+                        FileSystemObject dst = new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()), FileSystemObject.FileType.FILE, 0L, null);
 
                         if (ApplyStatus.Canceling.equals(getStatus().getStatus())) {
                             throw new ConfigurationApplyCancelException();
@@ -273,14 +300,21 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                         setStatus(acs);
                         appEventPublisher.sendNotification(acs);
 
-                        fileManagerService.copy(src, new FileSystemObject(
-                                Helpers.addEndSeparator(serverRootPathName) + Helpers.addEndSeparator(clientTmpFolderName) + StringUtils.substring(src.getPath(), Helpers.addEndSeparator(localPath.getPath()).length()),
-                                FileSystemObject.FileType.FILE,
-                                0L,
-                                null
-                        ));
+                        if (log.isDebugEnabled()) {
+                            log.debug("Apply configuration - begin copy file from [{}] to [{}]", src.getPath(), dst.getPath());
+                        }
+
+                        fileManagerService.copy(src, dst);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Apply configuration - end copy file");
+                        }
 
                         counter++;
+                    }
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Apply configuration - files successful copied");
                     }
 
                     if (ApplyStatus.Canceling.equals(getStatus().getStatus())) {
@@ -292,17 +326,30 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     setStatus(acs);
                     appEventPublisher.sendNotification(acs);
 
+                    if (log.isDebugEnabled()) {
+                        log.debug("Apply configuration - try to get server apply lock");
+                    }
+
                     //3. send server msg
                     IMessagingLock serverApplyLock = messagingClient.getLock(serverApplyLockName);
                     if (serverApplyLock.tryLock(getApplyLockTimeOut(), getUnit())) {
                         try {
+
                             final CountDownLatch latch = new CountDownLatch(1);
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("Apply configuration - successful get server apply lock");
+                            }
 
                             //3.1 build request dto
                             ApplyConfigurationRequest req = buildApplyConfigurationRequest(configurationName);
 
                             if (req == null) {
                                 throw new Exception("Empty request object constructed");
+                            }
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("Apply configuration - try send message to server");
                             }
 
                             //3.2 send req dto to server, wait response
@@ -321,13 +368,26 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                                 setStatus(acs);
                                                 appEventPublisher.sendNotification(acs);
 
+                                                if (log.isDebugEnabled()) {
+                                                    log.debug("Apply configuration - successful server message response");
+                                                    log.debug("Apply configuration - try to rename server folder to tmp");
+                                                }
+
                                                 //3.3.1 rename server folder to tmp
                                                 if (fileManagerService.exist(serverPath)) {
                                                     fileManagerService.rename(serverPath, new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
                                                 }
 
+                                                if (log.isDebugEnabled()) {
+                                                    log.debug("Apply configuration - try to rename tmp local-server folder to server folder");
+                                                }
+
                                                 //3.3.2 rename tmp local-server folder to server folder
                                                 fileManagerService.rename(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + clientTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null), serverPath);
+
+                                                if (log.isDebugEnabled()) {
+                                                    log.debug("Apply configuration - try to remove tmp server folder");
+                                                }
 
                                                 //3.3.3 remove tmp server folder
                                                 fileManagerService.delete(new FileSystemObject(Helpers.addEndSeparator(serverRootPathName) + serverTmpFolderName, FileSystemObject.FileType.FOLDER, 0L, null));
@@ -396,15 +456,26 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 }
                             });
 
+                            if (log.isDebugEnabled()) {
+                                log.debug("Apply configuration - start waiting for server response...");
+                            }
+
                             //warning: timeout used if server never answered (onTimeout event must be implemented)
                             if (!latch.await(serverTimeOut, getUnit())) {
                                 log.error("Timeout applying task - no answer from the server");
                                 throw new Exception("Timeout applying task - no answer from the server");
                             }
 
+                            if (log.isDebugEnabled()) {
+                                log.debug("Apply configuration - try to unlock apply lock");
+                            }
+
                             //must free server lock
                             serverApplyLock.unlock();
 
+                            if (log.isDebugEnabled()) {
+                                log.debug("Apply configuration - successful done");
+                            }
                         } catch (Exception ex) {
                             //must free server lock
                             serverApplyLock.unlock();

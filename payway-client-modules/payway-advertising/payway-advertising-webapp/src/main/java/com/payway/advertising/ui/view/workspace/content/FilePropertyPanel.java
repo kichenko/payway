@@ -11,13 +11,14 @@ import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.AgentFileExpressionValidator;
 import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.model.DbAgentFile;
+import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbFileType;
+import com.payway.advertising.ui.view.workspace.content.container.AgentFileOwnerBeanContainer;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
@@ -25,6 +26,9 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,51 +68,56 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @Getter
     @Setter
-    private AgentFileOwnerService agentFileOwnerService;
-
-    @Getter
-    @Setter
-    private AgentFileService agentFileService;
-
-    @Getter
-    @Setter
-    private FileSystemManagerService fileSystemManagerService;
-
-    @Getter
-    @Setter
-    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
-
-    @Getter
-    @Setter
-    private BeanItem<DbAgentFile> beanItem;
-
-    @Getter
-    @Setter
     private PropertySaveListener listener;
 
-    @Getter
-    private final Validator agentFileExpressionValidator;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private AgentFileOwnerService agentFileOwnerService;
 
-    @Getter
-    private final Validator agentFileValidator;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private AgentFileService agentFileService;
 
-    @Getter
-    @Setter
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private FileSystemManagerService fileSystemManagerService;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private DbAgentFile bean;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private Validator agentFileExpressionValidator;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private Validator agentFileValidator;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private String rootPath;
 
-    @Getter
-    @Setter
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private String relativePath;
 
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private List<DbAgentFileOwner> owners = new ArrayList<>(0);
+
     public FilePropertyPanel() {
-
-        agentFileExpressionValidator = new AgentFileExpressionValidator();
-        agentFileValidator = new AgentFileValidator(agentFileExpressionValidator);
-
         init();
+        setAgentFileExpressionValidator(new AgentFileExpressionValidator());
+        setAgentFileValidator(new AgentFileValidator(getAgentFileExpressionValidator()));
     }
 
     private void init() {
+
         setSizeFull();
         addStyleName("tab-panel-file-property");
         addComponent(Clara.create("FilePropertyTabs.xml", this));
@@ -134,19 +143,19 @@ public class FilePropertyPanel extends VerticalLayout {
                 try {
                     ((InteractionUI) UI.getCurrent()).showProgressBar();
 
-                    if (getBeanItem().getBean().getId() == null) {
+                    if (getBean().getId() == null) {
                         //set name only for new object, where id == null
-                        getBeanItem().getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
+                        getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
 
                         //set digest only for new object, where id == null
                         String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
-                        getBeanItem().getBean().setDigest(digest);
+                        getBean().setDigest(digest);
                     }
 
-                    if (agentFileValidator.validate(beanItem.getBean())) {
-                        agentFileService.save(getBeanItem().getBean());
+                    if (agentFileValidator.validate(getBean())) {
+                        agentFileService.save(getBean());
                         if (getListener() != null) {
-                            getListener().onSave(beanItem.getBean());
+                            getListener().onSave(getBean());
                         }
                     } else {
                         ((InteractionUI) UI.getCurrent()).showNotification("", "Invalid file property values", Notification.Type.ERROR_MESSAGE);
@@ -165,24 +174,69 @@ public class FilePropertyPanel extends VerticalLayout {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+
                 Window wnd = new AgentFileOwnerBookWindow("Agent owners book", agentFileOwnerService);
                 wnd.setModal(true);
+
+                wnd.addCloseListener(new Window.CloseListener() {
+                    private static final long serialVersionUID = 751019052034176230L;
+
+                    @Override
+                    public void windowClose(Window.CloseEvent e) {
+                        refreshOwners();
+                    }
+                });
+
                 UI.getCurrent().addWindow(wnd);
                 wnd.markAsDirtyRecursive();
             }
         });
     }
 
-    public void initOwnerBeanContainer() {
-        //set custom container for owner combobox
-        tabGeneral.getCbOwner().setContainerDataSource(new AgentFileOwnerBeanItemContainer(agentFileOwnerService));
-        tabGeneral.getCbOwner().setFilteringMode(FilteringMode.CONTAINS);
-        tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
+    private void refreshOwners() {
+        try {
+
+            ((InteractionUI) UI.getCurrent()).showProgressBar();
+
+            setOwners(agentFileOwnerService.list());
+
+            Object selectedItemId = tabGeneral.getCbOwner().getValue();
+            ((AgentFileOwnerBeanContainer) tabGeneral.getCbOwner().getContainerDataSource()).removeAllItems();
+            ((AgentFileOwnerBeanContainer) tabGeneral.getCbOwner().getContainerDataSource()).addAll(getOwners());
+            tabGeneral.getCbOwner().setValue(selectedItemId);
+
+        } catch (Exception ex) {
+            log.error("Refresh agent owner list", ex);
+            ((InteractionUI) UI.getCurrent()).showNotification("Refresh agent owner list", "Bad refresh agent owner list", Notification.Type.ERROR_MESSAGE);
+        } finally {
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
+        }
     }
 
-    public void initFileTypeBeanContainer() {
-        //set custom container for file type combobox
+    public void setUp(AgentFileService agentFileService, AgentFileOwnerService agentFileOwnerService, FileSystemManagerService fileSystemManagerService, FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity) {
+        setAgentFileService(agentFileService);
+        setAgentFileOwnerService(agentFileOwnerService);
+        setFileSystemManagerService(fileSystemManagerService);
+        setFileSystemManagerServiceSecurity(fileSystemManagerServiceSecurity);
+    }
+
+    public void setUpOwnerBeanContainer() {
+
+        tabGeneral.getCbOwner().setContainerDataSource(new AgentFileOwnerBeanContainer());
+        tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+        tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
+
+        try {
+            setOwners(agentFileOwnerService.list());
+            ((AgentFileOwnerBeanContainer) tabGeneral.getCbOwner().getContainerDataSource()).removeAllItems();
+            ((AgentFileOwnerBeanContainer) tabGeneral.getCbOwner().getContainerDataSource()).addAll(getOwners());
+        } catch (Exception ex) {
+            log.error("Set up owner bean container failed - {}", ex);
+        }
+    }
+
+    public void setUpFileTypeBeanContainer() {
+
         tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
         tabGeneral.getCbFileType().addItem(DbFileType.Unknown);
         tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "Unknown");
@@ -204,29 +258,30 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getEditFileName().setReadOnly(true);
     }
 
-    public void showProperty(String rootPath, String relativePath, String fileName, BeanItem<DbAgentFile> beanItem) {
+    public void showProperty(String rootPath, String relativePath, String fileName, DbAgentFile bean) {
 
-        setBeanItem(beanItem);
+        setBean(bean);
         setRootPath(rootPath);
         setRelativePath(relativePath);
 
-        tabGeneral.getCbOwner().getContainerDataSource().removeAllItems();
-        if (beanItem.getBean().getOwner() != null) {
-            ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addItem(beanItem.getBean().getOwner());
+        if (getBean().getOwner() != null) {
+            tabGeneral.getCbOwner().setValue(bean.getOwner().getId());
+        } else {
+            tabGeneral.getCbOwner().setValue(null);
         }
 
         tabGeneral.getEditFileName().setReadOnly(false);
         tabGeneral.getEditFileName().setValue(fileName);
         tabGeneral.getEditFileName().setReadOnly(true);
-        fieldGroup.setItemDataSource(beanItem);
+        fieldGroup.setItemDataSource(new BeanItem<>(getBean()));
 
         tabGeneral.setEnabled(true);
         tabAdditional.setEnabled(true);
-
         btnOk.setEnabled(true);
     }
 
     public void clearProperty() {
+
         tabGeneral.getEditFileName().setReadOnly(false);
         tabGeneral.getEditFileName().setValue("");
         tabGeneral.getEditFileName().setReadOnly(true);
@@ -237,7 +292,6 @@ public class FilePropertyPanel extends VerticalLayout {
 
         tabGeneral.setEnabled(false);
         tabAdditional.setEnabled(false);
-
         btnOk.setEnabled(false);
     }
 }

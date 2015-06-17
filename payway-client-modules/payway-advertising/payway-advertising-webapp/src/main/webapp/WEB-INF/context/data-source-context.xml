@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:jee="http://www.springframework.org/schema/jee"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        ">
     
     <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource">
-        <property name="username" value="${db.username}"/>
-        <property name="password" value="${db.password}"/>
-        <property name="jdbcUrl" value="jdbc:postgresql://${db.host}:${db.port:5432}/${db.name}"/>
+        <property name="username" value="${app.db.username}"/>
+        <property name="password" value="${app.db.password}"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://${app.db.host}:${app.db.port:5432}/${app.db.name}"/>
         <property name="driverClass" value="org.postgresql.Driver"/>
         <property name="idleConnectionTestPeriodInMinutes" value="60"/>        
         <property name="idleMaxAgeInSeconds" value="240"/>
@@ -18,5 +18,6 @@
         <property name="acquireIncrement" value="2"/>        
         <property name="statementsCacheSize" value="50"/>
         <property name="statisticsEnabled" value="false"/>    
-    </bean>   
+    </bean>
+
 </beans>

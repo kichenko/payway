@@ -4,7 +4,7 @@
 package com.payway.commons.webapp.messaging.client;
 
 import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.XmlClientConfigBuilder;
+import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.*;
 import com.payway.commons.webapp.bus.AppEventPublisher;
 import lombok.AccessLevel;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -55,9 +54,6 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     @Value("${client.queue.template.name}")
     private String clientQueueTemplateName;
 
-    @Value("${client.config.hz:classpath:hazelcast-client.xml}")
-    private Resource config;
-
     @Setter(AccessLevel.PRIVATE)
     public volatile IMessagingClient.State state = IMessagingClient.State.Disconnected;
 
@@ -70,6 +66,15 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
 
     @Value("${app.id}.Topic")
     private String appTopicName;
+
+    @Value("${app.cluster.name}")
+    private String clusterName;
+
+    @Value("${app.cluster.password}")
+    private String clusterPassword;
+
+    @Value("${app.cluster.address}")
+    private String[] clusterAddress;
 
     @PreDestroy
     public void preDestroy() {
@@ -85,7 +90,11 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
 
             if (semaphore.tryAcquire(1, TimeUnit.SECONDS)) {
                 construct = true;
-                client = HazelcastClient.newHazelcastClient(new XmlClientConfigBuilder(config.getInputStream()).build());
+                ClientConfig cc = new ClientConfig();
+                cc.getGroupConfig().setName(clusterName);
+                cc.getGroupConfig().setPassword(clusterPassword);
+                cc.getNetworkConfig().addAddress(clusterAddress);
+                client = HazelcastClient.newHazelcastClient(cc);
                 client.getLifecycleService().addLifecycleListener(this);
                 client.getTopic(appTopicName).addMessageListener(messageListener);
                 clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());

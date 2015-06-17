@@ -4,6 +4,7 @@
 package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
+import com.payway.bustickets.core.BusTicketsSettings;
 import com.payway.bustickets.service.app.AppService;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
@@ -27,6 +28,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsRequest;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsResponse;
 import com.payway.messaging.model.common.OperatorDto;
+import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.payway.messaging.model.common.RetailerTerminalsDto;
 import com.payway.messaging.model.message.auth.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -159,11 +161,12 @@ public class BusTicketsUI extends AbstractUI {
 
     private void updateContent() {
 
-        //mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-        //mainView.initializeUserMenu("", new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
-        //mainView.getSideBarMenu().select(0);
-        //setContent(mainView);
-        UserDto user = appService.getBusTicketsSettings().getUser();
+        UserDto user = null;
+
+        if (appService.getBusTicketsSettings() != null) {
+            user = appService.getBusTicketsSettings().getUser();
+        }
+
         if (user != null) {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
             mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
@@ -196,27 +199,24 @@ public class BusTicketsUI extends AbstractUI {
 
         try {
 
+            List<RetailerTerminalDto> terminals = null;
             UserDto user = event.getUser();
+
             if (user == null) {
                 throw new Exception("User sign in");
             }
 
-            //set params to session  
-            //user
-            appService.getBusTicketsSettings().setUser(event.getUser());
-
-            //session id
-            appService.getBusTicketsSettings().setSessionId(event.getSessionId());
-
-            //terminals
             if (event.getExtensions() != null && event.getExtensions().size() > 0) {
                 for (Object ext : event.getExtensions()) {
                     if (ext instanceof RetailerTerminalsDto) {
-                        appService.getBusTicketsSettings().setTerminals(((RetailerTerminalsDto) ext).getRetailerTerminals());
+                        terminals = ((RetailerTerminalsDto) ext).getRetailerTerminals();
                         break;
                     }
                 }
             }
+
+            //set params to session
+            appService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals));
 
             if (loginView.isRememberMe()) {
                 Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
@@ -251,7 +251,10 @@ public class BusTicketsUI extends AbstractUI {
     public void processSessionBusEvent(BusTicketOperatorsSuccessBusEvent event) {
 
         //set params to session
-        appService.getBusTicketsSettings().setOperators(event.getOperators());
+        BusTicketsSettings settings = appService.getBusTicketsSettings();
+        if (settings != null) {
+            appService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals()));
+        }
 
         updateContent();
         ((InteractionUI) UI.getCurrent()).closeProgressBar();

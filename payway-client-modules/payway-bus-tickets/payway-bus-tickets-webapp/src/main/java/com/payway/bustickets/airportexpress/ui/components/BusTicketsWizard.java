@@ -26,14 +26,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
@@ -47,6 +46,16 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 public class BusTicketsWizard extends AbstractWizard {
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class ContentTicket {
+
+        private byte[] content;
+        private String name;
+        private String type;
+    }
 
     private static final long serialVersionUID = 7922687104437893528L;
 
@@ -96,6 +105,10 @@ public class BusTicketsWizard extends AbstractWizard {
     @Setter(AccessLevel.PRIVATE)
     private long checkId;
 
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private ContentTicket contentTicket = new ContentTicket();
+
     public BusTicketsWizard() {
         super(STEP_COUNT);
         init();
@@ -144,7 +157,34 @@ public class BusTicketsWizard extends AbstractWizard {
         getSteps().add(new BusTicketsFailWizardStep());
     }
 
+    private void clearContentTicket() {
+        setContentTicket(new ContentTicket());
+    }
+
+    private StreamResource createContentResource() {
+
+        StreamResource streamResource = new StreamResource(
+                new StreamResource.StreamSource() {
+                    private static final long serialVersionUID = -2480723276190894707L;
+
+                    @Override
+                    public InputStream getStream() {
+                        return new ByteArrayInputStream(getContentTicket().getContent());
+                    }
+                },
+                getContentTicket().getName()
+        );
+
+        streamResource.setMIMEType(getContentTicket().getType());
+
+        return streamResource;
+    }
+
     private void decorateStep() {
+
+        if (getStep() != BUS_TICKETS_SUCCESS_WIZARD_STEP_ID) {
+            clearContentTicket();
+        }
 
         if (getStep() == BUS_TICKETS_PARAMS_WIZARD_STEP_ID) { //begin            
             layoutContent.removeAllComponents();
@@ -327,38 +367,37 @@ public class BusTicketsWizard extends AbstractWizard {
         }));
     }
 
+    //TODO: add regex clean file name 
+    private String buildContentTicketFileName(String label, String contentType) {
+
+        if ("application/pdf".equals(contentType)) {
+            return label + ".pdf";
+        }
+
+        return label;
+    }
+
     private void processDownloadCheckRequest(final TransactionReceiptResponse response) {
 
-        try {
-            FileOutputStream st = new FileOutputStream(new File("c://users//sergey//1.pdf"));
-            st.write(response.getContent());
-            st.close();
-        } catch (Exception ex) {
-            int k = 900;
-        }
+        getContentTicket().setContent(response.getContent());
+        getContentTicket().setName(buildContentTicketFileName(response.getLabel(), response.getContentType()));
+        getContentTicket().setType(response.getContentType());
 
-        final StreamResource streamResource = new StreamResource(
-                new StreamResource.StreamSource() {
-                    private static final long serialVersionUID = -2480723276190894707L;
-
-                    @Override
-                    public InputStream getStream() {
-                        return new ByteArrayInputStream(response.getContent());
-                    }
-                },
-                response.getLabel()
-        );
-
-        streamResource.setMIMEType(response.getContentType());
-
+        //set up content res for success wizard step
         BusTicketsSuccessWizardStep stepWizard = (BusTicketsSuccessWizardStep) getWizardStep(BUS_TICKETS_SUCCESS_WIZARD_STEP_ID);
         if (stepWizard != null) {
-            stepWizard.setSource(streamResource);
-        } else {
-            log.warn("Bad step wizard step");
+            stepWizard.setContentResource(createContentResource());
         }
 
+        showTicketPreview();
+
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
+    }
+
+    private void showTicketPreview() {
+        BusTicketsPreviewWindow wnd = new BusTicketsPreviewWindow();
+        wnd.setPreviewContent(createContentResource());
+        wnd.show();
     }
 
     private void processBusTicketCheckDownloadExceptionResponse() {

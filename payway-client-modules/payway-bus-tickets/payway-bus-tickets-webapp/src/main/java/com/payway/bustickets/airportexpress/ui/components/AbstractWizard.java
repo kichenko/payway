@@ -8,6 +8,7 @@ import com.vaadin.ui.Panel;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,19 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class AbstractWizard extends Panel {
 
-    protected List<AbstractWizardStep> steps;
+    protected List<AbstractWizardStep> steps = new ArrayList<>(0);
     protected int stepCount;
     protected int step;
 
     @Setter
     @Getter
     protected MessageServerSenderService service;
-
-    public AbstractWizard() {
-        steps = new ArrayList<>(0);
-    }
 
     public AbstractWizard(int stepCount) {
         setStepCount(stepCount);

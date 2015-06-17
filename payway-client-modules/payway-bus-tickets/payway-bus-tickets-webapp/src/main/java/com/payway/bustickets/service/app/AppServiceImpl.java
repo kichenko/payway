@@ -21,16 +21,23 @@ public class AppServiceImpl implements AppService {
     public BusTicketsSettings getBusTicketsSettings() {
 
         BusTicketsSettings settings = null;
-
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
             settings = (BusTicketsSettings) session.getAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value());
-            if (settings == null) {
-                settings = new BusTicketsSettings();
-                session.setAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value(), settings);
-            }
         }
 
         return settings;
+    }
+
+    @Override
+    public boolean setBusTicketsSettings(BusTicketsSettings settings) {
+
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session != null) {
+            session.setAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value(), settings);
+            return true;
+        }
+
+        return false;
     }
 }

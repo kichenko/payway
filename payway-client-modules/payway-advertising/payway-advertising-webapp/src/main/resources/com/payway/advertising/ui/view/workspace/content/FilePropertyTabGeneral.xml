@@ -8,7 +8,7 @@
     <VerticalLayout id="layoutOwnerArea" width="100%">
         <CssLayout id="layoutHorizontalOwnerArea" styleName="tab-general-layout-owner-area">
             <CssLayout id="layoutCbOwner" styleName="tab-general-layout-cb-owner">
-                <ComboBox id="cbOwner" caption="Owner" width="100%"/>
+                <ComboBox id="cbOwner" caption="Owner" textInputAllowed="false" width="100%"/>
             </CssLayout>
             <CssLayout id="layoutBtnOwnerBook" styleName="tab-general-layout-btn-ownerbook">
                 <Button id="btnOwnerBook" caption=""/>

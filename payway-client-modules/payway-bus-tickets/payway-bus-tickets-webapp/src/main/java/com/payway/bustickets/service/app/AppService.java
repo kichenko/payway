@@ -14,4 +14,6 @@ import com.payway.bustickets.core.BusTicketsSettings;
 public interface AppService {
 
     BusTicketsSettings getBusTicketsSettings();
+
+    boolean setBusTicketsSettings(BusTicketsSettings settings);
 }

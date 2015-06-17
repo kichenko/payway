@@ -19,7 +19,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class UserDto extends AbstractDto {
+public final class UserDto extends AbstractDto {
 
     private static final long serialVersionUID = 942608076596562119L;
 

@@ -1,25 +1,26 @@
 package com.payway.messaging.model.common;
 
 import com.payway.messaging.model.AbstractDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Created by mike on 09/06/15.
  */
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class OperatorDto extends AbstractDto {
+public final class OperatorDto extends AbstractDto {
 
     private static final long serialVersionUID = -5820831317958391388L;
 
-    private String shortName;
+    private final String shortName;
 
-    private String name;
+    private final String name;
 
-    private ContentDto logo;
+    private final ContentDto logo;
 
 }

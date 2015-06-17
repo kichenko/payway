@@ -586,7 +586,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
                             if (container != null) {
                                 FileExplorerItemData bean = container.getItem(itemId).getBean();
                                 if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                                    panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new BeanItem<>(new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty())));
+                                    panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty()));
                                 } else {
                                     panelFileProperty.clearProperty();
                                 }
@@ -1081,15 +1081,9 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
 
     private void initTabSheetProperty() {
 
-        panelFileProperty.setAgentFileOwnerService(getAgentFileOwnerService());
-        panelFileProperty.setAgentFileService(getAgentFileService());
-        panelFileProperty.setFileSystemManagerService(getFileSystemManagerService());
-        panelFileProperty.setFileSystemManagerServiceSecurity(getFileSystemManagerServiceSecurity());
-
-        //
-        panelFileProperty.initOwnerBeanContainer();
-        panelFileProperty.initFileTypeBeanContainer();
-        //
+        panelFileProperty.setUp(getAgentFileService(), getAgentFileOwnerService(), getFileSystemManagerService(), getFileSystemManagerServiceSecurity());
+        panelFileProperty.setUpOwnerBeanContainer();
+        panelFileProperty.setUpFileTypeBeanContainer();
 
         //event on property success save
         panelFileProperty.setListener(new FilePropertyPanel.PropertySaveListener() {

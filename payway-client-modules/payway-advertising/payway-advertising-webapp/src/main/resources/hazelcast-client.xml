@@ -12,4 +12,5 @@
             <address>177.77.77.77</address>
         </cluster-members>
     </network>
+
 </hazelcast-client>

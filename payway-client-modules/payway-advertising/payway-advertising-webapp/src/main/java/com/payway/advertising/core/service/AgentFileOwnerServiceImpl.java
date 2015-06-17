@@ -6,6 +6,7 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.data.dao.AgentFileOwnerDao;
 import com.payway.advertising.model.DbAgentFileOwner;
+import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,11 @@ public class AgentFileOwnerServiceImpl implements AgentFileOwnerService {
     @Transactional(readOnly = true)
     public Page<DbAgentFileOwner> list(Pageable pageable) throws ServiceException {
         return agentFileOwnerDao.list(pageable);
+    }
+
+    @Override
+    public List<DbAgentFileOwner> list() throws ServiceException {
+        return agentFileOwnerDao.list();
     }
 
     @Override
