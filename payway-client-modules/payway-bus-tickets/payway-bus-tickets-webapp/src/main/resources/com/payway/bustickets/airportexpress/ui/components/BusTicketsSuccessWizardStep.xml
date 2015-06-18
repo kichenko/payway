@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsSuccessWizardStep" sizeFull="true">
-    <Label id="lbSuccess" value="Success" styleName="success common-text-center"/> 
     
-    <VerticalLayout id="layoutTicket">
-        <Button id="btnPreview" caption="Preview ticket" p:componentAlignment="MIDDLE_CENTER" styleName="primary"/>
-        <Button id="btnDownload" caption="Download ticket" p:componentAlignment="MIDDLE_CENTER" styleName="primary common-margin-up"/>
+    <Label id="lbSuccess" value="Success" width="100%" p:expandRatio="1" styleName="success common-text-center"/>
+    
+    <VerticalLayout id="layoutImage" p:expandRatio="8">
+        <Image id="image" width="300px" height="380px" p:componentAlignment="MIDDLE_CENTER"/>
+    </VerticalLayout>
+    
+    <VerticalLayout id="layoutButtons" p:expandRatio="1">
+        <HorizontalLayout id="layoutTicket" styleName="common-float-right">
+            <Button id="btnPreview" caption="Preview ticket"  p:componentAlignment="MIDDLE_RIGHT" styleName="friendly small"/>
+            <Button id="btnDownload" caption="Download ticket" p:componentAlignment="MIDDLE_RIGHT" styleName="friendly small common-margin-left"/>
+        </HorizontalLayout>
     </VerticalLayout>
                  
 </VerticalLayout>

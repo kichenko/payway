@@ -5,7 +5,7 @@ package com.payway.bustickets.core;
 
 import com.payway.messaging.model.common.OperatorDto;
 import com.payway.messaging.model.common.RetailerTerminalDto;
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.user.UserDto;
 import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;

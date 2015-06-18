@@ -9,8 +9,8 @@
     <VerticalLayout id = "layoutRight" p:expandRatio="3">    
         <VerticalLayout id="layoutContent" width="100%" height="500px"/>      
         <HorizontalLayout id="layoutFooter" width="100%" styleName="airport-express-bus-ticket-wizard-footer">
-            <Button id="btnLeft" p:componentAlignment="MIDDLE_CENTER" styleName="friendly airport-express-bus-ticket-wizard-btn-left"/>
-            <Button id="btnRight" p:componentAlignment="MIDDLE_CENTER" styleName="primary airport-express-bus-ticket-wizard-btn-right"/>
+            <Button id="btnLeft" styleName="friendly airport-express-bus-ticket-wizard-btn-left"/>
+            <Button id="btnRight" styleName="primary airport-express-bus-ticket-wizard-btn-right"/>
         </HorizontalLayout>
     </VerticalLayout>
     

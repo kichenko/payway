@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsParamsWizardStep" sizeFull="true">
-    <TextField id="editContactNo" immediate="true" caption="Contact No" styleName="" width="100%"/>
-    <ComboBox id="cbDirection" nullSelectionAllowed="false" caption="Direction" textInputAllowed="false" styleName="" width="100%"/>    
-    <ComboBox id="cbRoute" nullSelectionAllowed="false" caption="Route" textInputAllowed="false" styleName="" width="100%"/>   
-    <ComboBox id="cbTripDate" nullSelectionAllowed="false" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
-    <ComboBox id="cbBaggage"  nullSelectionAllowed="false" caption="Baggage" textInputAllowed="false" styleName="" width="100%"/>   
-    <Slider id="sliderQuantity" caption="Quantity" styleName="" width="100%"/>   
-    <Label id="lblSlider" sizeUndefined="true" p:componentAlignment="TOP_RIGHT"/> 
+    <FormLayout id="layoutParamsForm" sizeFull="true">
+        <TextField id="editContactNo" immediate="true" caption="Contact No" styleName="" width="100%"/>
+        <ComboBox id="cbDirection" nullSelectionAllowed="false" caption="Direction" textInputAllowed="false" styleName="" width="100%"/>    
+        <ComboBox id="cbRoute" nullSelectionAllowed="false" caption="Route" textInputAllowed="false" styleName="" width="100%"/>   
+        <ComboBox id="cbTripDate" nullSelectionAllowed="false" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
+        <ComboBox id="cbBaggage"  nullSelectionAllowed="false" caption="Baggage" textInputAllowed="false" styleName="" width="100%"/>   
+        <Slider id="sliderQuantity" caption="Quantity" styleName="" width="100%"/>   
+        <Label id="lblSummary" caption="Summary" sizeUndefined="true"/> 
+    </FormLayout>
 </VerticalLayout>

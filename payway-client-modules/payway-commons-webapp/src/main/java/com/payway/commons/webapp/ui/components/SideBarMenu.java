@@ -118,4 +118,16 @@ public final class SideBarMenu extends CustomComponent {
     public MenuItem getSelectedMenuItem() {
         return items.get((String) tree.getValue());
     }
+
+    public boolean expand(int index) {
+        if (index >= 0 && index < container.size()) {
+            Object itemId = container.getIdByIndex(index);
+            if (itemId != null) {
+                tree.expandItem(itemId);
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

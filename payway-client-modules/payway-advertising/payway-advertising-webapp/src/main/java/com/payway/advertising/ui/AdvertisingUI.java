@@ -28,7 +28,7 @@ import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.LoginView;
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;

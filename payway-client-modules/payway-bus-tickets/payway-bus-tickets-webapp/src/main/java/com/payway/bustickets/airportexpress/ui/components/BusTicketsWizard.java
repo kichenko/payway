@@ -387,17 +387,10 @@ public class BusTicketsWizard extends AbstractWizard {
         BusTicketsSuccessWizardStep stepWizard = (BusTicketsSuccessWizardStep) getWizardStep(BUS_TICKETS_SUCCESS_WIZARD_STEP_ID);
         if (stepWizard != null) {
             stepWizard.setContentResource(createContentResource());
+            stepWizard.setImagePdf(getContentTicket().getContent(), getContentTicket().getName());
         }
 
-        showTicketPreview();
-
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
-    }
-
-    private void showTicketPreview() {
-        BusTicketsPreviewWindow wnd = new BusTicketsPreviewWindow();
-        wnd.setPreviewContent(createContentResource());
-        wnd.show();
     }
 
     private void processBusTicketCheckDownloadExceptionResponse() {

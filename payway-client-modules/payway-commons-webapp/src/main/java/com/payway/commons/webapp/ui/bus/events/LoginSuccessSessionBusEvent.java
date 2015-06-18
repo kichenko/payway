@@ -3,7 +3,7 @@
  */
 package com.payway.commons.webapp.ui.bus.events;
 
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.user.UserDto;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;

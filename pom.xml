@@ -12,7 +12,7 @@
     <modules>
         <module>payway-client-modules</module>
         <module>payway-messaging</module>
-        <module>payway-server-app</module>
+        <module>payway-server-app-test</module>
     </modules>
 
     <properties>
@@ -75,7 +75,8 @@
 
         <hazelcast.all.version>3.4.2</hazelcast.all.version>
         <hazelcast.client.version>3.4.2</hazelcast.client.version>
-
+        
+        <org.apache.pdfbox.version>1.8.9</org.apache.pdfbox.version>
     </properties>
 
     <build>
@@ -430,6 +431,12 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${com.google.guava.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${org.apache.pdfbox.version}</version>
             </dependency>
 
         </dependencies>

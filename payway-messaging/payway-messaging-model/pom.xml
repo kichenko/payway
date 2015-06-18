@@ -25,12 +25,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>                
     </dependencies>
 
     <!-- build -->
     <build>
-        <!-- <finalName>payway-messaging-model</finalName> -->
+        <!-- <finalName>payway-messaging-model-common</finalName> -->
     </build>
 </project>

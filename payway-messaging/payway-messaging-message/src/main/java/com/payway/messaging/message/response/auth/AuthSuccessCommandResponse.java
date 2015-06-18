@@ -3,15 +3,14 @@
  */
 package com.payway.messaging.message.response.auth;
 
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.user.UserDto;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Команда-ответ успешной аутентификации/авторизации пользователя. Объект

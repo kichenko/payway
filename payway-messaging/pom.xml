@@ -18,6 +18,13 @@
     <modules>       
         <module>payway-messaging-model</module>
         <module>payway-messaging-message</module>   
+                
+        <module>payway-messaging-model-advertising</module>
+        <module>payway-messaging-model-bustickets</module>
+        
+        <module>payway-messaging-message-advertising</module>   
+        <module>payway-messaging-message-bustickets</module>
+        
     </modules>  
     
 </project>

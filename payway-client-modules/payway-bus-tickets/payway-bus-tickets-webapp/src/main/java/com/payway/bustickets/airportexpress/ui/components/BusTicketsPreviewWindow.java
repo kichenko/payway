@@ -38,8 +38,8 @@ public class BusTicketsPreviewWindow extends Window {
 
         setModal(true);
         setClosable(true);
-        setResizable(false);
-        setDraggable(false);
+        //setResizable(false);
+        //setDraggable(false);
         setWindowMode(WindowMode.MAXIMIZED);
         setContent(Clara.create("BusTicketsPreview.xml", this));
     }

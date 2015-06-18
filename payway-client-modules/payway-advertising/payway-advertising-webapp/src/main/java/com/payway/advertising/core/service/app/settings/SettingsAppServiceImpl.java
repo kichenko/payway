@@ -10,8 +10,8 @@ import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsChangedMessage;
-import com.payway.messaging.message.SettingsRequest;
-import com.payway.messaging.message.SettingsResponse;
+import com.payway.messaging.message.advertising.AdvertisingSettingsRequest;
+import com.payway.messaging.message.advertising.AdvertisingSettingsResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,9 +92,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
 
     private void loadRemoteConfiguration() {
         log.debug("Loading settings from cluster");
-        sender.sendMessage(new SettingsRequest(), new ResponseCallbackSupport<SettingsResponse, ExceptionResponse>() {
+        sender.sendMessage(new AdvertisingSettingsRequest(), new ResponseCallbackSupport<AdvertisingSettingsResponse, ExceptionResponse>() {
             @Override
-            public void onServerResponse(SettingsResponse response) {
+            public void onServerResponse(AdvertisingSettingsResponse response) {
                 String cp = response.getSettings().getConfigPath();
                 log.debug("configPath: {}", cp);
                 setServerConfigPath(cp);

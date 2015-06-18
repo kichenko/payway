@@ -20,12 +20,12 @@ import com.payway.commons.webapp.messaging.client.IMessagingClient;
 import com.payway.commons.webapp.messaging.client.IMessagingLock;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
-import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
-import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
-import com.payway.messaging.model.message.configuration.AgentFileDto;
-import com.payway.messaging.model.message.configuration.AgentFileOwnerDto;
-import com.payway.messaging.model.message.configuration.ApplyConfigurationDto;
-import com.payway.messaging.model.message.configuration.DbFileTypeDto;
+import com.payway.messaging.message.advertising.AdvertisingApplyConfigurationRequest;
+import com.payway.messaging.message.advertising.AdvertisingApplySuccessConfigurationResponse;
+import com.payway.messaging.model.bustickets.advertising.AgentFileDto;
+import com.payway.messaging.model.bustickets.advertising.AgentFileOwnerDto;
+import com.payway.messaging.model.bustickets.advertising.ApplyConfigurationDto;
+import com.payway.messaging.model.bustickets.advertising.DbFileTypeDto;
 import com.vaadin.ui.UI;
 import java.util.HashSet;
 import java.util.List;
@@ -122,7 +122,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
         appEventPublisher.sendNotification(acs);
     }
 
-    private ApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
+    private AdvertisingApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
 
         Set<AgentFileDto> agentFilesDto = new HashSet<>();
         Set<AgentFileOwnerDto> agentFileOwnersDto = new HashSet<>();
@@ -188,7 +188,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             }.apply(f));
         }
 
-        return new ApplyConfigurationRequest(new ApplyConfigurationDto(agentFilesDto, agentFileOwnersDto));
+        return new AdvertisingApplyConfigurationRequest(new ApplyConfigurationDto(agentFilesDto, agentFileOwnersDto));
     }
 
     /**
@@ -342,7 +342,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                             }
 
                             //3.1 build request dto
-                            ApplyConfigurationRequest req = buildApplyConfigurationRequest(configurationName);
+                            AdvertisingApplyConfigurationRequest req = buildApplyConfigurationRequest(configurationName);
 
                             if (req == null) {
                                 throw new Exception("Empty request object constructed");
@@ -360,7 +360,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                     ApplyConfigurationStatus acs;
 
                                     try {
-                                        ApplySuccessConfigurationResponse rsp = (ApplySuccessConfigurationResponse) response;
+                                        AdvertisingApplySuccessConfigurationResponse rsp = (AdvertisingApplySuccessConfigurationResponse) response;
                                         if (rsp != null) {
                                             try {
                                                 //status - сonfirmation

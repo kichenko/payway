@@ -30,7 +30,7 @@ import com.payway.messaging.message.bustickets.BusTicketOperatorsResponse;
 import com.payway.messaging.model.common.OperatorDto;
 import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.payway.messaging.model.common.RetailerTerminalsDto;
-import com.payway.messaging.model.message.auth.UserDto;
+import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -171,6 +171,7 @@ public class BusTicketsUI extends AbstractUI {
             mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
             mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
             mainView.getSideBarMenu().select(0);
+            mainView.getSideBarMenu().expand(0);
 
             setContent(mainView);
         } else {

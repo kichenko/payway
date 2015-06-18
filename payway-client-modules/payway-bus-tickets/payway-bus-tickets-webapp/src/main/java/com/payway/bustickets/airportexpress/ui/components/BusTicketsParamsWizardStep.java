@@ -11,6 +11,7 @@ import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.NullValidator;
 import com.vaadin.data.validator.RegexpValidator;
@@ -39,6 +40,8 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = -3017619450081339095L;
 
+    private static final String SUMMARY_LABEL_TEMPLATE = "Total %d ticket(s) x %.2f %s = %.2f %s";
+
     @UiField
     private TextField editContactNo;
 
@@ -58,7 +61,7 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
     private Slider sliderQuantity;
 
     @UiField
-    private Label lblSlider;
+    private Label lblSummary;
 
     public BusTicketsParamsWizardStep() {
         init();
@@ -121,8 +124,7 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
                 getCbRoute().select(null);
                 getCbTripDate().select(null);
                 getCbBaggage().select(null);
-                getSliderQuantity().setValue(0.0);
-                getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
+                refreshSummary();
             }
         });
 
@@ -135,12 +137,13 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
                 if (event.getProperty().getValue() != null) {
                     RouteDto route = ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getItem(event.getProperty().getValue()).getBean();
                     if (route != null) {
-                        getSliderQuantity().setMin(0.0);
                         getSliderQuantity().setMax(route.getSeatsTotal());
-                        getSliderQuantity().setValue(0.0);
-                        getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
+                        if (getSliderQuantity().getValue().intValue() > getSliderQuantity().getMax()) {
+                            getSliderQuantity().setValue(0.0);
+                        }
                     }
                 }
+                refreshSummary();
             }
         });
 
@@ -150,7 +153,7 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
+                refreshSummary();
             }
         });
     }
@@ -161,12 +164,18 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
         getSliderQuantity().setMin(0.0);
         getSliderQuantity().setMax(100.0);
         getSliderQuantity().setValue(0.0);
-        getLblSlider().setValue(Integer.toString(getSliderQuantity().getValue().intValue()));
+        getLblSummary().setValue("");
 
         ((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).addAll(directions);
         ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).addAll(routes);
         ((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).addAll(dates);
         ((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).addAll(baggages);
+
+        //set default values
+        getCbDirection().select(((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).getIdByIndex(0));
+        getCbRoute().select(((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getIdByIndex(0));
+        getCbTripDate().select(((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).getIdByIndex(0));
+        getCbBaggage().select(((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).getIdByIndex(0));
     }
 
     @Override
@@ -175,13 +184,16 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
         boolean ok = true;
 
         try {
+
             getEditContactNo().validate();
             getCbDirection().validate();
             getCbRoute().validate();
             getCbTripDate().validate();
             getCbBaggage().validate();
             getSliderQuantity().validate();
+
         } catch (Exception ex) {
+
             getEditContactNo().setValidationVisible(true);
             getCbDirection().setValidationVisible(true);
             getCbRoute().setValidationVisible(true);
@@ -206,19 +218,65 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
     }
 
     public DirectionDto getDirection() {
-        return ((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).getItem(getCbDirection().getValue()).getBean();
+
+        if (getCbDirection().getContainerDataSource() != null) {
+            DirectionDtoBeanContainer container = (DirectionDtoBeanContainer) getCbDirection().getContainerDataSource();
+            BeanItem<DirectionDto> beanItem = container.getItem(getCbDirection().getValue());
+            if (beanItem != null) {
+                return beanItem.getBean();
+            }
+        }
+
+        return null;
     }
 
     public ChoiceDto getBaggage() {
-        return ((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).getItem(getCbBaggage().getValue()).getBean();
+
+        if (getCbBaggage().getContainerDataSource() != null) {
+            ChoiceDtoBeanContainer container = (ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource();
+            BeanItem<ChoiceDto> beanItem = container.getItem(getCbBaggage().getValue());
+            if (beanItem != null) {
+                return beanItem.getBean();
+            }
+        }
+
+        return null;
     }
 
     public RouteDto getRoute() {
-        return ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getItem(getCbRoute().getValue()).getBean();
+
+        if (getCbRoute().getContainerDataSource() != null) {
+            RouteDtoBeanContainer container = (RouteDtoBeanContainer) getCbRoute().getContainerDataSource();
+            BeanItem<RouteDto> beanItem = container.getItem(getCbRoute().getValue());
+            if (beanItem != null) {
+                return beanItem.getBean();
+            }
+        }
+
+        return null;
     }
 
     public ChoiceDto getTripDate() {
-        return ((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).getItem(getCbTripDate().getValue()).getBean();
+
+        if (getCbTripDate().getContainerDataSource() != null) {
+            ChoiceDtoBeanContainer container = (ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource();
+            BeanItem<ChoiceDto> beanItem = container.getItem(getCbTripDate().getValue());
+            if (beanItem != null) {
+                return beanItem.getBean();
+            }
+        }
+
+        return null;
+    }
+
+    public void refreshSummary() {
+
+        RouteDto route = getRoute();
+        if (route != null) {
+            getLblSummary().setValue(String.format(SUMMARY_LABEL_TEMPLATE, getQuantity(), route.getPrice(), "UGX", getQuantity() * route.getPrice(), "UGX"));
+        } else {
+            getLblSummary().setValue("");
+        }
     }
 
 }
