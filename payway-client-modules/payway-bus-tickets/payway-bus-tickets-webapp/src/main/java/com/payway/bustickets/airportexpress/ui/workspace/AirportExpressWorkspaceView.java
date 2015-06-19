@@ -4,7 +4,7 @@
 package com.payway.bustickets.airportexpress.ui.workspace;
 
 import com.payway.bustickets.airportexpress.ui.components.BusTicketsWizard;
-import com.payway.bustickets.service.app.AppService;
+import com.payway.bustickets.service.app.settings.SettingsAppService;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
@@ -44,8 +44,8 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
     private MessageServerSenderService service;
 
     @Autowired
-    @Qualifier("appService")
-    private AppService appService;
+    @Qualifier("settingsAppService")
+    private SettingsAppService settingsAppService;
 
     @PostConstruct
     public void postConstruct() {
@@ -61,6 +61,7 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
         setWizardOperatorId();
         setWizardSessionId();
         setWizardLogoImage();
+        setWizardCurrencyAndMoneyPrecision();
 
         if (wizard.setStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID)) {
             wizard.setUpBusTicketsPaymentParams();
@@ -78,12 +79,12 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
     }
 
     private void setWizardTerminals() {
-        wizard.setUpTerminals(appService.getBusTicketsSettings().getTerminals());
+        wizard.setUpTerminals(settingsAppService.getBusTicketsSettings().getTerminals());
     }
 
     private void setWizardSessionId() {
 
-        String sessionId = appService.getBusTicketsSettings().getSessionId();
+        String sessionId = settingsAppService.getBusTicketsSettings().getSessionId();
         if (StringUtils.isBlank(sessionId)) {
             log.warn("Empty sessionId in session storage");
             return;
@@ -99,7 +100,7 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
             return;
         }
 
-        for (OperatorDto operator : appService.getBusTicketsSettings().getOperators()) {
+        for (OperatorDto operator : settingsAppService.getBusTicketsSettings().getOperators()) {
             if (!StringUtils.isBlank(operator.getShortName())) {
                 if (operator.getShortName().equals((String) menuItem.getData())) {
                     if (operator.getLogo() != null && operator.getLogo().getContent() != null) {
@@ -109,5 +110,9 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
                 }
             }
         }
+    }
+
+    private void setWizardCurrencyAndMoneyPrecision() {
+        wizard.setUpCurrencyAndMoneyPresicion(settingsAppService.getCurrency(), settingsAppService.getMoneyPrecision());
     }
 }

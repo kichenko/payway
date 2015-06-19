@@ -7,6 +7,6 @@
         <ComboBox id="cbTripDate" nullSelectionAllowed="false" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
         <ComboBox id="cbBaggage"  nullSelectionAllowed="false" caption="Baggage" textInputAllowed="false" styleName="" width="100%"/>   
         <Slider id="sliderQuantity" caption="Quantity" styleName="" width="100%"/>   
-        <Label id="lblSummary" caption="Summary" sizeUndefined="true"/> 
+        <Label id="lblSummary" caption="Summary" sizeUndefined="true" styleName="colored"/> 
     </FormLayout>
 </VerticalLayout>

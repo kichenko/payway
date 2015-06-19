@@ -16,6 +16,8 @@ import com.payway.messaging.message.bustickets.BusTicketValidateRequest;
 import com.payway.messaging.message.bustickets.BusTicketValidateValidResponse;
 import com.payway.messaging.message.common.TransactionReceiptRequest;
 import com.payway.messaging.message.common.TransactionReceiptResponse;
+import com.payway.messaging.model.common.CurrencyDto;
+import com.payway.messaging.model.common.MoneyPrecisionDto;
 import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
@@ -457,15 +459,7 @@ public class BusTicketsWizard extends AbstractWizard {
                 }
 
                 setStep(BUS_TICKETS_CONFIRM_WIZARD_STEP_ID);
-                wizardStepConfirm.setDirection(wizardStepParams.getDirection().getName());
-                wizardStepConfirm.setRoute(wizardStepParams.getRoute().getDepartureTime());
-                wizardStepConfirm.setTripDate(wizardStepParams.getTripDate().getLabel());
-                wizardStepConfirm.setBaggage(wizardStepParams.getBaggage().getLabel());
-                wizardStepConfirm.setContactNo(wizardStepParams.getContactNo());
-                wizardStepConfirm.setQuantity(wizardStepParams.getQuantity());
-                wizardStepConfirm.setRouteName(response.getRouteName());
-                wizardStepConfirm.setHasDiscount(response.getAmount() != null);
-                wizardStepConfirm.setTotalCost(getTotalCost());
+                wizardStepConfirm.setUp(response.getRouteName(), wizardStepParams.getContactNo(), wizardStepParams.getDirection(), wizardStepParams.getRoute(), wizardStepParams.getTripDate(), wizardStepParams.getBaggage(), wizardStepParams.getQuantity(), getTotalCost(), response.getAmount() != null);
             }
         } finally {
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
@@ -527,6 +521,22 @@ public class BusTicketsWizard extends AbstractWizard {
 
     public void setUpTerminals(List<RetailerTerminalDto> terminals) {
         retailerTerminalPanel.setUpTerminals(terminals);
+    }
+
+    public void setUpCurrencyAndMoneyPresicion(CurrencyDto currency, MoneyPrecisionDto moneyPrecision) {
+
+        BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
+        BusTicketsConfirmWizardStep wizardStepConfirm = (BusTicketsConfirmWizardStep) getWizardStep(BUS_TICKETS_CONFIRM_WIZARD_STEP_ID);
+
+        if (wizardStep != null) {
+            wizardStep.setCurrency(currency);
+            wizardStep.setMoneyPrecision(moneyPrecision);
+        }
+
+        if (wizardStepConfirm != null) {
+            wizardStepConfirm.setCurrency(currency);
+            wizardStepConfirm.setMoneyPrecision(moneyPrecision);
+        }
     }
 
     public void setUpBusTicketsPaymentParams() {

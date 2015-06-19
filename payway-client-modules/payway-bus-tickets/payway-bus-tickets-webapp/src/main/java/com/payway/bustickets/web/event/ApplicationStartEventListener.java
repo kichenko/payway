@@ -3,6 +3,8 @@
  */
 package com.payway.bustickets.web.event;
 
+import com.payway.web.event.ApplicationStartEvent;
+import com.payway.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.commons.webapp.messaging.client.MessagingClientRecoverTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.web.event;
+package com.payway.web.event;
 
 import org.springframework.context.ApplicationEvent;
 

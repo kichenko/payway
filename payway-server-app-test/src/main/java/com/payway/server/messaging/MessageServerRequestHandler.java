@@ -7,22 +7,22 @@ import com.hazelcast.core.HazelcastInstance;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.ResponseEnvelope;
 import com.payway.messaging.core.response.exception.common.CommonExceptionResponse;
-import com.payway.messaging.message.SettingsRequest;
-import com.payway.messaging.message.SettingsResponse;
+import com.payway.messaging.message.advertising.AdvertisingApplyConfigurationRequest;
+import com.payway.messaging.message.advertising.AdvertisingApplySuccessConfigurationResponse;
+import com.payway.messaging.message.advertising.AdvertisingSettingsRequest;
+import com.payway.messaging.message.advertising.AdvertisingSettingsResponse;
 import com.payway.messaging.message.request.auth.AuthCommandRequest;
-import com.payway.messaging.message.request.configuration.ApplyConfigurationRequest;
 import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
-import com.payway.messaging.message.response.configuration.ApplySuccessConfigurationResponse;
-import com.payway.messaging.model.message.auth.UserDto;
-import com.payway.messaging.model.message.settings.SettingsDto;
+import com.payway.messaging.model.advertising.SettingsDto;
+import com.payway.messaging.model.user.UserDto;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @Getter
 @Setter
@@ -78,10 +78,10 @@ public class MessageServerRequestHandler implements Runnable {
 
                         if (envelope.getBody() instanceof AuthCommandRequest) {
                             env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, null), null));
-                        } else if (envelope.getBody() instanceof ApplyConfigurationRequest) {
-                            env = new ResponseEnvelope(rid, origin, new ApplySuccessConfigurationResponse());
-                        } else if (envelope.getBody() instanceof SettingsRequest) {
-                            env = new ResponseEnvelope(rid, origin, new SettingsResponse(new SettingsDto("file:///${user.home}/var/apps/server/original-cfg")));
+                        } else if (envelope.getBody() instanceof AdvertisingApplyConfigurationRequest) {
+                            env = new ResponseEnvelope(rid, origin, new AdvertisingApplySuccessConfigurationResponse());
+                        } else if (envelope.getBody() instanceof AdvertisingSettingsRequest) {
+                            env = new ResponseEnvelope(rid, origin, new AdvertisingSettingsResponse(new SettingsDto("file:///${user.home}/var/apps/server/original-cfg")));
                         } else {
                             env = new ResponseEnvelope(rid, origin, new CommonExceptionResponse("Bad Request Type: " + envelope.getBody().getClass().getName()));
                         }

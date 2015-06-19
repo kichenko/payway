@@ -5,14 +5,12 @@ package com.payway.advertising.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.AgentFileOwnerService;
-import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
 import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
 import com.payway.advertising.core.service.config.apply.ApplyStatus;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
-import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
@@ -38,14 +36,13 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.servlet.http.Cookie;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * AdvertisingUI
@@ -75,10 +72,6 @@ public class AdvertisingUI extends AbstractUI {
     @Autowired
     @Qualifier(value = "userService")
     private UserService userService;
-
-    @Autowired
-    @Qualifier(value = "configurationService")
-    private ConfigurationService configurationService;
 
     @Autowired
     @Qualifier(value = "settingsAppService")
@@ -217,16 +210,10 @@ public class AdvertisingUI extends AbstractUI {
                 throw new Exception("Bad user sign in");
             }
 
-            DbConfiguration config = configurationService.findConfigurationByUser(user, true);
-            if (config == null) {
-                throw new Exception("Bad user sign in");
-            }
-
             user.setToken(event.getSessionId());
 
             //set params to session
             userAppService.setUser(user);
-            userAppService.setConfiguration(config);
 
             if (loginView.isRememberMe()) {
                 Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), user.getToken());

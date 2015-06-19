@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.hazelcast.com/schema/spring
+                           http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd">
+
+    <!-- файл с конфигом -->
+    <context:property-placeholder location="classpath:config.properties" />
+
+    <!-- имя очереди сервера, куда клиент отправляет запросы-->
+    <bean id="serverQueueName" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${server.queue.name}"/>
+    </bean>
+
+    <hz:hazelcast id="hazelcastInstance">
+        <hz:config>
+            <hz:group name="${avs.cluster.name}" password="${avs.cluster.password:AvsPass}"/>
+            <hz:queue name="server-queue-app*"/>
+            <!--<hz:idGenerator name="client-server-id-generator"/>-->
+        </hz:config>
+    </hz:hazelcast>
+
+    <!-- Сервис для работы с распределенными объектами-->
+    <bean id="dosService" class="com.payway.server.messaging.HazelcastDistributedObjectServiceImpl">
+        <property name="hazelcastInstance" ref="hazelcastInstance"/>
+    </bean>
+
+    <!-- Серверная очередь, для получения запросов-->
+    <bean id="serverQueue" class="java.util.concurrent.BlockingQueue" factory-bean="dosService" factory-method="createQueueByName" depends-on="dosService">
+        <constructor-arg ref="serverQueueName"/>
+    </bean>
+
+</beans>

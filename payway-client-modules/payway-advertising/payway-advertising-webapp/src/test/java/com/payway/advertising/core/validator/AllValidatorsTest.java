@@ -6,7 +6,6 @@ package com.payway.advertising.core.validator;
 import com.payway.advertising.model.DbAbstractEntity;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
-import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbFileType;
 import com.payway.commons.webapp.validator.Validator;
 import com.payway.commons.webapp.validator.impl.UserNameValidator;
@@ -62,7 +61,7 @@ public class AllValidatorsTest {
 
     @Test
     public void testAgentFileValidatorAllOk() {
-        DbAgentFile values[] = {new DbAgentFile("1/2/file.txt", DbFileType.Logo, new DbAgentFileOwner(), "", "digest", false, new DbConfiguration(), 0)};
+        DbAgentFile values[] = {new DbAgentFile("1/2/file.txt", DbFileType.Logo, new DbAgentFileOwner(), "", "digest", false, 0)};
         validateDbAbstractEntity(agentFileValidator, values, true);
     }
 

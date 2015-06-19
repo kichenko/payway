@@ -4,14 +4,13 @@
 package com.payway.advertising.core.service.config.apply;
 
 import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.payway.advertising.core.service.ConfigurationService;
+import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.exception.ConfigurationApplyCancelException;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
-import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbFileType;
 import com.payway.commons.webapp.bus.AppEventPublisher;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
@@ -22,14 +21,15 @@ import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.advertising.AdvertisingApplyConfigurationRequest;
 import com.payway.messaging.message.advertising.AdvertisingApplySuccessConfigurationResponse;
-import com.payway.messaging.model.bustickets.advertising.AgentFileDto;
-import com.payway.messaging.model.bustickets.advertising.AgentFileOwnerDto;
-import com.payway.messaging.model.bustickets.advertising.ApplyConfigurationDto;
-import com.payway.messaging.model.bustickets.advertising.DbFileTypeDto;
+import com.payway.messaging.model.advertising.AgentFileDto;
+import com.payway.messaging.model.advertising.AgentFileOwnerDto;
+import com.payway.messaging.model.advertising.ApplyConfigurationDto;
+import com.payway.messaging.model.advertising.DbFileTypeDto;
 import com.vaadin.ui.UI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +43,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -61,8 +62,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     FileSystemManagerService fileManagerService;
 
     @Autowired
-    @Qualifier(value = "configurationService")
-    private ConfigurationService configurationService;
+    private AgentFileService agentFileService;
 
     @Value("${server.lock.app.config.apply}")
     private String serverApplyLockName;
@@ -122,17 +122,12 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
         appEventPublisher.sendNotification(acs);
     }
 
-    private AdvertisingApplyConfigurationRequest buildApplyConfigurationRequest(String configurationName) throws Exception {
+    private AdvertisingApplyConfigurationRequest buildApplyConfigurationRequest() throws Exception {
 
         Set<AgentFileDto> agentFilesDto = new HashSet<>();
         Set<AgentFileOwnerDto> agentFileOwnersDto = new HashSet<>();
-        DbConfiguration cfg = configurationService.findConfigurationByNameWithFiles(configurationName);
 
-        if (cfg == null) {
-            throw new Exception(String.format("Can not find local database configuration with name [%s]", configurationName));
-        }
-
-        for (DbAgentFile f : cfg.getFiles()) {
+        for (DbAgentFile f : agentFileService.findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "id")))) {
 
             //owners
             if (f.getOwner() != null) {
@@ -213,14 +208,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      *
      * @param currentUI
      * @param userName
-     * @param configurationName
      * @param localPath
      * @param serverPath
      * @param result
      */
     @Override
     @Async(value = "serverTaskExecutor")
-    public void apply(final UI currentUI, final String userName, final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
+    public void apply(final UI currentUI, final String userName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
         try {
 
@@ -235,11 +229,13 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
 
             //1. get unique name
             final String serverRootPathName = StringUtils.substringBeforeLast(Helpers.removeEndSeparator(serverPath.getPath()), "/");
-            final String clientTmpFolderName = configurationService.generateUniqueFolderName("local", configurationName);
-            final String serverTmpFolderName = configurationService.generateUniqueFolderName("server", StringUtils.substringAfterLast(Helpers.removeEndSeparator(serverPath.getPath()), "/"));
+            final String clientTmpFolderName = "local-" + userName + "-" + UUID.randomUUID().toString();
+            final String serverTmpFolderName = "server-" + userName + "-" + StringUtils.substringAfterLast(Helpers.removeEndSeparator(serverPath.getPath()), "/");
 
             if (log.isDebugEnabled()) {
                 log.debug("Applying configuration - try get semaphore permission");
+                log.debug("Applying configuration clientTmpFolderName = {}", clientTmpFolderName);
+                log.debug("Applying configuration serverTmpFolderName = {}", serverTmpFolderName);
             }
 
             //try lock
@@ -342,7 +338,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                             }
 
                             //3.1 build request dto
-                            AdvertisingApplyConfigurationRequest req = buildApplyConfigurationRequest(configurationName);
+                            AdvertisingApplyConfigurationRequest req = buildApplyConfigurationRequest();
 
                             if (req == null) {
                                 throw new Exception("Empty request object constructed");

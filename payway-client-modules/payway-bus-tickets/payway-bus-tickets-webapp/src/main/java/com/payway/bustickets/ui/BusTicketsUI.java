@@ -5,7 +5,7 @@ package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.bustickets.core.BusTicketsSettings;
-import com.payway.bustickets.service.app.AppService;
+import com.payway.bustickets.service.app.settings.SettingsAppService;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
@@ -72,8 +72,8 @@ public class BusTicketsUI extends AbstractUI {
     private SessionEventBus sessionEventBus;
 
     @Autowired
-    @Qualifier(value = "appService")
-    private AppService appService;
+    @Qualifier(value = "settingsAppService")
+    private SettingsAppService settingsAppService;
 
     @Autowired
     private AbstractMainView mainView;
@@ -108,7 +108,7 @@ public class BusTicketsUI extends AbstractUI {
     @Override
     protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
-        List<OperatorDto> operators = appService.getBusTicketsSettings().getOperators();
+        List<OperatorDto> operators = settingsAppService.getBusTicketsSettings().getOperators();
         SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem(BusTicketsEmptyWorkspaceView.BUS_TICKET_EMPTY_WORKSPACE_VIEW_ID, "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
 
         if (operators != null) {
@@ -163,8 +163,8 @@ public class BusTicketsUI extends AbstractUI {
 
         UserDto user = null;
 
-        if (appService.getBusTicketsSettings() != null) {
-            user = appService.getBusTicketsSettings().getUser();
+        if (settingsAppService.getBusTicketsSettings() != null) {
+            user = settingsAppService.getBusTicketsSettings().getUser();
         }
 
         if (user != null) {
@@ -217,7 +217,7 @@ public class BusTicketsUI extends AbstractUI {
             }
 
             //set params to session
-            appService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals));
+            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals));
 
             if (loginView.isRememberMe()) {
                 Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
@@ -252,9 +252,9 @@ public class BusTicketsUI extends AbstractUI {
     public void processSessionBusEvent(BusTicketOperatorsSuccessBusEvent event) {
 
         //set params to session
-        BusTicketsSettings settings = appService.getBusTicketsSettings();
+        BusTicketsSettings settings = settingsAppService.getBusTicketsSettings();
         if (settings != null) {
-            appService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals()));
+            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals()));
         }
 
         updateContent();

@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.web.event;
+package com.payway.advertising.web.event.listener;
 
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;

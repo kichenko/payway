@@ -5,8 +5,16 @@ package com.payway.commons.webapp.messaging.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.core.*;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.LifecycleEvent;
+import com.hazelcast.core.LifecycleListener;
+import com.hazelcast.core.Message;
+import com.hazelcast.core.MessageListener;
 import com.payway.commons.webapp.bus.AppEventPublisher;
+import java.io.Serializable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
-import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * MessagingClientImpl
@@ -75,6 +78,9 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
 
     @Value("${app.cluster.address}")
     private String[] clusterAddress;
+
+    @Autowired
+    private AppEventPublisher appEventPublisher;
 
     @PreDestroy
     public void preDestroy() {
@@ -184,11 +190,9 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
         return "";
     }
 
-    @Autowired
-    AppEventPublisher appEventPublisher;
-
     private MessageListener messageListener = new MessageListener() {
-        @Override public void onMessage(Message message) {
+        @Override
+        public void onMessage(Message message) {
             log.debug("Incoming message: %s [%s]", message.getMessageObject().getClass().getName(), message.getPublishingMember());
             appEventPublisher.sendNotification(message.getMessageObject());
         }

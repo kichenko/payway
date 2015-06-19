@@ -24,41 +24,41 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @created 20.04.15 00:00
  */
 public abstract class AbstractMainView extends CustomComponent implements CustomComponentInitialize, SideBarMenu.SideBarMenuItemClickListener {
-    
+
     public interface SlideBarMenuItemClickCallback {
-        
+
         void onClick(SideBarMenu.MenuItem menuItem);
     }
-    
+
     @Autowired
     @Qualifier(value = "viewFactory")
     protected ViewFactory viewFactory;
-    
+
     @UiField
     protected CssLayout mainViewLayout;
-    
+
     @UiField
     protected MenuBar userMenu;
-    
+
     @UiField
     protected MenuBar menuBar;
-    
+
     @UiField
     @Getter
     protected SideBarMenu sideBarMenu;
-    
+
     @UiField
     protected CssLayout panelContent;
-    
+
     @UiField
     protected HorizontalSplitPanel splitHorizontalPanel;
-    
+
     @UiField
     protected CssLayout layoutLeft;
-    
+
     @UiField
     protected CssLayout layoutRight;
-    
+
     protected SlideBarMenuItemClickCallback sbMenuButtonClickCallback;
 
     /**
@@ -85,7 +85,7 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
         for (SideBarMenu.MenuItem i : items) {
             sideBarMenu.addMenuItem(i, this);
         }
-        
+
         sbMenuButtonClickCallback = sbButtonclick;
     }
 
@@ -96,16 +96,16 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
      */
     @Override
     public void onClickSideBarMenuItem(SideBarMenu.MenuItem menuItem) {
-        
+
         if (sbMenuButtonClickCallback != null) {
             sbMenuButtonClickCallback.onClick(menuItem);
         }
-        
+
         panelContent.removeAllComponents();
-        
+
         com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(menuItem.getTag());
         panelContent.addComponent(view);
-        
+
         WorkspaceView v = (WorkspaceView) view;
         if (v != null) {
             v.setMenuBar(menuBar);

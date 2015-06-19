@@ -15,6 +15,6 @@ public class DbAgentFileDeepCopyClonable implements EntityClonable<DbAgentFile> 
 
     @Override
     public DbAgentFile clone(DbAgentFile file) {
-        return new DbAgentFile(file.getId(), file.getName(), file.getKind(), file.getOwner() != null ? new DbAgentFileOwnerDeepCopyClonable().clone(file.getOwner()) : null, file.getExpression(), file.getDigest(), file.getIsCountHits(), file.getConfiguration() != null ? new DbConfigurationDeepCopyClonable().clone(file.getConfiguration()) : null, file.getSeqNo());
+        return new DbAgentFile(file.getId(), file.getName(), file.getKind(), file.getOwner() != null ? new DbAgentFileOwnerDeepCopyClonable().clone(file.getOwner()) : null, file.getExpression(), file.getDigest(), file.getIsCountHits(), file.getSeqNo());
     }
 }

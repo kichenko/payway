@@ -7,9 +7,12 @@ import com.payway.bustickets.airportexpress.ui.components.containers.ChoiceDtoBe
 import com.payway.bustickets.airportexpress.ui.components.containers.DirectionDtoBeanContainer;
 import com.payway.bustickets.airportexpress.ui.components.containers.RouteDtoBeanContainer;
 import com.payway.bustickets.airportexpress.ui.components.containers.filters.RouteByDirectionFilter;
+import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
+import com.payway.messaging.model.common.CurrencyDto;
+import com.payway.messaging.model.common.MoneyPrecisionDto;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.validator.DoubleRangeValidator;
@@ -24,6 +27,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -40,7 +44,7 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = -3017619450081339095L;
 
-    private static final String SUMMARY_LABEL_TEMPLATE = "Total %d ticket(s) x %.2f %s = %.2f %s";
+    private static final String SUMMARY_LABEL_TEMPLATE = "Total %d ticket(s) x %s %s = %s %s";
 
     @UiField
     private TextField editContactNo;
@@ -62,6 +66,12 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     @UiField
     private Label lblSummary;
+
+    @Setter
+    private CurrencyDto currency;
+
+    @Setter
+    private MoneyPrecisionDto moneyPrecision;
 
     public BusTicketsParamsWizardStep() {
         init();
@@ -273,10 +283,50 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
         RouteDto route = getRoute();
         if (route != null) {
-            getLblSummary().setValue(String.format(SUMMARY_LABEL_TEMPLATE, getQuantity(), route.getPrice(), "UGX", getQuantity() * route.getPrice(), "UGX"));
-        } else {
-            getLblSummary().setValue("");
+
+            double price = route.getPrice();
+            double sum = getQuantity() * route.getPrice();
+
+            String strCurrency = "";
+            String strPrice = Double.toString(price);
+            String strSum = Double.toString(sum);
+
+            if (getCurrency() != null) {
+                strCurrency = getCurrency().getIso();
+            } else {
+                log.error("Empty currency");
+            }
+
+            if (getMoneyPrecision() != null) {
+                if (MoneyPrecisionDto.Auto.equals(getMoneyPrecision())) {
+
+                    if (com.payway.bustickets.core.utils.NumberUtils.isInteger(price)) {
+                        strPrice = NumberFormatConverterUtils.format(price, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                    } else {
+                        strPrice = NumberFormatConverterUtils.format(price, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                    }
+
+                    if (com.payway.bustickets.core.utils.NumberUtils.isInteger(sum)) {
+                        strSum = NumberFormatConverterUtils.format(sum, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                    } else {
+                        strSum = NumberFormatConverterUtils.format(sum, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                    }
+
+                } else if (MoneyPrecisionDto.Zero.equals(getMoneyPrecision())) {
+                    strPrice = NumberFormatConverterUtils.format(price, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                    strSum = NumberFormatConverterUtils.format(sum, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                } else if (MoneyPrecisionDto.Two.equals(getMoneyPrecision())) {
+                    strPrice = NumberFormatConverterUtils.format(price, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                    strSum = NumberFormatConverterUtils.format(sum, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                } else {
+                    log.error("Empty money precision");
+                }
+
+                getLblSummary().setValue(String.format(SUMMARY_LABEL_TEMPLATE, getQuantity(), strPrice, strCurrency, strSum, strCurrency));
+
+            } else {
+                getLblSummary().setValue("");
+            }
         }
     }
-
 }

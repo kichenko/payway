@@ -6,7 +6,9 @@ package com.payway.advertising.core.service;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.model.DbAgentFile;
+import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Sort;
 
 /**
  * AgentFileService
@@ -23,4 +25,6 @@ public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
     void updateByNamePrefix(String srcName, String dstName, FileSystemObject foOld, FileSystemObject foNew) throws ServiceException;
 
     void deleteByNamePrefix(String srcName, FileSystemObject fo) throws ServiceException;
+
+    List<DbAgentFile> findAll(Sort sort) throws ServiceException;
 }

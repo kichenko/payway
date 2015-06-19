@@ -3,6 +3,7 @@
  */
 package com.payway.bustickets.airportexpress.ui.components;
 
+import com.payway.bustickets.core.utils.GraphicsConverterUtils;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
@@ -10,16 +11,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.List;
-import javax.imageio.ImageIO;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
@@ -86,18 +82,9 @@ public class BusTicketsSuccessWizardStep extends AbstractWizardStep {
             @Override
             public InputStream getStream() {
                 try {
-                    PDDocument doc = PDDocument.load(new ByteArrayInputStream(content));
-
-                    List<PDPage> pages = doc.getDocumentCatalog().getAllPages();
-                    PDPage page = pages.get(0);
-                    BufferedImage img = page.convertToImage(BufferedImage.TYPE_INT_RGB, 72);
-
-                    ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                    ImageIO.write(img, "png", buf);
-
-                    return new ByteArrayInputStream(buf.toByteArray());
-
-                } catch (Exception e) {
+                    return new ByteArrayInputStream(GraphicsConverterUtils.convertPdfToImage(content, "png", 0, (int) image.getWidth(), (int) image.getHeight(), BufferedImage.TYPE_INT_RGB, 72));
+                } catch (Exception ex) {
+                    log.error("Bad converting pdf ticket previe to image - {}", ex);
                     return null;
                 }
             }

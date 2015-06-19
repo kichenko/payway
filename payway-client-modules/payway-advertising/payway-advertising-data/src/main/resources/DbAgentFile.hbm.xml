@@ -20,6 +20,5 @@
             </type>
         </property>
         <many-to-one name="owner" column="agent_file_owner_id" class="com.payway.advertising.model.DbAgentFileOwner" lazy="false" not-null="false"/>
-        <many-to-one name="configuration" column="configuration_id" class="com.payway.advertising.model.DbConfiguration" lazy="false" not-null="false"/>
     </class>
 </hibernate-mapping>

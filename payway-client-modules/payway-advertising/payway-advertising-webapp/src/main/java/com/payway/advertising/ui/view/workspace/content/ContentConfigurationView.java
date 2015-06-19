@@ -172,7 +172,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
     private BeanService beanService;
 
     @Getter
-    private String rootUserConfigPath;
+    private String localConfigPath;
 
     @Setter
     private String currentPath;
@@ -192,7 +192,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
         splitPanel.setSecondComponent(panelFileProperty);
         splitPanel.setSplitPosition(75, Unit.PERCENTAGE);
 
-        initRootUserConfigPath();
+        initLocalConfigPath();
         initCurrentPath();
 
         initGridFileExplorerTable();
@@ -200,12 +200,12 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
         initTabSheetProperty();
     }
 
-    private void initRootUserConfigPath() {
-        rootUserConfigPath = Helpers.addEndSeparator(fileSystemManagerService.canonicalization(Helpers.addEndSeparator(settingsAppService.getLocalConfigPath()) + userAppService.getUser().getLogin()));
+    private void initLocalConfigPath() {
+        localConfigPath = Helpers.addEndSeparator(fileSystemManagerService.canonicalization(Helpers.addEndSeparator(settingsAppService.getLocalConfigPath())));
     }
 
     private void initCurrentPath() {
-        currentPath = getRootUserConfigPath();
+        currentPath = getLocalConfigPath();
     }
 
     private String getCurrentPath() {
@@ -349,7 +349,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
         if (getCurrentPath().equals(task.getPath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
             }
         }
     }
@@ -453,7 +453,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
     }
 
     private void initBreadCrumbs() {
-        breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), getRootUserConfigPath());
+        breadCrumbs.addCrumb("", new ThemeResource("images/bread_crumb_home.png"), getLocalConfigPath());
         breadCrumbs.addBreadCrumbSelectListener(new BreadCrumbs.BreadCrumbSelectListener() {
             private static final long serialVersionUID = 1291962818597591728L;
 
@@ -586,7 +586,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
                             if (container != null) {
                                 FileExplorerItemData bean = container.getItem(itemId).getBean();
                                 if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
-                                    panelFileProperty.showProperty(getRootUserConfigPath(), bean.getPath(), bean.getName(), new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty()));
+                                    panelFileProperty.showProperty(getLocalConfigPath(), bean.getPath(), bean.getName(), new DbAgentFileDeepCopyClonable().clone((DbAgentFile) bean.getProperty()));
                                 } else {
                                     panelFileProperty.clearProperty();
                                 }
@@ -818,7 +818,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
             Set<DbAgentFile> properties = agentFileService.findAllByName(FluentIterable.from(listFiles).transform(new Function<FileSystemObject, String>() {
                 @Override
                 public String apply(FileSystemObject obj) {
-                    return StringUtils.substring(obj.getPath(), getRootUserConfigPath().length());
+                    return StringUtils.substring(obj.getPath(), getLocalConfigPath().length());
                 }
             }).toSet());
 
@@ -834,9 +834,9 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
                 DbAgentFile property = Iterables.find(properties, new Predicate<DbAgentFile>() {
                     @Override
                     public boolean apply(DbAgentFile file) {
-                        return file.getName().equals(StringUtils.substring(f.getPath(), getRootUserConfigPath().length()));
+                        return file.getName().equals(StringUtils.substring(f.getPath(), getLocalConfigPath().length()));
                     }
-                }, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0));
+                }, new DbAgentFile("", null, null, "", "", false, 0));
 
                 container.addBean(new FileExplorerItemData(
                         FileSystemObject.FileType.FOLDER.equals(f.getFileType()) ? FileExplorerItemData.FileType.Folder : FileExplorerItemData.FileType.File,
@@ -873,7 +873,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
 
                         BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
                         if (container != null) {
-                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentPath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, userAppService.getConfiguration(), 0), new LocalDateTime()));
+                            container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.Folder, text, Helpers.addEndSeparator(getCurrentPath()) + text, 0L, new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
                             gridFileExplorer.sort();
                         }
                         isOk = true;
@@ -913,8 +913,8 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
 
                                 pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
 
-                                if (!StringUtils.contains(pathNew, getRootUserConfigPath())) {
-                                    log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getRootUserConfigPath());
+                                if (!StringUtils.contains(pathNew, getLocalConfigPath())) {
+                                    log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getLocalConfigPath());
                                     ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder, not equal root file path", Notification.Type.ERROR_MESSAGE);
                                     return isOk;
                                 }
@@ -925,7 +925,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
                                 ((InteractionUI) UI.getCurrent()).showProgressBar();
 
                                 //refresh properties & files/folders
-                                agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getRootUserConfigPath()), StringUtils.substringAfter(pathNew, getRootUserConfigPath()), foOld, foNew);
+                                agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getLocalConfigPath()), StringUtils.substringAfter(pathNew, getLocalConfigPath()), foOld, foNew);
 
                                 //upd grid item
                                 item.getBean().setName(text);
@@ -971,7 +971,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
                     FileSystemObject fo = new FileSystemObject(bean.getPath(), FileExplorerItemData.FileType.File.equals(bean.getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
 
                     //remove properties & remove files/folders from file system
-                    agentFileService.deleteByNamePrefix(StringUtils.substringAfter(bean.getPath(), getRootUserConfigPath()), fo);
+                    agentFileService.deleteByNamePrefix(StringUtils.substringAfter(bean.getPath(), getLocalConfigPath()), fo);
 
                     //upd grid
                     container.removeItem(selectedItemId);
@@ -1032,7 +1032,7 @@ public class ContentConfigurationView extends AbstractAdvertisingWorkspaceView i
         FileSystemObject serverPath = new FileSystemObject(fileSystemManagerService.canonicalization(settingsAppService.getServerConfigPath()), FileSystemObject.FileType.FOLDER, 0L, null);
         FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(fileSystemManagerService.canonicalization(settingsAppService.getLocalConfigPath())) + userAppService.getUser().getLogin(), FileSystemObject.FileType.FOLDER, 0L, null);
 
-        configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
+        configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
             @Override
             public void success() {
                 UI.getCurrent().access(new Runnable() {

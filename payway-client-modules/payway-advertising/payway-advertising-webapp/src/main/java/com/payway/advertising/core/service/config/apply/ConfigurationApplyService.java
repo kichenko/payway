@@ -14,7 +14,7 @@ import com.vaadin.ui.UI;
  */
 public interface ConfigurationApplyService {
 
-    void apply(final UI currentUI, final String userName, final String configurationName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
+    void apply(final UI currentUI, final String userName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result);
 
     boolean cancel();
 

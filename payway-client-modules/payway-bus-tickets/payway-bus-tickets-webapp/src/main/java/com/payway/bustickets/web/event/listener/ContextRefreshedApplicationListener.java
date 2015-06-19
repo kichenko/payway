@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.web.event;
+package com.payway.bustickets.web.event.listener;
 
 import com.payway.commons.webapp.messaging.MessageServerResponseListener;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * Запуск потока для обработки поступающих от сервера ответов.
  *
  * @author Sergey Kichenko
- * @created 28.04.15 00:00
+ * @created 06.06.15 00:00
  */
 @Slf4j
 @Component

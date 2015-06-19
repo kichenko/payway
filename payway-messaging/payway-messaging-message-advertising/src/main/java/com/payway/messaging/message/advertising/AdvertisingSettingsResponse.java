@@ -3,11 +3,13 @@ package com.payway.messaging.message.advertising;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.model.advertising.SettingsDto;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
 
 /**
  * Created by mike on 20/05/15.
  */
+@Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
 public final class AdvertisingSettingsResponse implements SuccessResponse {

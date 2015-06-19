@@ -27,7 +27,13 @@
     </properties>
 
     <!-- dependencies-->
-    <dependencies>      
+    <dependencies>   
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message-advertising</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>   
         
         <dependency>
             <groupId>com.payway</groupId>
@@ -55,14 +61,7 @@
             <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.payway</groupId>
-            <artifactId>payway-messaging-core</artifactId>
-            <scope>compile</scope>
-            <version>${project.parent.version}</version>
-        </dependency>
-
+        
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>

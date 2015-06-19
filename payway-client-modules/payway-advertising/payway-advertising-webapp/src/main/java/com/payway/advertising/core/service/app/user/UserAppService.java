@@ -3,7 +3,6 @@
  */
 package com.payway.advertising.core.service.app.user;
 
-import com.payway.advertising.model.DbConfiguration;
 import com.payway.advertising.model.DbUser;
 
 /**
@@ -17,8 +16,4 @@ public interface UserAppService {
     public DbUser getUser();
 
     public boolean setUser(DbUser user);
-
-    public DbConfiguration getConfiguration();
-
-    public boolean setConfiguration(DbConfiguration config);
 }

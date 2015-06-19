@@ -26,7 +26,7 @@ public class AgentFileValidator implements Validator {
 
         if (data instanceof DbAgentFile) {
             DbAgentFile file = (DbAgentFile) data;
-            return (expressionValidator != null ? expressionValidator.validate(file.getExpression()) : false) && !StringUtils.isBlank(file.getName()) && file.getConfiguration() != null && file.getSeqNo() != null && file.getKind() != null && !StringUtils.isBlank(file.getDigest());
+            return (expressionValidator != null ? expressionValidator.validate(file.getExpression()) : false) && !StringUtils.isBlank(file.getName()) && file.getSeqNo() != null && file.getKind() != null && !StringUtils.isBlank(file.getDigest());
         }
 
         return false;

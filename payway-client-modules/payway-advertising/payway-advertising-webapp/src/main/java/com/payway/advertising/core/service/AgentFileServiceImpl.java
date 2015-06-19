@@ -9,9 +9,11 @@ import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.data.dao.AgentFileDao;
 import com.payway.advertising.model.DbAgentFile;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,11 @@ public class AgentFileServiceImpl implements AgentFileService {
     @Override
     public DbAgentFile save(DbAgentFile entity) throws ServiceException {
         return agentFileDao.save(entity);
+    }
+
+    @Override
+    public List<DbAgentFile> findAll(Sort sort) throws ServiceException {
+        return agentFileDao.findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "id")));
     }
 
     @Override

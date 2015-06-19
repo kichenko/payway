@@ -3,7 +3,7 @@
  */
 package com.payway.bustickets.web;
 
-import com.payway.bustickets.web.event.ApplicationStartEvent;
+import com.payway.web.event.ApplicationStartEvent;
 import javax.servlet.ServletContextEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.ContextLoaderListener;

@@ -3,10 +3,16 @@
  */
 package com.payway.bustickets.airportexpress.ui.components;
 
+import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
+import com.payway.messaging.model.bustickets.DirectionDto;
+import com.payway.messaging.model.bustickets.RouteDto;
+import com.payway.messaging.model.common.ChoiceDto;
+import com.payway.messaging.model.common.CurrencyDto;
+import com.payway.messaging.model.common.MoneyPrecisionDto;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import java.text.DecimalFormat;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -24,6 +30,9 @@ public class BusTicketsConfirmWizardStep extends AbstractWizardStep {
     public static final int STEP_NO = 1;
 
     private static final long serialVersionUID = -4226906157266350856L;
+
+    private static final String TOTAL_COST_WITH_DISCOUNT_LABEL_TEMPLATE = "%s %s (discounted: %s %s)";
+    private static final String TOTAL_COST_WITHOUT_DISCOUNT_LABEL_TEMPLATE = "%s %s";
 
     @UiField
     private TextField editContactNo;
@@ -48,7 +57,18 @@ public class BusTicketsConfirmWizardStep extends AbstractWizardStep {
 
     @UiField
     private Label lbRouteName;
-    
+
+    @Setter
+    private CurrencyDto currency;
+
+    @Setter
+    private MoneyPrecisionDto moneyPrecision;
+
+    private RouteDto route;
+
+    @Setter
+    private boolean hasDicount;
+
     public BusTicketsConfirmWizardStep() {
         init();
     }
@@ -58,44 +78,69 @@ public class BusTicketsConfirmWizardStep extends AbstractWizardStep {
         addComponent(Clara.create("BusTicketsConfirmWizardStep.xml", this));
     }
 
-    public void setContactNo(String value) {
-        getEditContactNo().setValue(value);
-    }
-
-    public void setDirection(String direction) {
-        getEditDirection().setValue(direction);
-    }
-
-    public void setRoute(String route) {
-        getEditRoute().setValue(route);
-    }
-
-    public void setTripDate(String tripDate) {
-        getEditTripDate().setValue(tripDate);
-    }
-
-    public void setBaggage(String baggage) {
-        getEditBaggage().setValue(baggage);
-    }
-
-    public void setQuantity(int quantity) {
-        getEditQuantity().setValue(Integer.toString(quantity));
-    }
-
-    public void setTotalCost(Double totalCost) {
-        getEditTotalCost().setValue(new DecimalFormat("###.##").format(totalCost));
-    }
-
-    public void setHasDiscount(boolean hasDiscount) {
-        /*
-        if (hasDiscount) {
-            editTotalCost.setCaption("Total cost (with discount)");
-        } else {
-            editTotalCost.setCaption("Total cost (without discount)");
-        }*/
-    }
-    
     public void setRouteName(String routeName) {
         lbRouteName.setValue(routeName);
+    }
+
+    public void setUp(final String routeName, final String contactNo, final DirectionDto direction, final RouteDto route, final ChoiceDto tripDate, final ChoiceDto baggage, final int quantity, final double totalCost, final boolean hasDiscount) {
+
+        getLbRouteName().setValue(routeName);
+        getEditContactNo().setValue(contactNo);
+        getEditDirection().setValue(direction.getName());
+        getEditRoute().setValue(route.getDepartureTime());
+        getEditTripDate().setValue(tripDate.getLabel());
+        getEditBaggage().setValue(baggage.getLabel());
+        getEditQuantity().setValue(Integer.toString(quantity));
+
+        refreshTotalCost(route, quantity, totalCost, hasDiscount);
+    }
+
+    private void refreshTotalCost(final RouteDto route, final int quantity, final double totalCost, final boolean hasDiscount) {
+
+        double discount = totalCost - (quantity * route.getPrice());
+
+        String strCurrency = "";
+        String strTotalCost = Double.toString(totalCost);
+        String strDiscount = Double.toString(discount);
+
+        if (getCurrency() != null) {
+            strCurrency = getCurrency().getIso();
+        } else {
+            log.error("Empty currency");
+        }
+
+        if (getMoneyPrecision() != null) {
+            if (MoneyPrecisionDto.Auto.equals(getMoneyPrecision())) {
+
+                if (com.payway.bustickets.core.utils.NumberUtils.isInteger(discount)) {
+                    strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                } else {
+                    strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                }
+
+                if (com.payway.bustickets.core.utils.NumberUtils.isInteger(totalCost)) {
+                    strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                } else {
+                    strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                }
+
+            } else if (MoneyPrecisionDto.Zero.equals(getMoneyPrecision())) {
+                strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+                strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
+            } else if (MoneyPrecisionDto.Two.equals(getMoneyPrecision())) {
+                strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+                strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
+            } else {
+                log.error("Empty money precision");
+            }
+
+            if (hasDiscount) {
+                getEditTotalCost().setValue(String.format(TOTAL_COST_WITH_DISCOUNT_LABEL_TEMPLATE, strTotalCost, strCurrency, strDiscount, strCurrency));
+            } else {
+                getEditTotalCost().setValue(String.format(TOTAL_COST_WITHOUT_DISCOUNT_LABEL_TEMPLATE, strTotalCost, strCurrency));
+            }
+        } else {
+            getEditTotalCost().setValue("");
+        }
     }
 }
