@@ -11,7 +11,7 @@ import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsChangedMessage;
 import com.payway.messaging.message.advertising.AdvertisingSettingsRequest;
 import com.payway.messaging.message.advertising.AdvertisingSettingsResponse;
-import com.payway.web.event.ApplicationStartClientConnectedEvent;
+import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

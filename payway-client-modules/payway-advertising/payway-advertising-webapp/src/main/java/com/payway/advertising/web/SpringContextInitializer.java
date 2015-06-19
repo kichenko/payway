@@ -1,6 +1,6 @@
 package com.payway.advertising.web;
 
-import com.payway.advertising.web.event.ApplicationStartEvent;
+import com.payway.commons.webapp.web.event.ApplicationStartEvent;
 import javax.servlet.ServletContextEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.ContextLoaderListener;

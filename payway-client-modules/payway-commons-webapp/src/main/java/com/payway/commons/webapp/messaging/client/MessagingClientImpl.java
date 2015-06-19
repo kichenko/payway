@@ -5,25 +5,23 @@ package com.payway.commons.webapp.messaging.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.LifecycleEvent;
-import com.hazelcast.core.LifecycleListener;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.core.*;
 import com.payway.commons.webapp.bus.AppEventPublisher;
-import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PreDestroy;
+import java.io.Serializable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MessagingClientImpl
@@ -89,10 +87,10 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
 
     @Override
     public void construct() throws Exception {
+
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Start constructing messaging client");
-            }
+
+            log.debug("Starting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
 
             if (semaphore.tryAcquire(1, TimeUnit.SECONDS)) {
                 construct = true;

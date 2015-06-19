@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.web.event;
+package com.payway.commons.webapp.web.event;
 
 import org.springframework.context.ApplicationEvent;
 

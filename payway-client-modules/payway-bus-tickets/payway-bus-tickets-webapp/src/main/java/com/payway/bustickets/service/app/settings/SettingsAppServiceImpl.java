@@ -15,7 +15,7 @@ import com.payway.messaging.message.bustickets.BusTicketSettingsRequest;
 import com.payway.messaging.message.bustickets.BusTicketSettingsResponse;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.common.MoneyPrecisionDto;
-import com.payway.web.event.ApplicationStartClientConnectedEvent;
+import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.vaadin.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

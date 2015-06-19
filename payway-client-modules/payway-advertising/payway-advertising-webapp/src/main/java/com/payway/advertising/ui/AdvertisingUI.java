@@ -202,12 +202,12 @@ public class AdvertisingUI extends AbstractUI {
 
             UserDto userDto = event.getUser();
             if (userDto == null) {
-                throw new Exception("User sign in");
+                throw new Exception("User sign in (empty dto)");
             }
 
             DbUser user = userService.findUserByLogin(userDto.getUsername(), true);
             if (user == null) {
-                throw new Exception("Bad user sign in");
+                throw new Exception("Bad user sign in (user not found)");
             }
 
             user.setToken(event.getSessionId());

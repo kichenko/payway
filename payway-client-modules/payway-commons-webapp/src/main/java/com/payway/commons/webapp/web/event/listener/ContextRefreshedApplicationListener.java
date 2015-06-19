@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.web.event.listener;
+package com.payway.commons.webapp.web.event.listener;
 
 import com.payway.commons.webapp.messaging.MessageServerResponseListener;
 import lombok.extern.slf4j.Slf4j;
