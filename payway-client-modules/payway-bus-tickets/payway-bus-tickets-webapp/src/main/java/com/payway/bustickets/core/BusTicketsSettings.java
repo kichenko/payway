@@ -6,10 +6,11 @@ package com.payway.bustickets.core;
 import com.payway.messaging.model.common.OperatorDto;
 import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.payway.messaging.model.user.UserDto;
-import java.io.Serializable;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * BusTicketsSettings
@@ -27,4 +28,5 @@ public final class BusTicketsSettings implements Serializable {
     private final String sessionId;
     private final List<OperatorDto> operators;
     private final List<RetailerTerminalDto> terminals;
+    private final RetailerTerminalDto retailerTerminal;
 }

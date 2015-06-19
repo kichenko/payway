@@ -39,16 +39,17 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.servlet.http.Cookie;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * BusTicketsUI
@@ -117,7 +118,7 @@ public class BusTicketsUI extends AbstractUI {
                 //STALWART <-> bus-tickets-workspace-view-stalwart
                 if (!StringUtils.isBlank(operator.getShortName())) {
                     String workspaceViewName = AbstractBusTicketsWorkspaceView.WORKSPACE_VIEW_ID_PREFIX + operator.getShortName().toLowerCase();
-                    childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getShortName(), null));
+                    childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getId(), null));
                 }
             }
             menu.setChilds(childs);
@@ -127,7 +128,7 @@ public class BusTicketsUI extends AbstractUI {
     }
 
     private void sendBusTicketOperatorsRequest() {
-        service.sendMessage(new BusTicketOperatorsRequest(), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        service.sendMessage(new BusTicketOperatorsRequest(settingsAppService.getBusTicketsSettings().getSessionId(), settingsAppService.getBusTicketsSettings().getRetailerTerminal().getId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -217,7 +218,8 @@ public class BusTicketsUI extends AbstractUI {
             }
 
             //set params to session
-            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals));
+            RetailerTerminalDto rt = terminals == null || terminals.isEmpty() ? null : terminals.get(0);
+            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals, rt));
 
             if (loginView.isRememberMe()) {
                 Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
@@ -254,7 +256,7 @@ public class BusTicketsUI extends AbstractUI {
         //set params to session
         BusTicketsSettings settings = settingsAppService.getBusTicketsSettings();
         if (settings != null) {
-            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals()));
+            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals(), settings.getRetailerTerminal()));
         }
 
         updateContent();

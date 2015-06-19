@@ -22,8 +22,8 @@ public class BusTicketOperatorsResponse implements SuccessResponse {
 
     List<OperatorDto> operators = new LinkedList<>();
 
-    public void add(String shortName, String name, ContentDto logo) {
-        operators.add(new OperatorDto(shortName, name, logo));
+    public void add(long id, String shortName, String name, ContentDto logo) {
+        operators.add(new OperatorDto(id, shortName, name, logo));
     }
 
 }

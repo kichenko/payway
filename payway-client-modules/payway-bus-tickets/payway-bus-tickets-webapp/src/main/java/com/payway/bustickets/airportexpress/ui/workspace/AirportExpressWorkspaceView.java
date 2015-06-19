@@ -9,7 +9,6 @@ import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.messaging.model.common.OperatorDto;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
+
+import javax.annotation.PostConstruct;
 
 /**
  * AirportExpressWorkspaceView
@@ -75,7 +76,7 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
             return;
         }
 
-        wizard.setOperatorId((String) menu.getData());
+        wizard.setOperatorId((Long) menu.getData());
     }
 
     private void setWizardTerminals() {
@@ -101,15 +102,14 @@ public class AirportExpressWorkspaceView extends AbstractBusTicketsWorkspaceView
         }
 
         for (OperatorDto operator : settingsAppService.getBusTicketsSettings().getOperators()) {
-            if (!StringUtils.isBlank(operator.getShortName())) {
-                if (operator.getShortName().equals((String) menuItem.getData())) {
-                    if (operator.getLogo() != null && operator.getLogo().getContent() != null) {
-                        wizard.setLogoImage(operator.getLogo().getContent());
-                    }
-                    break;
+            if (operator.getId() == (long) menuItem.getData()) {
+                if (operator.getLogo() != null && operator.getLogo().getContent() != null) {
+                    wizard.setLogoImage(operator.getLogo().getContent());
                 }
+                break;
             }
         }
+
     }
 
     private void setWizardCurrencyAndMoneyPrecision() {

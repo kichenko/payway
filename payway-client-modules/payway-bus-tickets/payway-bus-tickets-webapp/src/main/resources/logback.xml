@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${catalina.base}/logs/payway-bus-tickets-webapp.trace.log</file>
-        <append>true</append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-            <fileNamePattern>${catalina.base}/logs/payway-bus-tickets-webapp.trace.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <maxFileSize>10mb</maxFileSize>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/payway-bus-tickets-webapp.trace.%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
         </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
         <encoder>
             <charset>UTF-8</charset>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -23,11 +18,11 @@
     </appender>
 
     <logger name="com.payway" level="DEBUG"/>
-    <logger name="org.springframework" level="DEBUG"/>
-    <logger name="com.hazelcast" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.hazelcast" level="INFO"/>
 
     <root level="WARN">
-        <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
+
 </configuration>

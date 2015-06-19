@@ -7,13 +7,7 @@ import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
-import com.payway.messaging.message.bustickets.BusTicketPaymentStartRequest;
-import com.payway.messaging.message.bustickets.BusTicketPaymentStartResponse;
-import com.payway.messaging.message.bustickets.BusTicketPurchaseRequest;
-import com.payway.messaging.message.bustickets.BusTicketPurchaseResponse;
-import com.payway.messaging.message.bustickets.BusTicketValidateInvalidResponse;
-import com.payway.messaging.message.bustickets.BusTicketValidateRequest;
-import com.payway.messaging.message.bustickets.BusTicketValidateValidResponse;
+import com.payway.messaging.message.bustickets.*;
 import com.payway.messaging.message.common.TransactionReceiptRequest;
 import com.payway.messaging.message.common.TransactionReceiptResponse;
 import com.payway.messaging.model.common.CurrencyDto;
@@ -22,16 +16,7 @@ import com.payway.messaging.model.common.RetailerTerminalDto;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.WebBrowser;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import com.vaadin.ui.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +24,12 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * BusTicketsWizard
@@ -89,7 +80,7 @@ public class BusTicketsWizard extends AbstractWizard {
 
     @Getter
     @Setter
-    private String operatorId;
+    private long operatorId;
 
     @Getter
     @Setter(AccessLevel.PRIVATE)
@@ -544,7 +535,9 @@ public class BusTicketsWizard extends AbstractWizard {
         setPaymentStart(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketPaymentStartRequest(getOperatorId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        // TODO : fix retailerTerminalId value
+        long retailerTerminalId = 0; // !!! wrong
+        getService().sendMessage(new BusTicketPaymentStartRequest(getSessionId(), retailerTerminalId, getOperatorId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {

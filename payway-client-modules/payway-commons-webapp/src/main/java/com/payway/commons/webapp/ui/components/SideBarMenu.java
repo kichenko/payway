@@ -43,6 +43,7 @@ public final class SideBarMenu extends CustomComponent {
         private Resource icon;
         private Object data;
         private List<MenuItem> childs;
+
     }
 
     public interface SideBarMenuItemClickListener {

@@ -1,6 +1,7 @@
 package com.payway.messaging.message.bustickets;
 
 import com.payway.messaging.core.request.command.CommandRequest;
+import com.payway.messaging.message.IWebAppSessionAware;
 import lombok.*;
 
 /**
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class BusTicketValidateRequest extends CommandRequest {
+public class BusTicketValidateRequest extends CommandRequest implements IWebAppSessionAware {
 
     private static final long serialVersionUID = 4144648146040100002L;
 
@@ -20,7 +21,7 @@ public class BusTicketValidateRequest extends CommandRequest {
 
     long retailerTerminalId;
 
-    String serviceProviderId;
+    long operatorId;
 
     String contactNumber;
 

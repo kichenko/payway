@@ -30,6 +30,12 @@
 
         <dependency>
             <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.payway</groupId>
             <artifactId>payway-messaging-model-bustickets</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -37,7 +43,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>                
+        </dependency>
+
     </dependencies>
 
     <!-- build -->
