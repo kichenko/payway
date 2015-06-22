@@ -16,6 +16,7 @@ import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindows
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
+import com.payway.advertising.ui.view.workspace.content.AdvertisingContentConfigurationView;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.ui.AbstractUI;
@@ -37,7 +38,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -129,9 +130,9 @@ public class AdvertisingUI extends AbstractUI {
     }
 
     @Override
-    protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
-        Collection<SideBarMenu.MenuItem> items = new ArrayList<>(5);
-        items.add(new SideBarMenu.MenuItem("content-configuration", "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
+    protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
+        List<SideBarMenu.MenuItem> items = new ArrayList<>(1);
+        items.add(new SideBarMenu.MenuItem("configuration", AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID, "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
         return items;
     }
 

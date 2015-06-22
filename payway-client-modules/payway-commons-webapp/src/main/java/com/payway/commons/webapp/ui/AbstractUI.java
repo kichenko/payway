@@ -6,16 +6,14 @@ package com.payway.commons.webapp.ui;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.ProgressBarWindow;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
+import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.Collection;
 import java.util.Collections;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
+import java.util.List;
 
 /**
  * AbstractUI
@@ -55,20 +53,25 @@ public abstract class AbstractUI extends UI implements InteractionUI {
         }
     }
 
-    protected abstract Collection<SideBarMenu.MenuItem> getSideBarMenuItems();
+    protected abstract List<SideBarMenu.MenuItem> getSideBarMenuItems();
 
-    protected Collection<ImmutableTriple<String, Resource, MenuBar.Command>> getMenuBarItems() {
+    protected List<AbstractMainView.UserMenuItem> getMenuBarItems() {
         return Collections.singletonList(
-                new ImmutableTriple<String, Resource, MenuBar.Command>("Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
+                new AbstractMainView.UserMenuItem("Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
                     private static final long serialVersionUID = 7160936162824727503L;
 
                     @Override
                     public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                        for (final UI ui : VaadinSession.getCurrent().getUIs()) {
+                            ui.access(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ui.getPage().reload();
+                                }
+                            });
+                        }
                         VaadinSession.getCurrent().close();
-                        UI.getCurrent().getSession().getService().closeSession(VaadinSession.getCurrent());
-                        VaadinSession.getCurrent().close();
-                        Page.getCurrent().reload();
                     }
-                }));
+                }, false));
     }
 }

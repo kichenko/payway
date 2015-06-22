@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsSettingsWindow" width="570px" height="280px" styleName="bus-ticket-settings-window">
+   
+    <FormLayout id="layoutSettingsForm" sizeFull="true" styleName="common-paddings">
+        <ComboBox id="cbRetailerTerminals" nullSelectionAllowed="false" caption="Retailer terminal" textInputAllowed="false" styleName="" width="100%"/>    
+        <Label id="lbTerminalName" caption="Terminal name" styleName="" width="100%"/>
+        <Label id="lbTerminalLocation" caption="Terminal location" styleName="" width="100%"/>
+        <Label id="lbRetailerName" caption="Retailer name" styleName="" width="100%"/>
+        <HorizontalLayout id="layoutButtonsRetailerTerminalForm" styleName="common-float-right">
+            <Button id="btnCancel" caption="Cancel" styleName=""/>
+            <Button id="btnSave" caption="Save" styleName="primary common-margin-left"/>
+        </HorizontalLayout>
+    </FormLayout>
+           
+</VerticalLayout>

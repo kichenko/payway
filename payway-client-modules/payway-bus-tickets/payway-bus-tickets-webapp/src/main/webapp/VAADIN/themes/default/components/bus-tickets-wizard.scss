@@ -1,0 +1,19 @@
+@mixin bus-tickets-wizard-component {
+
+    .bus-ticket-wizard {
+        background-color: white;
+        padding: 15px 5px 5px 5px;
+    }
+
+    .bus-ticket-wizard-footer {
+        //background-color: green;
+    }
+
+    .bus-ticket-wizard-btn-left {
+        float:left;
+    }
+
+    .bus-ticket-wizard-btn-right {
+        float:right;
+    }
+}

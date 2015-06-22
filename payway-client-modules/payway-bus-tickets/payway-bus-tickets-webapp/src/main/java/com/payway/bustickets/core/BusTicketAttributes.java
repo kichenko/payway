@@ -11,7 +11,7 @@ package com.payway.bustickets.core;
  */
 public enum BusTicketAttributes {
 
-    BUS_TICKET_SETTINGS("user_bus_ticket_operators");
+    BUS_TICKET_SESSION_SETTINGS("bus_ticket_session_settings");
 
     private final String value;
 

@@ -9,6 +9,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,12 @@ public final class SideBarMenu extends CustomComponent {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MenuItem {
+    public static class MenuItem implements Serializable {
+
+        private static final long serialVersionUID = -5148511189792404017L;
 
         private String tag;
+        private String viewId;
         private String caption;
         private Resource icon;
         private Object data;
@@ -100,6 +104,7 @@ public final class SideBarMenu extends CustomComponent {
     }
 
     public void clearMenuItems() {
+        tree.select(null);
         tree.removeAllItems();
     }
 

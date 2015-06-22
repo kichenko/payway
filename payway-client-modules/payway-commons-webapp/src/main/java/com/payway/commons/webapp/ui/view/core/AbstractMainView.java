@@ -9,10 +9,12 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.MenuBar;
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -30,6 +32,25 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
         void onClick(SideBarMenu.MenuItem menuItem);
     }
 
+    public interface ViewActivateStateChangeListener {
+
+        void onActivate(WorkspaceView workspaceView);
+
+        void onDeactivate(WorkspaceView workspaceView);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class UserMenuItem implements Serializable {
+
+        private static final long serialVersionUID = 8581718071618173495L;
+
+        private final String caption;
+        private final Resource icon;
+        private final MenuBar.Command command;
+        private final boolean addSeparator;
+    }
+
     @Autowired
     @Qualifier(value = "viewFactory")
     protected ViewFactory viewFactory;
@@ -38,9 +59,11 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
     protected CssLayout mainViewLayout;
 
     @UiField
+    @Getter
     protected MenuBar userMenu;
 
     @UiField
+    @Getter
     protected MenuBar menuBar;
 
     @UiField
@@ -61,6 +84,10 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
 
     protected SlideBarMenuItemClickCallback sbMenuButtonClickCallback;
 
+    @Getter
+    @Setter
+    protected ViewActivateStateChangeListener viewActivateStateChangeListener;
+
     /**
      * Create user menu
      *
@@ -68,10 +95,15 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
      * @param icon
      * @param items
      */
-    public void initializeUserMenu(String caption, Resource icon, Collection<ImmutableTriple<String, Resource, MenuBar.Command>> items) {
+    public void initializeUserMenu(String caption, Resource icon, List<UserMenuItem> items) {
         MenuBar.MenuItem settingsItem = userMenu.addItem(caption, icon, null);
-        for (Triple<String, Resource, MenuBar.Command> i : items) {
-            settingsItem.addItem(i.getLeft(), i.getMiddle(), i.getRight());
+        for (UserMenuItem item : items) {
+            if (item.isAddSeparator()) {
+                settingsItem.addItem(item.getCaption(), item.getIcon(), item.getCommand());
+                settingsItem.addSeparator();
+            } else {
+                settingsItem.addItem(item.getCaption(), item.getIcon(), item.getCommand());
+            }
         }
     }
 
@@ -97,22 +129,45 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
     @Override
     public void onClickSideBarMenuItem(SideBarMenu.MenuItem menuItem) {
 
+        com.vaadin.ui.Component view = viewFactory.view(menuItem.getViewId());
+        WorkspaceView newView = (WorkspaceView) view;
+
         if (sbMenuButtonClickCallback != null) {
             sbMenuButtonClickCallback.onClick(menuItem);
         }
 
-        panelContent.removeAllComponents();
+        if (panelContent.getComponentCount() == 1) {
+            WorkspaceView oldView = (WorkspaceView) panelContent.getComponent(0);
+            if (viewActivateStateChangeListener != null && oldView != null) {
+                viewActivateStateChangeListener.onDeactivate(oldView);
+            }
+        }
 
-        com.vaadin.ui.Component view = (com.vaadin.ui.Component) viewFactory.view(menuItem.getTag());
+        panelContent.removeAllComponents();
         panelContent.addComponent(view);
 
-        WorkspaceView v = (WorkspaceView) view;
-        if (v != null) {
-            v.setMenuBar(menuBar);
-            v.setSideBarMenu(sideBarMenu);
-            setUpCustomWorkspaceView(v);
-            v.activate();
+        if (newView != null) {
+            newView.setMenuBar(menuBar);
+            newView.setSideBarMenu(sideBarMenu);
+            setUpCustomWorkspaceView(newView);
+
+            newView.activate();
+            if (viewActivateStateChangeListener != null) {
+                viewActivateStateChangeListener.onActivate(newView);
+            }
         }
+    }
+
+    public void clearWorkspaceView() {
+
+        if (panelContent.getComponentCount() == 1) {
+            WorkspaceView oldView = (WorkspaceView) panelContent.getComponent(0);
+            if (viewActivateStateChangeListener != null && oldView != null) {
+                viewActivateStateChangeListener.onDeactivate(oldView);
+            }
+        }
+
+        panelContent.removeAllComponents();
     }
 
     /**

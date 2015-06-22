@@ -3,7 +3,7 @@
  */
 package com.payway.bustickets.service.app.settings;
 
-import com.payway.bustickets.core.BusTicketsSettings;
+import com.payway.bustickets.core.BusTicketsSessionSettings;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.common.MoneyPrecisionDto;
 
@@ -15,9 +15,9 @@ import com.payway.messaging.model.common.MoneyPrecisionDto;
  */
 public interface SettingsAppService {
 
-    BusTicketsSettings getBusTicketsSettings();
+    BusTicketsSessionSettings getSessionSettings();
 
-    boolean setBusTicketsSettings(BusTicketsSettings settings);
+    boolean setSessionSettings(BusTicketsSessionSettings settings);
 
     void setCurrency(CurrencyDto dto);
 

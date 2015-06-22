@@ -5,17 +5,19 @@ package com.payway.bustickets.service.app.settings;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.bustickets.core.BusTicketAttributes;
-import com.payway.bustickets.core.BusTicketsSettings;
+import com.payway.bustickets.core.BusTicketsSessionSettings;
+import com.payway.commons.webapp.bus.AppEventPublisher;
+import com.payway.commons.webapp.bus.event.SettingsChangedAppEventBus;
 import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
+import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsChangedMessage;
 import com.payway.messaging.message.bustickets.BusTicketSettingsRequest;
 import com.payway.messaging.message.bustickets.BusTicketSettingsResponse;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.common.MoneyPrecisionDto;
-import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.vaadin.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,24 +41,27 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     private CurrencyDto currency;
     private MoneyPrecisionDto moneyPrecision;
 
-    @Override
-    public BusTicketsSettings getBusTicketsSettings() {
+    @Autowired
+    private AppEventPublisher appEventPublisher;
 
-        BusTicketsSettings settings = null;
+    @Override
+    public BusTicketsSessionSettings getSessionSettings() {
+
+        BusTicketsSessionSettings settings = null;
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            settings = (BusTicketsSettings) session.getAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value());
+            settings = (BusTicketsSessionSettings) session.getAttribute(BusTicketAttributes.BUS_TICKET_SESSION_SETTINGS.value());
         }
 
         return settings;
     }
 
     @Override
-    public boolean setBusTicketsSettings(BusTicketsSettings settings) {
+    public boolean setSessionSettings(BusTicketsSessionSettings settings) {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            session.setAttribute(BusTicketAttributes.BUS_TICKET_SETTINGS.value(), settings);
+            session.setAttribute(BusTicketAttributes.BUS_TICKET_SESSION_SETTINGS.value(), settings);
             return true;
         }
 
@@ -65,6 +70,7 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
 
     @Subscribe
     public void onMessage(SettingsChangedMessage message) {
+
         if (log.isDebugEnabled()) {
             log.debug("Receive settings change mesage - {}", message);
         }
@@ -86,12 +92,16 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         sender.sendMessage(new BusTicketSettingsRequest(), new ResponseCallbackSupport<BusTicketSettingsResponse, ExceptionResponse>() {
             @Override
             public void onServerResponse(BusTicketSettingsResponse response) {
+
                 if (log.isDebugEnabled()) {
                     log.debug("Receive remote settings - {}", response);
                 }
 
                 setCurrency(response.getSettings().getCurrency());
                 setMoneyPrecision(response.getSettings().getMoneyPrecision());
+
+                //notify about settigs changed, need for ui's
+                appEventPublisher.sendNotification(new SettingsChangedAppEventBus());
             }
         });
     }

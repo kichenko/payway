@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.bustickets.ui.components" id="layoutBusTicketsWizard" sizeFull="true" styleName="bus-ticket-wizard">
+    
+    <VerticalLayout id = "layoutLeft" p:expandRatio="1">   
+        <Image id="imgLogo" width="160px" height="120px"/>
+        <cmp:RetailerTerminalPanel id="retailerTerminalPanel" width="160px" styleName="retailer-terminal-panel-cmp"/>
+    </VerticalLayout>
+    
+    <VerticalLayout id = "layoutRight" p:expandRatio="3">    
+        <VerticalLayout id="layoutContent" width="100%" height="500px"/>      
+        <HorizontalLayout id="layoutFooter" width="100%" styleName="ticket-wizard-footer">
+            <Button id="btnLeft" styleName="friendly bus-ticket-wizard-btn-left"/>
+            <Button id="btnRight" styleName="primary bus-ticket-wizard-btn-right"/>
+        </HorizontalLayout>
+    </VerticalLayout>
+    
+</HorizontalLayout>

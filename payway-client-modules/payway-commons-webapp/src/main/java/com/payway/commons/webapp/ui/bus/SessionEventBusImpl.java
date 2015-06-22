@@ -4,6 +4,7 @@
 package com.payway.commons.webapp.ui.bus;
 
 import com.google.common.eventbus.EventBus;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
  * @created 21.05.15 00:00
  */
 @Slf4j
-public class SessionEventBusImpl implements SessionEventBus {
+public class SessionEventBusImpl implements SessionEventBus, Serializable {
+
+    private static final long serialVersionUID = -5675094820736490733L;
 
     @Setter
     @Getter

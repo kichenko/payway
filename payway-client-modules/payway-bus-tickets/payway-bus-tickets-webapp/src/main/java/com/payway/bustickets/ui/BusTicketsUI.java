@@ -4,12 +4,13 @@
 package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.bustickets.core.BusTicketsSettings;
+import com.payway.bustickets.core.BusTicketsSessionSettings;
 import com.payway.bustickets.service.app.settings.SettingsAppService;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
-import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
+import com.payway.bustickets.ui.view.core.BusTicketsSettingsWindow;
 import com.payway.bustickets.ui.view.workspace.BusTicketsEmptyWorkspaceView;
+import com.payway.bustickets.ui.view.workspace.BusTicketsWorkspaceView;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
@@ -23,6 +24,7 @@ import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.LoginView;
+import com.payway.commons.webapp.ui.view.core.WorkspaceView;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketOperatorsRequest;
@@ -37,19 +39,19 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.servlet.http.Cookie;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * BusTicketsUI
@@ -107,20 +109,19 @@ public class BusTicketsUI extends AbstractUI {
     }
 
     @Override
-    protected Collection<SideBarMenu.MenuItem> getSideBarMenuItems() {
+    protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
-        List<OperatorDto> operators = settingsAppService.getBusTicketsSettings().getOperators();
-        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem(BusTicketsEmptyWorkspaceView.BUS_TICKET_EMPTY_WORKSPACE_VIEW_ID, "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
+        List<OperatorDto> operators = settingsAppService.getSessionSettings().getOperators();
+        SideBarMenu.MenuItem menu = new SideBarMenu.MenuItem("bus-tickets-empty", BusTicketsEmptyWorkspaceView.BUS_TICKETS_EMPTY_WORKSPACE_VIEW_ID, "Bus Tickets", new ThemeResource("images/sidebar_bus_tickets.png"), null, null);
 
         if (operators != null) {
             List<SideBarMenu.MenuItem> childs = new LinkedList<>();
             for (OperatorDto operator : operators) {
-                //STALWART <-> bus-tickets-workspace-view-stalwart
                 if (!StringUtils.isBlank(operator.getShortName())) {
-                    String workspaceViewName = AbstractBusTicketsWorkspaceView.WORKSPACE_VIEW_ID_PREFIX + operator.getShortName().toLowerCase();
-                    childs.add(new SideBarMenu.MenuItem(workspaceViewName, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getId(), null));
+                    childs.add(new SideBarMenu.MenuItem(operator.getShortName(), BusTicketsWorkspaceView.BUS_TICKETS_WORKSPACE_VIEW_ID, operator.getName(), new ThemeResource("images/sidebar_bus_tickets.png"), operator.getId(), null));
                 }
             }
+
             menu.setChilds(childs);
         }
 
@@ -128,7 +129,9 @@ public class BusTicketsUI extends AbstractUI {
     }
 
     private void sendBusTicketOperatorsRequest() {
-        service.sendMessage(new BusTicketOperatorsRequest(settingsAppService.getBusTicketsSettings().getSessionId(), settingsAppService.getBusTicketsSettings().getRetailerTerminal().getId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+
+        ((InteractionUI) UI.getCurrent()).showProgressBar();
+        service.sendMessage(new BusTicketOperatorsRequest(settingsAppService.getSessionSettings().getSessionId(), settingsAppService.getSessionSettings().getCurrentRetailerTerminal().getId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -160,19 +163,71 @@ public class BusTicketsUI extends AbstractUI {
         }));
     }
 
+    @Override
+    protected List<AbstractMainView.UserMenuItem> getMenuBarItems() {
+
+        List<AbstractMainView.UserMenuItem> menus = new ArrayList<>(2);
+
+        menus.add(new AbstractMainView.UserMenuItem("Settings", new ThemeResource("images/user_menu_item_settings.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                new BusTicketsSettingsWindow(settingsAppService.getSessionSettings().getCurrentRetailerTerminal(), settingsAppService.getSessionSettings().getTerminals(), new BusTicketsSettingsWindow.SettingsSaveListener() {
+                    @Override
+                    public boolean onSave(SettingsSaveEvent event) {
+
+                        BusTicketsSessionSettings settings = settingsAppService.getSessionSettings();
+                        if (settings.getCurrentRetailerTerminal().equals(event.getSource().getCurrentRetailerTerminal())) {
+                            ((InteractionUI) UI.getCurrent()).showNotification("Bus tickets params", "Please, select another terminal", Notification.Type.WARNING_MESSAGE);
+                            return false;
+                        }
+
+                        settingsAppService.setSessionSettings(new BusTicketsSessionSettings(settings.getUser(), settings.getSessionId(), settings.getOperators(), settings.getTerminals(), event.getSource().getCurrentRetailerTerminal()));
+                        sendBusTicketOperatorsRequest();
+
+                        return true;
+                    }
+                }).show();
+            }
+        }, true));
+
+        menus.add(super.getMenuBarItems().get(0));
+
+        return menus;
+    }
+
     private void updateContent() {
 
         UserDto user = null;
 
-        if (settingsAppService.getBusTicketsSettings() != null) {
-            user = settingsAppService.getBusTicketsSettings().getUser();
+        if (settingsAppService.getSessionSettings() != null) {
+            user = settingsAppService.getSessionSettings().getUser();
         }
 
         if (user != null) {
-            mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+
+            updateSideBar();
+            mainView.getMenuBar().setVisible(false);
             mainView.initializeUserMenu(user.getUsername(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
-            mainView.getSideBarMenu().select(0);
-            mainView.getSideBarMenu().expand(0);
+
+            //subscribe workspace on session events
+            mainView.setViewActivateStateChangeListener(new AbstractMainView.ViewActivateStateChangeListener() {
+
+                @Override
+                public void onActivate(WorkspaceView workspaceView) {
+                    if (workspaceView != null) {
+                        getSessionEventBus().addSubscriber(workspaceView);
+                    }
+                }
+
+                @Override
+                public void onDeactivate(WorkspaceView workspaceView) {
+                    if (workspaceView != null) {
+                        getSessionEventBus().removeSubscriber(workspaceView);
+                    }
+                }
+            });
 
             setContent(mainView);
         } else {
@@ -182,22 +237,32 @@ public class BusTicketsUI extends AbstractUI {
         }
     }
 
+    private void updateSideBar() {
+
+        mainView.clearWorkspaceView();
+        mainView.getSideBarMenu().clearMenuItems();
+        mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+
+        mainView.getSideBarMenu().select(0);
+        mainView.getSideBarMenu().expand(0);
+    }
+
     @Subscribe
-    public void processSessionBusEvent(LoginFailSessionBusEvent event) {
+    public void onLoginFail(LoginFailSessionBusEvent event) {
         log.error("Bad user sign in (bad auth)");
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
         ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
     }
 
     @Subscribe
-    public void processSessionBusEvent(LoginExceptionSessionBusEvent event) {
+    public void onLoginException(LoginExceptionSessionBusEvent event) {
         log.error("Bad user sign in (exception)");
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
         ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
     }
 
     @Subscribe
-    public void processSessionBusEvent(LoginSuccessSessionBusEvent event) {
+    public void onLoginSuccess(LoginSuccessSessionBusEvent event) {
 
         try {
 
@@ -217,9 +282,9 @@ public class BusTicketsUI extends AbstractUI {
                 }
             }
 
-            //set params to session
-            RetailerTerminalDto rt = terminals == null || terminals.isEmpty() ? null : terminals.get(0);
-            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(event.getUser(), event.getSessionId(), null, terminals, rt));
+            //set params to session: user, sesionId, current terminal and terminal list
+            RetailerTerminalDto currentTerminal = terminals == null || terminals.isEmpty() ? null : terminals.get(0);
+            settingsAppService.setSessionSettings(new BusTicketsSessionSettings(event.getUser(), event.getSessionId(), null, terminals, currentTerminal));
 
             if (loginView.isRememberMe()) {
                 Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
@@ -233,33 +298,36 @@ public class BusTicketsUI extends AbstractUI {
                 UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
             }
 
+            updateContent();
+
             //send request to get bus ticket operators
             sendBusTicketOperatorsRequest();
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
 
         } catch (Exception ex) {
-            log.error("Bad user sign in", ex);
+            log.error("Bad user sign in - {}", ex);
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
             ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
         }
     }
 
     @Subscribe
-    public void processSessionBusEvent(BusTicketOperatorsFailBusEvent event) {
+    public void onBusTicketOperatorsFail(BusTicketOperatorsFailBusEvent event) {
         log.error("Bad bus tickets operators server response (exception)");
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
         ((InteractionUI) UI.getCurrent()).showNotification("", "Bad bus tickets operators server response", Notification.Type.ERROR_MESSAGE);
     }
 
     @Subscribe
-    public void processSessionBusEvent(BusTicketOperatorsSuccessBusEvent event) {
+    public void onBusTicketOperatorsSuccess(BusTicketOperatorsSuccessBusEvent event) {
 
         //set params to session
-        BusTicketsSettings settings = settingsAppService.getBusTicketsSettings();
+        BusTicketsSessionSettings settings = settingsAppService.getSessionSettings();
         if (settings != null) {
-            settingsAppService.setBusTicketsSettings(new BusTicketsSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals(), settings.getRetailerTerminal()));
+            settingsAppService.setSessionSettings(new BusTicketsSessionSettings(settings.getUser(), settings.getSessionId(), event.getOperators(), settings.getTerminals(), settings.getCurrentRetailerTerminal()));
         }
 
-        updateContent();
+        updateSideBar();
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 }
