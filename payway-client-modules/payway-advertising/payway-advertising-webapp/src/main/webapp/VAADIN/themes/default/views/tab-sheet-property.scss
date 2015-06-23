@@ -1,33 +1,27 @@
 @mixin tab-sheet-property-view {
 
     //var's
-    $btnSavePropertyHeight: 40px;
-    $btnSavePropertyBottomPadding: 5px;
-    $btnSavePropertyRightPadding: 5px;
-    $panelBtnPropertyHeight: $btnSavePropertyHeight + $btnSavePropertyBottomPadding;
+    $panelTabsHeight:305px;
+    $btnSaveHeight:40px;
 
     .tab-property-layout-btn-save {
         float: right;
-        height: 40px;
+        height: $btnSaveHeight;
     }
 
     .tab-property-layout-save{
         //background: green;
         width: 100%;
-        padding-right: $btnSavePropertyRightPadding;
-        height: $panelBtnPropertyHeight;
     }
 
-    .tab-property-layout-tabs {
-
-        padding: 1px;
-        background-color: white;
-
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
+    .tab-property-file-preview {
+        //background: darkorange;
         width: 100%;
         height: 100%;
-        padding-bottom: $panelBtnPropertyHeight;
-        margin-bottom: -1 * $panelBtnPropertyHeight;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-bottom: $panelTabsHeight + $btnSaveHeight;
+        margin-bottom: -1 * ($panelTabsHeight + $btnSaveHeight);
     }
+
 }

@@ -27,8 +27,13 @@
     </properties>
 
     <!-- dependencies-->
-    <dependencies>   
+    <dependencies>  
         
+        <dependency>
+            <groupId>de.steinwedel.vaadin.addon</groupId>
+            <artifactId>messagebox</artifactId>
+        </dependency>
+         
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message-advertising</artifactId>

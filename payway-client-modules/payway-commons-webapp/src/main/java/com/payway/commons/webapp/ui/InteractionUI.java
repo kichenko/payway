@@ -4,6 +4,10 @@
 package com.payway.commons.webapp.ui;
 
 import com.vaadin.ui.Notification;
+import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBox;
+import de.steinwedel.messagebox.MessageBoxListener;
 
 /**
  * Notification
@@ -18,4 +22,6 @@ public interface InteractionUI {
     void showProgressBar();
 
     void closeProgressBar();
+
+    MessageBox showMessageBox(String title, String message, Icon icon, MessageBoxListener listener, ButtonId... buttonIds);
 }

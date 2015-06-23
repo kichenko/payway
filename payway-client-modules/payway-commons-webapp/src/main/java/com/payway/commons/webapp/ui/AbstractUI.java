@@ -12,6 +12,10 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBox;
+import de.steinwedel.messagebox.MessageBoxListener;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,5 +77,10 @@ public abstract class AbstractUI extends UI implements InteractionUI {
                         VaadinSession.getCurrent().close();
                     }
                 }, false));
+    }
+
+    @Override
+    public MessageBox showMessageBox(String title, String message, Icon icon, MessageBoxListener listener, ButtonId... buttonIds) {
+        return MessageBox.showPlain(Icon.INFO, title, message, listener, buttonIds);
     }
 }

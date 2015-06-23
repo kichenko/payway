@@ -14,6 +14,7 @@ import com.payway.advertising.model.DbAgentFile;
 import com.payway.advertising.model.DbAgentFileOwner;
 import com.payway.advertising.model.DbFileType;
 import com.payway.advertising.ui.view.workspace.content.container.AgentFileOwnerBeanItemContainer;
+import com.payway.advertising.ui.view.workspace.content.preview.FilePreviewPanel;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -64,6 +65,9 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @UiField
     private FilePropertyTabAdditional tabAdditional;
+
+    @UiField
+    private FilePreviewPanel filePreviewPanel;
 
     private final FieldGroup fieldGroup = new FieldGroup();
 
@@ -239,7 +243,7 @@ public class FilePropertyPanel extends VerticalLayout {
     public void setUpFileTypeBeanContainer() {
 
         tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-        
+
         tabGeneral.getCbFileType().addItem(DbFileType.Unknown);
         tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "Unknown");
 
@@ -267,10 +271,6 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void showProperty(String rootPath, String relativePath, String fileName, DbAgentFile bean) {
 
-        if (bean == null) {
-            return;
-        }
-
         setBean(bean);
         setRootPath(rootPath);
         setRelativePath(relativePath);
@@ -289,6 +289,8 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.setEnabled(true);
         tabAdditional.setEnabled(true);
         btnSave.setEnabled(true);
+
+        filePreviewPanel.show(fileName, relativePath, bean == null ? null : bean.getKind());
     }
 
     public void clearProperty() {
@@ -304,5 +306,7 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.setEnabled(false);
         tabAdditional.setEnabled(false);
         btnSave.setEnabled(false);
+
+        filePreviewPanel.clear();
     }
 }

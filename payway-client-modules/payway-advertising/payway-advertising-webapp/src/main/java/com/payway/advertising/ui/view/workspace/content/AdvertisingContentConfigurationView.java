@@ -42,9 +42,14 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.server.Extension;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Html5File;
@@ -54,7 +59,12 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
+import de.steinwedel.messagebox.ButtonId;
+import de.steinwedel.messagebox.Icon;
+import de.steinwedel.messagebox.MessageBoxListener;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -102,9 +112,10 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             ROW_EDIT,
             ROW_REMOVE,
             ROW_CFG_APPLY,
+            ROW_DOWNLOAD_FILE,
             TABLE_NEW_FOLDER,
             TABLE_REFRESH_FOLDER,
-            TABLE_CFG_APPLY
+            TABLE_CFG_APPLY,
         }
 
         private MenuAction action;
@@ -122,6 +133,9 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     @UiField
     private HorizontalSplitPanel splitPanel;
+
+    @UiField
+    private Button btnDownloadFile;
 
     private ContextMenu gridContextMenu = new ContextMenu();
 
@@ -188,7 +202,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     private void init() {
         setSizeFull();
-        addComponent(Clara.create("ContentConfigurationView.xml", this));
+        addComponent(Clara.create("AdvertisingContentConfigurationView.xml", this));
 
         splitPanel.setFirstComponent(gridFileExplorer);
         splitPanel.setSecondComponent(panelFileProperty);
@@ -357,10 +371,18 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void buildMenuBar() {
+
+        FileExplorerItemData bean = null;
+        BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+
+        if (container != null && gridFileExplorer.getValue() != null) {
+            bean = container.getItem(gridFileExplorer.getValue()).getBean();
+        }
+
         if (gridFileExplorer.getValue() == null) {
             buildTableCommonMenuBarItems();
         } else {
-            buildTableRowsMenuBarItems();
+            buildTableRowsMenuBarItems(bean);
         }
     }
 
@@ -399,7 +421,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         });
     }
 
-    private void buildTableRowsMenuBarItems() {
+    private void buildTableRowsMenuBarItems(FileExplorerItemData bean) {
 
         getMenuBar().removeItems();
 
@@ -442,6 +464,20 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                 actionMenuRemoveFileOrFolder();
             }
         });
+
+        if (bean != null) {
+            if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
+                //Download
+                getMenuBar().addItem("Download", new ThemeResource("images/grid_files_menu_item_download_file.png"), new MenuBar.Command() {
+                    private static final long serialVersionUID = 7160936162824727503L;
+
+                    @Override
+                    public void menuSelected(MenuBar.MenuItem selectedItem) {
+                        actionMenuDownloadFile();
+                    }
+                });
+            }
+        }
 
         //Apply
         getMenuBar().addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"), new MenuBar.Command() {
@@ -712,7 +748,14 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     private void initContextMenuTableRow(ContextMenu menu, Object data) {
         if (menu != null) {
+
             ContextMenu.ContextMenuItem tmp;
+            FileExplorerItemData bean = null;
+            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+
+            if (container != null && gridFileExplorer.getValue() != null) {
+                bean = container.getItem(gridFileExplorer.getValue()).getBean();
+            }
 
             menu.removeAllItems();
 
@@ -734,6 +777,14 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             tmp.setSeparatorVisible(true);
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_REMOVE, data));
             tmp.addItemClickListener(this);
+
+            if (bean != null) {
+                if (FileExplorerItemData.FileType.File.equals(bean.getFileType())) {
+                    tmp = menu.addItem("Download", new ThemeResource("images/grid_files_menu_item_download_file.png"));
+                    tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_DOWNLOAD_FILE, data));
+                    tmp.addItemClickListener(this);
+                }
+            }
 
             tmp = menu.addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"));
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_CFG_APPLY, data));
@@ -963,6 +1014,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void removeFileOrFolder(final Object selectedItemId) {
+
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
 
@@ -988,6 +1040,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void actionMenuRefreshFolder() {
+
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
             panelFileProperty.clearProperty();
@@ -1006,6 +1059,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void actionMenuEditFileOrFolder() {
+
         Object itemId = gridFileExplorer.getValue();
         if (itemId != null) {
             renameFileOrFolder(gridFileExplorer.getValue());
@@ -1015,51 +1069,136 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void actionMenuRemoveFileOrFolder() {
+
+        String caption = "Delete %s";
+        String title = "Are you sure want to delete %s?";
+        FileExplorerItemData.FileType kind = getGridFileExplorerFileObjectType();
+        String arg = (kind == null) ? "?" : kind.getName();
+
+        ((InteractionUI) UI.getCurrent()).showMessageBox(String.format(caption, arg), String.format(title, arg), Icon.INFO,
+                new MessageBoxListener() {
+                    @Override
+                    public void buttonClicked(ButtonId buttonId) {
+                        if (buttonId.equals(ButtonId.YES)) {
+
+                            Object itemId = gridFileExplorer.getValue();
+                            if (itemId != null) {
+                                removeFileOrFolder(gridFileExplorer.getValue());
+                            } else {
+                                ((InteractionUI) UI.getCurrent()).showNotification("", "Choose object to remove", Notification.Type.ERROR_MESSAGE);
+                            }
+                        }
+                    }
+                },
+                ButtonId.YES,
+                ButtonId.NO
+        );
+    }
+
+    private FileExplorerItemData.FileType getGridFileExplorerFileObjectType() {
+
         Object itemId = gridFileExplorer.getValue();
         if (itemId != null) {
-            removeFileOrFolder(gridFileExplorer.getValue());
-        } else {
-            ((InteractionUI) UI.getCurrent()).showNotification("", "Choose object to remove", Notification.Type.ERROR_MESSAGE);
+            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+            if (container != null) {
+                FileExplorerItemData bean = container.getItem(itemId).getBean();
+                if (bean != null) {
+                    return bean.getFileType();
+                }
+            }
         }
+
+        return null;
     }
 
     private void actionMenuApplyConfig() {
 
-        if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
-            log.error("Bad application settings (empty), cannot apply configuration");
-            ((InteractionUI) UI.getCurrent()).showNotification("", "Empty application settings, cannot apply configuration", Notification.Type.ERROR_MESSAGE);
-            return;
+        ((InteractionUI) UI.getCurrent()).showMessageBox("Applying configuration", "Are you sure want to apply the configuration?", Icon.INFO,
+                new MessageBoxListener() {
+                    @Override
+                    public void buttonClicked(ButtonId buttonId) {
+
+                        if (buttonId.equals(ButtonId.OK)) {
+                            if (StringUtils.isBlank(settingsAppService.getServerConfigPath())) {
+                                log.error("Bad application settings (empty), cannot apply configuration");
+                                ((InteractionUI) UI.getCurrent()).showNotification("", "Empty application settings, cannot apply configuration", Notification.Type.ERROR_MESSAGE);
+                                return;
+                            }
+
+                            FileSystemObject serverPath = new FileSystemObject(fileSystemManagerService.canonicalization(settingsAppService.getServerConfigPath()), FileSystemObject.FileType.FOLDER, 0L, null);
+                            FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(fileSystemManagerService.canonicalization(settingsAppService.getLocalConfigPath())), FileSystemObject.FileType.FOLDER, 0L, null);
+
+                            configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
+                                @Override
+                                public void success() {
+                                    UI.getCurrent().access(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration applying started", Notification.Type.TRAY_NOTIFICATION);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void fail() {
+                                    UI.getCurrent().access(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            log.error("Bad applying server configuration (already applying)");
+                                            ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration already applying", Notification.Type.ERROR_MESSAGE);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                },
+                ButtonId.OK,
+                ButtonId.CANCEL
+        );
+    }
+
+    private void actionMenuDownloadFile() {
+
+        Object itemId = gridFileExplorer.getValue();
+        if (itemId != null) {
+            BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+            if (container != null) {
+                final FileExplorerItemData bean = container.getItem(itemId).getBean();
+                if (bean != null) {
+
+                    List<Extension> extentions = new ArrayList<>(btnDownloadFile.getExtensions());
+                    if (!extentions.isEmpty()) {
+                        btnDownloadFile.removeExtension(new ArrayList<>(btnDownloadFile.getExtensions()).get(0));
+                    }
+
+                    new FileDownloader(new StreamResource(
+                            new StreamResource.StreamSource() {
+                                private static final long serialVersionUID = -2480723276190894707L;
+
+                                @Override
+                                public InputStream getStream() {
+                                    try {
+                                        return fileSystemManagerService.getInputStream(new FileSystemObject(bean.getPath(), FileSystemObject.FileType.FILE, 0L, null));
+                                    } catch (Exception ex) {
+                                        log.error("Bad file download - {}", ex);
+                                    }
+                                    return null;
+                                }
+                            },
+                            bean.getName()
+                    )).extend(btnDownloadFile);
+
+                    //#hack to download file with button
+                    Page.getCurrent().getJavaScript().execute("document.getElementById('btnDownloadFile').click();");
+                }
+            }
         }
-
-        FileSystemObject serverPath = new FileSystemObject(fileSystemManagerService.canonicalization(settingsAppService.getServerConfigPath()), FileSystemObject.FileType.FOLDER, 0L, null);
-        FileSystemObject localPath = new FileSystemObject(Helpers.addEndSeparator(fileSystemManagerService.canonicalization(settingsAppService.getLocalConfigPath())), FileSystemObject.FileType.FOLDER, 0L, null);
-
-        configurationApplyService.apply(UI.getCurrent(), userAppService.getUser().getLogin(), localPath, serverPath, new ApplyConfigRunCallback() {
-            @Override
-            public void success() {
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration applying started", Notification.Type.TRAY_NOTIFICATION);
-                    }
-                });
-            }
-
-            @Override
-            public void fail() {
-                UI.getCurrent().access(new Runnable() {
-                    @Override
-                    public void run() {
-                        log.error("Bad applying server configuration (already applying)");
-                        ((InteractionUI) UI.getCurrent()).showNotification("", "Configuration already applying", Notification.Type.ERROR_MESSAGE);
-                    }
-                });
-            }
-        });
     }
 
     @Override
     public void contextMenuItemClicked(ContextMenu.ContextMenuItemClickEvent event) {
+
         ContextMenu.ContextMenuItem item = (ContextMenu.ContextMenuItem) event.getSource();
         if (item != null) {
             ContextMenuItemData data = (ContextMenuItemData) item.getData();
@@ -1074,8 +1213,22 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                     actionMenuEditFileOrFolder();
                 } else if (ContextMenuItemData.MenuAction.ROW_REMOVE.equals(data.getAction())) {
                     actionMenuRemoveFileOrFolder();
+                } else if (ContextMenuItemData.MenuAction.ROW_DOWNLOAD_FILE.equals(data.getAction())) {
+                    actionMenuDownloadFile();
                 } else if (ContextMenuItemData.MenuAction.TABLE_CFG_APPLY.equals(data.getAction()) || ContextMenuItemData.MenuAction.ROW_CFG_APPLY.equals(data.getAction())) {
-                    actionMenuApplyConfig();
+
+                    ((InteractionUI) UI.getCurrent()).showMessageBox("Applying configuration", "Are you sure want to apply the configuration?", Icon.INFO,
+                            new MessageBoxListener() {
+                                @Override
+                                public void buttonClicked(ButtonId buttonId) {
+                                    if (buttonId.equals(ButtonId.OK)) {
+                                        actionMenuApplyConfig();
+                                    }
+                                }
+                            },
+                            ButtonId.OK,
+                            ButtonId.CANCEL
+                    );
                 }
             }
         }

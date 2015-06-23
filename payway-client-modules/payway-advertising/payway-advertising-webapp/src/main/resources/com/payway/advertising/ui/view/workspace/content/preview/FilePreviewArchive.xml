@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.advertising.ui.view.workspace.content.preview" id="layoutFilePreviewArchive" styleName="" sizeFull="true">
+    <Image id="image" p:componentAlignment="MIDDLE_CENTER"/>
+</VerticalLayout>

@@ -84,9 +84,9 @@ public class BusTicketsSuccessWizardStep extends AbstractWizardStep {
                 try {
                     return new ByteArrayInputStream(GraphicsConverterUtils.convertPdfToImage(content, "png", 0, (int) image.getWidth(), (int) image.getHeight(), BufferedImage.TYPE_INT_RGB, 72));
                 } catch (Exception ex) {
-                    log.error("Bad converting pdf ticket previe to image - {}", ex);
-                    return null;
+                    log.error("Bad converting pdf ticket preview to image - {}", ex);
                 }
+                return null;
             }
         }, fileName));
     }

@@ -25,8 +25,18 @@ public class FileExplorerItemData implements Serializable {
 
     public enum FileType {
 
-        File,
-        Folder
+        File("file"),
+        Folder("folder");
+
+        private final String name;
+
+        private FileType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     private static final long serialVersionUID = -3077409807450078907L;
