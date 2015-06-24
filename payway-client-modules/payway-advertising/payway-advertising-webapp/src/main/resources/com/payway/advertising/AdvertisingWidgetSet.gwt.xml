@@ -25,4 +25,8 @@
     
 
     <inherits name="de.steinwedel.messagebox.WidgetSet" />
+
+    <inherits name="org.vaadin.peter.imagescaler.ImageScalerWidgetset" />
+
+    
 </module>

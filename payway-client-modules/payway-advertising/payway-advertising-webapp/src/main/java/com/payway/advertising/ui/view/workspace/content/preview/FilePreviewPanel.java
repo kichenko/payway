@@ -3,10 +3,16 @@
  */
 package com.payway.advertising.ui.view.workspace.content.preview;
 
+import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.model.DbFileType;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -25,6 +31,10 @@ public class FilePreviewPanel extends Panel {
     @UiField
     private VerticalLayout layoutFilePreview;
 
+    @Getter
+    @Setter
+    private FileSystemManagerService fileSystemManagerService;
+
     public FilePreviewPanel() {
         init();
     }
@@ -33,6 +43,18 @@ public class FilePreviewPanel extends Panel {
         setCaption("File preview");
         setIcon(new ThemeResource("images/file_preview_panel.png"));
         setContent(Clara.create("FilePreviewPanel.xml", this));
+    }
+
+    private BufferedImage loadImage(final String path) {
+
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(fileSystemManagerService.getInputStream(new FileSystemObject(path, FileSystemObject.FileType.FILE, 0L, null)));
+        } catch (Exception ex) {
+            log.error("Bad image - {}", ex);
+        }
+        
+        return img;
     }
 
     public void show(String fileName, String filePath, DbFileType kind) {
@@ -52,7 +74,7 @@ public class FilePreviewPanel extends Panel {
 
             case Banner:
             case Logo:
-                layoutFilePreview.addComponent(new FilePreviewImage());
+                layoutFilePreview.addComponent(new FilePreviewImage(loadImage(filePath), fileName));
                 break;
 
             case Clip:

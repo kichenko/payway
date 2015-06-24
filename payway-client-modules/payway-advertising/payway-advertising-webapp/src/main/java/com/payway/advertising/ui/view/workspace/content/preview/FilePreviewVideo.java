@@ -3,7 +3,9 @@
  */
 package com.payway.advertising.ui.view.workspace.content.preview;
 
+import com.vaadin.server.FileResource;
 import com.vaadin.ui.Video;
+import java.io.File;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -30,5 +32,6 @@ public final class FilePreviewVideo extends AbstractFilePreview {
     protected void init() {
         setSizeFull();
         addComponent(Clara.create("FilePreviewVideo.xml", this));
+        video.setSource(new FileResource(new File("c:\\1.mp4")));
     }
 }

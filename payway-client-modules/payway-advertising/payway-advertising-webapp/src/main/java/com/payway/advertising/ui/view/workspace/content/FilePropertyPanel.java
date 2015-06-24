@@ -290,6 +290,7 @@ public class FilePropertyPanel extends VerticalLayout {
         tabAdditional.setEnabled(true);
         btnSave.setEnabled(true);
 
+        filePreviewPanel.setFileSystemManagerService(fileSystemManagerService);
         filePreviewPanel.show(fileName, relativePath, bean == null ? null : bean.getKind());
     }
 
