@@ -191,6 +191,11 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>imagescaler</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>xuggle</groupId>
+            <artifactId>xuggle-xuggler</artifactId>
+        </dependency>
 
     </dependencies>
 

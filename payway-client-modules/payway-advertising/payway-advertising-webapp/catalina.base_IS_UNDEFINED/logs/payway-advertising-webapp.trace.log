@@ -1,0 +1,43 @@
+13:36:53.960 [main] ERROR com.xuggle.xuggler - URL: c://output.mp4; Error: could not open file (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:53:22.593 [main] ERROR com.xuggle.xuggler - URL: xuggler:5e7de958-c989-453b-99f0-0335c94c03d3-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:54:05.350 [main] ERROR com.xuggle.xuggler - URL: xuggler:08089c7b-a60d-4e68-8ac3-242cc908a5ec-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:54:51.537 [main] ERROR com.xuggle.xuggler - URL: xuggler:f8bdb246-1353-4902-b626-f6ab14a6e0ad-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:55:26.726 [main] ERROR com.xuggle.xuggler - URL: xuggler:0be044a8-8652-44d9-bf39-91110e1e8481-java.io.FileInputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:56:11.093 [main] ERROR com.xuggle.xuggler - URL: xuggler:f03379e3-5f0b-4e93-a1dd-d9e78b56790f-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+13:56:43.894 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B95D0B0] error, slice code was 0
+13:56:43.894 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B95D0B0] header damaged
+13:57:31.875 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AD8D0B0] error, slice code was 0
+13:57:31.891 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AD8D0B0] header damaged
+14:19:03.829 [main] ERROR com.xuggle.xuggler - URL: xuggler:885a3dbc-0efa-473f-bcc4-05afcd941481-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+14:19:33.687 [main] ERROR com.xuggle.xuggler - URL: xuggler:c2c9d1e2-9819-497c-80d7-26cc44f12acb-java.io.FileOutputStream-5276d6ee; Error: could not find output format (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:513)
+14:25:44.081 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AF4D0B0] error, slice code was 0
+14:25:44.081 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AF4D0B0] header damaged
+14:27:40.399 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B9AD0B0] error, slice code was 0
+14:27:40.415 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B9AD0B0] header damaged
+14:31:21.949 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001ADBD0B0] error, slice code was 0
+14:31:21.949 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001ADBD0B0] header damaged
+14:32:13.174 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B00D0B0] error, slice code was 0
+14:32:13.174 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B00D0B0] header damaged
+14:34:39.149 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B69D0B0] error, slice code was 0
+14:34:39.149 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B69D0B0] header damaged
+14:35:33.175 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AFBD0B0] error, slice code was 0
+14:35:33.178 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AFBD0B0] header damaged
+14:36:40.405 [main] ERROR org.ffmpeg - [h263 @ 000000001ABCC860] The specified picture size of 1440x900 is not valid for the H.263 codec.
+Valid sizes are 128x96, 176x144, 352x288, 704x576, and 1408x1152. Try H.263+.
+14:36:40.405 [main] WARN  com.xuggle.xuggler - Error: could not open codec (../../../../../../../csrc/com/xuggle/xuggler/StreamCoder.cpp:831)
+14:37:14.471 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AE5AD60] error, slice code was 0
+14:37:14.471 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AE5AD60] header damaged
+14:38:40.390 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AAEAD60] error, slice code was 0
+14:38:40.390 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AAEAD60] header damaged
+14:39:24.725 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AF0AD60] error, slice code was 0
+14:39:24.725 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AF0AD60] header damaged
+14:39:53.961 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B27AD60] error, slice code was 0
+14:39:53.961 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B27AD60] header damaged
+14:40:36.147 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B62AD60] error, slice code was 0
+14:40:36.147 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B62AD60] header damaged
+14:45:55.257 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AA4D0B0] error, slice code was 0
+14:45:55.263 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001AA4D0B0] header damaged
+14:46:34.990 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B8FD0B0] error, slice code was 0
+14:46:34.992 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B8FD0B0] header damaged
+15:02:45.557 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001A79AD60] error, slice code was 0
+15:02:45.557 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001A79AD60] header damaged

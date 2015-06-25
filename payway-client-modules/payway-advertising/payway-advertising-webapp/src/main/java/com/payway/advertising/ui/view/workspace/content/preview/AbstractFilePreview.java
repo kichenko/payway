@@ -4,6 +4,7 @@
 package com.payway.advertising.ui.view.workspace.content.preview;
 
 import com.vaadin.ui.VerticalLayout;
+import java.io.InputStream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,4 +19,8 @@ public abstract class AbstractFilePreview extends VerticalLayout {
     private static final long serialVersionUID = 9074580570822532757L;
 
     protected abstract void init();
+
+    protected abstract void loadContent(InputStream stream, String fileName);
+
+    public abstract AbstractFilePreview build(InputStream stream, String fileName);
 }

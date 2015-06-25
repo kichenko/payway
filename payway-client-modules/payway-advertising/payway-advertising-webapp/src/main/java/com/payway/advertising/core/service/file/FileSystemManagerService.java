@@ -5,6 +5,7 @@ package com.payway.advertising.core.service.file;
 
 import com.payway.advertising.core.service.exception.FileSystemManagerServiceException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ public interface FileSystemManagerService {
     boolean exist(FileSystemObject src) throws FileSystemManagerServiceException;
 
     InputStream getInputStream(FileSystemObject src) throws FileSystemManagerServiceException;
+
+    OutputStream getOutputStream(FileSystemObject src) throws FileSystemManagerServiceException;
 
     String canonicalization(String path);
 }

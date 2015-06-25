@@ -5,6 +5,7 @@ package com.payway.advertising.core.service.file;
 
 import com.payway.advertising.core.service.exception.FileSystemManagerServiceException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -176,6 +177,22 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
             FileObject fo = fileSystemManager.resolveFile(src.getPath());
             if (FileType.FILE.equals(fo.getType())) {
                 is = fo.getContent().getInputStream();
+            }
+        } catch (Exception ex) {
+            log.error("Bad file input stream", ex);
+            throw new FileSystemManagerServiceException("Error receive file system object input stream", ex);
+        }
+
+        return is;
+    }
+
+    @Override
+    public OutputStream getOutputStream(FileSystemObject src) throws FileSystemManagerServiceException {
+        OutputStream is = null;
+        try {
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
+            if (FileType.FILE.equals(fo.getType())) {
+                is = fo.getContent().getOutputStream();
             }
         } catch (Exception ex) {
             log.error("Bad file input stream", ex);

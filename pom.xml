@@ -80,6 +80,8 @@
         
         <org.apache.pdfbox.version>1.8.9</org.apache.pdfbox.version>
         <net.coobird.thumbnailator>0.4.8</net.coobird.thumbnailator>
+        
+        <xuggle.version>5.4</xuggle.version>
     </properties>
 
     <build>
@@ -460,6 +462,13 @@
                 <artifactId>thumbnailator</artifactId>
                 <version>${net.coobird.thumbnailator}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>xuggle</groupId>
+                <artifactId>xuggle-xuggler</artifactId>
+                <scope>provided</scope>
+                <version>${xuggle.version}</version>
+            </dependency>
                        
         </dependencies>
     </dependencyManagement>
@@ -482,17 +491,22 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-
-        <!--
+        
         <repository>
-            <id>commons-vfs</id>
-            <name>Apache Commons VFS Repository Group</name>
-            <url>https://repository.apache.org/content/groups/snapshots/</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>xuggle</id>
+            <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
         </repository>
+
+        <!--    
+            <repository>
+                <id>commons-vfs</id>
+                <name>Apache Commons VFS Repository Group</name>
+                <url>https://repository.apache.org/content/groups/snapshots/</url>
+                <layout>default</layout>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
         -->
 
     </repositories>
