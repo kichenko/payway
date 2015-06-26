@@ -81,7 +81,7 @@
         <org.apache.pdfbox.version>1.8.9</org.apache.pdfbox.version>
         <net.coobird.thumbnailator>0.4.8</net.coobird.thumbnailator>
         
-        <xuggle.version>5.4</xuggle.version>
+        <xuggle.version>5.3</xuggle.version>
     </properties>
 
     <build>

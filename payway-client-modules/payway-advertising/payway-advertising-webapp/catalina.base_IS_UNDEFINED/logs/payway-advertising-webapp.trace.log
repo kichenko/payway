@@ -41,3 +41,20 @@ Valid sizes are 128x96, 176x144, 352x288, 704x576, and 1408x1152. Try H.263+.
 14:46:34.992 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B8FD0B0] header damaged
 15:02:45.557 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001A79AD60] error, slice code was 0
 15:02:45.557 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001A79AD60] header damaged
+11:54:34.331 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001BB3D0B0] error, slice code was 0
+11:54:34.363 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001BB3D0B0] header damaged
+13:49:30.712 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B6BAD60] error, slice code was 0
+13:49:30.714 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B6BAD60] header damaged
+14:13:10.748 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B53D0B0] error, slice code was 0
+14:13:10.764 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B53D0B0] header damaged
+14:15:02.806 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B6DD0B0] error, slice code was 0
+14:15:02.806 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B6DD0B0] header damaged
+14:51:11.360 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B5BAD60] error, slice code was 0
+14:51:11.360 [main] ERROR org.ffmpeg - [msmpeg4v2 @ 000000001B5BAD60] header damaged
+18:16:53.579 [main] WARN  com.xuggle.xuggler - Could not find streams in input container (../../../../../../../csrc/com/xuggle/xuggler/Container.cpp:898)
+18:46:08.719 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001B521010] moov atom not found
+18:47:45.797 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001AF11010] moov atom not found
+18:48:29.366 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001ADC1010] stream 0, offset 0x437e: partial file
+18:52:00.381 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001AD01010] stream 0, offset 0x437e: partial file
+18:54:22.216 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001AED1010] moov atom not found
+19:02:37.329 [main] ERROR org.ffmpeg - [mov,mp4,m4a,3gp,3g2,mj2 @ 000000001B9D1010] stream 0, offset 0x437e: partial file

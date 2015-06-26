@@ -196,6 +196,12 @@
             <groupId>xuggle</groupId>
             <artifactId>xuggle-xuggler</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>it.sauronsoftware</groupId>
+            <artifactId>jave</artifactId>
+            <version>1.0.2</version>  
+        </dependency>
 
     </dependencies>
 
