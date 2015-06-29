@@ -6,7 +6,6 @@ package com.payway.media.core.attributes.video;
 import com.payway.media.core.attribures.AbstractAttributes;
 import com.payway.media.core.codec.Codec;
 import java.util.Properties;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,9 +22,9 @@ import lombok.ToString;
  * @created 27.06.15 00:00
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Setter(AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true)
 public class VideoAttributes extends AbstractAttributes {
 

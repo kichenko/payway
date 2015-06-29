@@ -18,3 +18,8 @@ nb-configuration.xml
 /payway-messaging/payway-messaging-message/target/
 /payway-messaging/payway-messaging-model/target/
 /payway-messaging/payway-messaging-hazelcast/target/
+/payway-client-modules/payway-commons-webapp/target/
+/payway-messaging/payway-messaging-model-advertising/target/
+/payway-messaging/payway-messaging-message-advertising/target/
+/payway-media/payway-media-core/target/
+/payway-media/payway-media-xuggler/target/

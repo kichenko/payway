@@ -48,7 +48,7 @@ public class PersistenceConfig {
         factoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         factoryBean.setDataSource(dataSource);
 
-        factoryBean.setMappingResources("DbAgentFile.hbm.xml", "DbAgentFileOwner.hbm.xml", "DbUser.hbm.xml");
+        factoryBean.setMappingResources("DbAgentFile.hbm.xml", "DbAgentFileOwner.hbm.xml", "DbUser.hbm.xml", "DbConfiguration.hbm.xml");
 
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty(AvailableSettings.DIALECT, PostgreSQL82Dialect.class.getName());

@@ -14,7 +14,7 @@ import java.util.List;
  * @author Sergey Kichenko
  * @created 10.05.15 00:00
  */
-public interface SettingsAppService {
+public interface SettingsAppService extends DatabaseAppSettings {
 
     String getLocalConfigPath();
 
