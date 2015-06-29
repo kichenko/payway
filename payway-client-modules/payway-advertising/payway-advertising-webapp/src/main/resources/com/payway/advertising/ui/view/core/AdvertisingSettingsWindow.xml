@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tab="urn:import:com.payway.advertising.ui.view.core" id="advertisingSettingsLayout" styleName="" sizeFull="true">
+    
+    <VerticalLayout id="layoutTab" styleName="" width="100%">
+        <TabSheet id="tabSheetSettings" styleName="framed padded-tabbar"/>
+        <tab:VideoFileConvertSettingsTab id="videoFileConvertSettingsTab"/>
+    </VerticalLayout>
+            
+    <HorizontalLayout id="layoutFooter" width="100%" styleName="">
+        <Button id="btnCancel" styleName=""/>
+        <Button id="btnSave" styleName="primary"/>
+    </HorizontalLayout>
+    
+</VerticalLayout>

@@ -16,6 +16,7 @@ import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindows
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
+import com.payway.advertising.ui.view.core.AdvertisingSettingsWindow;
 import com.payway.advertising.ui.view.workspace.content.AdvertisingContentConfigurationView;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
@@ -26,6 +27,7 @@ import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
+import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.LoginView;
 import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -34,6 +36,7 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
@@ -142,6 +145,25 @@ public class AdvertisingUI extends AbstractUI {
         if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
             sessionEventBus.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
         }
+    }
+
+    @Override
+    protected List<AbstractMainView.UserMenuItem> getMenuBarItems() {
+
+        List<AbstractMainView.UserMenuItem> menus = new ArrayList<>(2);
+
+        menus.add(new AbstractMainView.UserMenuItem("Settings", new ThemeResource("images/user_menu_item_settings.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(final MenuBar.MenuItem selectedItem) {
+                new AdvertisingSettingsWindow("Settings", settingsAppService).show();
+            }
+        }, true));
+
+        menus.add(super.getMenuBarItems().get(0));
+
+        return menus;
     }
 
     /**

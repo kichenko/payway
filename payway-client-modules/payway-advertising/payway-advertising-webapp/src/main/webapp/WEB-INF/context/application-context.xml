@@ -3,11 +3,13 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <task:annotation-driven/>
     <context:component-scan base-package="com.payway.advertising com.payway.commons.webapp" />
@@ -86,4 +88,46 @@
         </property>
     </bean>
     
+    <!-- Contains all file ext's, that may be handled by FileVideoConverterHandler-->
+    <util:list id="supportedVideoFileExtensions" list-class="java.util.ArrayList">
+        <value>avi</value>
+        <value>mp4</value>
+        <value>ogv</value>
+        <value>ogg</value>
+        <value>3gp</value>
+        <value>wmv</value>
+        <value>mpeg</value>
+        <value>mpg</value>
+    </util:list>
+    
+    <!-- Xuggler video converter-->
+    <bean id = "videoConverter" class="com.payway.xuggler.core.converter.video.impl.XugglerVideoConverter"/>
+    
+    <!-- Xuggler media container service -->
+    <bean id = "formatContainerService" class="com.payway.xuggler.media.core.container.service.impl.XugglerContainerService"/>
+    
+    <!--Video file converter handler based on Xuggler-->
+    <bean id = "fileVideoConverterHandler" class="com.payway.advertising.core.handlers.FileVideoConverterHandler">
+        <property name="supportedVideoFileExtensions" ref="supportedVideoFileExtensions"/>
+        <property name="videoConverter" ref="xugglerVideoConverter"/>
+        <property name="settingsAppService" ref="settingsAppService"/>
+    </bean>
+    
+    <!--Destantion file copy handler based -->
+    <bean id = "fileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
+        <property name="fileSystemManagerService" ref="fileSystemManagerService"/>
+        <property name="settingsAppService" ref="settingsAppService"/>
+    </bean>
+    
+    <!-- Contains all file upload processor handler's-->
+    <util:list id="fileUploadedHandlers" value-type="com.payway.advertising.core.handlers.FileHandler" list-class="java.util.ArrayList">
+        <ref bean="fileVideoConverterHandler"/>
+        <ref bean="fileDestCopyHandler"/>
+    </util:list>
+    
+    <!-- File upload processor task with defined handlers -->
+    <bean id = "FileUploadedProcessorTask" class="com.payway.advertising.core.handlers.FileUploadedProcessorTask" scope="prototype">
+        <property name="handlers" ref="fileUploadedHandlers"/>
+    </bean>
+        
 </beans>

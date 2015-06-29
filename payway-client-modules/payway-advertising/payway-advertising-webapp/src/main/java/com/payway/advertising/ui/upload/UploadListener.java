@@ -3,7 +3,6 @@
  */
 package com.payway.advertising.ui.upload;
 
-
 /**
  * UploadListener
  *

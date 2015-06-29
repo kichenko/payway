@@ -4,9 +4,10 @@
 package com.payway.bustickets.ui.view.workspace;
 
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
-import com.vaadin.spring.annotation.UIScope;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 
@@ -17,7 +18,7 @@ import org.vaadin.teemu.clara.Clara;
  * @created 08.06.15 00:00
  */
 @Slf4j
-@UIScope
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component(value = BusTicketsEmptyWorkspaceView.BUS_TICKETS_EMPTY_WORKSPACE_VIEW_ID)
 public class BusTicketsEmptyWorkspaceView extends AbstractBusTicketsWorkspaceView {
 

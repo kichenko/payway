@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="videoFileConvertSettingsTab" styleName="" sizeFull="true">
+              
+    <FormLayout id="layoutParams" sizeFull="true">
+        <CheckBox id ="chConvertVideo" caption="Enable video convert" width="100%"/>
+        <ComboBox id="cbFormatContainer"  nullSelectionAllowed="false" caption="Current media format" textInputAllowed="false" styleName="" width="100%"/>   
+        <Slider id="sliderVideoBitRate" caption="Video bit rate" styleName="" width="100%"/>   
+    </FormLayout>
+
+</VerticalLayout>

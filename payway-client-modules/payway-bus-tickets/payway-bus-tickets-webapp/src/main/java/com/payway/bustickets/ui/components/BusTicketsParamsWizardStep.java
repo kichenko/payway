@@ -3,11 +3,11 @@
  */
 package com.payway.bustickets.ui.components;
 
+import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
 import com.payway.bustickets.ui.components.containers.ChoiceDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.DirectionDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.RouteDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.filters.RouteByDirectionFilter;
-import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
@@ -147,9 +147,15 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
                 if (event.getProperty().getValue() != null) {
                     RouteDto route = ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getItem(event.getProperty().getValue()).getBean();
                     if (route != null) {
-                        getSliderQuantity().setMax(route.getSeatsTotal());
+
+                        if (route.getSeatsTotal() <= 0) {
+                            getSliderQuantity().setMax(1.0);
+                        } else {
+                            getSliderQuantity().setMax(route.getSeatsTotal());
+                        }
+
                         if (getSliderQuantity().getValue().intValue() > getSliderQuantity().getMax()) {
-                            getSliderQuantity().setValue(0.0);
+                            getSliderQuantity().setValue(1.0);
                         }
                     }
                 }
@@ -171,9 +177,9 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
     public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
 
         getEditContactNo().setValue("");
-        getSliderQuantity().setMin(0.0);
+        getSliderQuantity().setMin(1.0);
         getSliderQuantity().setMax(100.0);
-        getSliderQuantity().setValue(0.0);
+        getSliderQuantity().setValue(1.0);
         getLblSummary().setValue("");
 
         ((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).addAll(directions);

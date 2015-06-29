@@ -27,9 +27,9 @@ public interface UploadTask {
 
     String getTmpFileExt();
 
-    void setPath(String path);
+    void setUploadPath(String path);
 
-    String getPath();
+    String getUploadPath();
 
     int getBufferSize();
 
@@ -44,4 +44,16 @@ public interface UploadTask {
     void setUploadObject(Object uploadObject);
 
     Object getUploadObject();
+
+    String getUploadTempFileName();
+
+    void setUploadTempFileName(String fileName);
+
+    FileUploadedProcessorTaskListener getFileUploadedProcessorTaskListener();
+
+    void setFileUploadedProcessorTaskListener(FileUploadedProcessorTaskListener callback);
+
+    void setDestFilePath(String path);
+
+    String getDestFilePath();
 }

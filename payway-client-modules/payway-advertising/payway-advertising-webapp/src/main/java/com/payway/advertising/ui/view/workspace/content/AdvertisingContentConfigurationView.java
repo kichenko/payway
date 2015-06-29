@@ -24,7 +24,7 @@ import com.payway.advertising.model.helpers.clonable.DbAgentFileDeepCopyClonable
 import com.payway.advertising.ui.component.BreadCrumbs;
 import com.payway.advertising.ui.component.TextEditDialogWindow;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
-import com.payway.advertising.ui.upload.UploadListener;
+import com.payway.advertising.ui.component.UploadTaskPanel;
 import com.payway.advertising.ui.upload.UploadTask;
 import com.payway.advertising.ui.upload.UploadTaskDnD;
 import com.payway.advertising.ui.upload.UploadTaskFileInput;
@@ -48,7 +48,6 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -77,21 +76,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
- * ContentConfigurationView
+ * AdvertisingContentConfigurationView
  *
  * @author Sergey Kichenko
  * @created 22.04.15 00:00
  */
 @Slf4j
-@UIScope
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component(value = AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID)
-public class AdvertisingContentConfigurationView extends AbstractAdvertisingWorkspaceView implements UploadListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
+public class AdvertisingContentConfigurationView extends AbstractAdvertisingWorkspaceView implements UploadTaskPanel.UploadEventListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
     public static final String ADVERTISING_CONTENT_WORKSPACE_VIEW_ID = ADVERTISING_DEFAULT_WORKSPACE_VIEW_PREFIX + "content-configuration";
 
@@ -241,6 +242,9 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                 panelFileProperty.clearProperty();
                 isFileGridLoadedOnActivate = true;
 
+                getUploadTaskPanel().setUploadEventListener(this);
+                getUploadTaskPanel().setBeanService(getBeanService());
+
                 activateFileUploadButton();
                 activateDragAndDropWrapper();
                 activateMenuBar();
@@ -267,18 +271,18 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             public boolean process(Upload upload, Upload.StartedEvent event) {
                 boolean ok = false;
                 if (upload != null) {
-                    UploadTaskFileInput task = new UploadTaskFileInput(getCurrentPath(), settingsAppService.getUploadBufferSize());
+                    UploadTaskFileInput task = new UploadTaskFileInput(settingsAppService.getTemporaryUploadDirPath(), getCurrentPath(), settingsAppService.getUploadBufferSize());
 
                     task.setUploadObject(upload);
                     task.setFileName(event.getFilename());
                     task.setFileSize(event.getContentLength());
-                    task.addListener(AdvertisingContentConfigurationView.this);
+                    //?task.addListener(AdvertisingContentConfigurationView.this);
                     task.setTmpFileExt(settingsAppService.getTemporaryFileExt());
                     upload.setReceiver(task);
 
                     if (fileNameValidator.validate(task.getFileName())) {
                         try {
-                            if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                            if (fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                 ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                             } else {
                                 getUploadTaskPanel().addUploadTask(task);
@@ -321,16 +325,16 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                     for (final Html5File file : files) {
                         if (fileNameValidator.validate(file.getFileName())) {
 
-                            UploadTask task = new UploadTaskDnD(getCurrentPath(), settingsAppService.getUploadBufferSize());
+                            UploadTask task = new UploadTaskDnD(settingsAppService.getTemporaryUploadDirPath(), getCurrentPath(), settingsAppService.getUploadBufferSize());
 
-                            task.addListener(AdvertisingContentConfigurationView.this);
+                            //?task.addListener(AdvertisingContentConfigurationView.this);
                             task.setFileName(file.getFileName());
                             task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
                             task.setFileSize(file.getFileSize());
                             task.setUploadObject(file);
 
                             try {
-                                if (fileSystemManagerService.exist(new FileSystemObject(task.getPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                                if (fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                     task.interrupt();
                                     ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                                 } else {
@@ -350,22 +354,13 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     @Override
-    public void updateProgress(UploadTask task, long readBytes, long contentLength) {
-        //
-    }
+    public void onFinish(UploadTask task) {
 
-    @Override
-    public void uploadFailed(UploadTask task, boolean isInterrupted) {
-        //
-    }
-
-    @Override
-    public void uploadSucceeded(UploadTask task) {
         //update grid then file is upload
-        if (getCurrentPath().equals(task.getPath())) {
+        if (getCurrentPath().equals(task.getDestFilePath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getUploadPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
             }
         }
     }

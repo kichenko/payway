@@ -49,21 +49,24 @@
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-advertising-model</artifactId>
-            <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-advertising-data</artifactId>
-            <scope>compile</scope>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
-            <scope>compile</scope>
+            <version>${project.parent.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-media-xuggler</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         
@@ -191,18 +194,7 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>imagescaler</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>xuggle</groupId>
-            <artifactId>xuggle-xuggler</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>it.sauronsoftware</groupId>
-            <artifactId>jave</artifactId>
-            <version>1.0.2</version>  
-        </dependency>
-
+                
     </dependencies>
 
     <!-- build -->

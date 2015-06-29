@@ -25,8 +25,8 @@ public class UploadTaskDnD extends AbstractUploadTask implements StreamVariable 
         super();
     }
 
-    public UploadTaskDnD(String path, int bufSize) {
-        super(path, bufSize);
+    public UploadTaskDnD(String uploadPath, String destFilePath, int bufSize) {
+        super(uploadPath, destFilePath, bufSize);
     }
 
     @Override

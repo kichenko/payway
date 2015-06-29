@@ -22,10 +22,10 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
- * AbstractUI
+ * BusTicketsSettingsWindow
  *
  * @author Sergey Kichenko
- * @created 21.05.15 00:00
+ * @created 21.06.15 00:00
  */
 public class BusTicketsSettingsWindow extends Window {
 

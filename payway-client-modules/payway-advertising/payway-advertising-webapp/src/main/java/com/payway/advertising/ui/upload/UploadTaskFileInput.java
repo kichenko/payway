@@ -25,8 +25,8 @@ public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Re
         super();
     }
 
-    public UploadTaskFileInput(String path, int bufferSize) {
-        super(path, bufferSize);
+    public UploadTaskFileInput(String uploadPath, String destFilePath, int bufferSize) {
+        super(uploadPath, destFilePath, bufferSize);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Re
     @Override
     public void interrupt() {
         if (upload != null) {
-            interrupted = true;
+            super.interrupt();
             upload.interruptUpload();
         }
     }
@@ -69,6 +69,7 @@ public class UploadTaskFileInput extends AbstractUploadTask implements Upload.Re
 
     @Override
     public void uploadFailed(Upload.FailedEvent event) {
+
         //then upload is failed, remove tmp uploaded file
         removeTmpUploadedFile();
 

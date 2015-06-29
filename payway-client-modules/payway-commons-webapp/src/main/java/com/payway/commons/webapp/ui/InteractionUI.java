@@ -17,7 +17,7 @@ import de.steinwedel.messagebox.MessageBoxListener;
  */
 public interface InteractionUI {
 
-    void showNotification(String caption, String text, Notification.Type kind);
+    void showNotification(String title, String message, Notification.Type kind);
 
     void showProgressBar();
 

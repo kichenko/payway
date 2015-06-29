@@ -7,8 +7,10 @@ import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.ProgressBarWindow;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -34,8 +36,17 @@ public abstract class AbstractUI extends UI implements InteractionUI {
     private int progressCounter;
 
     @Override
-    public void showNotification(String caption, String text, Notification.Type kind) {
-        Notification.show(text, kind);
+    public void showNotification(String title, String message, Notification.Type kind) {
+
+        if (Notification.Type.ERROR_MESSAGE.equals(kind)) {
+            Notification notification = new Notification(message, kind);
+            notification.setPosition(Position.MIDDLE_CENTER);
+            notification.setStyleName("closable error");
+            notification.show(Page.getCurrent());
+        } else {
+            Notification.show(message, kind);
+        }
+        
         UI.getCurrent().push();
     }
 
