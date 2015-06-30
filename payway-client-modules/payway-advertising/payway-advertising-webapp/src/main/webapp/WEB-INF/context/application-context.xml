@@ -89,7 +89,7 @@
     </bean>
     
     <!-- Contains all file ext's, that may be handled by FileVideoConverterHandler-->
-    <util:list id="supportedVideoFileExtensions" list-class="java.util.ArrayList">
+    <util:list id="supportedVideoFileExtensions" list-class="java.util.ArrayList" value-type="java.lang.String">
         <value>avi</value>
         <value>mp4</value>
         <value>ogv</value>
@@ -101,7 +101,7 @@
     </util:list>
     
     <!-- Xuggler video converter-->
-    <bean id = "videoConverter" class="com.payway.xuggler.core.converter.video.impl.XugglerVideoConverter"/>
+    <bean id = "videoConverter" class="com.payway.xuggler.core.converter.video.impl.XugglerVideoConverter" scope="prototype"/>
     
     <!-- Xuggler media container service -->
     <bean id = "formatContainerService" class="com.payway.xuggler.media.core.container.service.impl.XugglerContainerService"/>
@@ -109,13 +109,13 @@
     <!--Video file converter handler based on Xuggler-->
     <bean id = "fileVideoConverterHandler" class="com.payway.advertising.core.handlers.FileVideoConverterHandler">
         <property name="supportedVideoFileExtensions" ref="supportedVideoFileExtensions"/>
-        <property name="videoConverter" ref="xugglerVideoConverter"/>
+        <property name="videoConverter" ref="videoConverter"/>
         <property name="settingsAppService" ref="settingsAppService"/>
     </bean>
     
     <!--Destantion file copy handler based -->
     <bean id = "fileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
-        <property name="fileSystemManagerService" ref="fileSystemManagerService"/>
+        <property name="fileSystemManagerService" ref="fileManagerService"/>
         <property name="settingsAppService" ref="settingsAppService"/>
     </bean>
     
@@ -126,7 +126,7 @@
     </util:list>
     
     <!-- File upload processor task with defined handlers -->
-    <bean id = "FileUploadedProcessorTask" class="com.payway.advertising.core.handlers.FileUploadedProcessorTask" scope="prototype">
+    <bean id = "fileUploadedProcessorTask" class="com.payway.advertising.core.handlers.FileUploadedProcessorTask" scope="prototype">
         <property name="handlers" ref="fileUploadedHandlers"/>
     </bean>
         

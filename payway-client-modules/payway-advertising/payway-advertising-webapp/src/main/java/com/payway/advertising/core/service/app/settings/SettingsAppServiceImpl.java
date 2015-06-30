@@ -3,6 +3,8 @@
  */
 package com.payway.advertising.core.service.app.settings;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ServiceException;
@@ -14,10 +16,10 @@ import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
 import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.media.core.attributes.audio.AudioAttributes;
 import com.payway.media.core.attributes.video.VideoAttributes;
-import com.payway.media.core.codec.impl.LibTheoraCodec;
-import com.payway.media.core.codec.impl.LibVorbisCodec;
+import com.payway.media.core.codec.Codec;
+import com.payway.media.core.codec.CodecDirection;
+import com.payway.media.core.codec.CodecType;
 import com.payway.media.core.container.FormatContainer;
-import com.payway.media.core.container.impl.OggFormatContainer;
 import com.payway.media.core.container.service.ContainerService;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.message.SettingsChangedMessage;
@@ -61,6 +63,21 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     @Value("${app.config.upload.tmp.dir.path}")
     private String temporaryUploadDirPath;
 
+    @Value("${app.media.video.converting.default.format}")
+    private String appMediaVideoConvertingDefaultFormat;
+
+    @Value("${app.media.video.converting.default.format.codec.encoder.audio}")
+    private String appMediaVideoConvertingDefaultFormatCodecEncoderAudio;
+
+    @Value("${app.media.video.converting.default.format.codec.encoder.video}")
+    private String appMediaVideoConvertingDefaultFormatCodecEncoderVideo;
+
+    @Value("${app.media.video.converting.default.format.codec.encoder.video.bitrate}")
+    private int appMediaVideoConvertingDefaultFormatCodecEncoderVideoBitrate;
+
+    @Value("${app.media.video.converting.enable}")
+    private boolean convertVideoFiles;
+
     @Value("")
     private String contextPath;
 
@@ -82,16 +99,62 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
 
     private AudioAttributes audioAttributes;
 
-    private boolean convertVideoFiles;
-
     @PostConstruct
     public void postConstruct() {
 
-        currentFormatContainer = new OggFormatContainer();
         supportedFormatContainers = formatContainerService.getSupportedFormatContainers();
 
-        audioAttributes = new AudioAttributes(new LibVorbisCodec(), 0, 0, 0, 0, 0, null);
-        videoAttributes = new VideoAttributes(new LibTheoraCodec(), null, 1400 * 1000, 0, 0, 0, null);
+        audioAttributes = new AudioAttributes(null, 0, 0, 0, 0, 0, null);
+        videoAttributes = new VideoAttributes(null, null, appMediaVideoConvertingDefaultFormatCodecEncoderVideoBitrate * 1000, 0, 0, 0, null);
+
+        for (FormatContainer fmt : supportedFormatContainers) {
+            if (appMediaVideoConvertingDefaultFormat.equals(fmt.getId())) {
+                currentFormatContainer = fmt;
+                break;
+            }
+        }
+
+        /**
+         *
+         * Set defaults audio & video codec encoders, if it's possible
+         *
+         */
+        if (currentFormatContainer != null) {
+
+            List<Codec> supportedCodecs = currentFormatContainer.getSupportedCodecs();
+
+            List<Codec> audioEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
+                @Override
+                public boolean apply(Codec codec) {
+                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Audio.equals(codec.getType());
+                }
+            }).toList();
+
+            List<Codec> videoEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
+                @Override
+                public boolean apply(Codec codec) {
+                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Video.equals(codec.getType());
+                }
+            }).toList();
+
+            if (getAudioAttributes() != null) {
+                for (Codec codec : audioEncoder) {
+                    if (codec.getId().equals(appMediaVideoConvertingDefaultFormatCodecEncoderAudio)) {
+                        getAudioAttributes().setCodec(codec);
+                        break;
+                    }
+                }
+            }
+
+            if (getVideoAttributes() != null) {
+                for (Codec codec : videoEncoder) {
+                    if (codec.getId().equals(appMediaVideoConvertingDefaultFormatCodecEncoderVideo)) {
+                        getVideoAttributes().setCodec(codec);
+                        break;
+                    }
+                }
+            }
+        }
 
         try {
             load();
@@ -187,7 +250,40 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
 
     @Override
     public void setCurrentFormatContainer(FormatContainer currentFormatContainer) {
+
         this.currentFormatContainer = currentFormatContainer;
+
+        /**
+         *
+         * Set defaults audio & video codec encoders, if it's possible
+         *
+         */
+        if (currentFormatContainer != null) {
+
+            List<Codec> supportedCodecs = currentFormatContainer.getSupportedCodecs();
+
+            List<Codec> audioEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
+                @Override
+                public boolean apply(Codec codec) {
+                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Audio.equals(codec.getType());
+                }
+            }).toList();
+
+            List<Codec> videoEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
+                @Override
+                public boolean apply(Codec codec) {
+                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Video.equals(codec.getType());
+                }
+            }).toList();
+
+            if (getAudioAttributes() != null && !audioEncoder.isEmpty()) {
+                getAudioAttributes().setCodec(audioEncoder.get(0));
+            }
+
+            if (getVideoAttributes() != null && !videoEncoder.isEmpty()) {
+                getVideoAttributes().setCodec(videoEncoder.get(0));
+            }
+        }
     }
 
     @Override
@@ -232,9 +328,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         List<DbConfigurationKeyType> keys = new ArrayList<>(3);
 
         Collections.addAll(keys,
-          DbConfigurationKeyType.AdvertisingConvertVideoEnable,
-          DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
-          DbConfigurationKeyType.AdvertisingConvertVideoBitRate
+                DbConfigurationKeyType.AdvertisingConvertVideoEnable,
+                DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
+                DbConfigurationKeyType.AdvertisingConvertVideoBitRate
         );
 
         List<DbConfiguration> configs = configurationService.getByKeys(keys);

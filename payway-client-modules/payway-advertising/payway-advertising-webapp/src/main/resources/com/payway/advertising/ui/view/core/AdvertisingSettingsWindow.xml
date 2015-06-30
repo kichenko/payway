@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tab="urn:import:com.payway.advertising.ui.view.core" id="advertisingSettingsLayout" styleName="" sizeFull="true">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tab="urn:import:com.payway.advertising.ui.view.core" id="advertisingSettingsLayout" styleName="common-padding-all" sizeFull="true">
     
-    <VerticalLayout id="layoutTab" styleName="" width="100%">
+    <CssLayout id="layoutTab" styleName="" width="100%">
         <TabSheet id="tabSheetSettings" styleName="framed padded-tabbar"/>
-        <tab:VideoFileConvertSettingsTab id="videoFileConvertSettingsTab"/>
-    </VerticalLayout>
+    </CssLayout>
             
-    <HorizontalLayout id="layoutFooter" width="100%" styleName="">
-        <Button id="btnCancel" styleName=""/>
-        <Button id="btnSave" styleName="primary"/>
-    </HorizontalLayout>
+    <CssLayout id = "layoutFooter" styleName="common-float-right">
+        <CssLayout id = "layoutButtons" styleName="common-padding-top-big">
+            <Button id="btnCancel" caption="Cancel" styleName=""/>
+            <Button id="btnSave" caption="Save" styleName="primary common-margin-left"/>
+        </CssLayout>
+    </CssLayout>
     
-</VerticalLayout>
+</CssLayout>

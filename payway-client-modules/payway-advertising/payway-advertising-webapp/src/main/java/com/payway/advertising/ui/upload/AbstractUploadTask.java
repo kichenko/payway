@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.upload;
 
+import com.googlecode.flyway.core.util.StringUtils;
 import com.payway.advertising.core.utils.Helpers;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -16,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 
 /**
  * AbstractUploadTask
@@ -56,8 +58,6 @@ public abstract class AbstractUploadTask implements UploadTask {
     protected String tmpFileExt;
 
     @Getter(onMethod = @_({
-        @Override}))
-    @Setter(onMethod = @_({
         @Override}))
     protected String uploadPath;
 
@@ -112,11 +112,22 @@ public abstract class AbstractUploadTask implements UploadTask {
         return uploadTempFileName;
     }
 
+    @Override
+    public void setUploadPath(String path) {
+        uploadPath = StringUtils.replaceAll(path, "\\", "/");
+    }
+
     protected OutputStream createOutputStream() {
         if (!isInterrupted()) {
+
             try {
+                File uploadTmpFolder = new File(new URI(getUploadPath()));
+                if (!uploadTmpFolder.exists()) {
+                    FileUtils.forceMkdir(uploadTmpFolder);
+                }
                 return new BufferedOutputStream(new FileOutputStream(new File(new URI(Helpers.addEndSeparator(getUploadPath()) + createUploadTempFileName()))), getBufferSize());
             } catch (Exception ex) {
+                interrupt();
                 log.error("Error create output stream - {}", ex);
             }
         }

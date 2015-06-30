@@ -3,10 +3,11 @@
  */
 package com.payway.advertising.core.handlers;
 
+import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.ui.upload.FileUploadedProcessorTaskListener;
-import java.util.HashMap;
+import java.io.File;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileUploadedProcessorTask implements FileProcessorTask, Runnable {
 
+    @Setter
     private List<FileHandler> handlers;
 
     @Setter(AccessLevel.PRIVATE)
@@ -65,44 +67,50 @@ public class FileUploadedProcessorTask implements FileProcessorTask, Runnable {
     @Override
     public void process() throws FileProcessorException {
 
-        Map<String, Object> params = new HashMap<>();
-
-        params.put("dstFilePath", dstFilePath);
-        params.put("dstFileName", dstFileName);
+        int i = 0;
+        FileHandlerArgs args = new FileHandlerArgs(srcFilePath, srcFileName, dstFilePath, dstFileName);
 
         if (callback != null) {
             callback.onStart(handlers.size());
         }
 
-        int i = 0;
-        for (FileHandler handler : handlers) {
-
-            try {
+        try {
+            for (FileHandler handler : getHandlers()) {
                 i = i + 1;
                 if (callback != null) {
                     if (callback.isInterrupt()) {
                         callback.onInterrupt();
                         break;
                     }
-                    callback.onProcess(i, handlers.size());
+                    callback.onProcess(i, getHandlers().size());
                 }
 
-                if (handler.handle(srcFilePath, srcFileName, params)) {
-                    log.debug("File [{}], successful processed", srcFileName);
+                if (handler.handle(args)) {
+                    log.debug("File [{}], successful processed", args.getSrcFileName());
                 } else {
-                    log.debug("File [{}], skipped", srcFileName);
-                }
-            } catch (Exception ex) {
-                log.error("File handler [{}] executed with error [{}]", handler, ex);
-                if (callback != null) {
-                    callback.onFail(i, handlers.size());
-                    break;
+                    log.debug("File [{}], skipped", args.getSrcFileName());
                 }
             }
-        }
 
-        if (callback != null && !callback.isInterrupt()) {
-            callback.onFinish();
+            if (callback != null && !callback.isInterrupt()) {
+                callback.onFinish(args);
+            }
+        } catch (Exception ex) {
+            log.error("File handler executed with error [{}]", ex);
+            try {
+                if (callback != null) {
+                    callback.onFail(i, getHandlers().size());
+                }
+            } catch (Exception e) {
+                log.error("Could not call callback onFail - {}", e);
+            }
+        } finally {
+            //delete uploaded file
+            try {
+                new File(new URI(Helpers.addEndSeparator(args.getSrcFilePath()) + args.getSrcFileName())).delete();
+            } catch (Exception e) {
+                log.error("Could not delete uploaded file [{}] on crush file handler - {}", Helpers.addEndSeparator(args.getSrcFilePath()) + args.getSrcFileName(), e);
+            }
         }
     }
 

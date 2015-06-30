@@ -8,6 +8,7 @@ import com.payway.media.core.codec.impl.LibTheoraCodec;
 import com.payway.media.core.codec.impl.LibVorbisCodec;
 import com.payway.media.core.container.AbstractFormatContainer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -25,7 +26,7 @@ public final class OggFormatContainer extends AbstractFormatContainer {
     private static final long serialVersionUID = -3306663135539103667L;
 
     private static final List<Codec> SUPPORTED_CODECS = new ArrayList<>();
-    
+
     static {
         //video encoder
         SUPPORTED_CODECS.add(new LibTheoraCodec());
@@ -41,11 +42,16 @@ public final class OggFormatContainer extends AbstractFormatContainer {
 
     @Override
     public List<Codec> getSupportedCodecs() {
-        return SUPPORTED_CODECS;
+        return Collections.unmodifiableList(SUPPORTED_CODECS);
     }
 
     @Override
     public boolean isCodecSupported(Codec codec) {
         return SUPPORTED_CODECS.contains(codec);
+    }
+
+    @Override
+    public String getFileExt() {
+        return "ogv";
     }
 }

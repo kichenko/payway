@@ -21,4 +21,6 @@ public interface FormatContainer {
     List<Codec> getSupportedCodecs();
 
     boolean isCodecSupported(Codec codec);
+
+    String getFileExt();
 }

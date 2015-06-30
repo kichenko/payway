@@ -10,6 +10,7 @@ import com.payway.advertising.model.common.DbConfigurationKeyType;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ConfigurationServiceImpl
@@ -24,6 +25,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigurationDao configurationDao;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void save(List<DbConfiguration> configs) throws ServiceException {
 
         for (DbConfiguration config : configs) {
@@ -34,16 +36,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DbConfiguration getByKey(DbConfigurationKeyType key) throws ServiceException {
         return configurationDao.getByKey(key);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DbConfiguration> getByKeys(List<DbConfigurationKeyType> keys) throws ServiceException {
         return configurationDao.getByKeys(keys);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public DbConfiguration save(DbConfiguration entity) throws ServiceException {
 
         if (configurationDao.updateByKey(entity.getKey(), entity.getValue()) == 0) {
@@ -54,11 +59,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void delete(DbConfiguration entity) throws ServiceException {
         configurationDao.delete(entity);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DbConfiguration getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

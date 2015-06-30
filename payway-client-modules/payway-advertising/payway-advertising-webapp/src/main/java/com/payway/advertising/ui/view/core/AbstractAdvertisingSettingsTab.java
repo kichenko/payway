@@ -25,13 +25,18 @@ public abstract class AbstractAdvertisingSettingsTab extends VerticalLayout {
     @Setter(AccessLevel.PROTECTED)
     protected SettingsAppService settingsAppService;
     
-    public AbstractAdvertisingSettingsTab(SettingsAppService settingsAppService) {
+    @Getter
+    @Setter
+    protected String caption;
+    
+    public AbstractAdvertisingSettingsTab(String caption, SettingsAppService settingsAppService) {
+        setCaption(caption);
         setSettingsAppService(settingsAppService);
     }
     
     public abstract void load();
     
-    public abstract void save();
+    public abstract void save() throws Exception;
     
     public abstract void cancel();
     

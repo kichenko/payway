@@ -3,8 +3,6 @@
  */
 package com.payway.advertising.core.handlers;
 
-import java.util.Map;
-
 /**
  * FileHandler
  *
@@ -13,5 +11,11 @@ import java.util.Map;
  */
 public interface FileHandler {
 
-    boolean handle(String srcFilePath, String srcFileName, Map<String, Object> params) throws FileHandlerException;
+    /**
+     *
+     * @param args - in/out
+     * @return
+     * @throws FileHandlerException
+     */
+    boolean handle(FileHandlerArgs args) throws FileHandlerException;
 }

@@ -34,4 +34,13 @@ public final class Helpers {
         return value;
     }
 
+    public static String changeFileExt(String fileName, String fileExt) {
+
+        if (StringUtils.contains(fileName, ".")) {
+            return StringUtils.substringBeforeLast(fileName, ".") + "." + fileExt;
+        }
+
+        return fileName + "." + fileExt;
+    }
+
 }

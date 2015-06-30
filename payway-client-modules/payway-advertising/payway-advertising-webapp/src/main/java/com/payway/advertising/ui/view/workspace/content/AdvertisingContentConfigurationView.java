@@ -7,6 +7,7 @@ import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.base.Predicate;
 import com.google.gwt.thirdparty.guava.common.collect.FluentIterable;
 import com.google.gwt.thirdparty.guava.common.collect.Iterables;
+import com.payway.advertising.core.handlers.FileHandlerArgs;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
@@ -67,6 +68,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -189,6 +191,11 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     private BeanService beanService;
 
     @Getter
+    @Setter
+    @Resource(name = "supportedVideoFileExtensions")
+    private List<String> supportedVideoFileExtensions;
+
+    @Getter
     private String localConfigPath;
 
     @Setter
@@ -262,6 +269,22 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         buildMenuBar();
     }
 
+    private boolean checkVideoFileOnExist(String path, String fileName) throws Exception {
+
+        if (!settingsAppService.isConvertVideoFiles()) {
+            return false;
+        }
+
+        //it's video file, checking... 
+        if (supportedVideoFileExtensions.contains(StringUtils.substringAfterLast(fileName, "."))) {
+            if (settingsAppService.getCurrentFormatContainer() != null) {
+                return fileSystemManagerService.exist(new FileSystemObject(path + Helpers.changeFileExt(fileName, settingsAppService.getCurrentFormatContainer().getFileExt()), FileSystemObject.FileType.FILE, 0L, null));
+            }
+        }
+
+        return false;
+    }
+
     private void activateFileUploadButton() {
 
         UploadButtonWrapper.UploadStartedEventProcessor processor;
@@ -276,13 +299,13 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                     task.setUploadObject(upload);
                     task.setFileName(event.getFilename());
                     task.setFileSize(event.getContentLength());
-                    //?task.addListener(AdvertisingContentConfigurationView.this);
                     task.setTmpFileExt(settingsAppService.getTemporaryFileExt());
                     upload.setReceiver(task);
 
                     if (fileNameValidator.validate(task.getFileName())) {
                         try {
-                            if (fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                            if (checkVideoFileOnExist(getCurrentPath(), task.getFileName()) || fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                                task.interrupt();
                                 ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                             } else {
                                 getUploadTaskPanel().addUploadTask(task);
@@ -327,14 +350,13 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
                             UploadTask task = new UploadTaskDnD(settingsAppService.getTemporaryUploadDirPath(), getCurrentPath(), settingsAppService.getUploadBufferSize());
 
-                            //?task.addListener(AdvertisingContentConfigurationView.this);
                             task.setFileName(file.getFileName());
                             task.setTmpFileExt(settingsAppService.getTemporaryFileExt()); //set tmp file ext
                             task.setFileSize(file.getFileSize());
                             task.setUploadObject(file);
 
                             try {
-                                if (fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
+                                if (checkVideoFileOnExist(getCurrentPath(), task.getFileName()) || fileSystemManagerService.exist(new FileSystemObject(getCurrentPath() + task.getFileName(), FileSystemObject.FileType.FILE, 0L, null))) {
                                     task.interrupt();
                                     ((InteractionUI) UI.getCurrent()).showNotification("", "File already downloaded on server", Notification.Type.ERROR_MESSAGE);
                                 } else {
@@ -354,13 +376,13 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     @Override
-    public void onFinish(UploadTask task) {
+    public void onFinish(UploadTask task, FileHandlerArgs args) {
 
         //update grid then file is upload
         if (getCurrentPath().equals(task.getDestFilePath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, task.getFileName(), task.getUploadPath() + task.getFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, args.getDstFileName(), task.getDestFilePath() + args.getDstFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
             }
         }
     }

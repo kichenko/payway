@@ -23,9 +23,9 @@ public interface ConfigurationDao extends JpaRepository<DbConfiguration, Long> {
     List<DbConfiguration> getByKeys(@Param("keys") List<DbConfigurationKeyType> keys);
 
     @Query(value = "select c from DbConfiguration c where c.key = :key")
-    DbConfiguration getByKey(@Param("keys") DbConfigurationKeyType key);
+    DbConfiguration getByKey(@Param("key") DbConfigurationKeyType key);
 
     @Modifying
-    @Query(value = "update DbConfiguration c set value=:value where c.key = :key")
+    @Query(value = "update DbConfiguration c set c.value = :value where c.key = :key")
     int updateByKey(@Param("key") DbConfigurationKeyType key, @Param("value") String value);
 }

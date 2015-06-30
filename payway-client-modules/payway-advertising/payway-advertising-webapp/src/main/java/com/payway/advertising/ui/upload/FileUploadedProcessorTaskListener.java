@@ -3,6 +3,8 @@
  */
 package com.payway.advertising.ui.upload;
 
+import com.payway.advertising.core.handlers.FileHandlerArgs;
+
 /**
  * FileUploadedProcessorTaskListener
  *
@@ -17,7 +19,7 @@ public interface FileUploadedProcessorTaskListener {
 
     void onFail(final int currentTask, final int countTask);
 
-    void onFinish();
+    void onFinish(final FileHandlerArgs args);
 
     void onInterrupt();
 

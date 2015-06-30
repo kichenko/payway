@@ -9,6 +9,7 @@ import com.payway.media.core.codec.impl.LibX264Codec;
 import com.payway.media.core.codec.impl.Mpeg4Codec;
 import com.payway.media.core.container.AbstractFormatContainer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -43,11 +44,16 @@ public final class Mp4FormatContainer extends AbstractFormatContainer {
 
     @Override
     public List<Codec> getSupportedCodecs() {
-        return SUPPORTED_CODECS;
+        return Collections.unmodifiableList(SUPPORTED_CODECS);
     }
 
     @Override
     public boolean isCodecSupported(Codec codec) {
         return SUPPORTED_CODECS.contains(codec);
+    }
+
+    @Override
+    public String getFileExt() {
+        return "mp4";
     }
 }

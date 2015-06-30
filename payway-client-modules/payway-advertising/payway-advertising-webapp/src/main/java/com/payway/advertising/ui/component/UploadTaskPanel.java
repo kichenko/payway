@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.ui.component;
 
+import com.payway.advertising.core.handlers.FileHandlerArgs;
 import com.payway.advertising.core.handlers.FileUploadedProcessorTask;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.ui.upload.AbstractFileUploadedProcessorTaskListener;
@@ -34,7 +35,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
 
     public interface UploadEventListener {
 
-        void onFinish(UploadTask task);
+        void onFinish(UploadTask task, FileHandlerArgs args);
     }
 
     public enum UploadStatusType {
@@ -106,7 +107,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
             }
         });
 
-        gridTasks.addItem(new Object[]{uploadTask.getFileName(), new ProgressBar(), UploadStatusType.Start.getStatus(), "Start upload", btnCancel}, uploadTask.getTaskId());
+        gridTasks.addItem(new Object[]{uploadTask.getFileName(), UploadStatusType.Start.getStatus(), new ProgressBar(), "Start upload", btnCancel}, uploadTask.getTaskId());
     }
 
     @Override
@@ -156,7 +157,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
                         throw new Exception("Empty item in table row");
                     }
 
-                    Button button = (Button) item.getItemProperty("Cancel");
+                    Button button = (Button) item.getItemProperty("Cancel").getValue();
                     if (button == null) {
                         throw new Exception("Empty 'cancel' button in table row");
                     }
@@ -185,6 +186,8 @@ public class UploadTaskPanel extends Panel implements UploadListener {
 
                                     item.getItemProperty("Decription").setValue("Process");
                                     item.getItemProperty("Status").setValue(UploadStatusType.Process.getStatus());
+                                    gridTasks.refreshRowCache();
+                                    getUIRef().push();
                                 }
                             });
                         }
@@ -203,6 +206,8 @@ public class UploadTaskPanel extends Panel implements UploadListener {
                                     item.getItemProperty("Decription").setValue(String.format("Processing task %d/%d", currentTask, countTask));
                                     ((ProgressBar) item.getItemProperty("Progress").getValue()).setValue(currentTask / (float) countTask);
                                     item.getItemProperty("Status").setValue(UploadStatusType.Process.getStatus());
+                                    gridTasks.refreshRowCache();
+                                    getUIRef().push();
                                 }
                             });
                         }
@@ -219,13 +224,15 @@ public class UploadTaskPanel extends Panel implements UploadListener {
                                     }
 
                                     item.getItemProperty("Decription").setValue(String.format("Failed on execute task %d/%d", currentTask, countTask));
-                                    item.getItemProperty("Status").setValue(UploadStatusType.Process.getStatus());
+                                    item.getItemProperty("Status").setValue(UploadStatusType.Fail.getStatus());
+                                    gridTasks.refreshRowCache();
+                                    getUIRef().push();
                                 }
                             });
                         }
 
                         @Override
-                        public void onFinish() {
+                        public void onFinish(final FileHandlerArgs args) {
                             this.access(new Runnable() {
                                 @Override
                                 public void run() {
@@ -237,10 +244,12 @@ public class UploadTaskPanel extends Panel implements UploadListener {
 
                                     item.getItemProperty("Decription").setValue("Finish");
                                     item.getItemProperty("Status").setValue(UploadStatusType.Finish.getStatus());
+                                    gridTasks.refreshRowCache();
+                                    getUIRef().push();
 
                                     //fire finish upload event
                                     if (uploadEventListener != null) {
-                                        uploadEventListener.onFinish(getUploadTaskRef());
+                                        uploadEventListener.onFinish(getUploadTaskRef(), args);
                                     }
                                 }
                             });
@@ -259,6 +268,8 @@ public class UploadTaskPanel extends Panel implements UploadListener {
 
                                     item.getItemProperty("Decription").setValue("Cancel");
                                     item.getItemProperty("Status").setValue(UploadStatusType.Cancel.getStatus());
+                                    gridTasks.refreshRowCache();
+                                    getUIRef().push();
                                 }
                             });
                         }
