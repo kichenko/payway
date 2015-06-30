@@ -26,7 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 public class FileVideoConverterHandler implements FileHandler {
 
+    /**
+     * Proxy bean (prototype scope)
+     */
     private VideoConverter videoConverter;
+
     private SettingsAppService settingsAppService;
     private List<String> supportedVideoFileExtensions;
 
@@ -53,7 +57,7 @@ public class FileVideoConverterHandler implements FileHandler {
 
             videoConverter.convert(inputFile, outputFile, settingsAppService.getCurrentFormatContainer(), settingsAppService.getVideoAttributes(), settingsAppService.getAudioAttributes(), null);
 
-            //delete input & rename ouput & change file's ext dest 
+            //delete input & rename ouput & change file's ext dest
             if (inputFile.delete()) {
                 args.setSrcFileName(outputFile.getName());
                 args.setDstFileName(Helpers.changeFileExt(args.getDstFileName(), settingsAppService.getCurrentFormatContainer().getFileExt()));

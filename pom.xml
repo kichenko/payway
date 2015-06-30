@@ -477,7 +477,7 @@
                 <scope>provided</scope>
                 <version>${xuggle.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
@@ -511,7 +511,7 @@
             <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
         </repository>
 
-        <!--
+
         <repository>
             <id>commons-vfs</id>
             <name>Apache Commons VFS Repository Group</name>
@@ -521,7 +521,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        -->
+      
 
 
     </repositories>

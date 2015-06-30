@@ -255,7 +255,7 @@ public class XugglerVideoConverter extends AbstractVideoConverter {
 
                     retval = ic.decodeAudio(inSamples, iPacket, offset);
                     if (retval <= 0) {
-                        throw new MediaException("Could not decode audio.  stream: " + i);
+                        throw new MediaException("Could not decode audio in stream: " + i);
                     }
 
                     if (inSamples.getTimeStamp() != Global.NO_PTS) {
@@ -316,7 +316,7 @@ public class XugglerVideoConverter extends AbstractVideoConverter {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Finish decode audion from packet");
+                    log.debug("Finish decode audio from packet");
                 }
 
             } else if (cType == ICodec.Type.CODEC_TYPE_VIDEO) {
@@ -1205,9 +1205,6 @@ public class XugglerVideoConverter extends AbstractVideoConverter {
              * If we got a complete packet out of the encoder, then go ahead and
              * write it to the container.
              */
-            if (log.isDebugEnabled()) {
-                log.debug("Write packet to ouput container");
-            }
             retval = mOContainer.writePacket(oPacket, mForceInterleave);
             if (retval < 0) {
                 throw new MediaException("Could not write output packet");

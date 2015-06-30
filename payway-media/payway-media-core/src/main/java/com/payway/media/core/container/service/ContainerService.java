@@ -26,4 +26,9 @@ public interface ContainerService {
     boolean isContainerSupported(FormatContainer container);
 
     boolean isCodecSupported(Codec codec);
+
+    Codec getDefaultAudioEncoderCodec(FormatContainer format);
+
+    Codec getDefaultVideoEncoderCodec(FormatContainer format);
+
 }

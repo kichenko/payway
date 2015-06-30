@@ -99,6 +99,7 @@ public class AdvertisingUI extends AbstractUI {
 
     @Override
     protected void init(VaadinRequest request) {
+
         settingsAppService.setContextPath(request.getContextPath());
         updateContent();
 

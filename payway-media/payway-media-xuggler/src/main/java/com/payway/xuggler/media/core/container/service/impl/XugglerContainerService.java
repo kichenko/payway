@@ -3,11 +3,13 @@
  */
 package com.payway.xuggler.media.core.container.service.impl;
 
+import com.payway.media.core.codec.Codec;
 import com.payway.media.core.codec.impl.LibMp3LameCodec;
 import com.payway.media.core.codec.impl.LibTheoraCodec;
 import com.payway.media.core.codec.impl.LibVorbisCodec;
 import com.payway.media.core.codec.impl.LibX264Codec;
 import com.payway.media.core.codec.impl.Mpeg4Codec;
+import com.payway.media.core.container.FormatContainer;
 import com.payway.media.core.container.impl.Mp4FormatContainer;
 import com.payway.media.core.container.impl.OggFormatContainer;
 import com.payway.media.core.container.service.AbstractContainerService;
@@ -39,5 +41,39 @@ public class XugglerContainerService extends AbstractContainerService {
         supportedCodecs.add(new LibVorbisCodec());
         supportedCodecs.add(new LibX264Codec());
         supportedCodecs.add(new Mpeg4Codec());
+    }
+
+    @Override
+    public Codec getDefaultAudioEncoderCodec(FormatContainer format) {
+
+        if (format != null) {
+            switch (format.getId()) {
+                case "ogg":
+                    return new LibVorbisCodec();
+                case "mp4":
+                    return new LibMp3LameCodec();
+                default:
+                    return null;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Codec getDefaultVideoEncoderCodec(FormatContainer format) {
+
+        if (format != null) {
+            switch (format.getId()) {
+                case "ogg":
+                    return new LibTheoraCodec();
+                case "mp4":
+                    return new LibX264Codec();
+                default:
+                    return null;
+            }
+        }
+
+        return null;
     }
 }

@@ -254,34 +254,16 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         this.currentFormatContainer = currentFormatContainer;
 
         /**
-         *
-         * Set defaults audio & video codec encoders, if it's possible
-         *
+         * * Set defaults audio & video codec encoders, if it's possible
          */
         if (currentFormatContainer != null) {
 
-            List<Codec> supportedCodecs = currentFormatContainer.getSupportedCodecs();
-
-            List<Codec> audioEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
-                @Override
-                public boolean apply(Codec codec) {
-                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Audio.equals(codec.getType());
-                }
-            }).toList();
-
-            List<Codec> videoEncoder = FluentIterable.from(supportedCodecs).filter(new Predicate<Codec>() {
-                @Override
-                public boolean apply(Codec codec) {
-                    return CodecDirection.Encoder.equals(codec.getDirection()) && CodecType.Video.equals(codec.getType());
-                }
-            }).toList();
-
-            if (getAudioAttributes() != null && !audioEncoder.isEmpty()) {
-                getAudioAttributes().setCodec(audioEncoder.get(0));
+            if (getAudioAttributes() != null) {
+                getAudioAttributes().setCodec(formatContainerService.getDefaultAudioEncoderCodec(currentFormatContainer));
             }
 
-            if (getVideoAttributes() != null && !videoEncoder.isEmpty()) {
-                getVideoAttributes().setCodec(videoEncoder.get(0));
+            if (getVideoAttributes() != null) {
+                getVideoAttributes().setCodec(formatContainerService.getDefaultVideoEncoderCodec(currentFormatContainer));
             }
         }
     }
@@ -328,9 +310,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         List<DbConfigurationKeyType> keys = new ArrayList<>(3);
 
         Collections.addAll(keys,
-                DbConfigurationKeyType.AdvertisingConvertVideoEnable,
-                DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
-                DbConfigurationKeyType.AdvertisingConvertVideoBitRate
+          DbConfigurationKeyType.AdvertisingConvertVideoEnable,
+          DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
+          DbConfigurationKeyType.AdvertisingConvertVideoBitRate
         );
 
         List<DbConfiguration> configs = configurationService.getByKeys(keys);
