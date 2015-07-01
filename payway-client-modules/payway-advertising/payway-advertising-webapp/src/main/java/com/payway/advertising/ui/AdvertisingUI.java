@@ -141,6 +141,7 @@ public class AdvertisingUI extends AbstractUI {
     }
 
     private void refreshApplyConfigNotification() {
+
         ApplyConfigurationStatus status = configurationApplyService.getStatus();
 
         if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
@@ -168,7 +169,7 @@ public class AdvertisingUI extends AbstractUI {
     }
 
     /**
-     * Refresh notifications on user sig in.
+     * Refresh notifications on user sign in.
      *
      * Ex: then user signin and configuration is applying at this time - it's
      * need to notify user about this action.

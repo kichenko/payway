@@ -3,7 +3,6 @@
  */
 package com.payway.commons.webapp.messaging;
 
-import com.payway.commons.webapp.messaging.ResponseCallBack;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.vaadin.ui.UI;
@@ -11,15 +10,15 @@ import java.lang.ref.WeakReference;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * UIResponseCallBackImpl
+ * UIResponseCallBackSupport
  *
  * @author Sergey Kichenko
  * @created 11.06.15 00:00
  */
 @Slf4j
-public final class UIResponseCallBackImpl implements ResponseCallBack {
+public final class UIResponseCallBackSupport implements ResponseCallBack {
 
-    public interface ResponseCallbackHandler {
+    public interface ResponseCallBackHandler {
 
         void doServerResponse(final SuccessResponse response);
 
@@ -30,11 +29,10 @@ public final class UIResponseCallBackImpl implements ResponseCallBack {
         void doTimeout();
     }
 
-    //## need weak ref
     private final WeakReference<UI> ui;
-    private final ResponseCallbackHandler handler;
+    private final ResponseCallBackHandler handler;
 
-    public UIResponseCallBackImpl(final UI ui, final ResponseCallbackHandler handler) {
+    public UIResponseCallBackSupport(final UI ui, final ResponseCallBackHandler handler) {
         this.ui = new WeakReference(ui);
         this.handler = handler;
     }
@@ -53,7 +51,7 @@ public final class UIResponseCallBackImpl implements ResponseCallBack {
                 }
             });
         } else {
-            log.error("Empty ui");
+            log.error("Empty ui on success server response");
         }
     }
 
@@ -71,7 +69,7 @@ public final class UIResponseCallBackImpl implements ResponseCallBack {
                 }
             });
         } else {
-            log.error("Empty ui");
+            log.error("Empty ui on exception server response");
         }
     }
 
@@ -89,7 +87,7 @@ public final class UIResponseCallBackImpl implements ResponseCallBack {
                 }
             });
         } else {
-            log.error("Empty ui");
+            log.error("Empty ui on server local exception response");
         }
     }
 
@@ -107,7 +105,7 @@ public final class UIResponseCallBackImpl implements ResponseCallBack {
                 }
             });
         } else {
-            log.error("Empty ui");
+            log.error("Empty ui on server response timeout");
         }
     }
 }

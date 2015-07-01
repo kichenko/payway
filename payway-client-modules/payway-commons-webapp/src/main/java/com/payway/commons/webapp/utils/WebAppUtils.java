@@ -25,7 +25,7 @@ public final class WebAppUtils {
      */
     private static final String HTTP_HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
 
-    public static String getRemoteIPAddress(final VaadinRequest request, final WebBrowser webBrowser) {
+    public static String getRemoteAddress(final VaadinRequest request, final WebBrowser webBrowser) {
 
         if (log.isDebugEnabled()) {
             log.debug("Receive remote ip address");

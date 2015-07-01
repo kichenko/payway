@@ -5,7 +5,7 @@ package com.payway.commons.webapp.ui.view.core;
 
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.messaging.ResponseCallBack;
+import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
@@ -26,6 +26,7 @@ import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -35,6 +36,7 @@ import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
@@ -49,10 +51,9 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  * @created 20.04.15 00:00
  */
 @Slf4j
-//@UIScope
 @Component
-@Scope(value = "prototype")
-public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class LoginView extends CustomComponent implements CustomComponentInitialize, UIResponseCallBackSupport.ResponseCallBackHandler {
 
     private static final long serialVersionUID = -8709373681721076425L;
 
@@ -64,9 +65,6 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
 
-    //@Autowired
-    //@Qualifier(value = "sessionEventBus")
-    //private SessionEventBus sessionEventBus;
     @Autowired
     @Qualifier("userNameValidator")
     private Validator userNameValidator;
@@ -93,11 +91,12 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     @PostConstruct
     public void postConstruct() {
         setSizeFull();
-        setCompositionRoot(Clara.create("LoginView.xml", this));
         init();
     }
 
     private void init() {
+
+        setCompositionRoot(Clara.create("LoginView.xml", this));
 
         editUserName.addShortcutListener(new ShortcutListener("Sign in (Enter)", ShortcutAction.KeyCode.ENTER, null) {
             private static final long serialVersionUID = -7690864248678996551L;
@@ -129,6 +128,18 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
         }
     }
 
+    protected Cookie getCookieByName(String name) {
+
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        for (Cookie cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+
+        return null;
+    }
+
     public void setTitle(String title) {
         labelTitle.setValue(title);
     }
@@ -141,16 +152,19 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     public void clickButtonSignIn(Button.ClickEvent event) throws Exception {
 
         if (!userNameValidator.validate(editUserName.getValue())) {
-            editUserName.setComponentError(new UserError("Invalid username, please correct"));
+            editUserName.setComponentError(new UserError("Invalid user name"));
             return;
         }
 
         if (!userPasswordValidator.validate(editPassword.getValue())) {
-            editPassword.setComponentError(new UserError("Invalid password, please correct"));
+            editPassword.setComponentError(new UserError("Invalid password"));
             return;
         }
 
-        final String clientIpAddress = WebAppUtils.getRemoteIPAddress(VaadinService.getCurrentRequest(), Page.getCurrent().getWebBrowser());
+        final UI ui = getUI();
+        final String userName = editUserName.getValue();
+        final String userPassword = editPassword.getValue();
+        final String clientIpAddress = WebAppUtils.getRemoteAddress(VaadinService.getCurrentRequest(), Page.getCurrent().getWebBrowser());
 
         if (log.isDebugEnabled()) {
             log.debug("Try to sign in with remote ip address - [{}]", clientIpAddress);
@@ -160,87 +174,80 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.auth(editUserName.getValue(), editPassword.getValue(), clientIpAddress, LoginView.this);
+                service.auth(userName, userPassword, clientIpAddress, new UIResponseCallBackSupport(ui, LoginView.this));
             }
         });
     }
 
+    private SessionEventBus popSessionEventBus(final UI ui) {
+
+        if (!(ui instanceof AbstractUI)) {
+            log.error("UI is not instance of {}, could not get session event bus", AbstractUI.class.getName());
+            return null;
+        }
+
+        return ((AbstractUI) ui).getSessionEventBus();
+    }
+
     @Override
-    public void onServerResponse(final SuccessResponse response) {
-        final UI ui = getUI();
-        if (ui != null) {
-            ui.access(new Runnable() {
-                @Override
-                public void run() {
+    public void doServerResponse(final SuccessResponse response) {
 
-                    SessionEventBus sessionEventBus;
-                    if (ui instanceof AbstractUI) {
-                        sessionEventBus = ((AbstractUI) ui).getSessionEventBus();
-                        if (sessionEventBus == null) {
-                            log.error("Could not get session event bus");
-                            return;
-                        }
-                    } else {
-                        log.error("UI is not instanceof AbstractUI");
-                        return;
-                    }
+        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
+        if (sessionEventBus == null) {
+            log.error("Could not pop session event bus from ui on sucess server response");
+            return;
+        }
 
-                    if (response instanceof AbstractAuthCommandResponse) {
-                        if (response instanceof AuthSuccessCommandResponse) {
-                            AuthSuccessCommandResponse ap = (AuthSuccessCommandResponse) response;
-                            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(ap.getUser(), ap.getSessionId(), ap.getExtensions()));
-                        } else if (response instanceof AuthBadCredentialsCommandResponse) {
-                            sessionEventBus.sendNotification(new LoginFailSessionBusEvent());
-                        }
-                    } else {
-                        log.error("Bad auth server response (unknown type) - {}", response);
-                        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
-                    }
+        if (!(response instanceof AbstractAuthCommandResponse)) {
+            log.error("Bad auth server response (unknown type) - {}", response);
+            sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
+            return;
+        }
 
-                }
-            });
+        if (response instanceof AuthSuccessCommandResponse) {
+            AuthSuccessCommandResponse rsp = (AuthSuccessCommandResponse) response;
+            sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(rsp.getUser(), rsp.getSessionId(), rsp.getExtensions()));
+        } else if (response instanceof AuthBadCredentialsCommandResponse) {
+            sessionEventBus.sendNotification(new LoginFailSessionBusEvent());
         }
     }
 
     @Override
-    public void onServerException(final ExceptionResponse ex) {
-        UI ui = getUI();
-        if (ui != null) {
-            ui.access(new Runnable() {
-                @Override
-                public void run() {
-                    log.error("Bad auth server response (server exception) - {}", ex);
-                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
-                }
-            });
+    public void doServerException(final ExceptionResponse ex) {
+
+        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
+        if (sessionEventBus == null) {
+            log.error("Could not pop session event bus from ui on server exception response");
+            return;
         }
+
+        log.error("Bad auth server response (server exception) - {}", ex);
+        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
     }
 
     @Override
-    public void onLocalException(final Exception ex) {
-        final UI ui = getUI();
-        if (ui != null) {
-            ui.access(new Runnable() {
-                @Override
-                public void run() {
-                    log.error("Bad auth server response (local exception) - {}", ex);
-                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
-                }
-            });
+    public void doLocalException(final Exception ex) {
+
+        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
+        if (sessionEventBus == null) {
+            log.error("Could not pop session event bus from ui on local server exception response");
+            return;
         }
+
+        log.error("Bad auth server response (local exception) - {}", ex);
+        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
     }
 
     @Override
-    public void onTimeout() {
-        final UI ui = getUI();
-        if (ui != null) {
-            ui.access(new Runnable() {
-                @Override
-                public void run() {
-                    log.error("Bad auth server response (timeout)");
-                    sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
-                }
-            });
+    public void doTimeout() {
+
+        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
+        if (sessionEventBus == null) {
+            log.error("Could not pop session event bus from ui on server response timeout");
+            return;
         }
+
+        log.error("Bad auth server response (timeout)");
+        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
     }
 }
