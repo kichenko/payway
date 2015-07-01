@@ -141,6 +141,27 @@
     <build>
 
         <finalName>payway-bus-tickets-webapp</finalName>
+        
+        <!-- Add app version-->
+        <resources>           
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <excludes>
+                    <exclude>com/payway/bustickets/ui/view/core/BusTicketsMainView.xml</exclude>
+                </excludes>
+            </resource>  
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>com/payway/bustickets/ui/view/core/BusTicketsMainView.xml</include>
+                </includes>
+            </resource>                                
+        </resources>
 
         <plugins>
 
@@ -202,6 +223,7 @@
                     </execution>
                 </executions>
             </plugin>
+                                    
         </plugins>
 
         <pluginManagement>

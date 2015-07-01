@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.service.bean;
 
+import java.io.Serializable;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Component;
  * @created 20.05.15 00:00
  */
 @Component(value = "beanService")
-public class BeanServiceImpl implements BeanService, ApplicationContextAware {
+public class BeanServiceImpl implements BeanService, ApplicationContextAware, Serializable {
+
+    private static final long serialVersionUID = 5046726960155159535L;
 
     private ApplicationContext applicationContext;
 

@@ -1,0 +1,24 @@
+@import "../valo/valo";
+//
+@import "addons";
+@import "commons";
+//
+@import "components/appversion";
+@import "components/sidebarmenu";
+
+//
+@import "views/login";
+@import "views/main";
+
+@mixin default {
+    @include valo;
+
+    @include addons;
+    @include commons;
+
+    @include app-version-component;
+    @include sidebar-menu-component;
+
+    @include login-view;
+    @include main-view;
+}

@@ -35,6 +35,7 @@
 @import "views/login";
 @import "views/main";
 
+@import "components/appversion";
 @import "components/sidebarmenu";
 @import "components/bus-tickets-wizard";
 @import "components/retailer-terminal-panel";
@@ -45,6 +46,7 @@
     @include addons;
     @include commons;
 
+    @include app-version-component;
     @include sidebar-menu-component;
     @include bus-tickets-wizard-component;
     @include retailer-terminal-panel-component;

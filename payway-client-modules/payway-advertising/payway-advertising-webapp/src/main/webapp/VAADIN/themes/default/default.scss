@@ -3,6 +3,7 @@
 @import "addons";
 @import "commons";
 //
+@import "components/appversion";
 @import "components/sidebarmenu";
 @import "components/breadcrumbs";
 @import "components/textdialogwindow";
@@ -27,6 +28,7 @@
     @include addons;
     @include commons;
 
+    @include app-version-component;
     @include sidebar-menu-component;
     @include breadcrumbs-component;
     @include notificationsbutton-component;

@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>payway-advertising</artifactId>
+        <artifactId>payway-kiosk-cashier</artifactId>
         <groupId>com.payway</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.payway</groupId>
-    <artifactId>payway-advertising-webapp</artifactId>
+    <artifactId>payway-kiosk-cashier-webapp</artifactId>
 
     <packaging>war</packaging>
-    <name>payway-advertising-webapp</name>
+    <name>payway-kiosk-cashier-webapp</name>
 
     <!-- используем версию родителя-->
     <!--<version>1.0-SNAPSHOT</version>-->
@@ -28,18 +28,7 @@
 
     <!-- dependencies-->
     <dependencies>  
-        
-        <dependency>
-            <groupId>de.steinwedel.vaadin.addon</groupId>
-            <artifactId>messagebox</artifactId>
-        </dependency>
-         
-        <dependency>
-            <groupId>com.payway</groupId>
-            <artifactId>payway-messaging-message-advertising</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>   
-        
+      
         <dependency>
             <groupId>com.payway</groupId>
             <artifactId>payway-commons-webapp</artifactId>
@@ -48,28 +37,10 @@
 
         <dependency>
             <groupId>com.payway</groupId>
-            <artifactId>payway-advertising-model</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.payway</groupId>
-            <artifactId>payway-advertising-data</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.payway</groupId>
-            <artifactId>payway-media-xuggler</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        
+ 
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
@@ -134,39 +105,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-webdav</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-vfs2</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-
-        <!--
+        
         <dependency>
-            <groupId>com.avs</groupId>
-            <artifactId>cluster</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>de.steinwedel.vaadin.addon</groupId>
+            <artifactId>messagebox</artifactId>
         </dependency>
-        -->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -194,18 +142,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>imagescaler</artifactId>
-        </dependency>
-                
+                        
     </dependencies>
 
     <!-- build -->
     <build>
 
-        <finalName>payway-advertising-webapp</finalName>     
+        <finalName>payway-kiosk-cashier-webapp</finalName>     
         
         <!-- Add app version-->
         <resources>           

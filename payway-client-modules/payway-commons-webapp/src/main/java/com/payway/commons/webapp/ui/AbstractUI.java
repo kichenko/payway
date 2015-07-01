@@ -29,11 +29,10 @@ import java.util.List;
  */
 public abstract class AbstractUI extends UI implements InteractionUI {
 
-    public abstract SessionEventBus getSessionEventBus();
-
     private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();
-
     private int progressCounter;
+
+    public abstract SessionEventBus getSessionEventBus();
 
     @Override
     public void showNotification(String title, String message, Notification.Type kind) {
@@ -46,7 +45,7 @@ public abstract class AbstractUI extends UI implements InteractionUI {
         } else {
             Notification.show(message, kind);
         }
-        
+
         UI.getCurrent().push();
     }
 

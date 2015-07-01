@@ -6,11 +6,13 @@ package com.payway.commons.webapp.ui.view.core;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallBack;
+import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
+import com.payway.commons.webapp.utils.WebAppUtils;
 import com.payway.commons.webapp.validator.Validator;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
@@ -19,8 +21,9 @@ import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandRespo
 import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
-import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
@@ -32,6 +35,7 @@ import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
@@ -45,8 +49,9 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  * @created 20.04.15 00:00
  */
 @Slf4j
-@UIScope
+//@UIScope
 @Component
+@Scope(value = "prototype")
 public class LoginView extends AbstractCustomComponentView implements ResponseCallBack<SuccessResponse, ExceptionResponse> {
 
     private static final long serialVersionUID = -8709373681721076425L;
@@ -59,10 +64,9 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
     @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
 
-    @Autowired
-    @Qualifier(value = "sessionEventBus")
-    private SessionEventBus sessionEventBus;
-
+    //@Autowired
+    //@Qualifier(value = "sessionEventBus")
+    //private SessionEventBus sessionEventBus;
     @Autowired
     @Qualifier("userNameValidator")
     private Validator userNameValidator;
@@ -116,6 +120,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
 
     @Override
     public void initialize() {
+
         Cookie rememberMeCookie = getCookieByName(CommonAttributes.REMEMBER_ME.value());
         if (rememberMeCookie != null && rememberMeCookie.getValue() != null) {
             checkBoxRememberMe.setValue(true);
@@ -145,12 +150,17 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             return;
         }
 
+        final String clientIpAddress = WebAppUtils.getRemoteIPAddress(VaadinService.getCurrentRequest(), Page.getCurrent().getWebBrowser());
+
+        if (log.isDebugEnabled()) {
+            log.debug("Try to sign in with remote ip address - [{}]", clientIpAddress);
+        }
+
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        final String remoteAddress = null; // TODO: provide remote address here (it can be proxied !!!)
         serverTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                service.auth(editUserName.getValue(), editPassword.getValue(), remoteAddress, LoginView.this);
+                service.auth(editUserName.getValue(), editPassword.getValue(), clientIpAddress, LoginView.this);
             }
         });
     }
@@ -162,6 +172,19 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
             ui.access(new Runnable() {
                 @Override
                 public void run() {
+
+                    SessionEventBus sessionEventBus;
+                    if (ui instanceof AbstractUI) {
+                        sessionEventBus = ((AbstractUI) ui).getSessionEventBus();
+                        if (sessionEventBus == null) {
+                            log.error("Could not get session event bus");
+                            return;
+                        }
+                    } else {
+                        log.error("UI is not instanceof AbstractUI");
+                        return;
+                    }
+
                     if (response instanceof AbstractAuthCommandResponse) {
                         if (response instanceof AuthSuccessCommandResponse) {
                             AuthSuccessCommandResponse ap = (AuthSuccessCommandResponse) response;
@@ -173,6 +196,7 @@ public class LoginView extends AbstractCustomComponentView implements ResponseCa
                         log.error("Bad auth server response (unknown type) - {}", response);
                         sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
                     }
+
                 }
             });
         }

@@ -1,0 +1,10 @@
+@mixin app-version-component {
+    
+    .v-label-app-version {        
+        text-align: right;
+        font-size: 70%;
+        color: lightgrey;
+        font-weight: bold;
+        padding: 2px 5px;
+    }
+}
