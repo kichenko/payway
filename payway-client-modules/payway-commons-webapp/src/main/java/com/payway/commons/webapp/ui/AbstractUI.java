@@ -7,6 +7,7 @@ import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.ProgressBarWindow;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
+import com.payway.commons.webapp.ui.view.core.LoginView;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -20,6 +21,10 @@ import de.steinwedel.messagebox.MessageBox;
 import de.steinwedel.messagebox.MessageBoxListener;
 import java.util.Collections;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * AbstractUI
@@ -29,10 +34,45 @@ import java.util.List;
  */
 public abstract class AbstractUI extends UI implements InteractionUI {
 
+    private static final long serialVersionUID = 823360792811823114L;
+
+    @Getter
+    @Setter
+    @Autowired
+    @Qualifier(value = "sessionEventBus")
+    protected SessionEventBus sessionEventBus;
+
+    @Getter
+    @Setter
+    @Autowired
+    protected LoginView loginView;
+
     private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();
     private int progressCounter;
 
-    public abstract SessionEventBus getSessionEventBus();
+    protected void registerDetach() {
+
+        addDetachListener(new DetachListener() {
+            private static final long serialVersionUID = -327258454602850406L;
+
+            @Override
+            public void detach(DetachEvent event) {
+                cleanUpOnDetach();
+            }
+        });
+    }
+
+    protected void cleanUpOnDetach() {
+        unSubscribeSessionEventBus();
+    }
+
+    protected void subscribeSessionEventBus() {
+        getSessionEventBus().addSubscriber(this);
+    }
+
+    protected void unSubscribeSessionEventBus() {
+        getSessionEventBus().removeSubscriber(this);
+    }
 
     @Override
     public void showNotification(String title, String message, Notification.Type kind) {

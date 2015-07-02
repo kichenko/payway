@@ -14,16 +14,14 @@ import com.payway.bustickets.ui.view.workspace.BusTicketsWorkspaceView;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
+import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
-import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
-import com.payway.commons.webapp.ui.view.core.LoginView;
 import com.payway.commons.webapp.ui.view.core.WorkspaceView;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
@@ -47,7 +45,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.http.Cookie;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,21 +65,12 @@ public class BusTicketsUI extends AbstractUI {
 
     private static final long serialVersionUID = 1197507013599612841L;
 
-    @Getter(onMethod = @_({
-        @Override}))
-    @Autowired
-    @Qualifier(value = "sessionEventBus")
-    private SessionEventBus sessionEventBus;
-
-    @Autowired
-    @Qualifier(value = "settingsAppService")
-    private SettingsAppService settingsAppService;
-
     @Autowired
     private AbstractMainView mainView;
 
     @Autowired
-    private LoginView loginView;
+    @Qualifier(value = "settingsAppService")
+    private SettingsAppService settingsAppService;
 
     @Autowired
     @Qualifier("messageServerSenderService")
@@ -90,22 +78,10 @@ public class BusTicketsUI extends AbstractUI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+
+        subscribeSessionEventBus();
+        registerDetach();
         updateContent();
-
-        addDetachListener(new DetachListener() {
-            private static final long serialVersionUID = -327258454602850406L;
-
-            @Override
-            public void detach(DetachEvent event) {
-                cleanUp();
-            }
-        });
-
-        sessionEventBus.addSubscriber(this);
-    }
-
-    private void cleanUp() {
-        sessionEventBus.removeSubscriber(this);
     }
 
     @Override
@@ -131,7 +107,7 @@ public class BusTicketsUI extends AbstractUI {
     private void sendBusTicketOperatorsRequest() {
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        service.sendMessage(new BusTicketOperatorsRequest(settingsAppService.getSessionSettings().getSessionId(), settingsAppService.getSessionSettings().getCurrentRetailerTerminal().getId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        service.sendMessage(new BusTicketOperatorsRequest(settingsAppService.getSessionSettings().getSessionId(), settingsAppService.getSessionSettings().getCurrentRetailerTerminal().getId()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {

@@ -4,6 +4,7 @@
 package com.payway.bustickets.ui.components;
 
 import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
+import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
@@ -25,7 +26,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 @Getter
-public class BusTicketsConfirmWizardStep extends AbstractWizardStep {
+public final class BusTicketsConfirmWizardStep extends AbstractWizardStep {
 
     public static final int STEP_NO = 1;
 
@@ -80,7 +81,8 @@ public class BusTicketsConfirmWizardStep extends AbstractWizardStep {
         init();
     }
 
-    private void init() {
+    @Override
+    protected void init() {
         setSizeFull();
         addComponent(Clara.create("BusTicketsConfirmWizardStep.xml", this));
     }

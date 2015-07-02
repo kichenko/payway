@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.ui.components;
+package com.payway.commons.webapp.ui.components.wizard;
 
 import com.vaadin.ui.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractWizardStep extends VerticalLayout {
+
+    private static final long serialVersionUID = -804397699790880938L;
+
+    protected abstract void init();
 
     public boolean validate() {
         return false;

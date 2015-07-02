@@ -1,7 +1,8 @@
 @import "../valo/valo";
 //
 @import "addons";
-@import "commons";
+@import "app-common-style";
+
 //
 @import "components/appversion";
 @import "components/sidebarmenu";
@@ -11,10 +12,11 @@
 @import "views/main";
 
 @mixin default {
+
     @include valo;
 
     @include addons;
-    @include commons;
+    @include app-common-style;
 
     @include app-version-component;
     @include sidebar-menu-component;

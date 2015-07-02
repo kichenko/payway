@@ -22,13 +22,11 @@ import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
-import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
-import com.payway.commons.webapp.ui.view.core.LoginView;
 import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -65,10 +63,7 @@ public class AdvertisingUI extends AbstractUI {
 
     @Autowired
     private AdvertisingMainView mainView;
-
-    @Autowired
-    private LoginView loginView;
-
+   
     @Autowired
     @Qualifier(value = "userAppService")
     private UserAppService userAppService;
@@ -80,12 +75,6 @@ public class AdvertisingUI extends AbstractUI {
     @Autowired
     @Qualifier(value = "settingsAppService")
     SettingsAppService settingsAppService;
-
-    @Getter(onMethod = @_({
-        @Override}))
-    @Autowired
-    @Qualifier(value = "sessionEventBus")
-    private SessionEventBus sessionEventBus;
 
     @Getter
     @Autowired
@@ -101,22 +90,14 @@ public class AdvertisingUI extends AbstractUI {
     protected void init(VaadinRequest request) {
 
         settingsAppService.setContextPath(request.getContextPath());
+        subscribeSessionEventBus();
+        registerDetach();
         updateContent();
-
-        addDetachListener(new DetachListener() {
-            private static final long serialVersionUID = -327258454602850406L;
-
-            @Override
-            public void detach(DetachEvent event) {
-                cleanUp();
-            }
-        });
-
-        sessionEventBus.addSubscriber(this);
     }
 
-    private void cleanUp() {
-        sessionEventBus.removeSubscriber(this);
+    @Override
+    protected void cleanUpOnDetach() {
+        super.cleanUpOnDetach();
         sessionEventBus.removeSubscriber(mainView.getBtnNotifications());
     }
 

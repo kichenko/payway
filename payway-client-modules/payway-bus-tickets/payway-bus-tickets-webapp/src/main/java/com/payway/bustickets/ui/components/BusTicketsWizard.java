@@ -3,7 +3,7 @@
  */
 package com.payway.bustickets.ui.components;
 
-import com.payway.commons.webapp.messaging.UIResponseCallBackImpl;
+import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
@@ -26,7 +26,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Date;
@@ -46,7 +45,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @created 08.06.15 00:00
  */
 @Slf4j
-public class BusTicketsWizard extends AbstractWizard {
+public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
 
     @Getter
     @Setter
@@ -66,15 +65,6 @@ public class BusTicketsWizard extends AbstractWizard {
     public static final int BUS_TICKETS_CONFIRM_WIZARD_STEP_ID = 1;
     public static final int BUS_TICKETS_SUCCESS_WIZARD_STEP_ID = 2;
     public static final int BUS_TICKETS_FAIL_WIZARD_STEP_ID = 3;
-
-    @UiField
-    private Button btnLeft;
-
-    @UiField
-    private Button btnRight;
-
-    @UiField
-    private VerticalLayout layoutContent;
 
     @UiField
     private Image imgLogo;
@@ -115,7 +105,8 @@ public class BusTicketsWizard extends AbstractWizard {
         init();
     }
 
-    private void init() {
+    @Override
+    protected void init() {
 
         setSizeFull();
         setIcon(new ThemeResource("images/sidebar_bus_tickets.png"));
@@ -181,7 +172,8 @@ public class BusTicketsWizard extends AbstractWizard {
         return streamResource;
     }
 
-    private void decorateStep() {
+    @Override
+    protected void decorateStep() {
 
         if (getStep() != BUS_TICKETS_SUCCESS_WIZARD_STEP_ID) {
             clearContentTicket();
@@ -243,7 +235,8 @@ public class BusTicketsWizard extends AbstractWizard {
         }
     }
 
-    private void handleStepLeft() {
+    @Override
+    protected void handleStepLeft() {
 
         if (BUS_TICKETS_CONFIRM_WIZARD_STEP_ID == getStep()) {
             setStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
@@ -252,7 +245,8 @@ public class BusTicketsWizard extends AbstractWizard {
         }
     }
 
-    private void handleStepRight() {
+    @Override
+    protected void handleStepRight() {
 
         if (BUS_TICKETS_PARAMS_WIZARD_STEP_ID == getStep()) {
             processParams2ConfirmStep();
@@ -289,7 +283,7 @@ public class BusTicketsWizard extends AbstractWizard {
         setPaymentStop(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity(), getPaymentStart(), getPaymentStop(), getTotalCost()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity(), getPaymentStart(), getPaymentStop(), getTotalCost()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -329,7 +323,7 @@ public class BusTicketsWizard extends AbstractWizard {
 
     private void sendDownloadCheckRequest() {
 
-        getService().sendMessage(new TransactionReceiptRequest(getSessionId(), getCheckId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        getService().sendMessage(new TransactionReceiptRequest(getSessionId(), getCheckId()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -409,7 +403,7 @@ public class BusTicketsWizard extends AbstractWizard {
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
 
-        getService().sendMessage(new BusTicketValidateRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        getService().sendMessage(new BusTicketValidateRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
             @Override
             public void doServerResponse(final SuccessResponse response) {
                 if (response instanceof BusTicketValidateValidResponse) {
@@ -545,7 +539,7 @@ public class BusTicketsWizard extends AbstractWizard {
         setPaymentStart(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketPaymentStartRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId()), new UIResponseCallBackImpl(getUI(), new UIResponseCallBackImpl.ResponseCallbackHandler() {
+        getService().sendMessage(new BusTicketPaymentStartRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {

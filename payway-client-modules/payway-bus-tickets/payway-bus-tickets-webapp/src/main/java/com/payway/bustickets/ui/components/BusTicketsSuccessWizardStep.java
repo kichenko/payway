@@ -4,6 +4,7 @@
 package com.payway.bustickets.ui.components;
 
 import com.payway.bustickets.core.utils.GraphicsConverterUtils;
+import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
@@ -29,7 +30,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 @Slf4j
 @Setter(AccessLevel.PRIVATE)
 @Getter(AccessLevel.PRIVATE)
-public class BusTicketsSuccessWizardStep extends AbstractWizardStep {
+public final class BusTicketsSuccessWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = 9042170733083703085L;
 
@@ -49,7 +50,8 @@ public class BusTicketsSuccessWizardStep extends AbstractWizardStep {
         init();
     }
 
-    private void init() {
+    @Override
+    protected void init() {
         setSizeFull();
         addComponent(Clara.create("BusTicketsSuccessWizardStep.xml", this));
     }

@@ -3,6 +3,7 @@
  */
 package com.payway.bustickets.ui.components;
 
+import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.vaadin.ui.Label;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 @Getter
-public class BusTicketsFailWizardStep extends AbstractWizardStep {
+public final class BusTicketsFailWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = 8060109602379331780L;
 
@@ -28,7 +29,8 @@ public class BusTicketsFailWizardStep extends AbstractWizardStep {
         init();
     }
 
-    private void init() {
+    @Override
+    protected void init() {
         setSizeFull();
         addComponent(Clara.create("BusTicketsFailWizardStep.xml", this));
     }

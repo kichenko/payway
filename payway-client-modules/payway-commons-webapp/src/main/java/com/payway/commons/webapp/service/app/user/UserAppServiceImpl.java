@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.kioskcashier.service.app.user;
+package com.payway.commons.webapp.service.app.user;
 
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.messaging.model.user.UserDto;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 /**
  * UserAppServiceImpl
  *
- * Warning used in background thread!
+ * Warning in background thread, used vaadin session as user storage!
  *
  * @author Sergey Kichenko
  * @created 01.07.15 00:00
  */
-@Component
+@Component(value = "webApps.UserAppService")
 public class UserAppServiceImpl implements UserAppService {
 
     @Override

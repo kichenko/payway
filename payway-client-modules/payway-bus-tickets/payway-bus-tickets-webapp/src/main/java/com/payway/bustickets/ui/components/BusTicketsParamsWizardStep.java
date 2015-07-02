@@ -8,6 +8,7 @@ import com.payway.bustickets.ui.components.containers.ChoiceDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.DirectionDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.RouteDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.filters.RouteByDirectionFilter;
+import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
@@ -40,7 +41,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 @Getter
-public class BusTicketsParamsWizardStep extends AbstractWizardStep {
+public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = -3017619450081339095L;
 
@@ -96,7 +97,8 @@ public class BusTicketsParamsWizardStep extends AbstractWizardStep {
         getSliderQuantity().addValidator(new DoubleRangeValidator("Invalid quantity", 1.0, Double.MAX_VALUE));
     }
 
-    private void init() {
+    @Override
+    protected void init() {
         setSizeFull();
         addComponent(Clara.create("BusTicketsParamsWizardStep.xml", this));
 

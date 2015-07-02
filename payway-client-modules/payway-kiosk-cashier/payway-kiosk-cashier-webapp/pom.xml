@@ -159,14 +159,14 @@
                     <include>**/*</include>
                 </includes>
                 <excludes>
-                    <exclude>com/payway/advertising/ui/view/core/AdvertisingMainView.xml</exclude>
+                    <exclude>com/payway/kioskcashier/ui/view/core/KioskCashierMainView.xml</exclude>
                 </excludes>
             </resource>  
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>com/payway/advertising/ui/view/core/AdvertisingMainView.xml</include>
+                    <include>com/payway/kioskcashier/ui/view/core/KioskCashierMainView.xml</include>
                 </includes>
             </resource>                                
         </resources>

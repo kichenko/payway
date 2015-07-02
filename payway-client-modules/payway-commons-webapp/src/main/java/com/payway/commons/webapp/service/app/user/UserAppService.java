@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.kioskcashier.service.app.user;
+package com.payway.commons.webapp.service.app.user;
 
 import com.payway.messaging.model.user.UserDto;
 

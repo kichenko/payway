@@ -9,4 +9,6 @@
 
     <!-- property file -->
     <context:property-placeholder location="classpath:config.properties,file:///${avs.conf:/etc/avs.conf}" ignore-resource-not-found="true"/>
+    
+    <import resource="application-context.xml"/>
 </beans>

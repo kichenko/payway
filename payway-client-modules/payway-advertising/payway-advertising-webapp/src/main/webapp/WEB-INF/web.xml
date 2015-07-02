@@ -4,7 +4,7 @@
     <display-name>payway-advertising-webapp</display-name>
     
     <listener>
-        <listener-class>com.payway.advertising.web.SpringContextInitializer</listener-class>
+        <listener-class>com.payway.commons.webapp.web.PaywayCommonContextLoaderListener</listener-class>
     </listener>
         
     <!-- spring context -->

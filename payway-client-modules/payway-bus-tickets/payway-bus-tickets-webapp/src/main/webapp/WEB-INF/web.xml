@@ -5,7 +5,7 @@
     
     <!-- spring context -->
     <listener>
-        <listener-class>com.payway.bustickets.web.BusTicketsContextLoaderListener</listener-class>
+        <listener-class>com.payway.commons.webapp.web.PaywayCommonContextLoaderListener</listener-class>
     </listener>
         
     <context-param>

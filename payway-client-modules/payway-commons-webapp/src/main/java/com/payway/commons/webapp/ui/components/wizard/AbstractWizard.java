@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.ui.components;
+package com.payway.commons.webapp.ui.components.wizard;
 
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.vaadin.ui.Panel;
@@ -24,18 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 public abstract class AbstractWizard extends Panel {
 
-    protected List<AbstractWizardStep> steps = new ArrayList<>(0);
-    protected int stepCount;
-    protected int step;
+    private static final long serialVersionUID = 5373900918341617583L;
 
-    @Setter
-    @Getter
+    protected int step;
+    protected int stepCount;
     protected MessageServerSenderService service;
+    protected List<AbstractWizardStep> steps = new ArrayList<>(0);
 
     public AbstractWizard(int stepCount) {
         setStepCount(stepCount);
         steps = new ArrayList<>(stepCount);
     }
+
+    protected abstract void init();
 
     public boolean setStep(int step) {
         if (step >= 0 && step < stepCount) {
@@ -52,6 +53,4 @@ public abstract class AbstractWizard extends Panel {
         }
         return null;
     }
-
-    public abstract void setLogoImage(byte[] content);
 }

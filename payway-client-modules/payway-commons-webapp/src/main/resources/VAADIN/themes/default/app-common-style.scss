@@ -1,0 +1,14 @@
+@mixin app-common-style {
+
+    .app-common-style-float-right {
+        float: right;
+    }
+
+    .app-common-style-text-center {
+        text-align: center;
+    }
+
+    .app-common-style-text-right {
+        text-align: right;
+    }
+}

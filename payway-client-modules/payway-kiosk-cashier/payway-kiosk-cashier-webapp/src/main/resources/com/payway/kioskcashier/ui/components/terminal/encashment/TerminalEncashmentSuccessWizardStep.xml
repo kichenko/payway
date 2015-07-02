@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentSuccessWizardStep" styleName="" sizeFull="true">
+
+    <Label id="lbSuccess" value="Success" width="100%" styleName="success app-common-style-text-center"/>
+    
+    <Button id="btnPreview" caption="Preview" styleName="friendly small"/>
+    <Button id="btnDownload" caption="Download" styleName="friendly small"/>
+
+</VerticalLayout>

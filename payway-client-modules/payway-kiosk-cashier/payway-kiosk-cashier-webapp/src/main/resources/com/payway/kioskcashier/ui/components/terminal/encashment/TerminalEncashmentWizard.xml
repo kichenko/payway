@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentWizard" styleName="" sizeFull="true">
+    
+    <VerticalLayout id="layoutContent" width="100%"/>      
+    <HorizontalLayout id="layoutFooter" width="100%" styleName="terminal-encashment-wizard-footer">
+        <Button id="btnLeft" styleName="friendly terminal-encashment-wizard-btn-left"/>
+        <Button id="btnRight" styleName="primary terminal-encashment-wizard-btn-right"/>
+    </HorizontalLayout>   
+
+</VerticalLayout>

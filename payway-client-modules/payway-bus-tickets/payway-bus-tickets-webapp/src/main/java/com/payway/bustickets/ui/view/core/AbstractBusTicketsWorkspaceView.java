@@ -6,10 +6,10 @@ package com.payway.bustickets.ui.view.core;
 import com.payway.commons.webapp.ui.view.core.AbstractWorkspaceView;
 
 /**
- * AbstractWorkspaceView
+ * AbstractBusTicketsWorkspaceView
  *
  * @author Sergey Kichenko
- * @created 17.05.15 00:00
+ * @created 17.06.15 00:00
  */
 public abstract class AbstractBusTicketsWorkspaceView extends AbstractWorkspaceView {
 

@@ -14,6 +14,8 @@ import com.vaadin.ui.VerticalLayout;
  * @created 17.05.15 00:00
  */
 public abstract class AbstractWorkspaceView extends VerticalLayout implements WorkspaceView {
+    
+    private static final long serialVersionUID = 2748574587622351388L;
 
     protected MenuBar menuBar;
     protected SideBarMenu sideBarMenu;
