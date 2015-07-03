@@ -7,22 +7,22 @@ import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import org.vaadin.teemu.clara.Clara;
 
 /**
- * TerminalEncashmentCrudWizardStep
+ * SuccessWizardStep
  *
  * @author Sergey Kichenko
  * @created 02.07.15 00:00
  */
-public final class TerminalEncashmentCrudWizardStep extends AbstractWizardStep {
+public final class SuccessWizardStep extends AbstractWizardStep {
 
-    private static final long serialVersionUID = -8297534233174351589L;
+    private static final long serialVersionUID = -4034008235986621684L;
 
-    public TerminalEncashmentCrudWizardStep() {
+    public SuccessWizardStep() {
         init();
     }
 
     @Override
     protected void init() {
         setSizeFull();
-        addComponent(Clara.create("TerminalEncashmentCrudWizardStep.xml", this));
+        addComponent(Clara.create("SuccessWizardStep.xml", this));
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentSearchWizardStep" styleName="" sizeFull="true">
+        
+    <FormLayout id="layoutParamsForm" sizeFull="true">
+        <TextField id="editTerminal" immediate="true" caption="Terminal" styleName="" width="100%"/>
+        <TextField id="editReport" immediate="true" caption="Report" styleName="" width="100%"/>
+    </FormLayout>
+    
+</VerticalLayout>

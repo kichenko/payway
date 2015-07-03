@@ -37,6 +37,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
+import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
  * BusTicketsWizard
@@ -170,6 +171,28 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
         streamResource.setMIMEType(getContentTicket().getType());
 
         return streamResource;
+    }
+
+    @UiHandler(value = "btnLeft")
+    public void buttonClickLeft(Button.ClickEvent event) {
+
+        if (!isHandleLeftClick()) {
+            return;
+        }
+
+        handleStepLeft();
+        decorateStep();
+    }
+
+    @UiHandler(value = "btnRight")
+    public void buttonClickRight(Button.ClickEvent event) {
+
+        if (!isHandleRightClick()) {
+            return;
+        }
+
+        handleStepRight();
+        decorateStep();
     }
 
     @Override

@@ -47,9 +47,9 @@ public abstract class AbstractWizard extends Panel {
         return false;
     }
 
-    public AbstractWizardStep getWizardStep(int step) {
-        if (step >= 0 && step < stepCount) {
-            return steps.get(step);
+    public AbstractWizardStep getWizardStep(int stepIndex) {
+        if (stepIndex >= 0 && stepIndex < stepCount) {
+            return steps.get(stepIndex);
         }
         return null;
     }

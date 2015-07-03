@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
-import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
  * AbstractStandartButtonWizard
@@ -51,27 +50,5 @@ public abstract class AbstractStandartButtonWizard extends AbstractWizard {
 
     protected boolean isHandleRightClick() {
         return true;
-    }
-
-    @UiHandler(value = "btnLeft")
-    protected void buttonClickLeft(Button.ClickEvent event) {
-
-        if (!isHandleLeftClick()) {
-            return;
-        }
-
-        handleStepLeft();
-        decorateStep();
-    }
-
-    @UiHandler(value = "btnRight")
-    protected void buttonClickRight(Button.ClickEvent event) {
-
-        if (!isHandleRightClick()) {
-            return;
-        }
-
-        handleStepRight();
-        decorateStep();
     }
 }

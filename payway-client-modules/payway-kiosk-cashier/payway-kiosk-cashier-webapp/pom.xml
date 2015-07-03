@@ -40,6 +40,12 @@
             <artifactId>payway-messaging-message</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message-kiosk-cashier</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
  
         <dependency>
             <groupId>com.vaadin</groupId>

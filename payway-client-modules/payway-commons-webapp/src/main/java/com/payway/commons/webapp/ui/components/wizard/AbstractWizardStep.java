@@ -20,6 +20,6 @@ public abstract class AbstractWizardStep extends VerticalLayout {
     protected abstract void init();
 
     public boolean validate() {
-        return false;
+        return true;
     }
 }

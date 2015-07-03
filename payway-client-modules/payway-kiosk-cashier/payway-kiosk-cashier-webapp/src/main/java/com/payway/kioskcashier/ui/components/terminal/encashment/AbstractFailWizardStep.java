@@ -4,25 +4,30 @@
 package com.payway.kioskcashier.ui.components.terminal.encashment;
 
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
+import com.vaadin.ui.Label;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.vaadin.teemu.clara.Clara;
+import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
- * TerminalEncashmentFailWizardStep
+ * AbstractFailWizardStep
  *
  * @author Sergey Kichenko
  * @created 02.07.15 00:00
  */
-public final class TerminalEncashmentFailWizardStep extends AbstractWizardStep {
+@Getter
+@NoArgsConstructor
+public abstract class AbstractFailWizardStep extends AbstractWizardStep {
 
     private static final long serialVersionUID = -46604939612244693L;
-
-    public TerminalEncashmentFailWizardStep() {
-        init();
-    }
+    
+    @UiField
+    protected Label lbReason;
 
     @Override
     protected void init() {
         setSizeFull();
-        addComponent(Clara.create("TerminalEncashmentFailWizardStep.xml", this));
+        addComponent(Clara.create("FailWizardStep.xml", this));
     }
 }
