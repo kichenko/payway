@@ -8,7 +8,7 @@
     </FormLayout>
     
     <VerticalLayout id = "layoutGrid" width="100%" height="70%">
-        <Grid id="gridEncashment" sizeFull="true"/>
+        <Table id="gridEncashment" sizeFull="true"/>
     </VerticalLayout> 
         
 </CssLayout>

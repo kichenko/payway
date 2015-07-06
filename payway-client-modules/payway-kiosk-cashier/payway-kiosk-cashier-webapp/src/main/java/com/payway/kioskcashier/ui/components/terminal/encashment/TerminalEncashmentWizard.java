@@ -12,6 +12,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.kioskcashier.EncashmentReportFailureSearchRequest;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchRequest;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchResponse;
+import com.payway.messaging.model.common.CurrencyDto;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
@@ -20,6 +21,7 @@ import de.steinwedel.messagebox.ButtonId;
 import de.steinwedel.messagebox.Icon;
 import de.steinwedel.messagebox.MessageBoxListener;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
@@ -47,6 +49,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
     @Setter(AccessLevel.PRIVATE)
     boolean isHandleRightClick = true;
 
+    @Setter
+    @Getter
+    private CurrencyDto currency;
+
     public TerminalEncashmentWizard() {
         super(STEP_COUNT);
         init();
@@ -73,7 +79,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
 
     @Override
     protected void handleStepLeft() {
-        
+
         if (TERMINAL_ENCASHMENT_SEARCH_FAIL_WIZARD_STEP_ID == getStep()) {
             setStep(TERMINAL_ENCASHMENT_SEARCH_WIZARD_STEP_ID);
         } else if (TERMINAL_ENCASHMENT_CRUD_FAIL_WIZARD_STEP_ID == getStep()) {
@@ -243,7 +249,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         }
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new EncashmentReportSearchRequest(wizardStep.getEditTerminal().getValue(), Integer.parseInt(wizardStep.getEditReport().getValue())), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+        getService().sendMessage(new EncashmentReportSearchRequest(getCurrency().getId(), wizardStep.getEditTerminal().getValue(), Integer.parseInt(wizardStep.getEditReport().getValue())), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {

@@ -9,19 +9,15 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * EncashmentReportSearchRequest
+ * EncashmentSaveBanknoteNominalRequest
  *
  * @author Sergey Kichenko
- * @created 03.07.15 00:00
+ * @created 06.07.15 00:00
  */
 @Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentReportSearchRequest extends CommandRequest {
+public class EncashmentSaveBanknoteNominalRequest extends CommandRequest {
 
-    private static final long serialVersionUID = 7436126340351870702L;
-
-    private final long currencyId;
-    private final String terminalName;
-    private final int reportNo;
+    private static final long serialVersionUID = 2849838982105517376L;
 }

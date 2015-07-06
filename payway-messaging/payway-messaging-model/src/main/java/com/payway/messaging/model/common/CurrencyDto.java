@@ -30,4 +30,9 @@ public final class CurrencyDto extends AbstractDto {
     private final String iso;
 
     private final boolean defaultCurrency;
+
+    public CurrencyDto(long id, String name, String shotName, String iso, boolean defaultCurrency) {
+        this(name, shotName, iso, defaultCurrency);
+        setId(id);
+    }
 }

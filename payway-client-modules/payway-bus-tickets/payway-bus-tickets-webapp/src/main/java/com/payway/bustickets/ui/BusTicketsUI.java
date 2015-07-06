@@ -4,8 +4,7 @@
 package com.payway.bustickets.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.bustickets.core.BusTicketsSessionSettings;
-import com.payway.bustickets.service.app.settings.SettingsAppService;
+import com.payway.bustickets.service.app.settings.model.BusTicketsSessionSettings;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsFailBusEvent;
 import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
 import com.payway.bustickets.ui.view.core.BusTicketsSettingsWindow;
@@ -15,6 +14,7 @@ import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
+import com.payway.commons.webapp.service.app.settings.SettingsAppService;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
@@ -70,7 +70,7 @@ public class BusTicketsUI extends AbstractUI {
 
     @Autowired
     @Qualifier(value = "settingsAppService")
-    private SettingsAppService settingsAppService;
+    private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
 
     @Autowired
     @Qualifier("messageServerSenderService")

@@ -4,11 +4,12 @@
 package com.payway.bustickets.ui.view.workspace;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.bustickets.service.app.settings.SettingsAppService;
+import com.payway.bustickets.service.app.settings.model.BusTicketsSessionSettings;
 import com.payway.bustickets.ui.components.BusTicketsWizard;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.bus.event.SettingsChangedAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.service.app.settings.SettingsAppService;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.messaging.model.common.OperatorDto;
 import com.vaadin.ui.UI;
@@ -47,7 +48,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
 
     @Autowired
     @Qualifier("settingsAppService")
-    private SettingsAppService settingsAppService;
+    private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
 
     @PostConstruct
     public void postConstruct() {

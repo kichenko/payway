@@ -4,6 +4,8 @@
 package com.payway.kioskcashier.ui.view.core.workspace;
 
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.service.app.settings.SettingsAppService;
+import com.payway.kioskcashier.service.app.settings.model.KioskCashierSessionSettings;
 import com.payway.kioskcashier.ui.components.terminal.encashment.TerminalEncashmentWizard;
 import com.payway.kioskcashier.ui.view.core.AbstractKioskCashierWorkspaceView;
 import javax.annotation.PostConstruct;
@@ -38,15 +40,18 @@ public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspa
     @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
 
+    @Autowired
+    SettingsAppService<KioskCashierSessionSettings> settingsAppService;
+
     @PostConstruct
     public void postConstruct() {
         setSizeFull();
         addComponent(Clara.create("TerminalEncashmentWorkspaceView.xml", this));
-        wizard.setService(service);
     }
 
     @Override
     public void activate() {
-        //
+        wizard.setService(service);
+        wizard.setCurrency(settingsAppService.getCurrency());
     }
 }

@@ -4,14 +4,13 @@
 package com.payway.messaging.model.kioskcashier;
 
 import com.payway.messaging.model.AbstractDto;
-import com.payway.messaging.model.common.CurrencyDto;
-import com.payway.messaging.model.common.MoneyPrecisionDto;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * SettingsDto
+ * BanknoteNominalEncashmentDto
  *
  * @author Sergey Kichenko
  * @created 03.07.15 00:00
@@ -19,10 +18,11 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
-public final class SettingsDto extends AbstractDto {
+@EqualsAndHashCode(callSuper = true)
+public final class BanknoteNominalEncashmentDto extends AbstractDto {
 
-    private static final long serialVersionUID = 2020821325401263476L;
+    private static final long serialVersionUID = 1991467777897674558L;
 
-    private final CurrencyDto currency;
-    private final MoneyPrecisionDto moneyPrecision;
+    private final long banknoteNominalId;
+    private final int quantity;
 }
