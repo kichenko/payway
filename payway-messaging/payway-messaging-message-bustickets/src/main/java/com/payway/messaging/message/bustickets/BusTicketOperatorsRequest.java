@@ -2,7 +2,11 @@ package com.payway.messaging.message.bustickets;
 
 import com.payway.messaging.core.request.command.CommandRequest;
 import com.payway.messaging.message.IWebAppSessionAware;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 
 /**

@@ -19,26 +19,44 @@ import org.springframework.stereotype.Component;
 @Component(value = "webApps.UserAppService")
 public class UserAppServiceImpl implements UserAppService {
 
-    @Override
-    public UserDto getUser() {
-
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session == null) {
-            return null;
-        }
-
-        return (UserDto) session.getAttribute(CommonAttributes.USER.value());
-    }
-
-    @Override
-    public boolean setUser(UserDto user) {
+    protected boolean setSessionValue(String key, Object value) {
 
         VaadinSession session = VaadinSession.getCurrent();
         if (session == null) {
             return false;
         }
 
-        session.setAttribute(CommonAttributes.USER.value(), user);
+        session.setAttribute(key, value);
         return true;
+    }
+
+    protected Object getSessionValue(String key) {
+
+        VaadinSession session = VaadinSession.getCurrent();
+        if (session == null) {
+            return null;
+        }
+
+        return session.getAttribute(key);
+    }
+
+    @Override
+    public UserDto getUser() {
+        return (UserDto) getSessionValue(CommonAttributes.USER.value());
+    }
+
+    @Override
+    public boolean setUser(UserDto user) {
+        return setSessionValue(CommonAttributes.USER.value(), user);
+    }
+
+    @Override
+    public boolean setSessionId(String sessionId) {
+        return setSessionValue(CommonAttributes.WEB_APP_SESSION_ID.value(), sessionId);
+    }
+
+    @Override
+    public String getSessionId() {
+        return (String) getSessionValue(CommonAttributes.WEB_APP_SESSION_ID.value());
     }
 }

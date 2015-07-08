@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentWizard" styleName="" sizeFull="true">
     
-    <VerticalLayout id="layoutContent"  p:expandRatio="-1" p:componentAlignment="TOP_CENTER" width="100%" height="100%"/>   
+    <VerticalLayout id="layoutContent"  p:expandRatio="-1" p:componentAlignment="TOP_CENTER" width="100%" height="100%" styleName="terminal-encashment-wizard-content"/>   
        
     <HorizontalLayout id="layoutFooter" p:expandRatio="0" p:componentAlignment="BOTTOM_CENTER" width="100%" styleName="terminal-encashment-wizard-footer">
         <Button id="btnLeft" p:componentAlignment="MIDDLE_LEFT" styleName="friendly terminal-encashment-wizard-btn-left"/>

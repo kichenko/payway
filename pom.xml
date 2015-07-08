@@ -82,6 +82,7 @@
         <vaadin.addons.contextmenu>4.5</vaadin.addons.contextmenu>
         <de.steinwedel.vaadin.addon.messagebox>2.0.7</de.steinwedel.vaadin.addon.messagebox>
         <org.vaadin.addons.imagescaler.version>2.0.0</org.vaadin.addons.imagescaler.version>
+        <org.vaadin.addons.tm.kod.numberfield7>0.0.2</org.vaadin.addons.tm.kod.numberfield7>
 
         <hazelcast.all.version>3.4.2</hazelcast.all.version>
         <hazelcast.client.version>3.4.2</hazelcast.client.version>
@@ -435,6 +436,12 @@
                 <groupId>org.vaadin.addons</groupId>
                 <artifactId>imagescaler</artifactId>
                 <version>${org.vaadin.addons.imagescaler.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>tm.kod</groupId>
+                <artifactId>numberfield7</artifactId>
+                <version>${org.vaadin.addons.tm.kod.numberfield7}</version>
             </dependency>
 
             <!-- vaadin libs end-->

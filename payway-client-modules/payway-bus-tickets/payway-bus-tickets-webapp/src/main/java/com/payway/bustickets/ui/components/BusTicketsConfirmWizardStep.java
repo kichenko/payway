@@ -3,7 +3,7 @@
  */
 package com.payway.bustickets.ui.components;
 
-import com.payway.bustickets.core.utils.NumberFormatConverterUtils;
+import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
@@ -131,13 +131,13 @@ public final class BusTicketsConfirmWizardStep extends AbstractWizardStep {
         if (getMoneyPrecision() != null) {
             if (MoneyPrecisionDto.Auto.equals(getMoneyPrecision())) {
 
-                if (com.payway.bustickets.core.utils.NumberUtils.isInteger(discount)) {
+                if (com.payway.commons.webapp.core.utils.NumberUtils.isInteger(discount)) {
                     strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
                 } else {
                     strDiscount = NumberFormatConverterUtils.format(discount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);
                 }
 
-                if (com.payway.bustickets.core.utils.NumberUtils.isInteger(totalCost)) {
+                if (com.payway.commons.webapp.core.utils.NumberUtils.isInteger(totalCost)) {
                     strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS);
                 } else {
                     strTotalCost = NumberFormatConverterUtils.format(totalCost, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS);

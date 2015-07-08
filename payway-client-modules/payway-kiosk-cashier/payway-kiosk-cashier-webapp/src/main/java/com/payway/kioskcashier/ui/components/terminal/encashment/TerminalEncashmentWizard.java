@@ -9,9 +9,10 @@ import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.components.wizard.AbstractStandartButtonWizard;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
-import com.payway.messaging.message.kioskcashier.EncashmentReportFailureSearchRequest;
+import com.payway.messaging.message.kioskcashier.EncashmentReportFailureSearchResponse;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchRequest;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchResponse;
+import com.payway.messaging.message.kioskcashier.EncashmentsResultRequest;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
@@ -53,6 +54,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
     @Getter
     private CurrencyDto currency;
 
+    @Setter
+    @Getter
+    private String sessionId;
+
     public TerminalEncashmentWizard() {
         super(STEP_COUNT);
         init();
@@ -67,9 +72,11 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
 
         setUpSteps();
         setStep(TERMINAL_ENCASHMENT_SEARCH_WIZARD_STEP_ID);
+        decorateStep();
     }
 
     private void setUpSteps() {
+
         getSteps().add(new SearchWizardStep());
         getSteps().add(new SearchFailWizardStep());
         getSteps().add(new CrudWizardStep());
@@ -91,24 +98,13 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
 
     @UiHandler(value = "btnLeft")
     public void buttonClickLeft(Button.ClickEvent event) {
-
-        if (!isHandleLeftClick()) {
-            return;
-        }
-
         handleStepLeft();
         decorateStep();
     }
 
     @UiHandler(value = "btnRight")
     public void buttonClickRight(Button.ClickEvent event) {
-
-        if (!isHandleRightClick()) {
-            return;
-        }
-
         handleStepRight();
-        decorateStep();
     }
 
     @Override
@@ -117,14 +113,13 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         if (TERMINAL_ENCASHMENT_SEARCH_WIZARD_STEP_ID == getStep()) {
             processSearchStep();
         } else if (TERMINAL_ENCASHMENT_CRUD_WIZARD_STEP_ID == getStep()) {
+
             ((AbstractUI) getUI()).showMessageBox("Save terminal encashment report", "Are you sure want to save terminal encashment report", Icon.QUESTION, new MessageBoxListener() {
                 @Override
                 public void buttonClicked(ButtonId buttonId) {
                     if (ButtonId.YES.equals(buttonId)) {
                         processCrudStep();
-                        setHandleRightClick(true);
-                    } else {
-                        setHandleRightClick(false);
+                        decorateStep();
                     }
                 }
             },
@@ -134,8 +129,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
 
         } else if (TERMINAL_ENCASHMENT_SUCCESS_WIZARD_STEP_ID == getStep() || TERMINAL_ENCASHMENT_CRUD_FAIL_WIZARD_STEP_ID == getStep()) {
             setStep(TERMINAL_ENCASHMENT_CRUD_WIZARD_STEP_ID);
+            decorateStep();
         } else if (TERMINAL_ENCASHMENT_SEARCH_FAIL_WIZARD_STEP_ID == getStep()) {
             setStep(TERMINAL_ENCASHMENT_SEARCH_WIZARD_STEP_ID);
+            decorateStep();
         }
     }
 
@@ -152,7 +149,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
-            setCaption("Search");
+            setCaption("Search terminal encashment report");
 
             btnLeft.setVisible(false);
             btnLeft.setCaption("");
@@ -165,7 +162,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
-            setCaption("Create");
+            setCaption("Create encashment report");
 
             btnLeft.setVisible(true);
             btnLeft.setCaption("Back");
@@ -178,7 +175,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
-            setCaption("Failed search");
+            setCaption("Failed search terminal encashment report");
 
             btnLeft.setVisible(true);
             btnLeft.setCaption("Back");
@@ -191,7 +188,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
-            setCaption("Failed crud");
+            setCaption("Failed create encashment report");
 
             btnLeft.setVisible(true);
             btnLeft.setCaption("Back");
@@ -204,7 +201,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
             layoutContent.removeAllComponents();
             layoutContent.addComponent(getSteps().get(getStep()));
 
-            setCaption("Successful");
+            setCaption("Successful create encashment report");
 
             btnLeft.setVisible(false);
             btnLeft.setCaption("");
@@ -226,7 +223,15 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
     }
 
     private void processCrudStep() {
-        //
+
+        CrudWizardStep wizardStep = (CrudWizardStep) getWizardStep(getStep());
+        if (wizardStep != null) {
+            if (wizardStep.validate()) {
+                sendEncashmentsResultRequest();
+            } else {
+                ((InteractionUI) UI.getCurrent()).showNotification("Validation encashments result", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void processSearchStep() {
@@ -241,6 +246,60 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         }
     }
 
+    private void sendEncashmentsResultRequest() {
+
+        CrudWizardStep wizardStep = (CrudWizardStep) getWizardStep(getStep());
+        if (wizardStep == null) {
+            return;
+        }
+
+        ((InteractionUI) UI.getCurrent()).showProgressBar();
+        getService().sendMessage(new EncashmentsResultRequest(getSessionId(), wizardStep.getKioskEncashment().getId(), wizardStep.getEncashments()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+
+            @Override
+            public void doServerResponse(SuccessResponse response) {
+                /*
+                 if (response instanceof EncashmentReportSearchResponse) {
+                 processEncashmentReportSearchResponse((EncashmentReportSearchResponse) response);
+                 } else if (response instanceof EncashmentReportFailureSearchRequest) {
+                 processEncashmentReportFailureSearchRequest((EncashmentReportFailureSearchRequest) response);
+                 } else {
+                 log.error("Bad server response (unknown type) - {}", response);
+                 processSearchEncashmentReportExceptionResponse();
+                 }*/
+            }
+
+            @Override
+            public void doServerException(ExceptionResponse exception) {
+                log.error("Bad exception response (server exception) - {}", exception);
+                processEncashmentResultExceptionResponse();
+            }
+
+            @Override
+            public void doLocalException(Exception exception) {
+                log.error("Bad exception response (local exception) - {}", exception);
+                processEncashmentResultExceptionResponse();
+            }
+
+            @Override
+            public void doTimeout() {
+                log.error("Bad exception response (time out)");
+                processEncashmentResultExceptionResponse();
+            }
+        }));
+    }
+
+    private void processEncashmentResultExceptionResponse() {
+
+        CrudFailWizardStep wizardStep = (CrudFailWizardStep) getWizardStep(TERMINAL_ENCASHMENT_CRUD_FAIL_WIZARD_STEP_ID);
+        if (wizardStep != null) {
+            wizardStep.getLbReason().setValue("Internal server error");
+            setStep(TERMINAL_ENCASHMENT_CRUD_FAIL_WIZARD_STEP_ID);
+        }
+
+        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+    }
+
     private void sendSearchEncashmentReportRequest() {
 
         SearchWizardStep wizardStep = (SearchWizardStep) getWizardStep(0);
@@ -249,14 +308,14 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         }
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new EncashmentReportSearchRequest(getCurrency().getId(), wizardStep.getEditTerminal().getValue(), Integer.parseInt(wizardStep.getEditReport().getValue())), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+        getService().sendMessage(new EncashmentReportSearchRequest(getSessionId(), wizardStep.getEditTerminal().getValue(), Integer.parseInt(wizardStep.getEditReport().getValue())), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
                 if (response instanceof EncashmentReportSearchResponse) {
                     processEncashmentReportSearchResponse((EncashmentReportSearchResponse) response);
-                } else if (response instanceof EncashmentReportFailureSearchRequest) {
-                    processEncashmentReportFailureSearchRequest((EncashmentReportFailureSearchRequest) response);
+                } else if (response instanceof EncashmentReportFailureSearchResponse) {
+                    processEncashmentReportFailureSearchRequest((EncashmentReportFailureSearchResponse) response);
                 } else {
                     log.error("Bad server response (unknown type) - {}", response);
                     processSearchEncashmentReportExceptionResponse();
@@ -294,7 +353,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 
-    private void processEncashmentReportFailureSearchRequest(EncashmentReportFailureSearchRequest response) {
+    private void processEncashmentReportFailureSearchRequest(EncashmentReportFailureSearchResponse response) {
 
         SearchFailWizardStep wizardStep = (SearchFailWizardStep) getWizardStep(TERMINAL_ENCASHMENT_SEARCH_FAIL_WIZARD_STEP_ID);
         if (wizardStep != null) {
@@ -309,7 +368,7 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
 
         CrudWizardStep wizardStep = (CrudWizardStep) getWizardStep(TERMINAL_ENCASHMENT_CRUD_WIZARD_STEP_ID);
         if (wizardStep != null) {
-            wizardStep.setUp(response);
+            wizardStep.setUp(response, getCurrency());
             setStep(TERMINAL_ENCASHMENT_CRUD_WIZARD_STEP_ID);
         }
 

@@ -17,4 +17,8 @@ public interface UserAppService {
 
     boolean setUser(UserDto user);
 
+    boolean setSessionId(String sessionId);
+
+    String getSessionId();
+
 }

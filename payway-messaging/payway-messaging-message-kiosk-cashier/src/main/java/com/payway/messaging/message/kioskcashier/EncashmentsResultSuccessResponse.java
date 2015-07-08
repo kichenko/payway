@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentSaveBanknoteNominalSuccessResponse implements SuccessResponse {
+public final class EncashmentsResultSuccessResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 4838381928224679017L;
 

@@ -138,6 +138,7 @@ public class KioskCashierUI extends AbstractUI {
 
             //set params to session
             userAppService.setUser(userDto);
+            userAppService.setSessionId(event.getSessionId());
 
             if (loginView.isRememberMe()) {
                 //#hack cookie

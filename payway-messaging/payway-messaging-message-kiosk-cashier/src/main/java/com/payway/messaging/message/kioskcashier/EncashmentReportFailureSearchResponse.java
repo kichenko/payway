@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * EncashmentReportFailureSearchRequest
+ * EncashmentReportFailureSearchResponse
  *
  * @author Sergey Kichenko
  * @created 03.07.15 00:00
@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentReportFailureSearchRequest implements SuccessResponse {
+public final class EncashmentReportFailureSearchResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 2146273946116019802L;
 

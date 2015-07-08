@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * @created 06.07.15 00:00
  */
 @Slf4j
-public class BanknoteNominalEncashmentContainerBean extends BeanContainer<String, BanknoteNominalEncashment> {
+public class BanknoteNominalEncashmentContainerBean extends BeanContainer<Long, BanknoteNominalEncashment> {
 
     private static final long serialVersionUID = -3496881705838064114L;
 

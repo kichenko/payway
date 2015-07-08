@@ -1,14 +1,18 @@
 @mixin terminal-encashment-component {
 
     .terminal-encashment-wizard-footer {
-        background-color: red;
+        padding: 5px;
+    }
+
+    .terminal-encashment-wizard-content {
+        padding: 5px;
     }
 
     .terminal-encashment-wizard-btn-left {
-         float:right;
+        //
     }
 
     .terminal-encashment-wizard-btn-right {
-        float:right;
+        //
     }
 }

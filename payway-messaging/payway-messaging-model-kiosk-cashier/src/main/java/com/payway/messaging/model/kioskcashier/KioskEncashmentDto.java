@@ -27,4 +27,9 @@ public final class KioskEncashmentDto extends AbstractDto {
     private final int seqNum;
     private final Date arrivedDate;
     private final Date occuredDate;
+
+    public KioskEncashmentDto(long id, long terminalId, String terminalName, int seqNum, Date arrivedDate, Date occuredDate) {
+        this(terminalId, terminalName, seqNum, arrivedDate, occuredDate);
+        setId(id);
+    }
 }

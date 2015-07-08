@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.bustickets.core.utils;
+package com.payway.commons.webapp.core.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

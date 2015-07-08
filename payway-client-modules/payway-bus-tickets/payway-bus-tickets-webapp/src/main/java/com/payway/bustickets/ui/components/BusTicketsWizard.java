@@ -116,28 +116,6 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
         setUpSteps();
         setStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
 
-        //
-        btnLeft.addClickListener(new Button.ClickListener() {
-            private static final long serialVersionUID = 5019806363620874205L;
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                handleStepLeft();
-                decorateStep();
-            }
-        });
-
-        //
-        btnRight.addClickListener(new Button.ClickListener() {
-            private static final long serialVersionUID = 5019806363620874205L;
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                handleStepRight();
-                decorateStep();
-            }
-        });
-
         setTotalCost(0);
         setPaymentStart(null);
         setPaymentStop(null);

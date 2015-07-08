@@ -121,6 +121,11 @@
             <groupId>de.steinwedel.vaadin.addon</groupId>
             <artifactId>messagebox</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>tm.kod</groupId>
+            <artifactId>numberfield7</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

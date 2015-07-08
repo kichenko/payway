@@ -3,7 +3,7 @@
  */
 package com.payway.messaging.message.kioskcashier;
 
-import com.payway.messaging.core.request.command.CommandRequest;
+import com.payway.messaging.message.SessionCommandRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,11 +17,15 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentReportSearchRequest extends CommandRequest {
-
+public final class EncashmentReportSearchRequest extends SessionCommandRequest {
+    
     private static final long serialVersionUID = 7436126340351870702L;
-
-    private final long currencyId;
+    
     private final String terminalName;
     private final int reportNo;
+    
+    public EncashmentReportSearchRequest(String sessionId, String terminalName, int reportNo) {
+        this(terminalName, reportNo);
+        setSessionId(sessionId);
+    }
 }

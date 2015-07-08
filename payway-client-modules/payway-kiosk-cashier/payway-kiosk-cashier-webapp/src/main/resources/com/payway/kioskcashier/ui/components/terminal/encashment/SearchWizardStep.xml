@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentSearchWizardStep" styleName="" sizeFull="true">
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:num="urn:import:tm.kod.widgets.numberfield" id="layoutTerminalEncashmentSearchWizardStep" styleName="terminal-encashment-wizard-search" sizeFull="true">
         
-    <FormLayout id="layoutParamsForm" sizeFull="true">
-        <TextField id="editTerminal" immediate="true" caption="Terminal" styleName="" width="100%"/>
-        <TextField id="editReport" immediate="true" caption="Report" styleName="" width="100%"/>
-    </FormLayout>
+    <FormLayout id="layoutParamsForm" p:componentAlignment="MIDDLE_CENTER" sizeUndefined="true">
+        <TextField id="editTerminal" caption="Terminal" styleName="" width="250px"/>
+        <num:NumberField id="editReport" caption="Report" maxLength="5" nullRepresentation="0" useGrouping="false" signed="false" styleName="" width="250px"/>
+    </FormLayout>    
     
 </VerticalLayout>

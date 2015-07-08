@@ -6,6 +6,7 @@
 //
 @import "components/appversion";
 @import "components/sidebarmenu";
+@import "components/terminal-encashment/terminal-encashment";
 
 //
 @import "views/login";
@@ -20,6 +21,7 @@
 
     @include app-version-component;
     @include sidebar-menu-component;
+    @include terminal-encashment-component;
 
     @include login-view;
     @include main-view;
