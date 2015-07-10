@@ -4,25 +4,26 @@
 package com.payway.messaging.message.kioskcashier;
 
 import com.payway.messaging.core.response.SuccessResponse;
-import com.payway.messaging.model.kioskcashier.BanknoteNominalEncashmentDto;
-import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * EncashmentSaveBanknoteNominalSuccessResponse
+ * EncashmentCountingSaveResponse
  *
  * @author Sergey Kichenko
  * @created 06.07.15 00:00
  */
 @Getter
-@AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentsResultSuccessResponse implements SuccessResponse {
+public final class EncashmentCountingSaveResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 4838381928224679017L;
 
-    private final List<BanknoteNominalEncashmentDto> encashment;
+    private final boolean surplus;
+    private final boolean shortage;
 
+    public EncashmentCountingSaveResponse(boolean surplus, boolean shortage) {
+        this.surplus = surplus;
+        this.shortage = shortage;
+    }
 }

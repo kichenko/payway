@@ -27,7 +27,13 @@
     </properties>
 
     <!-- dependencies-->
-    <dependencies>  
+    <dependencies>
+        
+        <dependency>
+            <groupId>com.payway.vaadin.addons.ui</groupId>
+            <artifactId>payway-vaadin-textfield-digit</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>     
       
         <dependency>
             <groupId>com.payway</groupId>
@@ -122,11 +128,6 @@
             <artifactId>messagebox</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>tm.kod</groupId>
-            <artifactId>numberfield7</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

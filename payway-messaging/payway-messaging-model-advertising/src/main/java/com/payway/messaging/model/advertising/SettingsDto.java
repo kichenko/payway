@@ -4,7 +4,6 @@
 package com.payway.messaging.model.advertising;
 
 import com.payway.messaging.model.AbstractDto;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,7 +14,6 @@ import lombok.ToString;
  * @created 19.05.15 00:00
  */
 @Getter
-@AllArgsConstructor
 @ToString(callSuper = true)
 public final class SettingsDto extends AbstractDto {
 
@@ -25,5 +23,9 @@ public final class SettingsDto extends AbstractDto {
      * Path to server config, ex. 1/2/3/server-config-folder-name
      */
     private final String configPath;
+
+    public SettingsDto(String configPath) {
+        this.configPath = configPath;
+    }
 
 }

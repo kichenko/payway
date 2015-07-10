@@ -6,5 +6,7 @@
     <inherits name="de.steinwedel.messagebox.WidgetSet" />
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
-    <inherits name="tm.kod.widgets.numberfield.WidgetSet" />
+    
+
+    <inherits name="com.payway.vaadin.addons.ui.textfield.digit.WidgetSet" />
 </module>

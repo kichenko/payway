@@ -4,22 +4,25 @@
 package com.payway.messaging.message.kioskcashier;
 
 import com.payway.messaging.core.response.SuccessResponse;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * EncashmentReportFailureSearchResponse
+ * EncashmentCountingSaveFailureResponse
  *
  * @author Sergey Kichenko
  * @created 03.07.15 00:00
  */
 @Getter
-@AllArgsConstructor
 @ToString(callSuper = true)
-public final class EncashmentReportFailureSearchResponse implements SuccessResponse {
+public final class EncashmentCountingSaveFailureResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 2146273946116019802L;
 
     private final String reason;
+
+    public EncashmentCountingSaveFailureResponse(String reason) {
+        this.reason = reason;
+    }
+
 }

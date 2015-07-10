@@ -6,7 +6,6 @@ package com.payway.messaging.model.user;
 import com.payway.messaging.model.AbstractDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -17,7 +16,6 @@ import lombok.ToString;
  */
 @Getter
 @ToString(callSuper = true)
-@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public final class UserDto extends AbstractDto {
 
@@ -28,5 +26,11 @@ public final class UserDto extends AbstractDto {
     final private String firstName;
 
     final private String lastName;
+
+    public UserDto(String username, String firstName, String lastName) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
 }

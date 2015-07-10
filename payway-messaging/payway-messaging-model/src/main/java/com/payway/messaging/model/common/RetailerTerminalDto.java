@@ -1,6 +1,6 @@
 package com.payway.messaging.model.common;
 
-import com.payway.messaging.model.AbstractDto;
+import com.payway.messaging.model.IdentifiableDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class RetailerTerminalDto extends AbstractDto {
+public final class RetailerTerminalDto extends IdentifiableDto {
 
     private static final long serialVersionUID = 8662939658365643130L;
 

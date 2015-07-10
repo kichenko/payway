@@ -4,13 +4,13 @@
 package com.payway.messaging.message.response.auth;
 
 import com.payway.messaging.model.user.UserDto;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * Команда-ответ успешной аутентификации/авторизации пользователя. Объект
@@ -23,7 +23,6 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class AuthSuccessCommandResponse extends AbstractAuthCommandResponse {
 
@@ -34,6 +33,11 @@ public class AuthSuccessCommandResponse extends AbstractAuthCommandResponse {
     final private String sessionId;
 
     private List<Serializable> extensions;
+
+    public AuthSuccessCommandResponse(UserDto user, String sessionId) {
+        this.user = user;
+        this.sessionId = sessionId;
+    }
 
     public void addExtension(Serializable extension) {
         if (extensions == null) extensions = new LinkedList<>();

@@ -7,7 +7,6 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalDto;
 import com.payway.messaging.model.kioskcashier.KioskEncashmentDto;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -18,12 +17,18 @@ import lombok.ToString;
  * @created 03.07.15 00:00
  */
 @Getter
-@AllArgsConstructor
 @ToString(callSuper = true)
 public final class EncashmentReportSearchResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 8950351195681515060L;
 
     private final KioskEncashmentDto kioskEncashment;
+
     private final List<BanknoteNominalDto> nominals;
+
+    public EncashmentReportSearchResponse(KioskEncashmentDto kioskEncashment, List<BanknoteNominalDto> nominals) {
+        this.kioskEncashment = kioskEncashment;
+        this.nominals = nominals;
+    }
+
 }

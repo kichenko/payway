@@ -1,21 +1,19 @@
 package com.payway.messaging.model.bustickets;
 
 import com.payway.messaging.model.AbstractDto;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
  * Created by mike on 09/06/15.
  */
 @Getter
-@Setter
-@AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public final class RouteDto extends AbstractDto {
+
+    private static final long serialVersionUID = -7054019052878375518L;
 
     private final String mnemonics;
 
@@ -28,5 +26,14 @@ public final class RouteDto extends AbstractDto {
     private final int seatsTotal;
 
     private final int seatsSold;
+
+    public RouteDto(String mnemonics, DirectionDto direction, String departureTime, double price, int seatsTotal, int seatsSold) {
+        this.mnemonics = mnemonics;
+        this.direction = direction;
+        this.departureTime = departureTime;
+        this.price = price;
+        this.seatsTotal = seatsTotal;
+        this.seatsSold = seatsSold;
+    }
 
 }

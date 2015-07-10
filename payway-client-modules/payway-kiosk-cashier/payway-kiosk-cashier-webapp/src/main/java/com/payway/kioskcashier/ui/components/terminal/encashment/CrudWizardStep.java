@@ -15,15 +15,15 @@ import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalDto;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalEncashmentDto;
 import com.payway.messaging.model.kioskcashier.KioskEncashmentDto;
+import com.payway.vaadin.addons.ui.textfield.digit.DigitTextField;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -32,7 +32,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
-import tm.kod.widgets.numberfield.NumberField;
 
 /**
  * CrudWizardStep
@@ -94,106 +93,68 @@ public final class CrudWizardStep extends AbstractWizardStep {
         gridEncashment.setColumnAlignment("quantity", Table.Align.RIGHT);
         gridEncashment.setColumnAlignment("amount", Table.Align.RIGHT);
 
-        //generated columns
-        gridEncashment.addGeneratedColumn("label", new Table.ColumnGenerator() {
-            private static final long serialVersionUID = 2855441121974230973L;
+        gridEncashment.setVisibleColumns("label", "quantity", "amount");
+
+        gridEncashment.setEditable(true);
+        gridEncashment.setTableFieldFactory(new TableFieldFactory() {
+            private static final long serialVersionUID = 2678008976536735736L;
 
             @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
-                BanknoteNominalEncashment bean = ((BanknoteNominalEncashmentContainerBean) source.getContainerDataSource()).getItem(itemId).getBean();
-                if (bean != null) {
-                    return generateTableCellLabel(bean.getLabel(), Alignment.MIDDLE_CENTER);
-                }
+                if ("label".equals(propertyId)) {
 
-                return "";
-            }
-        });
+                    TextField field = new TextField((String) propertyId);
+                    field.setSizeFull();
+                    field.setReadOnly(true);
+                    field.setStyleName("borderless app-common-style-text-center");
 
-        gridEncashment.addGeneratedColumn("quantity", new Table.ColumnGenerator() {
-            private static final long serialVersionUID = 2855441121974230973L;
+                    return field;
 
-            @Override
-            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                } else if ("amount".equals(propertyId)) {
 
-                final BanknoteNominalEncashment bean = ((BanknoteNominalEncashmentContainerBean) source.getContainerDataSource()).getItem(itemId).getBean();
-                if (bean != null) {
+                    TextField field = new TextField((String) propertyId);
+                    field.setSizeFull();
+                    field.setReadOnly(true);
+                    field.setStyleName("borderless app-common-style-text-right");
 
-                    final NumberField editQuantity = new NumberField();
-                    editQuantity.setSizeFull();
-                    editQuantity.setMaxLength(4);
-                    editQuantity.setStyleName("app-common-style-text-right");
-                    editQuantity.setImmediate(true);
-                    editQuantity.setUseGrouping(false);
-                    editQuantity.setSigned(false);
-                    editQuantity.setConverter(Integer.class);
-                    editQuantity.setNullRepresentation("0");
-                    editQuantity.setNullSettingAllowed(false);
-                    editQuantity.setValue(Integer.toString(bean.getQuantity()));
+                    return field;
 
-                    editQuantity.addValueChangeListener(new Property.ValueChangeListener() {
+                } else {
+
+                    final DigitTextField field = new DigitTextField();
+                    field.setSizeFull();
+                    field.setMaxLength(4);
+                    field.setData(itemId);
+                    field.setImmediate(true);
+                    field.setNullRepresentation("0");
+                    field.setConverter(Integer.class);
+                    field.setNullSettingAllowed(true);
+                    field.setInvalidAllowed(false);
+                    field.setInvalidCommitted(false);
+                    field.setStyleName("app-common-style-text-right");
+
+                    field.addValueChangeListener(new Property.ValueChangeListener() {
                         private static final long serialVersionUID = -382717228031608542L;
 
                         @Override
                         public void valueChange(Property.ValueChangeEvent event) {
-
-                            try {
-                                bean.setQuantity((Integer) editQuantity.getConvertedValue());
+                            if (event.getProperty().getValue() != null) {
+                                BanknoteNominalEncashment bean = ((BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource()).getItem(field.getData()).getBean();
+                                if (bean != null) {
+                                    double cellAmount = bean.getNominal() * bean.getQuantity();
+                                    String strAmount = String.format("%s %s", NumberUtils.isInteger(cellAmount) ? NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS) : NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS), getCurrency().getIso());
+                                    ((BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource()).getItem(field.getData()).getItemProperty("amount").setValue(strAmount);
+                                }
                                 refreshGridEncashmentFooter();
-                                gridEncashment.markAsDirtyRecursive();
-                            } catch (Exception ex) {
-                                //
                             }
                         }
                     });
 
-                    editQuantity.addFocusListener(new FieldEvents.FocusListener() {
-                        private static final long serialVersionUID = -5924587297708382318L;
-
-                        @Override
-                        public void focus(FieldEvents.FocusEvent event) {
-                            ((NumberField) event.getComponent()).selectAll();
-                        }
-                    });
-
-                    return new VerticalLayout(editQuantity);
+                    return field;
                 }
-
-                return "";
             }
         });
-
-        gridEncashment.addGeneratedColumn("amount", new Table.ColumnGenerator() {
-            private static final long serialVersionUID = 2855441121974230973L;
-
-            @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-
-                BanknoteNominalEncashment bean = ((BanknoteNominalEncashmentContainerBean) source.getContainerDataSource()).getItem(itemId).getBean();
-                if (bean != null) {
-                    double cellAmount = bean.getNominal() * bean.getQuantity();
-                    return generateTableCellLabel(String.format("%s %s", NumberUtils.isInteger(cellAmount) ? NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS) : NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS), getCurrency().getIso()), Alignment.MIDDLE_RIGHT);
-                }
-
-                return "";
-            }
-        });
-
-        gridEncashment.setVisibleColumns("label", "quantity", "amount");
-    }
-
-    private Layout generateTableCellLabel(String value, Alignment alignment) {
-
-        Label label = new Label();
-        VerticalLayout layout = new VerticalLayout();
-
-        label.setValue(value);
-        label.setSizeUndefined();
-
-        layout.addComponent(label);
-        layout.setComponentAlignment(label, alignment);
-
-        return layout;
     }
 
     private void setReadOnlyFlag(boolean flag) {
@@ -234,7 +195,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
                 Collections2.transform(response.getNominals(), new Function<BanknoteNominalDto, BanknoteNominalEncashment>() {
                     @Override
                     public BanknoteNominalEncashment apply(BanknoteNominalDto dto) {
-                        return new BanknoteNominalEncashment(dto.getId(), dto.getBanknoteType(), dto.getLabel(), dto.getNominal(), 0);
+                        return new BanknoteNominalEncashment(dto.getId(), dto.getBanknoteType(), dto.getLabel(), dto.getNominal(), 0, "");
                     }
                 }));
 

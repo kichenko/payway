@@ -2,15 +2,14 @@ package com.payway.messaging.message.bustickets;
 
 import com.payway.messaging.core.request.command.CommandRequest;
 import com.payway.messaging.message.IWebAppSessionAware;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Created by mike on 09/06/15.
  */
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class BusTicketValidateRequest extends CommandRequest implements IWebAppSessionAware {
@@ -32,5 +31,21 @@ public class BusTicketValidateRequest extends CommandRequest implements IWebAppS
     String baggageId;
 
     int quantity;
+
+    public BusTicketValidateRequest(String sessionId, long retailerTerminalId, long operatorId, String contactNumber, String dateId, String routeId, String baggageId, int quantity) {
+        this.sessionId = sessionId;
+        this.retailerTerminalId = retailerTerminalId;
+        this.operatorId = operatorId;
+        this.contactNumber = contactNumber;
+        this.dateId = dateId;
+        this.routeId = routeId;
+        this.baggageId = baggageId;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
 
 }

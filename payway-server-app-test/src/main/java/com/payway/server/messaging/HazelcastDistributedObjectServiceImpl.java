@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HazelcastDistributedObjectServiceImpl implements DistributedObjectService {
 
     private IdGenerator idGenerator;
+
     private HazelcastInstance hazelcastInstance;
 
     /**
@@ -49,4 +50,5 @@ public class HazelcastDistributedObjectServiceImpl implements DistributedObjectS
     public String generateQueueName(String template) {
         return String.format("%s%d", template, idGenerator.newId());
     }
+
 }

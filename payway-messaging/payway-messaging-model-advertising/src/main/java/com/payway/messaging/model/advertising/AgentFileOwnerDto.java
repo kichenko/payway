@@ -3,12 +3,9 @@
  */
 package com.payway.messaging.model.advertising;
 
-import com.payway.messaging.model.AbstractDto;
-import lombok.AllArgsConstructor;
+import com.payway.messaging.model.IdentifiableDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -18,12 +15,9 @@ import lombok.ToString;
  * @created 19.05.15 00:00
  */
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class AgentFileOwnerDto extends AbstractDto {
+public final class AgentFileOwnerDto extends IdentifiableDto {
 
     private static final long serialVersionUID = 6760249542483546076L;
 
@@ -31,8 +25,9 @@ public final class AgentFileOwnerDto extends AbstractDto {
     protected String description;
 
     public AgentFileOwnerDto(long id, String name, String description) {
-        setId(id);
-        setName(name);
-        setDescription(description);
+        super(id);
+        this.name = name;
+        this.description = description;
     }
+
 }

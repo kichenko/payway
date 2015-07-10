@@ -28,4 +28,5 @@ public class BanknoteNominalEncashment {
     private String label;
     private double nominal;
     private int quantity;
+    private String amount;
 }

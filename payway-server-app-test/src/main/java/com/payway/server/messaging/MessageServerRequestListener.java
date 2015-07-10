@@ -5,7 +5,6 @@ package com.payway.server.messaging;
 
 import com.payway.messaging.core.AbstractEnvelope;
 import com.payway.messaging.core.RequestEnvelope;
-import java.util.concurrent.BlockingQueue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
+
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Обработчик получения запросов. Всего будет один объект, больше не нужно.
@@ -31,6 +32,7 @@ public class MessageServerRequestListener implements Runnable, ApplicationContex
     private ApplicationContext applicationContext;
 
     private TaskExecutor serverTaskExecutor;
+
     private BlockingQueue<RequestEnvelope> serverQueue;
 
     @Override
