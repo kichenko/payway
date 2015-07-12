@@ -23,3 +23,5 @@ nb-configuration.xml
 /payway-messaging/payway-messaging-message-advertising/target/
 /payway-media/payway-media-core/target/
 /payway-media/payway-media-xuggler/target/
+/payway-vaadin-addons/payway-vaadin-textfield-digit-addon/payway-vaadin-textfield-digit-demo/target/
+/payway-vaadin-addons/payway-vaadin-textfield-digit-addon/payway-vaadin-textfield-digit/target/

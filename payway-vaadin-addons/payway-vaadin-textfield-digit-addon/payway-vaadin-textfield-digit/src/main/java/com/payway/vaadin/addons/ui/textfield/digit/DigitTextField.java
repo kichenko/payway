@@ -5,4 +5,12 @@ import com.vaadin.ui.TextField;
 public class DigitTextField extends TextField {
 
     private static final long serialVersionUID = 6005789091642681520L;
+
+    public DigitTextField() {
+        //
+    }
+
+    public DigitTextField(String caption) {
+        super(caption);
+    }
 }
