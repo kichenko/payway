@@ -8,8 +8,8 @@ import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.core.utils.NumberUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
-import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashment;
-import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentContainerBean;
+import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModel;
+import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModelContainerBean;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchResponse;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalDto;
@@ -18,16 +18,26 @@ import com.payway.messaging.model.kioskcashier.KioskEncashmentDto;
 import com.payway.vaadin.addons.ui.textfield.digit.DigitTextField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
@@ -41,6 +51,63 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 public final class CrudWizardStep extends AbstractWizardStep {
+
+    @NoArgsConstructor
+    private static class KeyboardNavigatorHandler implements Action.Handler {
+
+        private static final long serialVersionUID = -2496992285303828227L;
+
+        //private final Action tab_next = new ShortcutAction("Tab", ShortcutAction.KeyCode.TAB, null);
+        //private final Action tab_prev = new ShortcutAction("Shift+Tab", ShortcutAction.KeyCode.TAB, new int[]{ShortcutAction.ModifierKey.SHIFT});
+        private final Action cur_down = new ShortcutAction("Down", ShortcutAction.KeyCode.ARROW_DOWN, null);
+        private final Action cur_up = new ShortcutAction("Up", ShortcutAction.KeyCode.ARROW_UP, null);
+        private final Action enter = new ShortcutAction("Enter", ShortcutAction.KeyCode.ENTER, null);
+
+        private BanknoteNominalEncashmentModelContainerBean container;
+        private Map<Long, TextField> mapEditors;
+
+        public KeyboardNavigatorHandler(BanknoteNominalEncashmentModelContainerBean container, Map<Long, TextField> mapEditors) {
+            this.container = container;
+            this.mapEditors = mapEditors;
+        }
+
+        @Override
+        public Action[] getActions(Object target, Object sender) {
+            return new Action[]{/*tab_next, tab_prev,*/cur_down, cur_up, enter};
+        }
+
+        @Override
+        public void handleAction(Action action, Object sender, Object target) {
+
+            if (target instanceof TextField) {
+
+                long itemId = (Long) ((TextField) target).getData();
+                if (action == enter || /*action == tab_next ||*/ action == cur_down) {
+
+                    int idx = container.getItemIds().indexOf(itemId);
+                    if (idx >= 0 && (idx + 1 < container.getItemIds().size())) {
+                        itemId = container.getItemIds().get(idx + 1);
+                        TextField txt = mapEditors.get(itemId);
+                        if (txt != null) {
+                            txt.focus();
+                        }
+                    }
+
+                } else if (/*action == tab_prev ||*/action == cur_up) {
+
+                    int idx = container.getItemIds().indexOf(itemId);
+                    if (idx >= 0 && (idx - 1) >= 0) {
+                        itemId = container.getItemIds().get(idx - 1);
+                        TextField txt = mapEditors.get(itemId);
+                        if (txt != null) {
+                            txt.focus();
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 
     private static final long serialVersionUID = -8297534233174351589L;
 
@@ -56,6 +123,8 @@ public final class CrudWizardStep extends AbstractWizardStep {
     @UiField
     private Table gridEncashment;
 
+    private Panel panelNavigator = new Panel();
+
     @Getter
     @Setter(AccessLevel.PRIVATE)
     private KioskEncashmentDto kioskEncashment;
@@ -63,6 +132,9 @@ public final class CrudWizardStep extends AbstractWizardStep {
     @Getter
     @Setter(AccessLevel.PRIVATE)
     private CurrencyDto currency;
+
+    private final Map<Long, TextField> mapGridEncashmentContainerEditors = new HashMap<>();
+    private final BanknoteNominalEncashmentModelContainerBean gridEncashmentContainer = new BanknoteNominalEncashmentModelContainerBean();
 
     public CrudWizardStep() {
         init();
@@ -72,21 +144,22 @@ public final class CrudWizardStep extends AbstractWizardStep {
     protected void init() {
 
         setSizeFull();
-        addComponent(Clara.create("CrudWizardStep.xml", this));
+
+        panelNavigator.setSizeFull();
+        panelNavigator.addActionHandler(new KeyboardNavigatorHandler(gridEncashmentContainer, mapGridEncashmentContainerEditors));
+        panelNavigator.setContent(Clara.create("CrudWizardStep.xml", this));
+        addComponent(panelNavigator);
 
         gridEncashment.setImmediate(true);
-        gridEncashment.setContainerDataSource(new BanknoteNominalEncashmentContainerBean());
+        gridEncashment.setContainerDataSource(gridEncashmentContainer);
 
         //header
-        gridEncashment.setColumnHeader("label", "Denomination");
+        gridEncashment.setColumnHeader("label", "Nominal");
         gridEncashment.setColumnHeader("quantity", "Quantity");
         gridEncashment.setColumnHeader("amount", "Amount");
 
         //footer
         gridEncashment.setFooterVisible(true);
-        gridEncashment.setColumnFooter("label", "Total:");
-        gridEncashment.setColumnFooter("quantity", "");
-        gridEncashment.setColumnFooter("total", "");
 
         //column align
         gridEncashment.setColumnAlignment("label", Table.Align.CENTER);
@@ -106,6 +179,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
                     TextField field = new TextField((String) propertyId);
                     field.setSizeFull();
+                    field.setData(itemId);
                     field.setReadOnly(true);
                     field.setStyleName("borderless app-common-style-text-center");
 
@@ -115,44 +189,101 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
                     TextField field = new TextField((String) propertyId);
                     field.setSizeFull();
+                    field.setData(itemId);
                     field.setReadOnly(true);
                     field.setStyleName("borderless app-common-style-text-right");
 
+                    field.setConverter(new Converter<String, Double>() {
+                        private static final long serialVersionUID = -810375086450402998L;
+
+                        @Override
+                        public Double convertToModel(String value, Class<? extends Double> targetType, Locale locale) throws Converter.ConversionException {
+                            return null;
+                        }
+
+                        @Override
+                        public String convertToPresentation(Double value, Class<? extends String> targetType, Locale locale) throws Converter.ConversionException {
+                            return String.format("%s %s", NumberUtils.isInteger(value) ? NumberFormatConverterUtils.format(value, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS) : NumberFormatConverterUtils.format(value, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS), getCurrency().getIso());
+                        }
+
+                        @Override
+                        public Class<Double> getModelType() {
+                            return Double.class;
+                        }
+
+                        @Override
+                        public Class<String> getPresentationType() {
+                            return String.class;
+                        }
+                    });
+
                     return field;
 
-                } else {
+                } else if ("quantity".equals(propertyId)) {
 
-                    final DigitTextField field = new DigitTextField();
+                    final TextField field = new DigitTextField();
                     field.setSizeFull();
                     field.setMaxLength(4);
                     field.setData(itemId);
                     field.setImmediate(true);
-                    field.setNullRepresentation("0");
-                    field.setConverter(Integer.class);
-                    field.setNullSettingAllowed(true);
                     field.setInvalidAllowed(false);
-                    field.setInvalidCommitted(false);
+                    field.setNullRepresentation("0");
                     field.setStyleName("app-common-style-text-right");
+
+                    mapGridEncashmentContainerEditors.put((Long) itemId, field);
+
+                    field.setConverter(new Converter<String, Integer>() {
+                        private static final long serialVersionUID = 4048654578990565270L;
+                        private final StringToIntegerConverter converter = new StringToIntegerConverter();
+
+                        @Override
+                        public Integer convertToModel(String value, Class<? extends Integer> targetType, Locale locale) throws Converter.ConversionException {
+
+                            Integer result = 0;
+                            try {
+                                result = converter.convertToModel(value, targetType, locale);
+                            } catch (Exception ex) {
+                                //NOP
+                            }
+
+                            return result == null ? 0 : result;
+                        }
+
+                        @Override
+                        public String convertToPresentation(Integer value, Class<? extends String> targetType, Locale locale) throws Converter.ConversionException {
+                            return converter.convertToPresentation(value, targetType, locale);
+                        }
+
+                        @Override
+                        public Class<Integer> getModelType() {
+                            return converter.getModelType();
+                        }
+
+                        @Override
+                        public Class<String> getPresentationType() {
+                            return converter.getPresentationType();
+                        }
+                    });
 
                     field.addValueChangeListener(new Property.ValueChangeListener() {
                         private static final long serialVersionUID = -382717228031608542L;
 
                         @Override
                         public void valueChange(Property.ValueChangeEvent event) {
-                            if (event.getProperty().getValue() != null) {
-                                BanknoteNominalEncashment bean = ((BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource()).getItem(field.getData()).getBean();
-                                if (bean != null) {
-                                    double cellAmount = bean.getNominal() * bean.getQuantity();
-                                    String strAmount = String.format("%s %s", NumberUtils.isInteger(cellAmount) ? NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITHOUT_DECIMALS) : NumberFormatConverterUtils.format(cellAmount, NumberFormatConverterUtils.DEFAULT_PATTERN_WITH_DECIMALS), getCurrency().getIso());
-                                    ((BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource()).getItem(field.getData()).getItemProperty("amount").setValue(strAmount);
-                                }
-                                refreshGridEncashmentFooter();
+
+                            Property property = gridEncashmentContainer.getContainerProperty(field.getData(), "amount");
+                            if (property instanceof MethodProperty) {
+                                ((MethodProperty) property).fireValueChange();
                             }
+
+                            refreshGridEncashmentFooter();
                         }
                     });
 
                     return field;
                 }
+
+                return null;
             }
         });
     }
@@ -167,10 +298,9 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
         int totalQuantity = 0;
         double totalAmount = 0.0;
-        BanknoteNominalEncashmentContainerBean container = (BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource();
 
-        for (Long iid : container.getItemIds()) {
-            BanknoteNominalEncashment bean = container.getItem(iid).getBean();
+        for (Long iid : gridEncashmentContainer.getItemIds()) {
+            BanknoteNominalEncashmentModel bean = gridEncashmentContainer.getItem(iid).getBean();
             if (bean != null) {
                 totalQuantity += bean.getQuantity();
                 totalAmount += bean.getQuantity() * bean.getNominal();
@@ -189,15 +319,17 @@ public final class CrudWizardStep extends AbstractWizardStep {
         editTerminal.setValue(response.getKioskEncashment().getTerminalName());
         editReport.setValue(Integer.toString(response.getKioskEncashment().getSeqNum()));
         cbDateOccured.setValue(response.getKioskEncashment().getOccuredDate());
-        gridEncashment.getContainerDataSource().removeAllItems();
 
-        ((BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource()).addAll(
-                Collections2.transform(response.getNominals(), new Function<BanknoteNominalDto, BanknoteNominalEncashment>() {
-                    @Override
-                    public BanknoteNominalEncashment apply(BanknoteNominalDto dto) {
-                        return new BanknoteNominalEncashment(dto.getId(), dto.getBanknoteType(), dto.getLabel(), dto.getNominal(), 0, "");
-                    }
-                }));
+        mapGridEncashmentContainerEditors.clear();
+        gridEncashmentContainer.removeAllItems();
+
+        gridEncashmentContainer.addAll(
+          Collections2.transform(response.getNominals(), new Function<BanknoteNominalDto, BanknoteNominalEncashmentModel>() {
+              @Override
+              public BanknoteNominalEncashmentModel apply(BanknoteNominalDto dto) {
+                  return new BanknoteNominalEncashmentModel(dto.getId(), dto.getLabel(), dto.getNominal(), 0);
+              }
+          }));
 
         setCurrency(currency);
         setKioskEncashment(response.getKioskEncashment());
@@ -207,16 +339,15 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
     public List<BanknoteNominalEncashmentDto> getEncashments() {
 
-        BanknoteNominalEncashmentContainerBean container = (BanknoteNominalEncashmentContainerBean) gridEncashment.getContainerDataSource();
-        List<BanknoteNominalEncashmentDto> encashments = new ArrayList<>(container.getItemIds().size());
+        List<BanknoteNominalEncashmentDto> encashments = new ArrayList<>(gridEncashmentContainer.getItemIds().size());
 
-        for (Long iid : container.getItemIds()) {
+        for (Long iid : gridEncashmentContainer.getItemIds()) {
 
-            BanknoteNominalEncashment bean = container.getItem(iid).getBean();
+            BanknoteNominalEncashmentModel bean = gridEncashmentContainer.getItem(iid).getBean();
             if (bean != null) {
                 encashments.add(new BanknoteNominalEncashmentDto(bean.getId(), bean.getQuantity()));
             } else {
-                log.error("Empty bean in encashment table with iid={}", iid);
+                log.error("Empty bean in encashment grid with iid={}", iid);
             }
         }
 

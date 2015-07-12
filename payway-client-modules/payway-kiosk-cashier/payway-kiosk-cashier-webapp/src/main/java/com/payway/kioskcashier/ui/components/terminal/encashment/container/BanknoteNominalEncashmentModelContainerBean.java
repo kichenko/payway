@@ -7,18 +7,18 @@ import com.vaadin.data.util.BeanContainer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * BanknoteNominalEncashmentContainerBean
+ * BanknoteNominalEncashmentModelContainerBean
  *
  * @author Sergey Kichenko
  * @created 06.07.15 00:00
  */
 @Slf4j
-public class BanknoteNominalEncashmentContainerBean extends BeanContainer<Long, BanknoteNominalEncashment> {
+public class BanknoteNominalEncashmentModelContainerBean extends BeanContainer<Long, BanknoteNominalEncashmentModel> {
 
     private static final long serialVersionUID = -3496881705838064114L;
 
-    public BanknoteNominalEncashmentContainerBean() {
-        super(BanknoteNominalEncashment.class);
+    public BanknoteNominalEncashmentModelContainerBean() {
+        super(BanknoteNominalEncashmentModel.class);
         setBeanIdProperty("id");
     }
 }

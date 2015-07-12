@@ -3,7 +3,6 @@
  */
 package com.payway.kioskcashier.ui.components.terminal.encashment.container;
 
-import com.payway.messaging.model.common.BanknoteTypeDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * BanknoteNominalEncashment
+ * BanknoteNominalEncashmentModel
  *
  * @author Sergey Kichenko
  * @created 06.07.15 00:00
@@ -21,12 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BanknoteNominalEncashment {
+public class BanknoteNominalEncashmentModel {
 
     private long id;
-    private BanknoteTypeDto banknoteType;
     private String label;
     private double nominal;
     private int quantity;
-    private String amount;
+
+    /**
+     * Calculated model field
+     *
+     * @return amount
+     */
+    public double getAmount() {
+        return nominal * quantity;
+    }
 }
