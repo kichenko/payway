@@ -57,11 +57,11 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
         private static final long serialVersionUID = -2496992285303828227L;
 
-        //private final Action tab_next = new ShortcutAction("Tab", ShortcutAction.KeyCode.TAB, null);
-        //private final Action tab_prev = new ShortcutAction("Shift+Tab", ShortcutAction.KeyCode.TAB, new int[]{ShortcutAction.ModifierKey.SHIFT});
-        private final Action cur_down = new ShortcutAction("Down", ShortcutAction.KeyCode.ARROW_DOWN, null);
-        private final Action cur_up = new ShortcutAction("Up", ShortcutAction.KeyCode.ARROW_UP, null);
-        private final Action enter = new ShortcutAction("Enter", ShortcutAction.KeyCode.ENTER, null);
+        //private final Action key_tab = new ShortcutAction("Tab", ShortcutAction.KeyCode.TAB, null);
+        //private final Action key_tab_shift = new ShortcutAction("Shift+Tab", ShortcutAction.KeyCode.TAB, new int[]{ShortcutAction.ModifierKey.SHIFT});
+        private final Action key_down = new ShortcutAction("Down", ShortcutAction.KeyCode.ARROW_DOWN, null);
+        private final Action key_up = new ShortcutAction("Up", ShortcutAction.KeyCode.ARROW_UP, null);
+        private final Action key_enter = new ShortcutAction("Enter", ShortcutAction.KeyCode.ENTER, null);
 
         private BanknoteNominalEncashmentModelContainerBean container;
         private Map<Long, TextField> mapEditors;
@@ -73,7 +73,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
         @Override
         public Action[] getActions(Object target, Object sender) {
-            return new Action[]{/*tab_next, tab_prev,*/cur_down, cur_up, enter};
+            return new Action[]{/*key_tab, key_tab_shift,*/key_down, key_up, key_enter};
         }
 
         @Override
@@ -82,7 +82,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
             if (target instanceof TextField) {
 
                 long itemId = (Long) ((TextField) target).getData();
-                if (action == enter || /*action == tab_next ||*/ action == cur_down) {
+                if (action == key_enter || /*action == key_tab ||*/ action == key_down) {
 
                     int idx = container.getItemIds().indexOf(itemId);
                     if (idx >= 0 && (idx + 1 < container.getItemIds().size())) {
@@ -93,7 +93,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
                         }
                     }
 
-                } else if (/*action == tab_prev ||*/action == cur_up) {
+                } else if (/*action == key_tab_shift ||*/action == key_up) {
 
                     int idx = container.getItemIds().indexOf(itemId);
                     if (idx >= 0 && (idx - 1) >= 0) {
