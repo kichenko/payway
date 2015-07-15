@@ -5,6 +5,9 @@ package com.payway.advertising.core.handlers;
 
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
 import com.payway.advertising.core.utils.Helpers;
+import com.payway.media.core.attributes.audio.AudioAttributes;
+import com.payway.media.core.attributes.video.VideoAttributes;
+import com.payway.media.core.container.FormatContainer;
 import com.payway.media.core.converter.video.VideoConverter;
 import java.io.File;
 import java.net.URI;
@@ -39,12 +42,18 @@ public class FileVideoConverterHandler implements FileHandler {
 
         try {
 
-            if (!supportedVideoFileExtensions.contains(StringUtils.substringAfterLast(args.getSrcFileName(), "."))) {
-                log.debug("Could not handle file ext [{}] - not supported", StringUtils.substringAfterLast(args.getSrcFileName(), "."));
+            String fileExt;
+            VideoAttributes videoAttributes;
+            AudioAttributes audioAttributes;
+            FormatContainer formatContainer;
+
+            if (!settingsAppService.isConvertVideoFiles()) {
+                log.debug("Video converting is not enabled, skip handler");
                 return false;
             }
 
-            if (!settingsAppService.isConvertVideoFiles()) {
+            if (!supportedVideoFileExtensions.contains(StringUtils.substringAfterLast(args.getSrcFileName(), ".").toLowerCase())) {
+                log.debug("Could not handle file ext [{}] - not supported", StringUtils.substringAfterLast(args.getSrcFileName(), "."));
                 return false;
             }
 
@@ -52,15 +61,20 @@ public class FileVideoConverterHandler implements FileHandler {
                 throw new Exception("Empty args");
             }
 
-            File inputFile = new File(new URI(Helpers.addEndSeparator(args.getSrcFilePath()) + args.getSrcFileName()));
-            File outputFile = new File(new URI(Helpers.addEndSeparator(args.getSrcFilePath()) + UUID.randomUUID().toString() + "_" + Helpers.changeFileExt(args.getSrcFileName(), settingsAppService.getCurrentFormatContainer().getFileExt())));
+            fileExt = settingsAppService.getCurrentFormatContainer().getFileExt();
+            formatContainer = settingsAppService.getCurrentFormatContainer();
+            videoAttributes = settingsAppService.getVideoAttributes();
+            audioAttributes = settingsAppService.getAudioAttributes();
 
-            videoConverter.convert(inputFile, outputFile, settingsAppService.getCurrentFormatContainer(), settingsAppService.getVideoAttributes(), settingsAppService.getAudioAttributes(), null);
+            File inputFile = new File(new URI(Helpers.addEndSeparator(args.getSrcFilePath()) + args.getSrcFileName()));
+            File outputFile = new File(new URI(Helpers.addEndSeparator(args.getSrcFilePath()) + UUID.randomUUID().toString() + "_" + Helpers.changeFileExt(args.getSrcFileName(), fileExt)));
+
+            videoConverter.convert(inputFile, outputFile, formatContainer, videoAttributes, audioAttributes, null);
 
             //delete input & rename ouput & change file's ext dest
             if (inputFile.delete()) {
                 args.setSrcFileName(outputFile.getName());
-                args.setDstFileName(Helpers.changeFileExt(args.getDstFileName(), settingsAppService.getCurrentFormatContainer().getFileExt()));
+                args.setDstFileName(Helpers.changeFileExt(args.getDstFileName(), fileExt));
             } else {
                 throw new Exception("Could not rename dst to src file after video convertion - {}");
             }

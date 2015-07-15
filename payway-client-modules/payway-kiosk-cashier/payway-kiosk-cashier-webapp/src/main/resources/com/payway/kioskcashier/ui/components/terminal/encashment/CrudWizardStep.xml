@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentWorkspaceView" styleName="" sizeFull="true">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentWorkspaceView" styleName="terminal-encashment-wizard-content" sizeFull="true">
     
     <FormLayout id="layoutParamsForm" width="100%" height="30%">
         <TextField id="editTerminal" readOnly="true" caption="Terminal" styleName="" width="250px"/>

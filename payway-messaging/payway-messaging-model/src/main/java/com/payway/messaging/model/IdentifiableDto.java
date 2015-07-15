@@ -5,6 +5,8 @@ package com.payway.messaging.model;
  */
 public abstract class IdentifiableDto extends AbstractDto {
 
+    private static final long serialVersionUID = 5143947813111476369L;
+
     final private long id;
 
     protected IdentifiableDto(long id) {

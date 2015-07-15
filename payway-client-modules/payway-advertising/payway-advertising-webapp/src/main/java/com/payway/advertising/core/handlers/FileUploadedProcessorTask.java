@@ -68,7 +68,7 @@ public class FileUploadedProcessorTask implements FileProcessorTask, Runnable {
     public void process() throws FileProcessorException {
 
         int i = 0;
-        FileHandlerArgs args = new FileHandlerArgs(srcFilePath, srcFileName, dstFilePath, dstFileName);
+        FileHandlerArgs args = new FileHandlerArgs(srcFilePath, srcFileName, dstFilePath, dstFileName, 0);
 
         if (callback != null) {
             callback.onStart(handlers.size());

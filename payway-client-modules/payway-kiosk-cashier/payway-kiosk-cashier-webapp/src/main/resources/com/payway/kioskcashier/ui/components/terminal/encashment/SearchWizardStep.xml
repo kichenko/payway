@@ -3,7 +3,7 @@
         
     <FormLayout id="layoutParamsForm" p:componentAlignment="MIDDLE_CENTER" sizeUndefined="true">
         <TextField id="editTerminal" caption="Terminal" styleName="" width="250px"/>
-        <dgt:DigitTextField id="editReport" caption="Report" immediate="true" maxLength="5" nullRepresentation="0" styleName="" width="250px"/>
+        <dgt:DigitTextField id="editReport" caption="Report" maxLength="5" nullRepresentation="0" styleName="" width="250px"/>
     </FormLayout>    
     
 </VerticalLayout>

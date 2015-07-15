@@ -98,6 +98,7 @@
         <value>wmv</value>
         <value>mpeg</value>
         <value>mpg</value>
+        <value>mov</value>
     </util:list>
 
     <!-- Xuggler media container service -->

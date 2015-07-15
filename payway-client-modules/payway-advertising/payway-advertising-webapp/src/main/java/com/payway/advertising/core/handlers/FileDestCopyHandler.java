@@ -38,13 +38,15 @@ public class FileDestCopyHandler implements FileHandler {
         FileSystemObject dstTmp = new FileSystemObject(outputTmp, FileSystemObject.FileType.FILE, 0L, null);
 
         try {
-            
+
             if (StringUtils.isBlank(args.getDstFileName()) || StringUtils.isBlank(args.getDstFilePath())) {
                 throw new Exception("Empty arg params");
             }
 
             fileSystemManagerService.copy(src, dstTmp);
             fileSystemManagerService.rename(dstTmp, dst);
+            //set real file size after all handler processing
+            args.setLength(fileSystemManagerService.resolve(dst).getSize());
         } catch (Exception ex) {
             log.error("Could not copy src to dst file - {}", ex);
 

@@ -22,6 +22,7 @@ public final class AgentFileOwnerDto extends IdentifiableDto {
     private static final long serialVersionUID = 6760249542483546076L;
 
     protected String name;
+
     protected String description;
 
     public AgentFileOwnerDto(long id, String name, String description) {

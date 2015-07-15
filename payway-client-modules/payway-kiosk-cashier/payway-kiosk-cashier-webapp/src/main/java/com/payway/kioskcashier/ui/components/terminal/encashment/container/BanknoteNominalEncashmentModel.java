@@ -20,12 +20,18 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BanknoteNominalEncashmentModel {
+public class BanknoteNominalEncashmentModel extends BeanModel {
 
-    private long id;
     private String label;
     private double nominal;
     private int quantity;
+
+    public BanknoteNominalEncashmentModel(long id, String label, double nominal, int quantity) {
+        super(id);
+        this.label = label;
+        this.nominal = nominal;
+        this.quantity = quantity;
+    }
 
     /**
      * Calculated model field

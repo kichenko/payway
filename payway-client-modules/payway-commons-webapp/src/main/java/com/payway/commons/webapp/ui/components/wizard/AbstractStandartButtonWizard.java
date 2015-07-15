@@ -44,11 +44,25 @@ public abstract class AbstractStandartButtonWizard extends AbstractWizard {
 
     protected abstract void decorateStep();
 
-    protected boolean isHandleLeftClick() {
-        return true;
+    protected void setUpWizardControl(String title, String btnLeftCaption, boolean btnLeftVisisble, String btnRightCaption, boolean btnRightVisisble) {
+
+        setCaption(title);
+
+        btnLeft.setVisible(btnLeftVisisble);
+        btnLeft.setCaption(btnLeftCaption);
+
+        btnRight.setVisible(btnRightVisisble);
+        btnRight.setCaption(btnRightCaption);
     }
 
-    protected boolean isHandleRightClick() {
-        return true;
+    @Override
+    public boolean setStep(int step) {
+
+        if (super.setStep(step)) {
+            decorateStep();
+            return true;
+        }
+
+        return false;
     }
 }

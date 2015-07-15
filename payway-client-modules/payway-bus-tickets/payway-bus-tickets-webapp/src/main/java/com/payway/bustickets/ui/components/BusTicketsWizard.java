@@ -153,22 +153,12 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
 
     @UiHandler(value = "btnLeft")
     public void buttonClickLeft(Button.ClickEvent event) {
-
-        if (!isHandleLeftClick()) {
-            return;
-        }
-
         handleStepLeft();
         decorateStep();
     }
 
     @UiHandler(value = "btnRight")
     public void buttonClickRight(Button.ClickEvent event) {
-
-        if (!isHandleRightClick()) {
-            return;
-        }
-
         handleStepRight();
         decorateStep();
     }
@@ -176,63 +166,27 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     @Override
     protected void decorateStep() {
 
+        layoutContent.removeAllComponents();
+        layoutContent.addComponent(getSteps().get(getStep()));
+
         if (getStep() != BUS_TICKETS_SUCCESS_WIZARD_STEP_ID) {
             clearContentTicket();
         }
 
-        if (getStep() == BUS_TICKETS_PARAMS_WIZARD_STEP_ID) { //begin            
-            layoutContent.removeAllComponents();
-            layoutContent.addComponent(getSteps().get(getStep()));
-
-            setCaption("Step 1 - Selection of parameters");
+        if (getStep() == BUS_TICKETS_PARAMS_WIZARD_STEP_ID) {
             retailerTerminalPanel.setEnabled(true);
+        } else {
+            retailerTerminalPanel.setEnabled(false);
+        }
 
-            btnLeft.setVisible(false);
-            btnLeft.setCaption("Back");
-
-            btnRight.setVisible(true);
-            btnRight.setCaption("Next");
+        if (getStep() == BUS_TICKETS_PARAMS_WIZARD_STEP_ID) { //begin 
+            setUpWizardControl("Step 1 - Selection of parameters", "", false, "Next", true);
         } else if (getStep() == BUS_TICKETS_CONFIRM_WIZARD_STEP_ID) { //checkout  
-
-            layoutContent.removeAllComponents();
-            layoutContent.addComponent(getSteps().get(getStep()));
-
-            setCaption("Step 2 - Confirmation and order");
-            retailerTerminalPanel.setEnabled(false);
-
-            btnLeft.setVisible(true);
-            btnLeft.setCaption("Back");
-
-            btnRight.setVisible(true);
-            btnRight.setCaption("Checkout");
-
+            setUpWizardControl("Step 2 - Confirmation and order", "Back", true, "Checkout", true);
         } else if (getStep() == BUS_TICKETS_SUCCESS_WIZARD_STEP_ID) { //success
-
-            layoutContent.removeAllComponents();
-            layoutContent.addComponent(getSteps().get(getStep()));
-
-            setCaption("Step 3 - Successful");
-            retailerTerminalPanel.setEnabled(false);
-
-            btnLeft.setVisible(false);
-            btnLeft.setCaption("");
-
-            btnRight.setVisible(true);
-            btnRight.setCaption("New Buy");
-
+            setUpWizardControl("Step 3 - Successful", "", false, "New Buy", true);
         } else if (getStep() == BUS_TICKETS_FAIL_WIZARD_STEP_ID) { //fail
-
-            layoutContent.removeAllComponents();
-            layoutContent.addComponent(getSteps().get(getStep()));
-
-            setCaption("Step 3 - Failed");
-            retailerTerminalPanel.setEnabled(false);
-
-            btnLeft.setVisible(false);
-            btnLeft.setCaption("");
-
-            btnRight.setVisible(true);
-            btnRight.setCaption("Try again");
+            setUpWizardControl("Step 3 - Failed", "", false, "Try again", true);
         }
     }
 
@@ -261,12 +215,10 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private void processParams2ConfirmStep() {
 
         BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(getStep());
-        if (wizardStep != null) {
-            if (wizardStep.validate()) {
-                sendValidateRequest();
-            } else {
-                ((InteractionUI) UI.getCurrent()).showNotification("Validation bus ticket params", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
-            }
+        if (wizardStep.validate()) {
+            sendValidateRequest();
+        } else {
+            ((InteractionUI) UI.getCurrent()).showNotification("Validation bus ticket params", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
         }
     }
 
@@ -277,10 +229,6 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private void sendPurchaseRequest() {
 
         BusTicketsParamsWizardStep wizardStepParams = (BusTicketsParamsWizardStep) getWizardStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
-        if (wizardStepParams == null) {
-            return;
-        }
-
         setPaymentStop(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
@@ -381,10 +329,8 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
 
         //set up content res for success wizard step
         BusTicketsSuccessWizardStep stepWizard = (BusTicketsSuccessWizardStep) getWizardStep(BUS_TICKETS_SUCCESS_WIZARD_STEP_ID);
-        if (stepWizard != null) {
-            stepWizard.setContentResource(createContentResource());
-            stepWizard.setImagePdf(getContentTicket().getContent(), getContentTicket().getName());
-        }
+        stepWizard.setContentResource(createContentResource());
+        stepWizard.setImagePdf(getContentTicket().getContent(), getContentTicket().getName());
 
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
@@ -398,12 +344,7 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
 
         BusTicketsParamsWizardStep wizardStepParams = (BusTicketsParamsWizardStep) getWizardStep(BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
 
-        if (wizardStepParams == null) {
-            return;
-        }
-
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-
         getService().sendMessage(new BusTicketValidateRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
             @Override
             public void doServerResponse(final SuccessResponse response) {
@@ -463,10 +404,8 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private void processBusTicketValidateInvalidResponse(BusTicketValidateInvalidResponse response) {
 
         BusTicketsFailWizardStep wizardStep = (BusTicketsFailWizardStep) getWizardStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
-        if (wizardStep != null) {
-            wizardStep.getLbReason().setValue(response.getReason());
-            setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
-        }
+        wizardStep.getLbReason().setValue(response.getReason());
+        setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
 
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
@@ -474,23 +413,10 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private void processBusTicketExceptionResponse() {
 
         BusTicketsFailWizardStep wizardStep = (BusTicketsFailWizardStep) getWizardStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
-        if (wizardStep != null) {
-            wizardStep.getLbReason().setValue("Internal server error");
-            setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
-        }
+        wizardStep.getLbReason().setValue("Internal server error");
+        setStep(BUS_TICKETS_FAIL_WIZARD_STEP_ID);
 
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
-    }
-
-    @Override
-    public boolean setStep(int step) {
-
-        if (super.setStep(step)) {
-            decorateStep();
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -572,12 +498,8 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     }
 
     private void processSuccessBusTicketPaymentStartRequest(BusTicketPaymentStartResponse response) {
-
         BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID);
-        if (wizardStep != null) {
-            wizardStep.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
-        }
-
+        wizardStep.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 }

@@ -15,15 +15,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractWizardStep extends VerticalLayout {
 
-    private static final long serialVersionUID = -804397699790880938L;
-    
-    public interface WizardAction {
-        void actionNextPage();
-        void actionPreviousPage();
+    public static abstract class AbstractWizardStepParams {
+        //
     }
 
+    public static abstract class AbstractWizardStepState {
+        //
+    }
+
+    private static final long serialVersionUID = -804397699790880938L;
+
     protected abstract void init();
-    
+
+    public void setupStep(AbstractWizardStepParams state) {
+        //
+    }
+
+    public AbstractWizardStepState getStepState() {
+        return null;
+    }
+
     public boolean validate() {
         return true;
     }

@@ -34,5 +34,7 @@ public interface FileSystemManagerService {
 
     OutputStream getOutputStream(FileSystemObject src) throws FileSystemManagerServiceException;
 
+    FileSystemObject resolve(FileSystemObject src) throws FileSystemManagerServiceException;
+    
     String canonicalization(String path);
 }

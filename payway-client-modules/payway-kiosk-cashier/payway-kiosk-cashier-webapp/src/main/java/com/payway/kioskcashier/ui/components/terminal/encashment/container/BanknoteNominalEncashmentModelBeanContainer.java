@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
  * @created 06.07.15 00:00
  */
 @Slf4j
-public class BanknoteNominalEncashmentModelContainerBean extends BeanContainer<Long, BanknoteNominalEncashmentModel> {
+public class BanknoteNominalEncashmentModelBeanContainer extends BeanContainer<Long, BanknoteNominalEncashmentModel> {
 
     private static final long serialVersionUID = -3496881705838064114L;
 
-    public BanknoteNominalEncashmentModelContainerBean() {
+    public BanknoteNominalEncashmentModelBeanContainer() {
         super(BanknoteNominalEncashmentModel.class);
         setBeanIdProperty("id");
     }

@@ -11,4 +11,31 @@
     .app-common-style-text-right {
         text-align: right;
     }
+
+    .app-common-style-label-failure {
+        color: #ed473b;
+        border: 2px solid  #ed473b;
+        border-radius: 4px;
+        padding: 7px 19px 7px 37px;
+        font-weight: 400;
+        font-size: 15px;
+    }
+
+    .app-common-style-label-success {
+        color: #2c9720;
+        border: 2px solid #2c9720;
+        border-radius: 4px;
+        padding: 7px 19px 7px 37px;
+        font-weight: 400;
+        font-size: 15px;
+    }
+
+    .app-common-style-label-warning {
+        color: darkorange;
+        border: 2px solid darkorange;
+        border-radius: 4px;
+        padding: 7px 19px 7px 37px;
+        font-weight: 400;
+        font-size: 15px;
+    }
 }

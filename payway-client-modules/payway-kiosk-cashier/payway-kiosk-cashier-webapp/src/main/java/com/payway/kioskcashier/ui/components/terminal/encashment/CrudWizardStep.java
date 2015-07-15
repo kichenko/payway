@@ -9,7 +9,7 @@ import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.core.utils.NumberUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
 import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModel;
-import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModelContainerBean;
+import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModelBeanContainer;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchResponse;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalDto;
@@ -62,18 +62,19 @@ public final class CrudWizardStep extends AbstractWizardStep {
         private final Action key_down = new ShortcutAction("Down", ShortcutAction.KeyCode.ARROW_DOWN, null);
         private final Action key_up = new ShortcutAction("Up", ShortcutAction.KeyCode.ARROW_UP, null);
         private final Action key_enter = new ShortcutAction("Enter", ShortcutAction.KeyCode.ENTER, null);
+        private final Action key_shift_enter = new ShortcutAction("Shift+Enter", ShortcutAction.KeyCode.ENTER, new int[]{ShortcutAction.ModifierKey.SHIFT});
 
-        private BanknoteNominalEncashmentModelContainerBean container;
+        private BanknoteNominalEncashmentModelBeanContainer container;
         private Map<Long, TextField> mapEditors;
 
-        public KeyboardNavigatorHandler(BanknoteNominalEncashmentModelContainerBean container, Map<Long, TextField> mapEditors) {
+        public KeyboardNavigatorHandler(BanknoteNominalEncashmentModelBeanContainer container, Map<Long, TextField> mapEditors) {
             this.container = container;
             this.mapEditors = mapEditors;
         }
 
         @Override
         public Action[] getActions(Object target, Object sender) {
-            return new Action[]{/*key_tab, key_tab_shift,*/key_down, key_up, key_enter};
+            return new Action[]{/*key_tab, key_tab_shift,*/key_down, key_up, key_enter, key_shift_enter};
         }
 
         @Override
@@ -89,17 +90,19 @@ public final class CrudWizardStep extends AbstractWizardStep {
                         itemId = container.getItemIds().get(idx + 1);
                         TextField txt = mapEditors.get(itemId);
                         if (txt != null) {
+                            txt.selectAll();
                             txt.focus();
                         }
                     }
 
-                } else if (/*action == key_tab_shift ||*/action == key_up) {
+                } else if (/*action == key_tab_shift ||*/action == key_up || action == key_shift_enter) {
 
                     int idx = container.getItemIds().indexOf(itemId);
                     if (idx >= 0 && (idx - 1) >= 0) {
                         itemId = container.getItemIds().get(idx - 1);
                         TextField txt = mapEditors.get(itemId);
                         if (txt != null) {
+                            txt.selectAll();
                             txt.focus();
                         }
                     }
@@ -134,7 +137,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
     private CurrencyDto currency;
 
     private final Map<Long, TextField> mapGridEncashmentContainerEditors = new HashMap<>();
-    private final BanknoteNominalEncashmentModelContainerBean gridEncashmentContainer = new BanknoteNominalEncashmentModelContainerBean();
+    private final BanknoteNominalEncashmentModelBeanContainer gridEncashmentContainer = new BanknoteNominalEncashmentModelBeanContainer();
 
     public CrudWizardStep() {
         init();
@@ -300,7 +303,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
         double totalAmount = 0.0;
 
         for (Long iid : gridEncashmentContainer.getItemIds()) {
-            BanknoteNominalEncashmentModel bean = gridEncashmentContainer.getItem(iid).getBean();
+            BanknoteNominalEncashmentModel bean = (BanknoteNominalEncashmentModel) gridEncashmentContainer.getItem(iid).getBean();
             if (bean != null) {
                 totalQuantity += bean.getQuantity();
                 totalAmount += bean.getQuantity() * bean.getNominal();
@@ -324,12 +327,12 @@ public final class CrudWizardStep extends AbstractWizardStep {
         gridEncashmentContainer.removeAllItems();
 
         gridEncashmentContainer.addAll(
-          Collections2.transform(response.getNominals(), new Function<BanknoteNominalDto, BanknoteNominalEncashmentModel>() {
-              @Override
-              public BanknoteNominalEncashmentModel apply(BanknoteNominalDto dto) {
-                  return new BanknoteNominalEncashmentModel(dto.getId(), dto.getLabel(), dto.getNominal(), 0);
-              }
-          }));
+                Collections2.transform(response.getNominals(), new Function<BanknoteNominalDto, BanknoteNominalEncashmentModel>() {
+                    @Override
+                    public BanknoteNominalEncashmentModel apply(BanknoteNominalDto dto) {
+                        return new BanknoteNominalEncashmentModel(dto.getId(), dto.getLabel(), dto.getNominal(), 0);
+                    }
+                }));
 
         setCurrency(currency);
         setKioskEncashment(response.getKioskEncashment());
@@ -343,7 +346,7 @@ public final class CrudWizardStep extends AbstractWizardStep {
 
         for (Long iid : gridEncashmentContainer.getItemIds()) {
 
-            BanknoteNominalEncashmentModel bean = gridEncashmentContainer.getItem(iid).getBean();
+            BanknoteNominalEncashmentModel bean = (BanknoteNominalEncashmentModel) gridEncashmentContainer.getItem(iid).getBean();
             if (bean != null) {
                 encashments.add(new BanknoteNominalEncashmentDto(bean.getId(), bean.getQuantity()));
             } else {

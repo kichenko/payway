@@ -13,5 +13,6 @@ import java.io.Serializable;
  */
 public abstract class AbstractDto implements Serializable {
 
+    private static final long serialVersionUID = -1473215272725270159L;
 
 }

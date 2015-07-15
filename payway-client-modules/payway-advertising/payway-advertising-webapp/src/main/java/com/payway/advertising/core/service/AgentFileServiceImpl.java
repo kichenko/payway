@@ -63,11 +63,13 @@ public class AgentFileServiceImpl implements AgentFileService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public DbAgentFile save(DbAgentFile entity) throws ServiceException {
         return agentFileDao.save(entity);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DbAgentFile> findAll(Sort sort) throws ServiceException {
         return agentFileDao.findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "id")));
     }

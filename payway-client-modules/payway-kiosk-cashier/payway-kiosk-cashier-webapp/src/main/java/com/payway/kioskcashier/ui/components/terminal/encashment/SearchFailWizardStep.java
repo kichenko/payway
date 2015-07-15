@@ -7,7 +7,7 @@ package com.payway.kioskcashier.ui.components.terminal.encashment;
  * SearchFailWizardStep
  *
  * @author Sergey Kichenko
- * @created 03.07.15 00:00
+ * @created 14.07.15 00:00
  */
 public final class SearchFailWizardStep extends AbstractFailWizardStep {
 

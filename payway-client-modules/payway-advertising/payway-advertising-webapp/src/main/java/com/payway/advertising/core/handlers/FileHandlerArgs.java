@@ -25,4 +25,6 @@ public class FileHandlerArgs {
 
     private String dstFilePath;
     private String dstFileName;
+
+    private long length;
 }

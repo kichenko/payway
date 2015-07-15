@@ -6,6 +6,7 @@ package com.payway.messaging.message.kioskcashier;
 import com.payway.messaging.message.SessionCommandRequest;
 import com.payway.messaging.model.kioskcashier.BanknoteNominalEncashmentDto;
 import java.util.List;
+import lombok.ToString;
 
 /**
  * EncashmentCountingSaveRequest
@@ -13,6 +14,7 @@ import java.util.List;
  * @author Sergey Kichenko
  * @created 06.07.15 00:00
  */
+@ToString(callSuper = true)
 public final class EncashmentCountingSaveRequest extends SessionCommandRequest {
     
     private static final long serialVersionUID = 2849838982105517376L;

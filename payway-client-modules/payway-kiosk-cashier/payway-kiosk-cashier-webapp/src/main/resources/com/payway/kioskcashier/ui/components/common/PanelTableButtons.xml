@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:org.vaadin.ui" id="layoutPanelTableButtons" sizeFull="true" styleName="panel-table-buttons-component-space-layout">
+    <Button id="btnAdd" caption="Add" p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" styleName="panel-table-buttons-component-space-button tiny primary"/>
+    <Table id="grid" p:expandRatio="1" sizeFull="true"/>
+</VerticalLayout>

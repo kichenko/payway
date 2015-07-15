@@ -1,0 +1,14 @@
+@mixin panel-table-buttons-component {
+
+    .panel-table-buttons-component-space-button {
+        margin: 5px 0px;
+    }
+
+    .panel-table-buttons-component-space-layout {
+        padding: 5px;
+    }
+
+    #grid .v-table-footer-container {
+        font-weight: bold;
+    }
+}

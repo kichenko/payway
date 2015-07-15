@@ -19,10 +19,12 @@ public final class EncashmentCountingSaveResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 4838381928224679017L;
 
-    private final boolean surplus;
-    private final boolean shortage;
+    private final long countingId;
+    private final double shortage;
+    private final double surplus;
 
-    public EncashmentCountingSaveResponse(boolean surplus, boolean shortage) {
+    public EncashmentCountingSaveResponse(long countingId, double surplus, double shortage) {
+        this.countingId = countingId;
         this.surplus = surplus;
         this.shortage = shortage;
     }

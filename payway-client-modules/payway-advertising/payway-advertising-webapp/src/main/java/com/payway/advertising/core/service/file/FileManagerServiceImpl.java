@@ -203,13 +203,27 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
     }
 
     @Override
+    public FileSystemObject resolve(FileSystemObject src) throws FileSystemManagerServiceException {
+
+        try {
+            FileObject fo = fileSystemManager.resolveFile(src.getPath());
+            return new FileSystemObject(src.getPath(), fo.isFile() ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, fo.getContent().getSize(), new LocalDateTime(fo.getContent().getLastModifiedTime()));
+        } catch (Exception ex) {
+            log.error("Bad file input stream", ex);
+            throw new FileSystemManagerServiceException("Error resolving file system object", ex);
+        }
+    }
+
+    @Override
     public String canonicalization(String path) {
+
         try {
             FileObject fo = fileSystemManager.resolveFile(path);
             return fo.getURL().toString();
         } catch (Exception ex) {
             log.error("Bad file uri canonicalization", ex);
         }
+
         return "";
     }
 }

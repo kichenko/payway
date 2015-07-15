@@ -276,7 +276,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         }
 
         //it's video file, checking... 
-        if (supportedVideoFileExtensions.contains(StringUtils.substringAfterLast(fileName, "."))) {
+        if (supportedVideoFileExtensions.contains(StringUtils.substringAfterLast(fileName, ".").toLowerCase())) {
             if (settingsAppService.getCurrentFormatContainer() != null) {
                 return fileSystemManagerService.exist(new FileSystemObject(path + Helpers.changeFileExt(fileName, settingsAppService.getCurrentFormatContainer().getFileExt()), FileSystemObject.FileType.FILE, 0L, null));
             }
@@ -382,7 +382,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         if (getCurrentPath().equals(task.getDestFilePath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, args.getDstFileName(), task.getDestFilePath() + args.getDstFileName(), task.getFileSize(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, args.getDstFileName(), task.getDestFilePath() + args.getDstFileName(), args.getLength(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
             }
         }
     }
