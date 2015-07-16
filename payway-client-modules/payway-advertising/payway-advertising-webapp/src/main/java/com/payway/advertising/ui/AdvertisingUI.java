@@ -18,8 +18,6 @@ import com.payway.advertising.ui.component.notification.events.ApplyConfiguratio
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
 import com.payway.advertising.ui.view.core.AdvertisingSettingsWindow;
 import com.payway.advertising.ui.view.workspace.content.AdvertisingContentConfigurationView;
-import com.payway.commons.webapp.core.CommonAttributes;
-import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
@@ -40,7 +38,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.Cookie;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +60,7 @@ public class AdvertisingUI extends AbstractUI {
 
     @Autowired
     private AdvertisingMainView mainView;
-   
+
     @Autowired
     @Qualifier(value = "userAppService")
     private UserAppService userAppService;
@@ -90,6 +87,7 @@ public class AdvertisingUI extends AbstractUI {
     protected void init(VaadinRequest request) {
 
         settingsAppService.setContextPath(request.getContextPath());
+
         subscribeSessionEventBus();
         registerDetach();
         updateContent();
@@ -220,21 +218,8 @@ public class AdvertisingUI extends AbstractUI {
 
             //set params to session
             userAppService.setUser(user);
-
-            if (loginView.isRememberMe()) {
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), user.getToken());
-                cookie.setMaxAge(CommonConstants.REMEMBER_ME_COOKIE_MAX_AGE);
-                //#hack cookie
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            } else {
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
-                cookie.setMaxAge(0);
-                //#hack cookie
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            }
-
-            ((InteractionUI) UI.getCurrent()).closeProgressBar();
             updateContent();
+            ((InteractionUI) UI.getCurrent()).closeProgressBar();
 
         } catch (Exception ex) {
             log.error("Bad user sign in", ex);

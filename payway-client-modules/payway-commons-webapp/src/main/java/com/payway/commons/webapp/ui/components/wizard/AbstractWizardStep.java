@@ -35,7 +35,7 @@ public abstract class AbstractWizardStep extends VerticalLayout {
         return null;
     }
 
-    public boolean validate() {
-        return true;
+    public void validate() throws WizardStepValidationException {
+        //
     }
 }

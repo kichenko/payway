@@ -4,8 +4,6 @@
 package com.payway.kioskcashier.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.commons.webapp.core.CommonAttributes;
-import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.service.app.user.UserAppService;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
@@ -27,7 +25,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -139,18 +136,6 @@ public class KioskCashierUI extends AbstractUI {
             //set params to session
             userAppService.setUser(userDto);
             userAppService.setSessionId(event.getSessionId());
-
-            if (loginView.isRememberMe()) {
-                //#hack cookie
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
-                cookie.setMaxAge(CommonConstants.REMEMBER_ME_COOKIE_MAX_AGE);
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            } else {
-                //#hack cookie
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
-                cookie.setMaxAge(0);
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            }
 
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
             updateContent();

@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.core.utils.NumberUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
+import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
 import com.payway.kioskcashier.ui.components.common.PanelTableButtons;
 import com.payway.kioskcashier.ui.components.terminal.encashment.container.NoteCountingDiscrepancyModel;
 import com.payway.kioskcashier.ui.components.terminal.encashment.container.NoteCountingDiscrepancyModelBeanItemContainer;
@@ -18,6 +19,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.data.validator.DoubleRangeValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -175,6 +178,8 @@ public final class CountingDiscrepancyWizardStep extends AbstractWizardStep {
     @Override
     public void setupStep(AbstractWizardStepParams params) {
 
+        String template = "<div><div style=\"display:inline;\"><b>%s</b></div><div style=\"display:inline; float:right;\"><b>%s</b></div></div>";
+
         setParams((CountingDiscrepancyWizardStepParams) params);
 
         panelSurplus.getGrid().getContainerDataSource().removeAllItems();
@@ -184,8 +189,8 @@ public final class CountingDiscrepancyWizardStep extends AbstractWizardStep {
         panelShortage.getGrid().setColumnFooter("amount", "");
 
         lbMessage.setValue("Counting discrepancy found");
-        panelSurplus.setCaption(String.format("<b>Surplus is %s</b>", formatAmountWithCurrency(getParams().getSurplusAmount())));
-        panelShortage.setCaption(String.format("<b>Shortage is %s</b>", formatAmountWithCurrency(Math.abs(getParams().getShortageAmount()))));
+        panelSurplus.setCaption(String.format(template, "Surplus", formatAmountWithCurrency(getParams().getSurplusAmount())));
+        panelShortage.setCaption(String.format(template, "Shortage", formatAmountWithCurrency(Math.abs(getParams().getShortageAmount()))));
     }
 
     @Override
@@ -231,11 +236,14 @@ public final class CountingDiscrepancyWizardStep extends AbstractWizardStep {
                 field.setSizeFull();
 
                 if ("clarification".equals(propertyId)) {
+                    field.setImmediate(true);
                     field.setNullRepresentation("");
+                    field.addValidator(new StringLengthValidator("Empty clarification", 1, Integer.MIN_VALUE, false));
                 } else if ("amount".equals(propertyId)) {
 
                     field.setImmediate(true);
                     field.setStyleName("app-common-style-text-right");
+                    field.addValidator(new DoubleRangeValidator("Empty amount", 0.1, Double.MAX_VALUE));
                     field.setConverter(new Converter<String, Double>() {
                         private static final long serialVersionUID = -874295801443223068L;
                         private final StringToDoubleConverter converter = new StringToDoubleConverter();
@@ -303,7 +311,7 @@ public final class CountingDiscrepancyWizardStep extends AbstractWizardStep {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         source.getContainerDataSource().removeItem(itemId);
-                        calculateFooter(source);
+                        source.setColumnFooter("amount", formatAmountWithCurrency(calculateFooter(source)));
                     }
                 });
 
@@ -318,7 +326,9 @@ public final class CountingDiscrepancyWizardStep extends AbstractWizardStep {
     }
 
     @Override
-    public boolean validate() {
-        return validateGridItems(panelSurplus.getGrid()) && validateGridItems(panelShortage.getGrid());
+    public void validate() throws WizardStepValidationException {
+        if (!validateGridItems(panelSurplus.getGrid()) || !validateGridItems(panelShortage.getGrid())) {
+            throw new WizardStepValidationException("Bad discrepancy validation");
+        }
     }
 }

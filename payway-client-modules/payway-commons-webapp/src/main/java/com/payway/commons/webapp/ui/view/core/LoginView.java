@@ -19,6 +19,7 @@ import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.response.auth.AbstractAuthCommandResponse;
 import com.payway.messaging.message.response.auth.AuthBadCredentialsCommandResponse;
 import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
+import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
@@ -31,6 +32,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import java.net.URI;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
@@ -115,29 +117,32 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
                 buttonSignIn.click();
             }
         });
+
+        checkBoxRememberMe.addValueChangeListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = -382717228031608542L;
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+
+                //#hack cookie
+                boolean flag = (Boolean) event.getProperty().getValue();
+                if (!flag) {
+                    URI uri = UI.getCurrent().getPage().getLocation();
+                    UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + CommonAttributes.REMEMBER_ME.value() + "=;" + "; path=" + uri.getPath() + " ;expires=Thu, 01-Jan-1970 00:00:01 GMT;'");
+                }
+            }
+        });
     }
 
     @Override
     public void initialize() {
 
-        Cookie rememberMeCookie = getCookieByName(CommonAttributes.REMEMBER_ME.value());
+        Cookie rememberMeCookie = ((AbstractUI) UI.getCurrent()).getCookieByName(CommonAttributes.REMEMBER_ME.value());
         if (rememberMeCookie != null && rememberMeCookie.getValue() != null) {
             checkBoxRememberMe.setValue(true);
         } else {
             checkBoxRememberMe.setValue(false);
         }
-    }
-
-    protected Cookie getCookieByName(String name) {
-
-        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
-        for (Cookie cookie : cookies) {
-            if (name.equals(cookie.getName())) {
-                return cookie;
-            }
-        }
-
-        return null;
     }
 
     public void setTitle(String title) {
@@ -205,7 +210,15 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
         }
 
         if (response instanceof AuthSuccessCommandResponse) {
+
             AuthSuccessCommandResponse rsp = (AuthSuccessCommandResponse) response;
+
+            //#hack cookie
+            if (((AbstractUI) UI.getCurrent()).getLoginView().isRememberMe()) {
+                URI uri = UI.getCurrent().getPage().getLocation();
+                UI.getCurrent().getPage().getJavaScript().execute("var date = new Date(); date.setTime(date.getTime()+(7*24*60*60*1000)); document.cookie='" + CommonAttributes.REMEMBER_ME.value() + "=" + rsp.getSessionId() + "; path=" + uri.getPath() + "; expires=' + date.toGMTString();");
+            }
+
             sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(rsp.getUser(), rsp.getSessionId(), rsp.getExtensions()));
         } else if (response instanceof AuthBadCredentialsCommandResponse) {
             sessionEventBus.sendNotification(new LoginFailSessionBusEvent());

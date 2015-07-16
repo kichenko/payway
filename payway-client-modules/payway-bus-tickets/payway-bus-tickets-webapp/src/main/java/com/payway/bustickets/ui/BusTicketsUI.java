@@ -10,8 +10,6 @@ import com.payway.bustickets.ui.bus.events.BusTicketOperatorsSuccessBusEvent;
 import com.payway.bustickets.ui.view.core.BusTicketsSettingsWindow;
 import com.payway.bustickets.ui.view.workspace.BusTicketsEmptyWorkspaceView;
 import com.payway.bustickets.ui.view.workspace.BusTicketsWorkspaceView;
-import com.payway.commons.webapp.core.CommonAttributes;
-import com.payway.commons.webapp.core.CommonConstants;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.service.app.settings.SettingsAppService;
@@ -44,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -261,18 +258,6 @@ public class BusTicketsUI extends AbstractUI {
             //set params to session: user, sesionId, current terminal and terminal list
             RetailerTerminalDto currentTerminal = terminals == null || terminals.isEmpty() ? null : terminals.get(0);
             settingsAppService.setSessionSettings(new BusTicketsSessionSettings(event.getUser(), event.getSessionId(), null, terminals, currentTerminal));
-
-            if (loginView.isRememberMe()) {
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), event.getSessionId());
-                cookie.setMaxAge(CommonConstants.REMEMBER_ME_COOKIE_MAX_AGE);
-                //#hack cookie
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            } else {
-                Cookie cookie = new Cookie(CommonAttributes.REMEMBER_ME.value(), "");
-                cookie.setMaxAge(0);
-                //#hack cookie
-                UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + cookie.getName() + "=" + cookie.getValue() + "; path=/'; expires=" + cookie.getMaxAge());
-            }
 
             updateContent();
 

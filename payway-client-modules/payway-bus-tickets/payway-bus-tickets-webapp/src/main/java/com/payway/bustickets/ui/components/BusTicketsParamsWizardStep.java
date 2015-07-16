@@ -3,12 +3,13 @@
  */
 package com.payway.bustickets.ui.components;
 
-import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.bustickets.ui.components.containers.ChoiceDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.DirectionDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.RouteDtoBeanContainer;
 import com.payway.bustickets.ui.components.containers.filters.RouteByDirectionFilter;
+import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
+import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
 import com.payway.messaging.model.bustickets.DirectionDto;
 import com.payway.messaging.model.bustickets.RouteDto;
 import com.payway.messaging.model.common.ChoiceDto;
@@ -197,9 +198,7 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
     }
 
     @Override
-    public boolean validate() {
-
-        boolean ok = true;
+    public void validate() throws WizardStepValidationException {
 
         try {
 
@@ -219,12 +218,10 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
             getCbBaggage().setValidationVisible(true);
             getSliderQuantity().setValidationVisible(true);
 
-            ok = false;
+            throw new WizardStepValidationException("Bad bus tickets params", ex);
         }
 
         UI.getCurrent().push();
-
-        return ok;
     }
 
     public int getQuantity() {

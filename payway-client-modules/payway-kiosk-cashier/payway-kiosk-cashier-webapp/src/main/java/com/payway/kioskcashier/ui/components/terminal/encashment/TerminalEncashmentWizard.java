@@ -7,6 +7,7 @@ import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.components.wizard.AbstractStandartButtonWizard;
+import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.kioskcashier.EncashmentCountingDiscrepancySaveRequest;
@@ -71,10 +72,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         setSizeFull();
         setIcon(new ThemeResource("images/sidebar_terminal_encashment.png"));
         setContent(Clara.create("TerminalEncashmentWizard.xml", this));
+        addActionHandler(new StandartButtonWizardKeyboardHandler());
 
         setUpSteps();
         setStep(TERMINAL_ENCASHMENT_SEARCH_WIZARD_STEP_ID);
-        //setStep(TERMINAL_ENCASHMENT_COUNTING_DISCREPANCY_WIZARD_STEP_ID);
         decorateStep();
     }
 
@@ -164,26 +165,28 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
         } else if (getStep() == TERMINAL_ENCASHMENT_COUNTING_DISCREPANCY_FAIL_WIZARD_STEP_ID) { //fail discrepancy
             setUpWizardControl("Failed create discrepancy encashment counting report", "Back", true, "New", true);
         } else if (getStep() == TERMINAL_ENCASHMENT_SUCCESS_WIZARD_STEP_ID) { //success
-            setUpWizardControl("Successful create encashment counting report", "", false, "New", true);
+            setUpWizardControl("Encashment counting report successfully created", "", false, "New", true);
         }
     }
 
     private void processCrudStep() {
 
         CrudWizardStep wizardStep = (CrudWizardStep) getWizardStep(getStep());
-        if (wizardStep.validate()) {
+        try {
+            wizardStep.validate();
             sendEncashmentsResultRequest();
-        } else {
-            ((InteractionUI) UI.getCurrent()).showNotification("Validation encashments result", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
+        } catch (WizardStepValidationException ex) {
+            ((InteractionUI) UI.getCurrent()).showNotification("Validation encashments result", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
         }
     }
 
     private void processDiscrepancy() {
 
         CountingDiscrepancyWizardStep wizardStep = (CountingDiscrepancyWizardStep) getWizardStep(getStep());
-        if (wizardStep.validate()) {
+        try {
+            wizardStep.validate();
             sendDiscrepancySaveRequest();
-        } else {
+        } catch (WizardStepValidationException ex) {
             ((InteractionUI) UI.getCurrent()).showNotification("Validation encashments result", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
         }
     }
@@ -249,9 +252,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
     private void processSearchStep() {
 
         SearchWizardStep wizardStep = (SearchWizardStep) getWizardStep(getStep());
-        if (wizardStep.validate()) {
+        try {
+            wizardStep.validate();
             sendSearchEncashmentReportRequest();
-        } else {
+        } catch (WizardStepValidationException ex) {
             ((InteractionUI) UI.getCurrent()).showNotification("Validation search encashment report", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
         }
     }
@@ -332,9 +336,10 @@ public final class TerminalEncashmentWizard extends AbstractStandartButtonWizard
     private void sendSearchEncashmentReportRequest() {
 
         SearchWizardStep wizardStep = (SearchWizardStep) getWizardStep(0);
+        SearchWizardStep.SearchWizardStepState state = wizardStep.getStepState();
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new EncashmentReportSearchRequest(getSessionId(), wizardStep.getEditTerminal().getValue(), (Integer) wizardStep.getEditReport().getConvertedValue()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+        getService().sendMessage(new EncashmentReportSearchRequest(getSessionId(), state.getTerminalName(), state.getReportNo()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {

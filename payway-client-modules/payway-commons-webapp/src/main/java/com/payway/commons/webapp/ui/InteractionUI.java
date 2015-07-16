@@ -8,6 +8,7 @@ import de.steinwedel.messagebox.ButtonId;
 import de.steinwedel.messagebox.Icon;
 import de.steinwedel.messagebox.MessageBox;
 import de.steinwedel.messagebox.MessageBoxListener;
+import javax.servlet.http.Cookie;
 
 /**
  * Notification
@@ -24,4 +25,6 @@ public interface InteractionUI {
     void closeProgressBar();
 
     MessageBox showMessageBox(String title, String message, Icon icon, MessageBoxListener listener, ButtonId... buttonIds);
+
+    Cookie getCookieByName(String name);
 }

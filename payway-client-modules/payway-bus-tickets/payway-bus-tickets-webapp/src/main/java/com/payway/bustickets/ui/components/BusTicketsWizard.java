@@ -5,6 +5,7 @@ package com.payway.bustickets.ui.components;
 
 import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.bustickets.BusTicketPaymentStartRequest;
@@ -215,9 +216,10 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private void processParams2ConfirmStep() {
 
         BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(getStep());
-        if (wizardStep.validate()) {
+        try {
+            wizardStep.validate();
             sendValidateRequest();
-        } else {
+        } catch (WizardStepValidationException ex) {
             ((InteractionUI) UI.getCurrent()).showNotification("Validation bus ticket params", "Please, enter the correct values", Notification.Type.ERROR_MESSAGE);
         }
     }

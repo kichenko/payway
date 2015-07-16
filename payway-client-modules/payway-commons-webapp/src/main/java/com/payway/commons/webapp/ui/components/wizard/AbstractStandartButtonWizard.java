@@ -3,6 +3,8 @@
  */
 package com.payway.commons.webapp.ui.components.wizard;
 
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import lombok.Getter;
@@ -25,6 +27,28 @@ public abstract class AbstractStandartButtonWizard extends AbstractWizard {
 
     private static final long serialVersionUID = -8946191934623942053L;
 
+    @NoArgsConstructor
+    public static class StandartButtonWizardKeyboardHandler implements Action.Handler {
+
+        private static final long serialVersionUID = 8820513042467846195L;
+
+        private final Action key_shift_enter = new ShortcutAction("Shift+Enter", ShortcutAction.KeyCode.ENTER, new int[]{ShortcutAction.ModifierKey.SHIFT});
+
+        @Override
+        public Action[] getActions(Object target, Object sender) {
+            return new Action[]{key_shift_enter};
+        }
+
+        @Override
+        public void handleAction(Action action, Object sender, Object target) {
+            if (action == key_shift_enter) {
+                if (sender instanceof AbstractStandartButtonWizard) {
+                    ((AbstractStandartButtonWizard) sender).handleStepRight();
+                }
+            }
+        }
+    }
+
     @UiField
     protected VerticalLayout layoutContent;
 
@@ -36,6 +60,7 @@ public abstract class AbstractStandartButtonWizard extends AbstractWizard {
 
     public AbstractStandartButtonWizard(int stepCount) {
         super(stepCount);
+
     }
 
     protected abstract void handleStepLeft();

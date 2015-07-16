@@ -8,6 +8,7 @@ import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import com.payway.commons.webapp.core.utils.NumberFormatConverterUtils;
 import com.payway.commons.webapp.core.utils.NumberUtils;
 import com.payway.commons.webapp.ui.components.wizard.AbstractWizardStep;
+import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
 import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModel;
 import com.payway.kioskcashier.ui.components.terminal.encashment.container.BanknoteNominalEncashmentModelBeanContainer;
 import com.payway.messaging.message.kioskcashier.EncashmentReportSearchResponse;
@@ -343,22 +344,25 @@ public final class CrudWizardStep extends AbstractWizardStep {
     public List<BanknoteNominalEncashmentDto> getEncashments() {
 
         List<BanknoteNominalEncashmentDto> encashments = new ArrayList<>(gridEncashmentContainer.getItemIds().size());
-
         for (Long iid : gridEncashmentContainer.getItemIds()) {
-
             BanknoteNominalEncashmentModel bean = (BanknoteNominalEncashmentModel) gridEncashmentContainer.getItem(iid).getBean();
-            if (bean != null) {
-                encashments.add(new BanknoteNominalEncashmentDto(bean.getId(), bean.getQuantity()));
-            } else {
-                log.error("Empty bean in encashment grid with iid={}", iid);
-            }
+            encashments.add(new BanknoteNominalEncashmentDto(bean.getId(), bean.getQuantity()));
         }
 
         return encashments;
     }
 
     @Override
-    public boolean validate() {
-        return true;
+    public void validate() throws WizardStepValidationException {
+
+        int quantity = 0;
+        for (Long iid : gridEncashmentContainer.getItemIds()) {
+            BanknoteNominalEncashmentModel bean = (BanknoteNominalEncashmentModel) gridEncashmentContainer.getItem(iid).getBean();
+            quantity += bean.getQuantity();
+        }
+
+        if (quantity == 0) {
+            throw new WizardStepValidationException("Denominations not entered");
+        }
     }
 }
