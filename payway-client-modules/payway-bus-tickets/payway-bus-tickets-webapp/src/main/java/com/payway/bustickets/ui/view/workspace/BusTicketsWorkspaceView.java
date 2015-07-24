@@ -70,7 +70,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
         setWizardLogoImage();
         setWizardCurrencyAndMoneyPrecision();
 
-        if (wizard.setStep(BusTicketsWizard.BUS_TICKETS_PARAMS_WIZARD_STEP_ID)) {
+        if (wizard.setStep(BusTicketsWizard.WizardStepType.Params.ordinal())) {
             wizard.setUpBusTicketsPaymentParams();
         }
     }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:org.vaadin.ui" id="layoutKioskEncashmentSelectWindow" sizeFull="true" styleName="app-style-wizard-content-padding">
+    <Table id="gridKioskEncashments" p:expandRatio="1" sizeFull="true"/>
+    <Button id="btnSelect" caption="Select" p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" styleName="app-common-style-margin-all-5px primary"/>
+</VerticalLayout>

@@ -4,6 +4,7 @@
 package com.payway.commons.webapp.ui.components.wizard;
 
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.messaging.model.common.CurrencyDto;
 import com.vaadin.ui.Panel;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +29,18 @@ public abstract class AbstractWizard extends Panel {
 
     protected int step;
     protected int stepCount;
+    protected String sessionId;
+    protected CurrencyDto currency;
     protected MessageServerSenderService service;
-    protected List<AbstractWizardStep> steps = new ArrayList<>(0);
-
-    public AbstractWizard(int stepCount) {
-        setStepCount(stepCount);
-        steps = new ArrayList<>(stepCount);
-    }
+    protected List<AbstractWizardStep> steps = new ArrayList<>();
 
     protected abstract void init();
+
+    protected abstract int getCurrentViewIndex();
+
+    public AbstractWizard(int stepCount) {
+        this.stepCount = stepCount;
+    }
 
     public boolean setStep(int step) {
         if (step >= 0 && step < stepCount) {
@@ -47,10 +51,15 @@ public abstract class AbstractWizard extends Panel {
         return false;
     }
 
-    public AbstractWizardStep getWizardStep(int stepIndex) {
-        if (stepIndex >= 0 && stepIndex < stepCount) {
-            return steps.get(stepIndex);
-        }
-        return null;
+    public AbstractWizardStep getWizardStep(int viewIndex) {
+        return viewIndex >= 0 && viewIndex < steps.size() ? steps.get(viewIndex) : null;
+    }
+
+    protected AbstractWizardStep getCurrentWizardStep() {
+        return getWizardStep(getCurrentViewIndex());
+    }
+
+    public void activate() {
+        //
     }
 }

@@ -3,16 +3,10 @@
  */
 package com.payway.kioskcashier.ui.view.core.workspace;
 
-import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.service.app.settings.SettingsAppService;
-import com.payway.commons.webapp.service.app.user.WebAppUserService;
-import com.payway.kioskcashier.service.app.settings.model.KioskCashierSessionSettings;
-import com.payway.kioskcashier.ui.components.terminal.encashment.TerminalEncashmentWizard;
+import com.payway.kioskcashier.ui.components.wizard.terminal.encashment.TerminalEncashmentWizard;
 import com.payway.kioskcashier.ui.view.core.AbstractKioskCashierWorkspaceView;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -37,17 +31,6 @@ public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspa
     @UiField
     private TerminalEncashmentWizard wizard;
 
-    @Autowired
-    @Qualifier("messageServerSenderService")
-    private MessageServerSenderService service;
-
-    @Autowired
-    SettingsAppService<KioskCashierSessionSettings> settingsAppService;
-
-    @Autowired
-    @Qualifier(value = "webApps.WebAppUserService")
-    private WebAppUserService userAppService;
-
     @PostConstruct
     public void postConstruct() {
         setSizeFull();
@@ -57,7 +40,7 @@ public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspa
     @Override
     public void activate() {
         wizard.setService(service);
-        wizard.setSessionId(userAppService.getUser().getSessionId());
         wizard.setCurrency(settingsAppService.getCurrency());
+        wizard.setSessionId(userAppService.getUser().getSessionId());
     }
 }

@@ -3,25 +3,19 @@
  */
 package com.payway.commons.webapp.ui;
 
-import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.ProgressBarWindow;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import de.steinwedel.messagebox.ButtonId;
 import de.steinwedel.messagebox.Icon;
 import de.steinwedel.messagebox.MessageBox;
 import de.steinwedel.messagebox.MessageBoxListener;
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.Cookie;
 import lombok.Getter;
@@ -109,28 +103,7 @@ public abstract class AbstractUI extends UI implements InteractionUI {
 
     protected abstract List<SideBarMenu.MenuItem> getSideBarMenuItems();
 
-    protected List<AbstractMainView.UserMenuItem> getMenuBarItems() {
-        return Collections.singletonList(
-                new AbstractMainView.UserMenuItem("Sign Out", new ThemeResource("images/user_menu_item_logout.png"), new MenuBar.Command() {
-                    private static final long serialVersionUID = 7160936162824727503L;
-
-                    @Override
-                    public void menuSelected(final MenuBar.MenuItem selectedItem) {
-                        for (final UI ui : VaadinSession.getCurrent().getUIs()) {
-                            ui.access(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //#hack cookie
-                                    URI uri = UI.getCurrent().getPage().getLocation();
-                                    UI.getCurrent().getPage().getJavaScript().execute("document.cookie='" + CommonAttributes.REMEMBER_ME.value() + "=;" + "; path=" + uri.getPath() + " ;expires=Thu, 01-Jan-1970 00:00:01 GMT;'");
-                                    ui.getPage().reload();
-                                }
-                            });
-                        }
-                        VaadinSession.getCurrent().close();
-                    }
-                }, false));
-    }
+    protected abstract List<AbstractMainView.UserMenuItem> getMenuBarItems();
 
     @Override
     public MessageBox showMessageBox(String title, String message, Icon icon, MessageBoxListener listener, ButtonId... buttonIds) {

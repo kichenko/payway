@@ -11,6 +11,7 @@ import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.WorkspaceView;
+import com.payway.kioskcashier.ui.view.core.workspace.BankCashDepositWorkspaceView;
 import com.payway.kioskcashier.ui.view.core.workspace.TerminalEncashmentWorkspaceView;
 import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -20,7 +21,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +87,10 @@ public class KioskCashierUI extends AbstractLoginUI {
 
     @Override
     protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
-        return Collections.singletonList(new SideBarMenu.MenuItem(TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, "Terminal Encashment", new ThemeResource("images/sidebar_terminal_encashment.png"), null, null));
+        List<SideBarMenu.MenuItem> menus = new ArrayList<>();        
+        menus.add(new SideBarMenu.MenuItem(TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, "Terminal Encashment", new ThemeResource("images/sidebar_terminal_encashment.png"), null, null));
+        menus.add(new SideBarMenu.MenuItem(BankCashDepositWorkspaceView.BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID, BankCashDepositWorkspaceView.BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID, "Cash deposit", new ThemeResource("images/sidebar_bank_cash_deposit.png"), null, null));
+        return menus;
     }
 
     @Subscribe

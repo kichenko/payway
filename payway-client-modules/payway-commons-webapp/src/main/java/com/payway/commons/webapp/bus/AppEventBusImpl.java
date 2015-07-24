@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * AppEventBusImpl
@@ -47,7 +48,7 @@ public class AppEventBusImpl implements AppEventBus, AppEventPublisher, BeanPost
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
-        if (bean.getClass().isAnnotationPresent(SubscribeOnAppEventBus.class)) {
+        if (AnnotationUtils.findAnnotation(bean.getClass(), SubscribeOnAppEventBus.class) != null) {
             log.debug("AppEventBus bean post processor got bean - {} with class - {}", beanName, bean.getClass().getName());
             addSubscriber(bean);
         }

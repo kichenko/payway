@@ -17,9 +17,9 @@ public abstract class AbstractBusTicketWizardStep extends AbstractStandartButton
 
     private static final long serialVersionUID = -5037544000737605342L;
 
+    public abstract void setLogoImage(byte[] content);
+    
     public AbstractBusTicketWizardStep(int stepCount) {
         super(stepCount);
     }
-
-    public abstract void setLogoImage(byte[] content);
 }

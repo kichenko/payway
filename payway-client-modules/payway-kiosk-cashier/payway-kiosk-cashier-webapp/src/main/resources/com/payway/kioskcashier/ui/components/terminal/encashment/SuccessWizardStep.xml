@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentSuccessWizardStep" styleName="" sizeFull="true">
-
-    <Label id="lbSuccess" contentMode="HTML" styleName="app-common-style-label-success app-common-style-text-center"/>
-    <Label id="lbMessage" styleName="colored app-common-style-text-center"/>
-    
-</VerticalLayout>

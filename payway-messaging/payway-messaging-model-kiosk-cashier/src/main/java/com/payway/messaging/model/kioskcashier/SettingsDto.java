@@ -4,6 +4,7 @@
 package com.payway.messaging.model.kioskcashier;
 
 import com.payway.messaging.model.AbstractDto;
+import com.payway.messaging.model.common.BankAccountDto;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.common.MoneyPrecisionDto;
 import lombok.Getter;
@@ -25,9 +26,11 @@ public final class SettingsDto extends AbstractDto {
 
     private final MoneyPrecisionDto moneyPrecision;
 
-    public SettingsDto(CurrencyDto currency, MoneyPrecisionDto moneyPrecision) {
+    private final BankAccountDto accountCashDeposit;
+
+    public SettingsDto(CurrencyDto currency, MoneyPrecisionDto moneyPrecision, BankAccountDto accountCashDeposit) {
         this.currency = currency;
         this.moneyPrecision = moneyPrecision;
+        this.accountCashDeposit = accountCashDeposit;
     }
-
 }

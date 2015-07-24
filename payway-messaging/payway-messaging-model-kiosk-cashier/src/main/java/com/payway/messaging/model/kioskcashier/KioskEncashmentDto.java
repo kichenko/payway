@@ -4,13 +4,12 @@
 package com.payway.messaging.model.kioskcashier;
 
 import com.payway.messaging.model.IdentifiableDto;
+import java.util.Date;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.Date;
-
 /**
- * SettingsDto
+ * KioskEncashmentDto
  *
  * @author Sergey Kichenko
  * @created 03.07.15 00:00

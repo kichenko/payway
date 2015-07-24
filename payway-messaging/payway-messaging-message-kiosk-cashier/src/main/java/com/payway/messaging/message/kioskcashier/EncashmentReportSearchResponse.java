@@ -22,12 +22,12 @@ public final class EncashmentReportSearchResponse implements SuccessResponse {
 
     private static final long serialVersionUID = 8950351195681515060L;
 
-    private final KioskEncashmentDto kioskEncashment;
+    private final List<KioskEncashmentDto> kioskEncashments;
 
     private final List<BanknoteNominalDto> nominals;
 
-    public EncashmentReportSearchResponse(KioskEncashmentDto kioskEncashment, List<BanknoteNominalDto> nominals) {
-        this.kioskEncashment = kioskEncashment;
+    public EncashmentReportSearchResponse(List<KioskEncashmentDto> kioskEncashments, List<BanknoteNominalDto> nominals) {
+        this.kioskEncashments = kioskEncashments;
         this.nominals = nominals;
     }
 

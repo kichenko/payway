@@ -1,12 +1,14 @@
 @import "../valo/valo";
 //
 @import "addons";
+@import "app-style";
 @import "app-common-style";
 
 //
 @import "components/appversion";
 @import "components/sidebarmenu";
 @import "components/terminal-encashment/terminal-encashment";
+@import "components/cash-deposit/cash-deposit";
 @import "components/panel-table-buttons/panel-table-buttons-component";
 
 //
@@ -18,11 +20,13 @@
     @include valo;
 
     @include addons;
+    @include app-style;
     @include app-common-style;
 
     @include app-version-component;
     @include sidebar-menu-component;
     @include terminal-encashment-component;
+    @include cash-deposit-component;
     @include panel-table-buttons-component;
 
     @include login-view;

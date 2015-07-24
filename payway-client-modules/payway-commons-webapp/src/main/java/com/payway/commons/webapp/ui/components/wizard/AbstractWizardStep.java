@@ -3,7 +3,10 @@
  */
 package com.payway.commons.webapp.ui.components.wizard;
 
+import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.vaadin.ui.VerticalLayout;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractWizardStep extends VerticalLayout {
+
+    @Getter
+    @Setter
+    protected MessageServerSenderService service;
 
     public static abstract class AbstractWizardStepParams {
         //

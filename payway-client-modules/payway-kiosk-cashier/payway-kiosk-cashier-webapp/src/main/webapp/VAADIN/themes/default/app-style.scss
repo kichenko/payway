@@ -1,0 +1,10 @@
+@mixin app-style {
+
+    .app-style-wizard-content-padding {
+        padding: 5px;
+    }
+
+    #layoutDiscrepancyWizardStepTable .v-spacing {
+        width: 5px;
+    }
+}

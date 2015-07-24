@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutCreateBankCashDepositWizardStep" styleName="app-style-wizard-content-padding" sizeFull="true">
+    <Table id="gridCashDepositNominals" sizeFull="true"/>        
+</CssLayout>

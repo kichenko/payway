@@ -189,7 +189,7 @@ public class BusTicketsUI extends AbstractLoginUI {
     }
 
     private void updateSideBar() {
-        
+
         mainView.clearWorkspaceView();
         mainView.getSideBarMenu().clearMenuItems();
         mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
@@ -227,7 +227,7 @@ public class BusTicketsUI extends AbstractLoginUI {
             setupWorkspaceContent();
             sendBusTicketOperatorsRequest();
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
-            
+
         } catch (Exception ex) {
             log.error("Bad user sign in - {}", ex);
             ((InteractionUI) UI.getCurrent()).closeProgressBar();

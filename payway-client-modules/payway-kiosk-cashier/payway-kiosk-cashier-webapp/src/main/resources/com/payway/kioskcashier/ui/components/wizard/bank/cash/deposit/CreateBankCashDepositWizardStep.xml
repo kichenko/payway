@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutAddNominalsBankCashDepositWizardStep" styleName="app-style-wizard-content-padding" sizeFull="true">
+    
+    <FormLayout id="layoutParamsForm" width="100%" height="40%">       
+        <PopupDateField id="cbDateCreated" caption="Created" textFieldEnabled="false" resolution="MINUTE" dateFormat="yyyy-MM-dd HH:mm" width="250px" styleName=""/>
+        <ComboBox id="cbDepositedBy" caption="Deposited by" textInputAllowed="false" width="250px" styleName=""/>
+        <ComboBox id="cbAccount" caption="Account" width="250px" enabled="false" textInputAllowed="false" styleName=""/>
+        <TextField id="editTeller" caption="Teller" width="250px" styleName=""/>
+    </FormLayout>
+    
+    <VerticalLayout id = "layoutGrid" width="100%" height="60%" styleName="">
+        <Table id="gridDepositCountings" sizeFull="true"/>
+    </VerticalLayout> 
+        
+</CssLayout>

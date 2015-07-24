@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.kioskcashier.ui.components.wizard.bank.cash.deposit" id="layoutBankCashDepositWorkspaceView" styleName="" sizeFull="true">
+    <cmp:BankCashDepositWizard id="wizard" caption="Cash deposit" width="80%" height="90%" p:componentAlignment="MIDDLE_CENTER"/>
+</VerticalLayout>

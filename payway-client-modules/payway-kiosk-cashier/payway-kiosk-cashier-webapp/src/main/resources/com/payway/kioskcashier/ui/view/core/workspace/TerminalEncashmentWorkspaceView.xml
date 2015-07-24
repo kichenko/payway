@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.kioskcashier.ui.components.terminal.encashment" id="layoutTerminalEncashmentWorkspaceView" styleName="" sizeFull="true">
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.kioskcashier.ui.components.wizard.terminal.encashment" id="layoutTerminalEncashmentWorkspaceView" styleName="" sizeFull="true">
     <cmp:TerminalEncashmentWizard id="wizard" caption="Terminal encashment" width="80%" height="90%" p:componentAlignment="MIDDLE_CENTER"/>
 </VerticalLayout>

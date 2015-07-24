@@ -14,7 +14,7 @@ KIOSK_CASHIER_WAR	:= payway-client-modules/payway-kiosk-cashier/payway-kiosk-cas
 KIOSK_CASHIER_PATH	:= /kiosk-cashier
 
 all:
-	MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=128m" mvn clean install
+	mvn -U clean install
 
 update:
 	svn update

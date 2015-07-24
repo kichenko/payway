@@ -18,7 +18,7 @@
 
     <modules>
         <module>payway-vaadin-textfield-digit</module>
-        <module>payway-vaadin-textfield-digit-demo</module>
+        <!--<module>payway-vaadin-textfield-digit-demo</module>-->
     </modules>
 
 </project>

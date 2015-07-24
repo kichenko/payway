@@ -1,5 +1,9 @@
 @mixin app-common-style {
 
+    .app-common-style-margin-all-5px {
+        margin: 5px;
+    }
+
     .app-common-style-float-right {
         float: right;
     }

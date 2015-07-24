@@ -3,12 +3,12 @@
  */
 package com.payway.commons.webapp.service.app.settings;
 
-import com.payway.commons.webapp.service.app.settings.model.AbstractAppSessionSettings;
 import com.google.common.eventbus.Subscribe;
 import com.payway.commons.webapp.bus.AppEventPublisher;
 import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
+import com.payway.commons.webapp.service.app.settings.model.AbstractAppSessionSettings;
 import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.messaging.message.SettingsChangedMessage;
 import com.payway.messaging.model.common.CurrencyDto;
