@@ -25,27 +25,28 @@ public final class CashDepositDto extends AbstractDto {
 
     private final Date created;
     private final long depositedBy;
-    private final long account;
     private final String teller;
     private final boolean shortage;
     private final boolean surplus;
+    private final double shortageAmount;
+    private final double surplusAmount;
     private final double total;
 
     private final List<Long> countings;
     private final List<CashDepositNominalDto> nominals;
     private final List<CountingDiscrepancyDto> discrepancies;
 
-    public CashDepositDto(Date created, long depositedBy, long account, String teller, boolean shortage, boolean surplus, double total, List<Long> countings, List<CashDepositNominalDto> nominals, List<CountingDiscrepancyDto> discrepancies) {
+    public CashDepositDto(Date created, long depositedBy, String teller, boolean shortage, boolean surplus, double shortageAmount, double surplusAmount, double total, List<Long> countings, List<CashDepositNominalDto> nominals, List<CountingDiscrepancyDto> discrepancies) {
         this.created = created;
         this.depositedBy = depositedBy;
-        this.account = account;
         this.teller = teller;
         this.shortage = shortage;
         this.surplus = surplus;
+        this.shortageAmount = shortageAmount;
+        this.surplusAmount = surplusAmount;
         this.total = total;
         this.countings = countings;
         this.nominals = nominals;
         this.discrepancies = discrepancies;
     }
-
 }

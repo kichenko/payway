@@ -224,7 +224,7 @@ public final class AddNominalsBankCashDepositWizardStep extends AbstractBankCash
 
     private void calculate(List<BanknoteNominalDto> nominals, List<BankCashDepositCountingSummaryDto> countingSummary) {
 
-        double total = 0;
+        double total = 0, shortageAmount = 0, surplusAmount = 0;
         BankCashDepositModel deposit = getBeanItem().getBean();
 
         Map<Long, BankCashDepositCountingSummaryDto> mapCountingNominals = Maps.uniqueIndex(countingSummary, new Function<BankCashDepositCountingSummaryDto, Long>() {
@@ -295,8 +295,10 @@ public final class AddNominalsBankCashDepositWizardStep extends AbstractBankCash
 
             if (delta > 0) {
                 deposit.setSurplus(true);
+                surplusAmount += detail.getDelta() * detail.getNominal();
             } else if (delta < 0) {
                 deposit.setShortage(true);
+                shortageAmount += detail.getDelta() * detail.getNominal();
             }
 
             total += detail.getQuantity() * detail.getNominal();
@@ -305,6 +307,8 @@ public final class AddNominalsBankCashDepositWizardStep extends AbstractBankCash
         }
 
         deposit.setTotal(total);
+        deposit.setSurplusAmount(surplusAmount);
+        deposit.setShortageAmount(Math.abs(shortageAmount));
     }
 
     @Override

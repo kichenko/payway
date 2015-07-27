@@ -34,72 +34,77 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  */
 @Slf4j
 public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
-    
+
     private static final long serialVersionUID = -6061678685975286200L;
-    
+
     public enum WizardStepType {
-        
+
         Deposit(0),
         Nominal(1),
         Discrepancy(2),
         Success(3),
         Fail(4);
-        
+
         private final int viewIndex;
-        
+
         private WizardStepType(int viewIndex) {
             this.viewIndex = viewIndex;
         }
-        
+
         public int getViewIndex() {
             return viewIndex;
         }
     }
-    
+
     @Getter
     @Setter
     private BankAccountDto accountCashDeposit;
-    
+
     private final BeanItem<BankCashDepositModel> beanItem = new BeanItem<>(new BankCashDepositModel());
-    
+
     public BankCashDepositWizard() {
         super(WizardStepType.values().length);
         init();
     }
-    
+
     @Override
     protected void init() {
-        
+
         setSizeFull();
         setIcon(new ThemeResource("images/sidebar_bank_cash_deposit.png"));
         setContent(Clara.create(getClass().getResourceAsStream("/com/payway/kioskcashier/ui/components/wizard/common/StandartButtonWizard.xml"), this));
         addActionHandler(new StandartButtonWizardKeyboardHandler());
-        
+
         setUpSteps();
         setStep(WizardStepType.Deposit.ordinal());
         decorateStep();
     }
-    
+
     private void setUpSteps() {
-        
+
         getSteps().add(new CreateBankCashDepositWizardStep());
         getSteps().add(new AddNominalsBankCashDepositWizardStep());
         getSteps().add(new DiscrepancyBankCashDepositWizardStep());
         getSteps().add(new SuccessWizardStep());
         getSteps().add(new FailWizardStep());
-        
+
         for (AbstractWizardStep ws : getSteps()) {
             if (ws instanceof BeanItemWizardStep) {
                 ((BeanItemWizardStep) ws).setBeanItem(beanItem);
             }
         }
     }
-    
+
     @Override
     public void activate() {
         ((AbstractWizardStandartButtonStep) getCurrentWizardStep()).setupStep(new CreateBankCashDepositWizardStep.CreateBankCashDepositWizardStepParams(getAccountCashDeposit()));
     }
-    
+
+    @Override
+    public void refresh() {
+        ((CreateBankCashDepositWizardStep) getSteps().get(WizardStepType.Deposit.getViewIndex())).refreshStep(new CreateBankCashDepositWizardStep.CreateBankCashDepositWizardStepParams(accountCashDeposit));
+    }
+
     @Override
     public void setService(MessageServerSenderService value) {
         service = value;
@@ -107,21 +112,21 @@ public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
             ws.setService(value);
         }
     }
-    
+
     @UiHandler(value = "btnLeft")
     public void buttonClickLeft(Button.ClickEvent event) {
         handleStepLeft();
         decorateStep();
     }
-    
+
     @UiHandler(value = "btnRight")
     public void buttonClickRight(Button.ClickEvent event) {
         handleStepRight();
     }
-    
+
     @Override
     protected void handleStepLeft() {
-        
+
         if (WizardStepType.Nominal.ordinal() == getStep()) {
             setStep(WizardStepType.Deposit.ordinal());
         } else if (WizardStepType.Discrepancy.ordinal() == getStep()) {
@@ -130,31 +135,31 @@ public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
             setStep(WizardStepType.Discrepancy.ordinal());
         }
     }
-    
+
     @Override
     protected int getCurrentViewIndex() {
         return WizardStepType.values()[getStep()].getViewIndex();
     }
-    
+
     @Override
     protected void handleStepRight() {
-        
+
         if (WizardStepType.Deposit.ordinal() == getStep()) {
             try {
                 getCurrentWizardStep().validate();
                 ((AbstractWizardStandartButtonStep) getCurrentWizardStep()).next(new AbstractWizardStandartButtonStep.ActionWizardStepHandler() {
-                    
+
                     @Override
                     public void success(Object... args) {
                         setStep(WizardStepType.Nominal.ordinal());
                         getCurrentWizardStep().setupStep(new AddNominalsBankCashDepositWizardStep.AddNominalsBankCashDepositWizardStepParams(getCurrency(), (List<BanknoteNominalDto>) args[0]));
                     }
-                    
+
                     @Override
                     public void failure(Object... args) {
                         //
                     }
-                    
+
                     @Override
                     public void exception(Exception ex) {
                         //
@@ -167,18 +172,18 @@ public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
             try {
                 getCurrentWizardStep().validate();
                 ((AbstractWizardStandartButtonStep) getCurrentWizardStep()).next(new AbstractWizardStandartButtonStep.ActionWizardStepHandler() {
-                    
+
                     @Override
                     public void success(Object... args) {
                         setStep(WizardStepType.Discrepancy.ordinal());
                         getCurrentWizardStep().setupStep(new DiscrepancyBankCashDepositWizardStep.DiscrepancyBankCashDepositWizardStepParams(getCurrency()));
                     }
-                    
+
                     @Override
                     public void failure(Object... args) {
                         //
                     }
-                    
+
                     @Override
                     public void exception(Exception ex) {
                         //
@@ -191,17 +196,17 @@ public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
             try {
                 getCurrentWizardStep().validate();
                 ((AbstractWizardStandartButtonStep) getCurrentWizardStep()).next(new AbstractWizardStandartButtonStep.ActionWizardStepHandler() {
-                    
+
                     @Override
                     public void success(Object... args) {
                         setStep(WizardStepType.Success.ordinal());
                     }
-                    
+
                     @Override
                     public void failure(Object... args) {
                         //
                     }
-                    
+
                     @Override
                     public void exception(Exception ex) {
                         //
@@ -215,13 +220,13 @@ public final class BankCashDepositWizard extends AbstractStandartButtonWizard {
             getCurrentWizardStep().setupStep(new CreateBankCashDepositWizardStep.CreateBankCashDepositWizardStepParams(getAccountCashDeposit()));
         }
     }
-    
+
     @Override
     protected void decorateStep() {
-        
+
         layoutContent.removeAllComponents();
         layoutContent.addComponent(getSteps().get(WizardStepType.values()[getStep()].getViewIndex()));
-        
+
         if (getStep() == WizardStepType.Deposit.ordinal()) {
             setUpWizardControl("Add general data", "", false, "Next", true);
         } else if (getStep() == WizardStepType.Nominal.ordinal()) {

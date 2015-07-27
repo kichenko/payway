@@ -62,4 +62,8 @@ public abstract class AbstractWizard extends Panel {
     public void activate() {
         //
     }
+
+    public void refresh() {
+        //
+    }
 }

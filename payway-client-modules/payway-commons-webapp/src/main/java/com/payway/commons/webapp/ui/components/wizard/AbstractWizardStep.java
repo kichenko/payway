@@ -38,6 +38,10 @@ public abstract class AbstractWizardStep extends VerticalLayout {
         //
     }
 
+    public void refreshStep(AbstractWizardStepParams state) {
+        //
+    }
+
     public AbstractWizardStepState getStepState() {
         return null;
     }

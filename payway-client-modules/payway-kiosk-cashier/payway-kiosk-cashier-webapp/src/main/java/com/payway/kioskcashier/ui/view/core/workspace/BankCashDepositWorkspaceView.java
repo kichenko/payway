@@ -53,6 +53,7 @@ public class BankCashDepositWorkspaceView extends AbstractKioskCashierWorkspaceV
     private void setWizardChangedSettings() {
         wizard.setCurrency(settingsAppService.getCurrency());
         wizard.setAccountCashDeposit(settingsAppService.getAccountCashDeposit());
+        wizard.refresh();
     }
 
     @Subscribe

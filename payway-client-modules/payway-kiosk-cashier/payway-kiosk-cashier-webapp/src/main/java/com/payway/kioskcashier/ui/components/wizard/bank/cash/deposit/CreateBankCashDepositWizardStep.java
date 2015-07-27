@@ -10,7 +10,6 @@ import com.google.gwt.thirdparty.guava.common.collect.FluentIterable;
 import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.components.wizard.WizardStepValidationException;
-import com.payway.kioskcashier.ui.components.wizard.bank.cash.deposit.datasource.AccountModel;
 import com.payway.kioskcashier.ui.components.wizard.bank.cash.deposit.datasource.BankCashDepositModel;
 import com.payway.kioskcashier.ui.components.wizard.bank.cash.deposit.datasource.BeanNameModelBeanItemContainer;
 import com.payway.kioskcashier.ui.components.wizard.bank.cash.deposit.datasource.NoteCountingDepositModel;
@@ -27,10 +26,12 @@ import com.payway.messaging.model.common.StaffDto;
 import com.payway.messaging.model.kioskcashier.NoteCountingDepositDto;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.StringToDateConverter;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
@@ -65,13 +66,19 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
         private final BankAccountDto acccount;
     }
 
-    private static final Function<NoteCountingDepositDto, NoteCountingDepositModel> transformerNoteCountingDeposit = new Function<NoteCountingDepositDto, NoteCountingDepositModel>() {
+    private final static class TransformerNoteCountingDepositModel implements Function<NoteCountingDepositDto, NoteCountingDepositModel> {
+
+        private final boolean selected;
+
+        public TransformerNoteCountingDepositModel(boolean selected) {
+            this.selected = selected;
+        }
 
         @Override
         public NoteCountingDepositModel apply(NoteCountingDepositDto src) {
 
             if (src != null) {
-                return new NoteCountingDepositModel(src.getId(), src.getCreated(), src.getTerminalName(), src.getSeqNum(), true);
+                return new NoteCountingDepositModel(src.getId(), src.getCreated(), src.getTerminalName(), src.getSeqNum(), selected);
             }
             return null;
         }
@@ -95,7 +102,7 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
     private PopupDateField cbDateCreated;
 
     @UiField
-    private ComboBox cbAccount;
+    private TextField editAccount;
 
     @UiField
     private TextField editTeller;
@@ -103,9 +110,15 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
     @UiField
     private Table gridDepositCountings;
 
+    @UiField
+    private MenuBar gridMenuBar;
+
+    private boolean selectedAll;
+
     private final NoteCountingDepositModelBeanItemContainer containerDepositCountings = new NoteCountingDepositModelBeanItemContainer();
 
     public CreateBankCashDepositWizardStep() {
+        selectedAll = true;
         init();
     }
 
@@ -124,10 +137,7 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
         cbDepositedBy.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         cbDepositedBy.setContainerDataSource(new BeanNameModelBeanItemContainer());
 
-        cbAccount.setRequired(true);
-        cbAccount.setItemCaptionPropertyId("name");
-        cbAccount.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        cbAccount.setContainerDataSource(new BeanNameModelBeanItemContainer());
+        editAccount.setRequired(true);
 
         //grid container
         gridDepositCountings.setContainerDataSource(containerDepositCountings);
@@ -165,6 +175,38 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
 
         gridDepositCountings.setVisibleColumns("created", "terminalName", "seqNum", "checked");
         gridDepositCountings.sort(new Object[]{"created"}, new boolean[]{true});
+
+        MenuBar.MenuItem menuMain = gridMenuBar.addItem("", FontAwesome.COG, null);
+        menuMain.setStyleName("icon-only");
+
+        menuMain.addItem("Select all", FontAwesome.CHECK_SQUARE_O, new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                selectedAll = true;
+                changeMenuSelectedState(true, selectedItem);
+            }
+        });
+
+        menuMain.addItem("Unselect all", FontAwesome.SQUARE_O, new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                selectedAll = false;
+                changeMenuSelectedState(false, selectedItem);
+            }
+        });
+    }
+
+    private void changeMenuSelectedState(boolean selected, MenuBar.MenuItem selectedItem) {
+
+        for (NoteCountingDepositModel bean : containerDepositCountings.getItemIds()) {
+            bean.setSelected(selected);
+        }
+
+        gridDepositCountings.refreshRowCache();
     }
 
     @Override
@@ -175,23 +217,27 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
         editTeller.setPropertyDataSource(getBeanItem().getItemProperty("teller"));
         cbDepositedBy.setPropertyDataSource(getBeanItem().getItemProperty("depositedBy"));
         cbDateCreated.setPropertyDataSource(getBeanItem().getItemProperty("created"));
-        cbAccount.setPropertyDataSource(getBeanItem().getItemProperty("account"));
+    }
+
+    @Override
+    public void refreshStep(AbstractWizardStepParams state) {
+
+        CreateBankCashDepositWizardStepParams st = (CreateBankCashDepositWizardStepParams) state;
+        if (st != null) {
+            editAccount.setValue(st.getAcccount().getAccount());
+        }
     }
 
     @Override
     public void setupStep(AbstractWizardStepParams state) {
 
         CreateBankCashDepositWizardStepParams st = (CreateBankCashDepositWizardStepParams) state;
-        AccountModel account = new AccountModel(st.getAcccount().getId(), st.getAcccount().getAccount());
 
         editTeller.setValue("");
         cbDepositedBy.setValue(null);
         cbDateCreated.setValue(new Date());
         gridDepositCountings.removeAllItems();
-
-        ((BeanNameModelBeanItemContainer) cbAccount.getContainerDataSource()).removeAllItems();
-        ((BeanNameModelBeanItemContainer) cbAccount.getContainerDataSource()).addBean(account);
-        cbAccount.select(account);
+        editAccount.setValue(st.getAcccount().getAccount());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
         getService().sendMessage(new CreateBankCashDepositParamsRequest(),
@@ -206,10 +252,11 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
                             BeanNameModelBeanItemContainer depositedByContainer = (BeanNameModelBeanItemContainer) cbDepositedBy.getContainerDataSource();
 
                             containerDepositCountings.removeAllItems();
-                            containerDepositCountings.addAll(Lists.transform(rsp.getKioskEncashments(), transformerNoteCountingDeposit));
+                            containerDepositCountings.addAll(Lists.transform(rsp.getKioskEncashments(), new TransformerNoteCountingDepositModel(selectedAll)));
 
                             depositedByContainer.removeAllItems();
                             depositedByContainer.addAll(Lists.transform(rsp.getStaffs(), transformerStuffModel));
+                            gridDepositCountings.sort();
                         } else {
                             log.error("Bad server response (unknown type) - {}", response);
                             ((InteractionUI) UI.getCurrent()).showNotification("Server error", "Internal server error", Notification.Type.ERROR_MESSAGE);
@@ -313,7 +360,6 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
 
             cbDepositedBy.validate();
             cbDateCreated.validate();
-            cbAccount.validate();
             editTeller.validate();
 
             for (NoteCountingDepositModel model : containerDepositCountings.getItemIds()) {

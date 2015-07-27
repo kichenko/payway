@@ -76,10 +76,11 @@ public final class DiscrepancyBankCashDepositWizardStep extends AbstractCounting
             return new CashDepositDto(
                     src.getCreated(),
                     src.getDepositedBy().getId(),
-                    src.getAccount().getId(),
                     src.getTeller(),
                     src.isShortage(),
                     src.isSurplus(),
+                    src.getShortageAmount(),
+                    src.getSurplusAmount(),
                     src.getTotal(),
                     Lists.newArrayList(Lists.transform(src.getDepositCountings(), transformerNoteCountingDepositModel)),
                     Lists.newArrayList(Lists.transform(src.getDepositNominals(), transformerCashDepositNominal)),

@@ -27,8 +27,6 @@ public class BankCashDepositModel extends BeanModel {
 
     private String teller;
 
-    private AccountModel account;
-
     private StuffModel depositedBy;
 
     private double total;
@@ -36,6 +34,10 @@ public class BankCashDepositModel extends BeanModel {
     private boolean surplus;
 
     private boolean shortage;
+
+    private double surplusAmount;
+
+    private double shortageAmount;
 
     private List<NoteCountingDepositModel> depositCountings = new ArrayList();
 

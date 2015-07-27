@@ -4,12 +4,20 @@
     <FormLayout id="layoutParamsForm" width="100%" height="40%">       
         <PopupDateField id="cbDateCreated" caption="Created" textFieldEnabled="false" resolution="MINUTE" dateFormat="yyyy-MM-dd HH:mm" width="250px" styleName=""/>
         <ComboBox id="cbDepositedBy" caption="Deposited by" textInputAllowed="false" width="250px" styleName=""/>
-        <ComboBox id="cbAccount" caption="Account" width="250px" enabled="false" textInputAllowed="false" styleName=""/>
+        <TextField id="editAccount" caption="Account" width="250px" enabled="false" styleName=""/>
         <TextField id="editTeller" caption="Teller" width="250px" styleName=""/>
     </FormLayout>
     
     <VerticalLayout id = "layoutGrid" width="100%" height="60%" styleName="">
-        <Table id="gridDepositCountings" sizeFull="true"/>
+        <VerticalLayout id = "panelDepositCountings" styleName="card" sizeFull="true">
+            <HorizontalLayout styleName="v-panel-caption" width="100%">
+                <!--<Label id="lblPanelDepositCountingsCaption" value="" p:expandRatio="1"/>-->
+                <MenuBar id="gridMenuBar" styleName="borderless small" p:componentAlignment="MIDDLE_RIGHT"/>
+            </HorizontalLayout>
+            <VerticalLayout p:expandRatio="1" sizeFull="true" styleName="">
+                <Table id="gridDepositCountings" sizeFull="true" styleName="borderless"/>
+            </VerticalLayout>
+        </VerticalLayout>
     </VerticalLayout> 
         
 </CssLayout>
