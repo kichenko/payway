@@ -27,8 +27,8 @@ public class ServerApplication {
         log.info("End load application context");
 
         log.info("Start running thread of processing incoming messages");
-        TaskExecutor serverTaskExecutor = context.getBean("serverTaskExecutor", TaskExecutor.class);
-        MessageServerRequestListener messageServerListener = context.getBean("messageServerListener", MessageServerRequestListener.class);
+        TaskExecutor serverTaskExecutor = context.getBean("app.ServerTaskExecutor", TaskExecutor.class);
+        MessageServerRequestListener messageServerListener = context.getBean("app.MessageServerListener", MessageServerRequestListener.class);
         serverTaskExecutor.execute(messageServerListener);
         log.info("End running thread of processing incoming messages");
 

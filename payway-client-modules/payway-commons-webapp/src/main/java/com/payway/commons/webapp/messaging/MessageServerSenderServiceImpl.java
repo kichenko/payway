@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Реализация сервиса отправки сообщений на сервер.
+ * MessageServerSenderServiceImpl
  *
  * @author Sergey Kichenko
  * @created 27.04.15 00:00

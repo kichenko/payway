@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @created 06.06.15 00:00
  */
 @Slf4j
-@Component(value = "settingsAppService")
+@Component(value = "app.kioskcashier.SettingsAppService")
 public class KioskCashierSettingsAppServiceImpl extends AbstractKioskCashierSettingsAppService {
 
     @Override

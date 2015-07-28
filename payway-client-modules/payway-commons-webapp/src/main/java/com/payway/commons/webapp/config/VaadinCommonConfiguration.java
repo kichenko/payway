@@ -7,13 +7,13 @@ import com.vaadin.spring.annotation.EnableVaadin;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring бин конфигурации для vaadin
+ * Enable vaadin + spring
  *
  * @author Sergey Kichenko
  * @created 04.06.15 00:00
  */
 @EnableVaadin
 @Configuration
-public class PaywayCommonVaadinConfiguration {
+public class VaadinCommonConfiguration {
 
 }

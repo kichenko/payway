@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Sergey Kichenko
  * @created 13.05.15 00:00
  */
-@Service(value = "agentFileService")
+@Service(value = "app.advertising.AgentFileService")
 public class AgentFileServiceImpl implements AgentFileService {
 
     @Autowired
     private AgentFileDao agentFileDao;
 
     @Autowired
-    @Qualifier("fileManagerService")
     private FileSystemManagerService fileSystemManagerService;
 
     @Override

@@ -15,8 +15,10 @@ import com.payway.commons.webapp.ui.view.core.AbstractWorkspaceView;
  * @created 17.05.15 00:00
  */
 public abstract class AbstractAdvertisingWorkspaceView extends AbstractWorkspaceView implements AdvertisingWorkspaceView {
-    
-    public static final String ADVERTISING_DEFAULT_WORKSPACE_VIEW_PREFIX = "advertising-workspace-view-";
+
+    public static final String ADVERTISING_DEFAULT_WORKSPACE_VIEW_PREFIX = "app.advertising.AdvertisingWorkspaceView";
+
+    private static final long serialVersionUID = -6326631045782133301L;
 
     protected UploadTaskPanel uploadTaskPanel;
     protected FileUploadPanel fileUploadPanel;

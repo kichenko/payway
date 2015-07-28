@@ -18,8 +18,8 @@ import org.vaadin.teemu.clara.Clara;
  * @created 20.06.15 00:00
  */
 @UIScope
-@Component
 @NoArgsConstructor
+@Component(value = "app.bustickets.BusTicketsMainView")
 public class BusTicketsMainView extends AbstractMainView {
 
     private static final long serialVersionUID = 3469218271943273963L;
@@ -28,7 +28,7 @@ public class BusTicketsMainView extends AbstractMainView {
 
     @PostConstruct
     void init() {
-        
+
         setSizeFull();
         setCompositionRoot(Clara.create("BusTicketsMainView.xml", this));
 

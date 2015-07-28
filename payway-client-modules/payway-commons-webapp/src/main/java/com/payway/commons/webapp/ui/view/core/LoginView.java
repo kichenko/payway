@@ -55,26 +55,24 @@ import org.vaadin.teemu.clara.binder.annotation.UiHandler;
  * @created 20.04.15 00:00
  */
 @Slf4j
-@Component
+@Component(value = "app.LoginView")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class LoginView extends CustomComponent implements CustomComponentInitialize, UIResponseCallBackSupport.ResponseCallBackHandler {
 
     private static final long serialVersionUID = -8709373681721076425L;
 
     @Autowired
-    @Qualifier("serverTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
     @Autowired
-    @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
 
     @Autowired
-    @Qualifier("userNameValidator")
+    @Qualifier("app.UserNameValidator")
     private Validator userNameValidator;
 
     @Autowired
-    @Qualifier("userPasswordValidator")
+    @Qualifier("app.UserPasswordValidator")
     private Validator userPasswordValidator;
 
     @Value("${app.auth.token.expired.days:7}")

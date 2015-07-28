@@ -32,7 +32,6 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationListener;
@@ -47,7 +46,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @SubscribeOnAppEventBus
-@Component(value = "settingsAppService")
+@Component(value = "app.advertising.SettingsAppService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationStartClientConnectedEvent> {
 
@@ -85,11 +84,13 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     private String serverConfigPath;
 
     @Autowired
-    @Qualifier(value = "formatContainerService")
     private ContainerService formatContainerService;
 
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    private MessageServerSenderService sender;
 
     private FormatContainer currentFormatContainer;
 
@@ -197,9 +198,6 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
     public void setServerConfigPath(String serverConfigPath) {
         this.serverConfigPath = serverConfigPath;
     }
-
-    @Autowired
-    MessageServerSenderService sender;
 
     @Override
     public void onApplicationEvent(ApplicationStartClientConnectedEvent event) {
@@ -310,9 +308,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         List<DbConfigurationKeyType> keys = new ArrayList<>(3);
 
         Collections.addAll(keys,
-          DbConfigurationKeyType.AdvertisingConvertVideoEnable,
-          DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
-          DbConfigurationKeyType.AdvertisingConvertVideoBitRate
+                DbConfigurationKeyType.AdvertisingConvertVideoEnable,
+                DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
+                DbConfigurationKeyType.AdvertisingConvertVideoBitRate
         );
 
         List<DbConfiguration> configs = configurationService.getByKeys(keys);

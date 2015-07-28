@@ -41,7 +41,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
@@ -54,21 +53,19 @@ import org.springframework.stereotype.Service;
  * @created 19.05.15 00:00
  */
 @Slf4j
-@Service(value = "configurationApplyService")
+@Service(value = "app.advertising.ConfigurationApplyService")
 public class ConfigurationApplyServiceImpl implements ConfigurationApplyService {
 
     @Autowired
-    @Qualifier(value = "fileManagerService")
     FileSystemManagerService fileManagerService;
 
     @Autowired
     private AgentFileService agentFileService;
 
-    @Value("${server.lock.app.config.apply}")
+    @Value("${app.server.lock.app.config.apply}")
     private String serverApplyLockName;
 
     @Autowired
-    @Qualifier(value = "messagingClient")
     private IMessagingClient messagingClient;
 
     @Getter
@@ -106,7 +103,6 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     private String login;
 
     @Autowired
-    @Qualifier(value = "messageServerSenderService")
     MessageServerSenderService messageServerSenderService;
 
     @Getter
@@ -213,7 +209,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      * @param result
      */
     @Override
-    @Async(value = "serverTaskExecutor")
+    @Async(value = "app.advertising.ServerTaskExecutor")
     public void apply(final UI currentUI, final String userName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
         try {

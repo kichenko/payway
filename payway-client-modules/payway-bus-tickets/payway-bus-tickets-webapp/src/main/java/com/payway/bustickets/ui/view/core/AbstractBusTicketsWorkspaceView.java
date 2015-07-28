@@ -13,5 +13,7 @@ import com.payway.commons.webapp.ui.view.core.AbstractWorkspaceView;
  */
 public abstract class AbstractBusTicketsWorkspaceView extends AbstractWorkspaceView {
 
-    public static final String WORKSPACE_VIEW_ID_PREFIX = "bus-ticket-workspace-view-";
+    public static final String WORKSPACE_VIEW_ID_PREFIX = "app.bustickets.BusTicketsWorkspaceView";
+
+    private static final long serialVersionUID = -2303996624862987913L;
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @created 24.05.15 00:00
  */
 @AllArgsConstructor
-@Component(value = "userPasswordValidator")
+@Component(value = "app.UserPasswordValidator")
 public class UserPasswordValidator implements Validator {
 
     @Override

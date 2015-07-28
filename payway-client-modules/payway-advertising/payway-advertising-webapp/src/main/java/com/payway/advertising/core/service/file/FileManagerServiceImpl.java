@@ -15,7 +15,6 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.Selectors;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,11 +24,10 @@ import org.springframework.stereotype.Component;
  * @created 18.05.15 00:00
  */
 @Slf4j
-@Component(value = "fileManagerService")
+@Component(value = "app.advertising.FileManagerService")
 public class FileManagerServiceImpl implements FileSystemManagerService {
 
     @Autowired
-    @Qualifier(value = "fileSystemManager")
     private FileSystemManager fileSystemManager;
 
     @Override

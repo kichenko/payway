@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Sergey Kichenko
  * @created 01.07.15 00:00
  */
-@Component(value = "webApps.WebAppUserService")
+@Component(value = "app.WebAppUserService")
 public class WebAppUserServiceImpl implements WebAppUserService {
 
     protected boolean setSessionValue(String key, Object value) {

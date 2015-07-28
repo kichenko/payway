@@ -15,12 +15,12 @@
 
     <!-- имя очереди сервера, куда клиент отправляет запросы-->
     <bean id="serverQueueName" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${server.queue.name}"/>
+        <constructor-arg type="java.lang.String" value="${app.server.queue.name}"/>
     </bean>
 
     <hz:hazelcast id="hazelcastInstance">
         <hz:config>
-            <hz:group name="${avs.cluster.name}" password="${avs.cluster.password:AvsPass}"/>
+            <hz:group name="${app.cluster.name}" password="${app.cluster.password:AvsPass}"/>
             <hz:queue name="server-queue-app*"/>
             <!--<hz:idGenerator name="client-server-id-generator"/>-->
         </hz:config>

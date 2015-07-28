@@ -17,7 +17,6 @@ import com.vaadin.ui.UI;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component(value = BusTicketsWorkspaceView.BUS_TICKETS_WORKSPACE_VIEW_ID)
 public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
 
-    public static final String BUS_TICKETS_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "core";
+    public static final String BUS_TICKETS_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "Tickets";
 
     private static final long serialVersionUID = 4644909330724328135L;
 
@@ -43,15 +42,12 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
     private BusTicketsWizard wizard;
 
     @Autowired
-    @Qualifier("messageServerSenderService")
     private MessageServerSenderService service;
 
     @Autowired
-    @Qualifier("settingsAppService")
     private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
 
     @Autowired
-    @Qualifier(value = "webApps.WebAppUserService")
     protected WebAppUserService userAppService;
 
     @PostConstruct

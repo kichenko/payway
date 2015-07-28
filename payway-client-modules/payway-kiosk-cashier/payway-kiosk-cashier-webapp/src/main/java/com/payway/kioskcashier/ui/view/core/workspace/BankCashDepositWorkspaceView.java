@@ -27,7 +27,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component(value = BankCashDepositWorkspaceView.BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID)
 public class BankCashDepositWorkspaceView extends AbstractKioskCashierWorkspaceView {
 
-    public static final String BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "bank-cash-deposit";
+    public static final String BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "BankCashDeposit";
 
     private static final long serialVersionUID = 1883807156208070210L;
 

@@ -24,7 +24,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component(value = TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID)
 public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspaceView {
 
-    public static final String TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "terminal-encashment";
+    public static final String TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "TerminalEncashment";
 
     private static final long serialVersionUID = -5429806955667759330L;
 

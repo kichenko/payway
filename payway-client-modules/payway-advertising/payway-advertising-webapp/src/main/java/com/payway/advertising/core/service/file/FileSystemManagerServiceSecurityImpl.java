@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @created 14.10.15 00:00
  */
 @Slf4j
-@Component(value = "fileSystemManagerServiceSecurity")
+@Component(value = "app.advertising.FileSystemManagerServiceSecurity")
 public class FileSystemManagerServiceSecurityImpl implements FileSystemManagerServiceSecurity {
 
     @Override

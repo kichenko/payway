@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- файл с конфигом -->
     <context:component-scan base-package="com.payway.advertising.data"/>
-    <bean class="com.payway.data.config.PersistenceConfig" />
+    <bean class="com.payway.data.config.PersistenceConfig"/>
+    
 </beans>

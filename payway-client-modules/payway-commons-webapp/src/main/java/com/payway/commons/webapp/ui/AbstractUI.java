@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * AbstractUI
@@ -38,7 +37,6 @@ public abstract class AbstractUI extends UI implements InteractionUI {
     @Getter
     @Setter
     @Autowired
-    @Qualifier(value = "sessionEventBus")
     protected SessionEventBus sessionEventBus;
 
     private final ProgressBarWindow progressBarWindow = new ProgressBarWindow();

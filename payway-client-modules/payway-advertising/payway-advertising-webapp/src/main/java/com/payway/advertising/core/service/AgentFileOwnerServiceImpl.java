@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @created 13.05.15 00:00
  */
 @Slf4j
-@Service(value = "agentFileOwnerService")
+@Service(value = "app.advertising.AgentFileOwnerService")
 public class AgentFileOwnerServiceImpl implements AgentFileOwnerService {
 
     @Autowired

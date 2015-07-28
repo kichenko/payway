@@ -6,7 +6,6 @@ package com.payway.commons.webapp.web.event.listener;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -19,11 +18,10 @@ import org.springframework.stereotype.Component;
  * @created 06.06.15 00:00
  */
 @Slf4j
-@Component(value = "contextClosedEventListener")
+@Component(value = "app.ContextClosedEventListener")
 class ContextClosedEventListener implements ApplicationListener<ContextClosedEvent> {
 
     @Autowired
-    @Qualifier(value = "serverTaskExecutor")
     private ThreadPoolTaskExecutor serverTaskExecutor;
 
     @Override

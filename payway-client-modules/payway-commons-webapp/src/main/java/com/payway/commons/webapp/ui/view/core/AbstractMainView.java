@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 
 /**
@@ -52,7 +51,6 @@ public abstract class AbstractMainView extends CustomComponent implements Custom
     }
 
     @Autowired
-    @Qualifier(value = "viewFactory")
     protected ViewFactory viewFactory;
 
     @UiField

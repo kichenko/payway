@@ -22,7 +22,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @created 20.04.15 00:00
  */
 @Slf4j
-public class PaywayCommonVaadinSpringServlet extends SpringVaadinServlet {
+public class WebAppVaadinSpringServlet extends SpringVaadinServlet {
 
     private static final long serialVersionUID = -3811629641190246104L;
 
@@ -39,7 +39,7 @@ public class PaywayCommonVaadinSpringServlet extends SpringVaadinServlet {
 
                 WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
                 if (wac != null) {
-                    EventBusBridge eventBusBridge = (EventBusBridge) wac.getBean("eventBusBridge");
+                    EventBusBridge eventBusBridge = (EventBusBridge) wac.getBean("app.EventBusBridge");
                     if (eventBusBridge != null) {
                         eventBusBridge.addSession(event.getSession());
                     } else {
@@ -59,7 +59,7 @@ public class PaywayCommonVaadinSpringServlet extends SpringVaadinServlet {
 
                 WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
                 if (wac != null) {
-                    EventBusBridge eventBusBridge = (EventBusBridge) wac.getBean("eventBusBridge");
+                    EventBusBridge eventBusBridge = (EventBusBridge) wac.getBean("app.EventBusBridge");
                     if (eventBusBridge != null) {
                         eventBusBridge.removeSession(event.getSession());
                     } else {

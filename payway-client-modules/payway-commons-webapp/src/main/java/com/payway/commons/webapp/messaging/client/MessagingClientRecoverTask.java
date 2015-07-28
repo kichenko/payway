@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
@@ -24,17 +23,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Scope(value = "prototype")
-@Component(value = "messagingClientRecoverTask")
+@Component(value = "app.MessagingClientRecoverTask")
 public class MessagingClientRecoverTask implements Runnable {
 
     @Autowired
     private ApplicationContext applicationContext;
 
     @Autowired
-    @Qualifier(value = "messagingClient")
     private IMessagingClient messagingClient;
 
-    @Value("${client.recover.task.period}")
+    @Value("${app.client.recover.task.period}")
     private long recoverPeriod;
 
     @Value("true")

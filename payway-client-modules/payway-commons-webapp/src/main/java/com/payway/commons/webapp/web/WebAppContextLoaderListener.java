@@ -10,13 +10,13 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * PaywayCommonContextLoaderListener
+ * WebAppContextLoaderListener
  *
  * @author Sergey Kichenko
  * @created 02.07.15 00:00
  */
 @Slf4j
-public class PaywayCommonContextLoaderListener extends ContextLoaderListener {
+public class WebAppContextLoaderListener extends ContextLoaderListener {
 
     @Override
     public void contextInitialized(ServletContextEvent event) {

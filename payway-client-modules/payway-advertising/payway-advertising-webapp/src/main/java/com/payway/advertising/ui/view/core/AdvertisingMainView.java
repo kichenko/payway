@@ -6,9 +6,9 @@ package com.payway.advertising.ui.view.core;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.FileUploadPanel;
-import com.payway.advertising.ui.component.notification.NotificationsButton;
 import com.payway.advertising.ui.component.UploadButtonWrapper;
 import com.payway.advertising.ui.component.UploadTaskPanel;
+import com.payway.advertising.ui.component.notification.NotificationsButton;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.WorkspaceView;
@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
@@ -32,8 +31,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  * @created 20.04.15 00:00
  */
 @UIScope
-@Component
 @NoArgsConstructor
+@Component(value = "app.advertising.AdvertisingMainView")
 public class AdvertisingMainView extends AbstractMainView {
 
     private static final long serialVersionUID = -4825092972126420478L;
@@ -43,7 +42,6 @@ public class AdvertisingMainView extends AbstractMainView {
     public static final float SIDEBAR_DEFAULT_HEIGHT_PERCENT = 50;
 
     @Autowired
-    @Qualifier(value = "beanService")
     private BeanService beanService;
 
     @UiField

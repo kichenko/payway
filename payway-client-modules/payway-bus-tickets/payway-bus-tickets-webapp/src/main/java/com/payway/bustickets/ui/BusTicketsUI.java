@@ -42,7 +42,6 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * BusTicketsUI
@@ -63,7 +62,6 @@ public class BusTicketsUI extends AbstractLoginUI {
     private AbstractMainView mainView;
 
     @Autowired
-    @Qualifier(value = "settingsAppService")
     private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
 
     @Override

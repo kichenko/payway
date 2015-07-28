@@ -17,25 +17,28 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
 
 /**
- * Слушатель ответов с сервера. Запускается в потоке при старте приложения.
- * Синглтон, т.к. нужен один на все приложение.
+ * MessageServerResponseListener
  *
  * @author Sergey Kichenko
  * @created 27.04.15 00:00
  */
+@Slf4j
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
 public class MessageServerResponseListener implements Runnable, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+
     private IMessagingClient messagingClient;
+
     private TaskExecutor serverTaskExecutor;
 
     private long timeOut;
+
     private TimeUnit timeUnit;
+
     private volatile boolean running = true;
 
     @Override
@@ -62,7 +65,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                     log.info("Waiting for a response message from the server");
                     ResponseEnvelope envelope = clientQueue.poll(timeOut, timeUnit);
                     log.info("Getting the response message from the server, start processing");
-                    serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("messageServerResponseHandler", envelope));
+                    serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("app.MessageServerResponseHandler", envelope));
                 } else {
                     Thread.sleep(5000);
                 }

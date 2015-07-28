@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Реализация сервиса хранения контекста запросов.
+ * MessageRequestContextHolderServiceImpl
  *
  * @author Sergey Kichenko
  * @created 27.04.15 00:00

@@ -4,17 +4,17 @@
     <display-name>payway-kiosk-cashier-webapp</display-name>
     
     <listener>
-        <listener-class>com.payway.commons.webapp.web.PaywayCommonContextLoaderListener</listener-class>
+        <listener-class>com.payway.commons.webapp.web.WebAppContextLoaderListener</listener-class>
     </listener>
         
     <!-- spring context -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/context/root-context.xml</param-value>
+        <param-value>/WEB-INF/context/application-context.xml</param-value>
     </context-param>
     <servlet>
-        <servlet-name>VaadinSampleServlet</servlet-name>
-        <servlet-class>com.payway.commons.webapp.core.servlet.PaywayCommonVaadinSpringServlet</servlet-class>
+        <servlet-name>KioskCashierServlet</servlet-name>
+        <servlet-class>com.payway.commons.webapp.core.servlet.WebAppVaadinSpringServlet</servlet-class>
         <init-param>
             <description>Vaadin pushmode</description>
             <param-name>pushmode</param-name>
@@ -39,7 +39,7 @@
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
-        <servlet-name>VaadinSampleServlet</servlet-name>
+        <servlet-name>KioskCashierServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <session-config>

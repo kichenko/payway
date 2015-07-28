@@ -105,7 +105,7 @@ public class NotificationsButton extends Button {
 
                                 @Override
                                 public boolean cancel() {
-                                    ConfigurationApplyService service = (ConfigurationApplyService) beanService.getBean("configurationApplyService");
+                                    ConfigurationApplyService service = (ConfigurationApplyService) beanService.getBean("app.advertising.ConfigurationApplyService");
                                     if (service != null) {
                                         return service.cancel();
                                     } else {

@@ -96,7 +96,7 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Component(value = AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID)
 public class AdvertisingContentConfigurationView extends AbstractAdvertisingWorkspaceView implements UploadTaskPanel.UploadEventListener, ContextMenu.ContextMenuItemClickListener, ContextMenu.ContextMenuOpenedListener.TableListener, ContextMenu.ContextMenuOpenedListener.ComponentListener {
 
-    public static final String ADVERTISING_CONTENT_WORKSPACE_VIEW_ID = ADVERTISING_DEFAULT_WORKSPACE_VIEW_PREFIX + "content-configuration";
+    public static final String ADVERTISING_CONTENT_WORKSPACE_VIEW_ID = ADVERTISING_DEFAULT_WORKSPACE_VIEW_PREFIX + "ContentConfiguration";
 
     private static final long serialVersionUID = -8149543787791067201L;
 
@@ -145,54 +145,46 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     @Getter
     @Setter
     @Autowired
-    @Qualifier("fileManagerService")
     private FileSystemManagerService fileSystemManagerService;
 
     @Getter
     @Setter
     @Autowired
-    @Qualifier("fileSystemManagerServiceSecurity")
     private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
 
     @Autowired
-    @Qualifier("settingsAppService")
     private SettingsAppService settingsAppService;
 
     @Autowired
-    @Qualifier(value = "webApps.WebAppUserService")
     protected WebAppUserService userAppService;
 
     @Autowired
-    @Qualifier("fileNameValidator")
+    @Qualifier("app.advertising.FileNameValidator")
     private Validator fileNameValidator;
 
     @Getter
     @Setter
     @Autowired
-    @Qualifier("agentFileOwnerService")
     private AgentFileOwnerService agentFileOwnerService;
 
     @Getter
     @Setter
     @Autowired
-    @Qualifier("agentFileService")
     private AgentFileService agentFileService;
 
     @Getter
     @Setter
     @Autowired
-    @Qualifier("configurationApplyService")
     private ConfigurationApplyService configurationApplyService;
 
     @Getter
     @Setter
     @Autowired
-    @Qualifier("beanService")
     private BeanService beanService;
 
     @Getter
     @Setter
-    @Resource(name = "supportedVideoFileExtensions")
+    @Resource(name = "app.advertising.SupportedVideoFileExtensions")
     private List<String> supportedVideoFileExtensions;
 
     @Getter

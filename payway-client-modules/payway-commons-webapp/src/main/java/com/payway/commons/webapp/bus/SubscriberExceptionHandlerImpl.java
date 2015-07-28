@@ -18,6 +18,6 @@ public class SubscriberExceptionHandlerImpl implements SubscriberExceptionHandle
 
     @Override
     public void handleException(Throwable exception, SubscriberExceptionContext context) {
-        log.error("Error event bus", exception);
+        log.error("Error in event bus [{}] with context [{}]", exception, context);
     }
 }

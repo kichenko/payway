@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @SubscribeOnAppEventBus
-@Component(value = "eventBusBridge")
+@Component(value = "app.EventBusBridge")
 public class EventBusBridgeImpl implements EventBusBridge {
 
     private final Set<VaadinSession> sessions = Sets.newConcurrentHashSet();

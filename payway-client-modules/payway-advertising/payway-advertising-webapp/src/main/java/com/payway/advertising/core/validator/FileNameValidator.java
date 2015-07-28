@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @created 13.05.15 00:00
  */
 @AllArgsConstructor
-@Component(value = "fileNameValidator")
+@Component(value = "app.advertising.FileNameValidator")
 public class FileNameValidator implements Validator {
 
     private final static Pattern pattern = Pattern.compile("^[^\\/*{}&,;'\"()|:<>?#$@!%\\t\\f\\r\\n]+$");

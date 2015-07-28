@@ -36,7 +36,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 
@@ -57,15 +56,12 @@ public abstract class AbstractLoginUI extends AbstractUI {
     protected LoginView loginView;
 
     @Autowired
-    @Qualifier(value = "webApps.WebAppUserService")
     protected WebAppUserService webAppUserService;
 
     @Autowired
-    @Qualifier("messageServerSenderService")
     protected MessageServerSenderService service;
 
     @Autowired
-    @Qualifier("serverTaskExecutor")
     protected TaskExecutor serverTaskExecutor;
 
     @Value("${app.auth.token.expired.days:7}")

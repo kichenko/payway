@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+       
+    <context:component-scan base-package="com.payway.commons.webapp"/>
+
+    <bean id="app.VaadinCommonConfiguration" class="com.payway.commons.webapp.config.VaadinCommonConfiguration" />
+
+    <!-- Task rejected handler for server task executor -->
+    <bean id="app.RejectPolicy" class = "com.payway.commons.webapp.messaging.RejectExecutionPolicy"/>
+
+    <!-- Abstract bean of server task executor -->
+    <bean id="app.AbstractServerTaskExecutor" abstract="true" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="maxPoolSize" value="25"/>
+        <property name="queueCapacity" value="5"/>
+        <property name="rejectedExecutionHandler" ref="app.RejectPolicy"/>
+    </bean>
+
+    <!-- Service contains map with contexts -->
+    <bean id="app.ServiceContext" class = "com.payway.commons.webapp.messaging.MessageRequestContextHolderServiceImpl">
+        <property name="map">
+            <bean class="java.util.concurrent.ConcurrentHashMap"/>
+        </property>
+    </bean>
+
+    <!-- Service message sender -->
+    <bean id="app.MessageServerSenderService" class = "com.payway.commons.webapp.messaging.MessageServerSenderServiceImpl">
+        <property name="messagingClient" ref="app.MessagingClient"/>
+        <property name="serviceContext" ref="app.ServiceContext"/>
+        <property name="timeOut" value="5"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
+    </bean>
+
+    <!-- Abstract bean of server response listener -->
+    <bean id="app.MessageServerResponseListener" abstract="true" class="com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
+        <!--<property name="serverTaskExecutor" ref="app.AbstractServerTaskExecutor"/>-->
+        <property name="messagingClient" ref="app.MessagingClient"/>
+        <property name="timeOut" value="20"/>
+        <property name="timeUnit">
+            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
+        </property>
+    </bean>
+
+    <!-- Server response handler -->
+    <bean id="app.MessageServerResponseHandler" class = "com.payway.commons.webapp.messaging.MessageServerResponseHandler" scope="prototype" depends-on="app.ServiceContext">
+        <property name="serviceContext" ref="app.ServiceContext"/>
+    </bean>
+
+    <!-- App event bus exception handler -->
+    <bean id="app.SubscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
+
+    <!-- Abstract bean of app event bus -->   
+    <bean id="app.AppEventBus" abstract="true" class="com.payway.commons.webapp.bus.AppEventBusImpl">
+        <!--
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.AsyncEventBus">
+                <constructor-arg name="executor" ref="app.AbstractServerTaskExecutor"/>
+                <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
+            </bean>
+        </property>
+        -->
+    </bean>
+
+    <!-- UI session event bus (with vaadin scope)-->
+    <bean id="app.SessionEventBus" class="com.payway.commons.webapp.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
+        <property name="eventBus">
+            <bean class="com.google.common.eventbus.EventBus">
+                <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
+            </bean>
+        </property>
+    </bean>
+   
+</beans>

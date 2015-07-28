@@ -11,85 +11,37 @@
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
+    <import resource="classpath:application-root-context.xml"/> 
+    <import resource="data-source-context.xml"/>
+    <import resource="spring-data-context.xml"/>
+    <import resource="classpath:application-common-context.xml"/> 
+        
     <task:annotation-driven/>
-    <context:component-scan base-package="com.payway.advertising com.payway.commons.webapp" />
-
-    <bean class="com.payway.commons.webapp.config.PaywayCommonVaadinConfiguration" />
-
-    <!-- Обработчик отказов для TaskExecutor'а -->
-    <bean id="rejectPolicy" class = "com.payway.commons.webapp.messaging.RejectExecutionPolicy"/>
-
-    <!--
-        TaskExecutor для обработки серверных задач.
-        Один поток выделяется для получения входящих сообщений.
-        Другие потоки - обработка сообщений.
-    -->
-    <bean id="serverTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="10" />
-        <property name="maxPoolSize" value="25" />
-        <property name="queueCapacity" value="5" />
-        <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
+    <context:component-scan base-package="com.payway.advertising"/>
+        
+    <!-- Concrete bean of server task executor -->
+    <bean id="app.advertising.ServerTaskExecutor" parent="app.AbstractServerTaskExecutor"/>
+    
+    <!-- Concrete bean of server response listener -->
+    <bean id="app.advertising.MessageServerResponseListener" parent="app.MessageServerResponseListener">
+        <property name="serverTaskExecutor" ref="app.advertising.ServerTaskExecutor"/>
     </bean>
-
-    <!-- Сервис хранения карты с контекстами -->
-    <bean id="serviceContext" class = "com.payway.commons.webapp.messaging.MessageRequestContextHolderServiceImpl">
-        <property name="map">
-            <bean class="java.util.concurrent.ConcurrentHashMap"/>
-        </property>
-    </bean>
-
-    <!-- Сервис отправки сообщений на сервер -->
-    <bean id="messageServerSenderService" class = "com.payway.commons.webapp.messaging.MessageServerSenderServiceImpl">
-        <property name="messagingClient" ref="messagingClient"/>
-        <property name="serviceContext" ref="serviceContext"/>
-        <property name="timeOut" value="5"/>
-        <property name="timeUnit">
-            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
-        </property>
-    </bean>
-
-    <!-- Обработчик получения ответов с сервера -->
-    <bean id="messageServerResponseListener" class = "com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
-        <property name="messagingClient" ref="messagingClient"/>
-        <property name="serverTaskExecutor" ref="serverTaskExecutor"/>
-        <property name="timeOut" value="20"/>
-        <property name="timeUnit">
-            <value type="java.util.concurrent.TimeUnit">SECONDS</value>
-        </property>
-    </bean>
-
-    <!-- Обработчик полученных ответов с сервера -->
-    <bean id="messageServerResponseHandler" class = "com.payway.commons.webapp.messaging.MessageServerResponseHandler" scope="prototype" depends-on="serviceContext">
-        <property name="serviceContext" ref="serviceContext"/>
-    </bean>
-
-    <!-- Объект для работы с файловой системой -->
-    <bean id="fileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
-
-    <!-- Bus exception handler -->
-    <bean id="subscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
-
-    <!-- app bus -->
-    <bean id="appEventBus" class="com.payway.commons.webapp.bus.AppEventBusImpl">
+    
+    <!-- Concrete bean of app event bus -->   
+    <bean id="app.advertising.AppEventBus" parent="app.AppEventBus">
         <property name="eventBus">
             <bean class="com.google.common.eventbus.AsyncEventBus">
-                <constructor-arg name="executor" ref="serverTaskExecutor"/>
-                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
+                <constructor-arg name="executor" ref="app.advertising.ServerTaskExecutor"/>
+                <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
             </bean>
         </property>
     </bean>
-
-    <!-- ui session bus with vaadin scope-->
-    <bean id="sessionEventBus" class="com.payway.commons.webapp.ui.bus.SessionEventBusImpl" scope="vaadin-ui">
-        <property name="eventBus">
-            <bean class="com.google.common.eventbus.EventBus">
-                <constructor-arg name="subscriberExceptionHandler" ref="subscriberExceptionHandler"/>
-            </bean>
-        </property>
-    </bean>
-
-    <!-- Contains all file ext's, that may be handled by FileVideoConverterHandler-->
-    <util:list id="supportedVideoFileExtensions" list-class="java.util.ArrayList" value-type="java.lang.String">
+    
+    <!-- File system manager-->
+    <bean id="app.advertising.FileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
+   
+    <!-- Contains all file ext's, that may be handled by file video converter handler-->
+    <util:list id="app.advertising.SupportedVideoFileExtensions" list-class="java.util.ArrayList" value-type="java.lang.String">
         <value>avi</value>
         <value>mp4</value>
         <value>ogv</value>
@@ -102,43 +54,43 @@
     </util:list>
 
     <!-- Xuggler media container service -->
-    <bean id = "formatContainerService" class="com.payway.xuggler.media.core.container.service.impl.XugglerContainerService"/>
+    <bean id="app.advertising.FormatContainerService" class="com.payway.xuggler.media.core.container.service.impl.XugglerContainerService"/>
 
-    <!-- Begin video converter-->
-    <bean id="videoConverter" class="com.payway.xuggler.core.converter.video.impl.XugglerVideoConverter" scope="prototype"/>
+    <!-- Begin video converter -->
+    <bean id="app.advertising.VideoConverter" class="com.payway.xuggler.core.converter.video.impl.XugglerVideoConverter" scope="prototype"/>
 
     <!-- Video converter will be injected to singleton and every time field called - new bean created -->
-    <bean id="prototypeVideoConverterTargetSource" class="org.springframework.aop.target.PrototypeTargetSource">
-        <property name="targetBeanName" value="videoConverter" />
+    <bean id="app.advertising.PrototypeVideoConverterTargetSource" class="org.springframework.aop.target.PrototypeTargetSource">
+        <property name="targetBeanName" value="app.advertising.VideoConverter"/>
     </bean>
 
-    <bean id="proxyVideoConverter" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="targetSource" ref="prototypeVideoConverterTargetSource" />
+    <bean id="app.advertising.ProxyVideoConverter" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="app.advertising.PrototypeVideoConverterTargetSource">
+        <property name="targetSource" ref="app.advertising.PrototypeVideoConverterTargetSource"/>
     </bean>
-    <!-- End video converter-->
+    <!-- End video converter -->
 
     <!-- Video file converter handler based on Xuggler-->
-    <bean id = "fileVideoConverterHandler" class="com.payway.advertising.core.handlers.FileVideoConverterHandler">
-        <property name="supportedVideoFileExtensions" ref="supportedVideoFileExtensions"/>
-        <property name="videoConverter" ref="proxyVideoConverter"/>
-        <property name="settingsAppService" ref="settingsAppService"/>
+    <bean id="app.advertising.FileVideoConverterHandler" class="com.payway.advertising.core.handlers.FileVideoConverterHandler">
+        <property name="supportedVideoFileExtensions" ref="app.advertising.SupportedVideoFileExtensions"/>
+        <property name="videoConverter" ref="app.advertising.ProxyVideoConverter"/>
+        <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
     </bean>
 
     <!-- Destantion file copy handler based -->
-    <bean id = "fileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
-        <property name="fileSystemManagerService" ref="fileManagerService"/>
-        <property name="settingsAppService" ref="settingsAppService"/>
+    <bean id="app.advertising.FileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
+        <property name="fileSystemManagerService" ref="app.advertising.FileManagerService"/>
+        <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
     </bean>
 
     <!-- Contains all file upload processor handler's, index ordered-->
-    <util:list id="fileUploadedHandlers" value-type="com.payway.advertising.core.handlers.FileHandler" list-class="java.util.ArrayList">
-        <ref bean="fileVideoConverterHandler"/>
-        <ref bean="fileDestCopyHandler"/>
+    <util:list id="app.advertising.FileUploadedHandlers" value-type="com.payway.advertising.core.handlers.FileHandler" list-class="java.util.ArrayList">
+        <ref bean="app.advertising.FileVideoConverterHandler"/>
+        <ref bean="app.advertising.FileDestCopyHandler"/>
     </util:list>
 
     <!-- File upload processor task with defined handlers -->
-    <bean id = "fileUploadedProcessorTask" class="com.payway.advertising.core.handlers.FileUploadedProcessorTask" scope="prototype">
-        <property name="handlers" ref="fileUploadedHandlers"/>
+    <bean id="app.advertising.FileUploadedProcessorTask" class="com.payway.advertising.core.handlers.FileUploadedProcessorTask" scope="prototype">
+        <property name="handlers" ref="app.advertising.FileUploadedHandlers"/>
     </bean>
 
 </beans>

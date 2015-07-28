@@ -17,30 +17,30 @@
     <import resource="hazelcast-server-context.xml"/>
 
     <!-- Обработчик отказов для TaskExecutor'а -->
-    <bean id="rejectPolicy" class = "com.payway.server.messaging.RejectExecutionPolicy"/>
+    <bean id="app.RejectPolicy" class = "com.payway.server.messaging.RejectExecutionPolicy"/>
 
     <!--
         TaskExecutor для обработки серверных задач.
         Один поток выделяется для получения входящих сообщений.
         Другие потоки - обработка сообщений.
     -->
-    <bean id="serverTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <bean id="app.ServerTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="10" />
         <property name="maxPoolSize" value="25" />
         <property name="queueCapacity" value="5" />
-        <property name="rejectedExecutionHandler" ref="rejectPolicy"/>
+        <property name="rejectedExecutionHandler" ref="app.RejectPolicy"/>
     </bean>
 
     <!-- Обработчик получения запросов -->
-    <bean id="messageServerListener" class="com.payway.server.messaging.MessageServerRequestListener">
-        <property name="serverTaskExecutor" ref="serverTaskExecutor" />
-        <property name="serverQueue" ref="serverQueue" />
+    <bean id="app.MessageServerListener" class="com.payway.server.messaging.MessageServerRequestListener">
+        <property name="serverTaskExecutor" ref="app.ServerTaskExecutor" />
+        <property name="serverQueue" ref="app.ServerQueue" />
     </bean>
 
     <!-- Обработчик входящих запросов -->
-    <bean id="messageServerRequestHandler" class="com.payway.server.messaging.MessageServerRequestHandler" scope="prototype">
+    <bean id="app.MessageServerRequestHandler" class="com.payway.server.messaging.MessageServerRequestHandler" scope="prototype">
 
-        <property name="dosService" ref="dosService" />
+        <property name="dosService" ref="app.DosService" />
         <property name="timeOut" value="20"/>
         <property name="timeUnit">
             <value type="java.util.concurrent.TimeUnit">SECONDS</value>

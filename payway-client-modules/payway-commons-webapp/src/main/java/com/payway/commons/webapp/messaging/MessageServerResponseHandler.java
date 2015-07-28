@@ -13,7 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Обработчик полученных ответов с сервера.
+ * MessageServerResponseHandler
  *
  * @author Sergey Kichenko
  * @created 27.04.15 00:00

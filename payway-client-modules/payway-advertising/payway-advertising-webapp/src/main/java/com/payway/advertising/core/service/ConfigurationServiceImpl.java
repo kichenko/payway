@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Sergey Kichenko
  * @created 29.06.15 00:00
  */
-@Service(value = "configurationService")
+@Service(value = "app.advertising.ConfigurationService")
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired

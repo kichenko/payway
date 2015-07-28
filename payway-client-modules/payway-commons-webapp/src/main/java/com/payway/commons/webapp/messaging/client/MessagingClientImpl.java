@@ -5,23 +5,25 @@ package com.payway.commons.webapp.messaging.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.core.*;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.LifecycleEvent;
+import com.hazelcast.core.LifecycleListener;
+import com.hazelcast.core.Message;
+import com.hazelcast.core.MessageListener;
 import com.payway.commons.webapp.bus.AppEventPublisher;
+import java.io.Serializable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
-import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * MessagingClientImpl
@@ -30,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @created 01.06.15 00:00
  */
 @Slf4j
-@Component(value = "messagingClient")
+@Component(value = "app.MessagingClient")
 public class MessagingClientImpl implements IMessagingClient, LifecycleListener {
 
     private HazelcastInstance client;
@@ -43,16 +45,16 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Value("${server.queue.name}")
+    @Value("${app.server.queue.name}")
     private String serverQueueName;
 
     @Value("")
     private String clientQueueName;
 
-    @Value("${client.id.generator.queue.name}")
+    @Value("${app.client.id.generator.queue.name}")
     private String clientIdGeneratorQueueName;
 
-    @Value("${client.queue.template.name}")
+    @Value("${app.client.queue.template.name}")
     private String clientQueueTemplateName;
 
     @Setter(AccessLevel.PRIVATE)
@@ -62,7 +64,6 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
     private volatile boolean autoRecover;
 
     @Autowired
-    @Qualifier(value = "serverTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
     @Value("${app.id}.Topic")
@@ -125,7 +126,7 @@ public class MessagingClientImpl implements IMessagingClient, LifecycleListener 
         if (autoRecover && !construct && !shutdown && LifecycleEvent.LifecycleState.SHUTDOWN.equals(event.getState())) {
             setState(IMessagingClient.State.Connecting);
             try {
-                serverTaskExecutor.execute((MessagingClientRecoverTask) applicationContext.getBean("messagingClientRecoverTask"));
+                serverTaskExecutor.execute((MessagingClientRecoverTask) applicationContext.getBean("app.MessagingClientRecoverTask"));
             } catch (Exception ex) {
                 log.error("Bad start recovering messaging client task", ex);
             }

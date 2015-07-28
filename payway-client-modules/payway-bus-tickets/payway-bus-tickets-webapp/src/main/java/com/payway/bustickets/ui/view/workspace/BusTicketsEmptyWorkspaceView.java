@@ -22,7 +22,7 @@ import org.vaadin.teemu.clara.Clara;
 @Component(value = BusTicketsEmptyWorkspaceView.BUS_TICKETS_EMPTY_WORKSPACE_VIEW_ID)
 public class BusTicketsEmptyWorkspaceView extends AbstractBusTicketsWorkspaceView {
 
-    public static final String BUS_TICKETS_EMPTY_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "empty";
+    public static final String BUS_TICKETS_EMPTY_WORKSPACE_VIEW_ID = WORKSPACE_VIEW_ID_PREFIX + "Empty";
 
     private static final long serialVersionUID = 4111225080130198518L;
 

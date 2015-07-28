@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * @created 06.06.15 00:00
  */
 @Slf4j
-@Component(value = "settingsAppService")
+@Component(value = "app.bustickets.SettingsAppService")
 public class SettingsAppServiceImpl extends AbstractSettingsAppService<BusTicketsSessionSettings> {
 
     @Override

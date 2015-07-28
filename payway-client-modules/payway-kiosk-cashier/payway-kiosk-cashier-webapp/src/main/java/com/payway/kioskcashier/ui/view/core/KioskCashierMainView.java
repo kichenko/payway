@@ -19,8 +19,8 @@ import org.vaadin.teemu.clara.Clara;
  * @created 02.07.15 00:00
  */
 @UIScope
-@Component
 @NoArgsConstructor
+@Component(value = "app.kioskcashier.KioskCashierMainView")
 public class KioskCashierMainView extends AbstractMainView {
 
     private static final float SIDEBAR_DEFAULT_WIDTH_PERCENT = 20;

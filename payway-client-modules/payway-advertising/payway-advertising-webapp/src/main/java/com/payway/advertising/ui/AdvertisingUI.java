@@ -37,7 +37,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * AdvertisingUI
@@ -58,17 +57,14 @@ public class AdvertisingUI extends AbstractLoginUI {
     private AdvertisingMainView mainView;
 
     @Autowired
-    @Qualifier(value = "settingsAppService")
     private SettingsAppService settingsAppService;
 
     @Getter
     @Autowired
-    @Qualifier(value = "configurationApplyService")
     private ConfigurationApplyService configurationApplyService;
 
     @Getter
     @Autowired
-    @Qualifier(value = "agentFileOwnerService")
     private AgentFileOwnerService agentFileOwnerService;
 
     @Override
@@ -179,8 +175,8 @@ public class AdvertisingUI extends AbstractLoginUI {
             webAppUserService.setUser(new WebAppUser(userDto.getUsername(), "", event.getSessionId()));
             setupWorkspaceContent();
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
-            
-        } catch (Exception ex) {            
+
+        } catch (Exception ex) {
             log.error("Bad user sign in", ex);
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
             ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);

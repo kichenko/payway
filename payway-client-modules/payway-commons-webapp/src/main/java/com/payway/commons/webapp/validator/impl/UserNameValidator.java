@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @created 13.05.15 00:00
  */
 @AllArgsConstructor
-@Component(value = "userNameValidator")
+@Component(value = "app.UserNameValidator")
 public class UserNameValidator implements Validator {
 
     private final static Pattern pattern = Pattern.compile("^[^\\/*{}&.,;'\"()|:<>?#$@!%\\t\\s\\f\\r\\n]+$");

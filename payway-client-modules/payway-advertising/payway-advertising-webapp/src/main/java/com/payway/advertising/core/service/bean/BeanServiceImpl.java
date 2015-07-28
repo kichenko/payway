@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Sergey Kichenko
  * @created 20.05.15 00:00
  */
-@Component(value = "beanService")
+@Component(value = "app.advertising.BeanService")
 public class BeanServiceImpl implements BeanService, ApplicationContextAware, Serializable {
 
     private static final long serialVersionUID = 5046726960155159535L;

@@ -15,7 +15,7 @@
 
     <!-- имя очереди сервера, куда клиент отправляет запросы-->
     <bean id="serverQueueName" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${server.queue.name}"/>
+        <constructor-arg type="java.lang.String" value="${app.server.queue.name}"/>
     </bean>
 
     <hz:hazelcast id="hazelcastInstance">

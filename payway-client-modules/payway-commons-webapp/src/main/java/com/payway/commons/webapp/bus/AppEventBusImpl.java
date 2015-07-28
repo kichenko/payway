@@ -5,7 +5,9 @@ package com.payway.commons.webapp.bus;
 
 import com.google.common.eventbus.EventBus;
 import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -19,6 +21,8 @@ import org.springframework.core.annotation.AnnotationUtils;
  * @created 21.05.15 00:00
  */
 @Slf4j
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppEventBusImpl implements AppEventBus, AppEventPublisher, BeanPostProcessor {
 
     @Getter
