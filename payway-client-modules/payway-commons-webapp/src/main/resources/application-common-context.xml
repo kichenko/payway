@@ -18,11 +18,11 @@
     <!-- Task rejected handler for server task executor -->
     <bean id="app.RejectPolicy" class = "com.payway.commons.webapp.messaging.RejectExecutionPolicy"/>
 
-    <!-- Abstract bean of server task executor -->
-    <bean id="app.AbstractServerTaskExecutor" abstract="true" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="10"/>
-        <property name="maxPoolSize" value="25"/>
-        <property name="queueCapacity" value="5"/>
+    <!-- Server task executor -->
+    <bean id="app.ServerTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="${app.server.task.executor.corePoolSize:10}"/>
+        <property name="maxPoolSize" value="${app.server.task.executor.maxPoolSize:25}"/>
+        <property name="queueCapacity" value="${app.server.task.executor.queueCapacity:5}"/>
         <property name="rejectedExecutionHandler" ref="app.RejectPolicy"/>
     </bean>
 
@@ -43,9 +43,9 @@
         </property>
     </bean>
 
-    <!-- Abstract bean of server response listener -->
-    <bean id="app.MessageServerResponseListener" abstract="true" class="com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
-        <!--<property name="serverTaskExecutor" ref="app.AbstractServerTaskExecutor"/>-->
+    <!-- Server response listener -->
+    <bean id="app.MessageServerResponseListener" class="com.payway.commons.webapp.messaging.MessageServerResponseListener" destroy-method="preDestroy">
+        <property name="serverTaskExecutor" ref="app.ServerTaskExecutor"/>
         <property name="messagingClient" ref="app.MessagingClient"/>
         <property name="timeOut" value="20"/>
         <property name="timeUnit">
@@ -61,16 +61,14 @@
     <!-- App event bus exception handler -->
     <bean id="app.SubscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
 
-    <!-- Abstract bean of app event bus -->   
-    <bean id="app.AppEventBus" abstract="true" class="com.payway.commons.webapp.bus.AppEventBusImpl">
-        <!--
+    <!-- App event bus -->   
+    <bean id="app.AppEventBus" class="com.payway.commons.webapp.bus.AppEventBusImpl">
         <property name="eventBus">
             <bean class="com.google.common.eventbus.AsyncEventBus">
-                <constructor-arg name="executor" ref="app.AbstractServerTaskExecutor"/>
+                <constructor-arg name="executor" ref="app.ServerTaskExecutor"/>
                 <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
             </bean>
         </property>
-        -->
     </bean>
 
     <!-- UI session event bus (with vaadin scope)-->

@@ -24,14 +24,15 @@ import com.payway.messaging.message.kioskcashier.CreateBankCashDepositParamsResp
 import com.payway.messaging.model.common.BankAccountDto;
 import com.payway.messaging.model.common.StaffDto;
 import com.payway.messaging.model.kioskcashier.NoteCountingDepositDto;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
@@ -47,6 +48,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
+import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
  * CreateBankCashDepositWizardStep
@@ -111,14 +113,16 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
     private Table gridDepositCountings;
 
     @UiField
-    private MenuBar gridMenuBar;
+    private Label lblSelectSummary;
 
     private boolean selectedAll;
+    private int selectedCount;
 
     private final NoteCountingDepositModelBeanItemContainer containerDepositCountings = new NoteCountingDepositModelBeanItemContainer();
 
     public CreateBankCashDepositWizardStep() {
         selectedAll = true;
+        selectedCount = 0;
         init();
     }
 
@@ -161,6 +165,26 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
             @Override
             public Object generateCell(final Table source, final Object itemId, Object columnId) {
                 CheckBox checkBox = new CheckBox(null, source.getContainerDataSource().getItem(itemId).getItemProperty("selected"));
+
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                    private static final long serialVersionUID = -382717228031608542L;
+
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent event) {
+
+                        boolean flag = (Boolean) event.getProperty().getValue();
+                        if (flag) {
+                            selectedCount += 1;
+                        } else {
+                            selectedCount -= 1;
+                            if (selectedCount < 0) {
+                                selectedCount = 0;
+                            }
+                        }
+                        refreshSelectSummary();
+                    }
+                });
+
                 VerticalLayout layout = new VerticalLayout(checkBox);
                 layout.setComponentAlignment(checkBox, Alignment.MIDDLE_CENTER);
                 return layout;
@@ -175,38 +199,34 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
 
         gridDepositCountings.setVisibleColumns("created", "terminalName", "seqNum", "checked");
         gridDepositCountings.sort(new Object[]{"created"}, new boolean[]{true});
-
-        MenuBar.MenuItem menuMain = gridMenuBar.addItem("", FontAwesome.COG, null);
-        menuMain.setStyleName("icon-only");
-
-        menuMain.addItem("Select all", FontAwesome.CHECK_SQUARE_O, new MenuBar.Command() {
-            private static final long serialVersionUID = 7160936162824727503L;
-
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                selectedAll = true;
-                changeMenuSelectedState(true, selectedItem);
-            }
-        });
-
-        menuMain.addItem("Unselect all", FontAwesome.SQUARE_O, new MenuBar.Command() {
-            private static final long serialVersionUID = 7160936162824727503L;
-
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                selectedAll = false;
-                changeMenuSelectedState(false, selectedItem);
-            }
-        });
     }
 
-    private void changeMenuSelectedState(boolean selected, MenuBar.MenuItem selectedItem) {
+    private void refreshSelectSummary() {
+        lblSelectSummary.setValue(String.format("<b>%d/%d</b>", selectedCount, containerDepositCountings.getItemIds().size()));
+    }
+
+    private void changeMenuSelectedState(boolean selected) {
 
         for (NoteCountingDepositModel bean : containerDepositCountings.getItemIds()) {
             bean.setSelected(selected);
         }
 
         gridDepositCountings.refreshRowCache();
+        refreshSelectSummary();
+    }
+
+    @UiHandler(value = "btnSelectAll")
+    public void onClickSelectAll(Button.ClickEvent event) {
+        selectedAll = true;
+        selectedCount = containerDepositCountings.getItemIds().size();
+        changeMenuSelectedState(true);
+    }
+
+    @UiHandler(value = "btnClearAll")
+    public void onClickClearAll(Button.ClickEvent event) {
+        selectedAll = false;
+        selectedCount = 0;
+        changeMenuSelectedState(false);
     }
 
     @Override
@@ -253,6 +273,14 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
 
                             containerDepositCountings.removeAllItems();
                             containerDepositCountings.addAll(Lists.transform(rsp.getKioskEncashments(), new TransformerNoteCountingDepositModel(selectedAll)));
+
+                            if (selectedAll) {
+                                selectedCount = containerDepositCountings.size();
+                            } else {
+                                selectedCount = 0;
+                            }
+
+                            refreshSelectSummary();
 
                             depositedByContainer.removeAllItems();
                             depositedByContainer.addAll(Lists.transform(rsp.getStaffs(), transformerStuffModel));

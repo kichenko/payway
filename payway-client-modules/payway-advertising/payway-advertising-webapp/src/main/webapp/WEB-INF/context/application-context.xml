@@ -18,25 +18,7 @@
         
     <task:annotation-driven/>
     <context:component-scan base-package="com.payway.advertising"/>
-        
-    <!-- Concrete bean of server task executor -->
-    <bean id="app.advertising.ServerTaskExecutor" parent="app.AbstractServerTaskExecutor"/>
-    
-    <!-- Concrete bean of server response listener -->
-    <bean id="app.advertising.MessageServerResponseListener" parent="app.MessageServerResponseListener">
-        <property name="serverTaskExecutor" ref="app.advertising.ServerTaskExecutor"/>
-    </bean>
-    
-    <!-- Concrete bean of app event bus -->   
-    <bean id="app.advertising.AppEventBus" parent="app.AppEventBus">
-        <property name="eventBus">
-            <bean class="com.google.common.eventbus.AsyncEventBus">
-                <constructor-arg name="executor" ref="app.advertising.ServerTaskExecutor"/>
-                <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
-            </bean>
-        </property>
-    </bean>
-    
+               
     <!-- File system manager-->
     <bean id="app.advertising.FileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
    

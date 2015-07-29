@@ -275,7 +275,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
                         }
                     });
 
-                    TaskExecutor taskExecutor = (TaskExecutor) beanService.getBean("app.advertising.ServerTaskExecutor");
+                    TaskExecutor taskExecutor = (TaskExecutor) beanService.getBean("app.ServerTaskExecutor");
                     if (taskExecutor == null) {
                         throw new Exception("Could not get task executor");
                     }

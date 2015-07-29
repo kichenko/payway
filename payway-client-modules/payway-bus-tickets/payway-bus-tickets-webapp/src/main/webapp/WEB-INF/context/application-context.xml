@@ -9,24 +9,5 @@
     
     <import resource="classpath:application-root-context.xml"/> 
     <import resource="classpath:application-common-context.xml"/> 
-    <context:component-scan base-package="com.payway.bustickets"/>
-    
-    <!-- Concrete bean of server task executor -->
-    <bean id="app.bustickets.ServerTaskExecutor" parent="app.AbstractServerTaskExecutor"/>
-    
-    <!-- Concrete bean of server response listener -->
-    <bean id="app.bustickets.MessageServerResponseListener" parent="app.MessageServerResponseListener">
-        <property name="serverTaskExecutor" ref="app.bustickets.ServerTaskExecutor"/>
-    </bean>
-    
-    <!-- Concrete bean of app event bus -->   
-    <bean id="app.bustickets.AppEventBus" parent="app.AppEventBus">
-        <property name="eventBus">
-            <bean class="com.google.common.eventbus.AsyncEventBus">
-                <constructor-arg name="executor" ref="app.bustickets.ServerTaskExecutor"/>
-                <constructor-arg name="subscriberExceptionHandler" ref="app.SubscriberExceptionHandler"/>
-            </bean>
-        </property>
-    </bean>
-    
+    <context:component-scan base-package="com.payway.bustickets"/>    
 </beans>

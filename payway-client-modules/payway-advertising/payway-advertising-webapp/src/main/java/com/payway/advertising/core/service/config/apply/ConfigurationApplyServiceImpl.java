@@ -209,7 +209,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
      * @param result
      */
     @Override
-    @Async(value = "app.advertising.ServerTaskExecutor")
+    @Async(value = "app.ServerTaskExecutor")
     public void apply(final UI currentUI, final String userName, final FileSystemObject localPath, final FileSystemObject serverPath, ApplyConfigRunCallback result) {
 
         try {
