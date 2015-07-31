@@ -12,6 +12,7 @@ import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.commons.webapp.ui.view.core.WorkspaceView;
 import com.payway.kioskcashier.ui.view.core.workspace.BankCashDepositWorkspaceView;
+import com.payway.kioskcashier.ui.view.core.workspace.QuickEncashmentCheckWorkspaceView;
 import com.payway.kioskcashier.ui.view.core.workspace.TerminalEncashmentWorkspaceView;
 import com.payway.messaging.model.user.UserDto;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -87,9 +88,12 @@ public class KioskCashierUI extends AbstractLoginUI {
 
     @Override
     protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
-        List<SideBarMenu.MenuItem> menus = new ArrayList<>();        
+
+        List<SideBarMenu.MenuItem> menus = new ArrayList<>();
+
         menus.add(new SideBarMenu.MenuItem(TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, TerminalEncashmentWorkspaceView.TERMINAL_ENCASHMENT_WORKSPACE_VIEW_ID, "Terminal Encashment", new ThemeResource("images/sidebar_terminal_encashment.png"), null, null));
         menus.add(new SideBarMenu.MenuItem(BankCashDepositWorkspaceView.BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID, BankCashDepositWorkspaceView.BANK_CASH_DEPOSIT_WORKSPACE_VIEW_ID, "Cash deposit", new ThemeResource("images/sidebar_bank_cash_deposit.png"), null, null));
+        menus.add(new SideBarMenu.MenuItem(QuickEncashmentCheckWorkspaceView.QUICK_ENCASHMENT_WORKSPACE_VIEW_ID, QuickEncashmentCheckWorkspaceView.QUICK_ENCASHMENT_WORKSPACE_VIEW_ID, "Quick encashment check", new ThemeResource("images/sidebar_quick_encashment_check.png"), null, null));
         return menus;
     }
 

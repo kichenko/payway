@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:dgt="urn:import:com.payway.vaadin.addons.ui.textfield.digit" id="layoutTerminalEncashmentSearchWizardStep" styleName="" sizeFull="true">
         
-    <FormLayout id="layoutParamsForm" p:componentAlignment="MIDDLE_CENTER" sizeUndefined="true">
-        <TextField id="editTerminal" caption="Terminal" styleName="" width="250px"/>
-        <dgt:DigitTextField id="editReport" caption="Report" maxLength="5" nullRepresentation="0" styleName="" width="250px"/>
-    </FormLayout>    
+    <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
+        <FormLayout>
+            <TextField id="editTerminal" caption="Terminal" styleName="" width="250px"/>
+            <dgt:DigitTextField id="editReport" caption="Report" maxLength="5" nullRepresentation="0" styleName="" width="250px"/>
+        </FormLayout>    
+    </HorizontalLayout>
     
 </VerticalLayout>

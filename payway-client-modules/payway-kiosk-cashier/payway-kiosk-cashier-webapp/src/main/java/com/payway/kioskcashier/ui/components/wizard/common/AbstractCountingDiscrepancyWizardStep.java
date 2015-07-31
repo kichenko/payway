@@ -22,6 +22,7 @@ import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -29,6 +30,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Locale;
@@ -179,15 +181,23 @@ public abstract class AbstractCountingDiscrepancyWizardStep extends AbstractWiza
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
-                TextField field = new TextField();
-                field.setSizeFull();
+                AbstractTextField field = null;
 
                 if ("clarification".equals(propertyId)) {
+
+                    field = new TextArea();
+
+                    field.setSizeFull();
+                    field.setHeight("70px");
                     field.setImmediate(true);
                     field.setNullRepresentation("");
                     field.addValidator(new StringLengthValidator("Empty clarification", 1, Integer.MIN_VALUE, false));
+
                 } else if ("amount".equals(propertyId)) {
 
+                    field = new TextField();
+
+                    field.setSizeFull();
                     field.setImmediate(true);
                     field.setStyleName("app-common-style-text-right");
                     field.addValidator(new DoubleRangeValidator("Empty amount", 0.1, Double.MAX_VALUE));
@@ -250,7 +260,8 @@ public abstract class AbstractCountingDiscrepancyWizardStep extends AbstractWiza
 
                 Button btn = new Button();
 
-                btn.setIcon(FontAwesome.MINUS);
+                btn.setCaptionAsHtml(true);
+                btn.setCaption("<b>X</b>");
                 btn.addStyleName("tiny danger");
                 btn.addClickListener(new Button.ClickListener() {
                     private static final long serialVersionUID = 5019806363620874205L;

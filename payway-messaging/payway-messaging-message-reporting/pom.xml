@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>payway-messaging</artifactId>
+        <groupId>com.payway</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.payway</groupId>
+    <artifactId>payway-messaging-message-reporting</artifactId>
+
+    <packaging>jar</packaging>
+    <name>payway-messaging-message-reporting</name>
+
+    <!-- используем версию родителя-->
+    <!--<version>1.0-SNAPSHOT</version>-->
+
+    <!-- dependencies-->
+    <dependencies>  
+                
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-message</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-messaging-model-reporting</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+                              
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>                
+    </dependencies>
+
+    <!-- build -->
+    <build>
+        <!-- <finalName>payway-messaging-reporting</finalName> -->
+    </build>
+</project>

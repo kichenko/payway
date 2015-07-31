@@ -30,6 +30,17 @@ public final class SuccessWizardStep extends AbstractWizardStep {
         init();
     }
 
+    public SuccessWizardStep(String message) {
+        init();
+        lbMessage.setValue(message);
+    }
+
+    public SuccessWizardStep(String success, String message) {
+        init();
+        lbSuccess.setValue(success);
+        lbMessage.setValue(message);
+    }
+
     @Override
     protected void init() {
         setSizeFull();

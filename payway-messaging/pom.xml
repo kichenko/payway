@@ -22,10 +22,12 @@
         <module>payway-messaging-model-advertising</module>
         <module>payway-messaging-model-bustickets</module>
         <module>payway-messaging-model-kiosk-cashier</module>
+        <module>payway-messaging-model-reporting</module>
 
         <module>payway-messaging-message-advertising</module>   
         <module>payway-messaging-message-bustickets</module>
         <module>payway-messaging-message-kiosk-cashier</module>
+        <module>payway-messaging-message-reporting</module>
         
     </modules>  
     

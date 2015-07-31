@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTerminalEncashmentFailWizardStep" styleName="" width="500px" height="150px">
+    
+    <VerticalLayout id="layoutContent" styleName="app-style-wizard-content-padding" p:expandRatio="1"/>  
+           
+    <HorizontalLayout styleName="app-style-wizard-content-padding" width="500px">
+        <Button id="btnOk" caption="Ok" width="100px" p:componentAlignment="MIDDLE_RIGHT"/>
+    </HorizontalLayout>
+
+</VerticalLayout>

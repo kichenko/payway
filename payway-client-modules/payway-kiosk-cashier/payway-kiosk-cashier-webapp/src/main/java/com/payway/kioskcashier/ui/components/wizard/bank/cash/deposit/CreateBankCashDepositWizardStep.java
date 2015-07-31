@@ -274,6 +274,10 @@ public final class CreateBankCashDepositWizardStep extends AbstractBankCashDepos
                             containerDepositCountings.removeAllItems();
                             containerDepositCountings.addAll(Lists.transform(rsp.getKioskEncashments(), new TransformerNoteCountingDepositModel(selectedAll)));
 
+                            for (int i = 0; i < 50; i++) {
+                                containerDepositCountings.addBean(new NoteCountingDepositModel());
+                            }
+
                             if (selectedAll) {
                                 selectedCount = containerDepositCountings.size();
                             } else {
