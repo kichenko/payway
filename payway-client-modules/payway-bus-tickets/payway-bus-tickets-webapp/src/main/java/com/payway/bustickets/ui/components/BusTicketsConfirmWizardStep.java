@@ -91,7 +91,7 @@ public final class BusTicketsConfirmWizardStep extends AbstractWizardStep {
         lbRouteName.setValue(routeName);
     }
 
-    public void setUp(final String routeName, final String contactNo, final DirectionDto direction, final RouteDto route, final ChoiceDto tripDate, final ChoiceDto baggage, final int quantity, final double totalCost, final boolean hasDiscount) {
+    public void setUp(final String routeName, final String contactNo, final DirectionDto direction, final RouteDto route, final ChoiceDto tripDate, final int baggageQuantity, final int quantity, final double totalCost, final boolean hasDiscount) {
 
         setRoute(route);
         setQuantity(quantity);
@@ -103,7 +103,7 @@ public final class BusTicketsConfirmWizardStep extends AbstractWizardStep {
         getEditDirection().setValue(direction.getName());
         getEditRoute().setValue(route.getDepartureTime());
         getEditTripDate().setValue(tripDate.getLabel());
-        getEditBaggage().setValue(baggage.getLabel());
+        getEditBaggage().setValue(Integer.toString(baggageQuantity));
         getEditQuantity().setValue(Integer.toString(quantity));
 
         refreshTotalCost();

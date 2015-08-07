@@ -2,6 +2,7 @@
 //
 @import "addons";
 @import "commons";
+@import "app-reporting-style";
 //
 @import "components/appversion";
 @import "components/sidebarmenu";
@@ -27,6 +28,8 @@
 
     @include addons;
     @include commons;
+    
+    @include app-reporting-style;
 
     @include app-version-component;
     @include sidebar-menu-component;

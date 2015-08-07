@@ -15,6 +15,7 @@ import com.payway.advertising.ui.component.notification.events.ApplyConfiguratio
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
 import com.payway.advertising.ui.view.core.AdvertisingSettingsWindow;
 import com.payway.advertising.ui.view.workspace.content.AdvertisingContentConfigurationView;
+import com.payway.advertising.ui.view.workspace.reporting.AdvertisingReportingWorkspace;
 import com.payway.commons.webapp.service.app.user.WebAppUser;
 import com.payway.commons.webapp.ui.AbstractLoginUI;
 import com.payway.commons.webapp.ui.InteractionUI;
@@ -95,7 +96,10 @@ public class AdvertisingUI extends AbstractLoginUI {
     protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
         List<SideBarMenu.MenuItem> items = new ArrayList<>(1);
+        
         items.add(new SideBarMenu.MenuItem("configuration", AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID, "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
+        items.add(new SideBarMenu.MenuItem("reporting", AdvertisingReportingWorkspace.ADVERTISING_REPORTING_WORKSPACE_VIEW_ID, "Reporting", new ThemeResource("images/sidebar_configuration.png"), null, null));
+        
         return items;
     }
 

@@ -30,6 +30,12 @@
     <dependencies>  
         
         <dependency>
+            <groupId>com.payway</groupId>
+            <artifactId>payway-webapp-reporting</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>   
+        
+        <dependency>
             <groupId>de.steinwedel.vaadin.addon</groupId>
             <artifactId>messagebox</artifactId>
         </dependency>

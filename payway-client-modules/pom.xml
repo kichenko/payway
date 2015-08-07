@@ -17,6 +17,7 @@
 
     <modules>
         <module>payway-commons-webapp</module>
+        <module>payway-webapp-reporting</module>
         <module>payway-advertising</module>
         <module>payway-bus-tickets</module>
         <module>payway-kiosk-cashier</module>

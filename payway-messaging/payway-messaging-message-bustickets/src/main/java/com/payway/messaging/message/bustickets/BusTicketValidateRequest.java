@@ -28,18 +28,18 @@ public class BusTicketValidateRequest extends CommandRequest implements IWebAppS
 
     String routeId;
 
-    String baggageId;
+    int baggage;
 
     int quantity;
 
-    public BusTicketValidateRequest(String sessionId, long retailerTerminalId, long operatorId, String contactNumber, String dateId, String routeId, String baggageId, int quantity) {
+    public BusTicketValidateRequest(String sessionId, long retailerTerminalId, long operatorId, String contactNumber, String dateId, String routeId, int baggage, int quantity) {
         this.sessionId = sessionId;
         this.retailerTerminalId = retailerTerminalId;
         this.operatorId = operatorId;
         this.contactNumber = contactNumber;
         this.dateId = dateId;
         this.routeId = routeId;
-        this.baggageId = baggageId;
+        this.baggage = baggage;
         this.quantity = quantity;
     }
 

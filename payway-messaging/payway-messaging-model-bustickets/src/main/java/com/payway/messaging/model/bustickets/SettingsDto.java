@@ -27,9 +27,11 @@ public final class SettingsDto extends AbstractDto {
 
     private final MoneyPrecisionDto moneyPrecision;
 
-    public SettingsDto(CurrencyDto currency, MoneyPrecisionDto moneyPrecision) {
+    private final int baggageRatio;
+
+    public SettingsDto(CurrencyDto currency, MoneyPrecisionDto moneyPrecision, int baggageRatio) {
         this.currency = currency;
         this.moneyPrecision = moneyPrecision;
+        this.baggageRatio = baggageRatio;
     }
-
 }

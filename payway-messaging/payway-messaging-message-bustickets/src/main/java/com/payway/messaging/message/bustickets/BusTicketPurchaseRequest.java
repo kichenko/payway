@@ -32,7 +32,7 @@ public class BusTicketPurchaseRequest extends CommandRequest implements IWebAppS
 
     String routeId;
 
-    String baggageId;
+    int baggage;
 
     int quantity;
 
@@ -42,7 +42,7 @@ public class BusTicketPurchaseRequest extends CommandRequest implements IWebAppS
 
     double amount;
 
-    public BusTicketPurchaseRequest(String localTxId, String sessionId, long retailerTerminalId, long operatorId, String contactNumber, String dateId, String routeId, String baggageId, int quantity, Date paymentStart, Date paymentStop, double amount) {
+    public BusTicketPurchaseRequest(String localTxId, String sessionId, long retailerTerminalId, long operatorId, String contactNumber, String dateId, String routeId, int baggage, int quantity, Date paymentStart, Date paymentStop, double amount) {
         this.localTxId = localTxId;
         this.sessionId = sessionId;
         this.retailerTerminalId = retailerTerminalId;
@@ -50,7 +50,7 @@ public class BusTicketPurchaseRequest extends CommandRequest implements IWebAppS
         this.contactNumber = contactNumber;
         this.dateId = dateId;
         this.routeId = routeId;
-        this.baggageId = baggageId;
+        this.baggage = baggage;
         this.quantity = quantity;
         this.paymentStart = paymentStart;
         this.paymentStop = paymentStop;

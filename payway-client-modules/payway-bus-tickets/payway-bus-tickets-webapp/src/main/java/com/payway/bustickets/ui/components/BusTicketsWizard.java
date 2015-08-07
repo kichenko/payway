@@ -90,6 +90,10 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
     private long operatorId;
 
     @Getter
+    @Setter
+    private int baggageRatio;
+
+    @Getter
     @Setter(AccessLevel.PRIVATE)
     private double totalCost;
 
@@ -246,7 +250,8 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
         setPaymentStop(new WebBrowser().getCurrentDate());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity(), getPaymentStart(), getPaymentStop(), getTotalCost()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+        // TODO: get real baggage value
+        getService().sendMessage(new BusTicketPurchaseRequest(UUID.randomUUID().toString(), getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggageQuantity(), wizardStepParams.getQuantity(), getPaymentStart(), getPaymentStop(), getTotalCost()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
 
             @Override
             public void doServerResponse(SuccessResponse response) {
@@ -359,37 +364,38 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
         BusTicketsParamsWizardStep wizardStepParams = (BusTicketsParamsWizardStep) getWizardStep(WizardStepType.Params.getViewIndex());
 
         ((InteractionUI) UI.getCurrent()).showProgressBar();
-        getService().sendMessage(new BusTicketValidateRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), wizardStepParams.getBaggage().getMnemonics(), wizardStepParams.getQuantity()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
-            @Override
-            public void doServerResponse(final SuccessResponse response) {
-                if (response instanceof BusTicketValidateValidResponse) {
-                    processBusTicketValidateValidResponse((BusTicketValidateValidResponse) response);
-                } else if (response instanceof BusTicketValidateInvalidResponse) {
-                    processBusTicketValidateInvalidResponse((BusTicketValidateInvalidResponse) response);
-                } else {
-                    log.error("Bad server response (unknown type) - {}", response);
-                    processBusTicketExceptionResponse();
-                }
-            }
+        // TODO: get real baggage value
+        getService().sendMessage(new BusTicketValidateRequest(getSessionId(), retailerTerminalPanel.getRetailerTerminalId(), getOperatorId(), wizardStepParams.getContactNo(), wizardStepParams.getTripDate().getMnemonics(), wizardStepParams.getRoute().getMnemonics(), 0 /* wizardStepParams.getBaggage().getMnemonics() */, wizardStepParams.getQuantity()), new UIResponseCallBackSupport(getUI(), new UIResponseCallBackSupport.ResponseCallBackHandler() {
+                    @Override
+                    public void doServerResponse(final SuccessResponse response) {
+                        if (response instanceof BusTicketValidateValidResponse) {
+                            processBusTicketValidateValidResponse((BusTicketValidateValidResponse) response);
+                        } else if (response instanceof BusTicketValidateInvalidResponse) {
+                            processBusTicketValidateInvalidResponse((BusTicketValidateInvalidResponse) response);
+                        } else {
+                            log.error("Bad server response (unknown type) - {}", response);
+                            processBusTicketExceptionResponse();
+                        }
+                    }
 
-            @Override
-            public void doServerException(final ExceptionResponse exception) {
-                log.error("Bad exception response (server exception) - {}", exception);
-                processBusTicketExceptionResponse();
-            }
+                    @Override
+                    public void doServerException(final ExceptionResponse exception) {
+                        log.error("Bad exception response (server exception) - {}", exception);
+                        processBusTicketExceptionResponse();
+                    }
 
-            @Override
-            public void doLocalException(final Exception exception) {
-                log.error("Bad exception response (local exception) - {}", exception);
-                processBusTicketExceptionResponse();
-            }
+                    @Override
+                    public void doLocalException(final Exception exception) {
+                        log.error("Bad exception response (local exception) - {}", exception);
+                        processBusTicketExceptionResponse();
+                    }
 
-            @Override
-            public void doTimeout() {
-                log.error("Bad exception response (time out)");
-                processBusTicketExceptionResponse();
-            }
-        }));
+                    @Override
+                    public void doTimeout() {
+                        log.error("Bad exception response (time out)");
+                        processBusTicketExceptionResponse();
+                    }
+                }));
     }
 
     private void processBusTicketValidateValidResponse(BusTicketValidateValidResponse response) {
@@ -408,7 +414,7 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
                 }
 
                 setStep(WizardStepType.Confirm.ordinal());
-                wizardStepConfirm.setUp(response.getRouteName(), wizardStepParams.getContactNo(), wizardStepParams.getDirection(), wizardStepParams.getRoute(), wizardStepParams.getTripDate(), wizardStepParams.getBaggage(), wizardStepParams.getQuantity(), getTotalCost(), response.getAmount() != null);
+                wizardStepConfirm.setUp(response.getRouteName(), wizardStepParams.getContactNo(), wizardStepParams.getDirection(), wizardStepParams.getRoute(), wizardStepParams.getTripDate(), wizardStepParams.getBaggageQuantity(), wizardStepParams.getQuantity(), getTotalCost(), response.getAmount() != null);
             }
         } finally {
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
@@ -513,7 +519,7 @@ public final class BusTicketsWizard extends AbstractBusTicketWizardStep {
 
     private void processSuccessBusTicketPaymentStartRequest(BusTicketPaymentStartResponse response) {
         BusTicketsParamsWizardStep wizardStep = (BusTicketsParamsWizardStep) getWizardStep(WizardStepType.Params.getViewIndex());
-        wizardStep.setUp(response.getDirections(), response.getRoutes(), response.getDates(), response.getBaggages());
+        wizardStep.setUp(response.getDirections(), response.getRoutes(), response.getDates(), getBaggageRatio());
         ((InteractionUI) UI.getCurrent()).closeProgressBar();
     }
 }

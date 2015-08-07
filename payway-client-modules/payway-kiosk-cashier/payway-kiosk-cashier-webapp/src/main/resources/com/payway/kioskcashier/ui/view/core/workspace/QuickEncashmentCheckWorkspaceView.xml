@@ -2,11 +2,11 @@
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.kioskcashier.ui.components.wizard.terminal.encashment" id="layoutTerminalEncashmentWorkspaceView" styleName="" sizeFull="true">
     
     <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
-        <FormLayout>
-            <PopupDateField id="cbDateOccured" required="true" caption="Date occured" textFieldEnabled="false" resolution="DAY" dateFormat="yyyy-MM-dd" width="300px" styleName=""/>
-            <TextField id="editTerminal" immediate="true" caption="Terminal" required="true" width="300px"/>
-            <TextField id="editReportNo" immediate="true" caption="Report No" required="true" width="300px"/>
-            <TextField id="editAmount" immediate="true" caption="Amount" required="true" width="300px"/>
+        <FormLayout spacing="false" margin="false">
+            <PopupDateField id="cbDateOccured" required="true" caption="Date occured" styleName="app-style-margin-bottom-5px" textFieldEnabled="false" resolution="DAY" dateFormat="yyyy-MM-dd" width="300px"/>
+            <TextField id="editTerminal" immediate="true" styleName="app-style-margin-bottom-5px" caption="Terminal" required="true" width="300px"/>
+            <TextField id="editReportNo" immediate="true" styleName="app-style-margin-bottom-5px" caption="Report No" required="true" width="300px"/>
+            <TextField id="editAmount" immediate="true" styleName="app-style-margin-bottom-5px" caption="Amount" required="true" width="300px"/>
             <HorizontalLayout width="300px">
                 <Button id="btnCheck" caption="Check" styleName="primary" p:componentAlignment="MIDDLE_RIGHT"/>
             </HorizontalLayout>

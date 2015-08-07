@@ -4,12 +4,11 @@
 package com.payway.bustickets.ui.view.workspace;
 
 import com.google.common.eventbus.Subscribe;
-import com.payway.bustickets.service.app.settings.model.BusTicketsSessionSettings;
+import com.payway.bustickets.service.app.settings.AbstractBusTicketsSettingsAppService;
 import com.payway.bustickets.ui.components.BusTicketsWizard;
 import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.bus.event.SettingsChangedAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
-import com.payway.commons.webapp.service.app.settings.SettingsAppService;
 import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.messaging.model.common.OperatorDto;
@@ -45,7 +44,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
     private MessageServerSenderService service;
 
     @Autowired
-    private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
+    private AbstractBusTicketsSettingsAppService settingsAppService;
 
     @Autowired
     protected WebAppUserService userAppService;
@@ -64,6 +63,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
         setWizardOperatorId();
         setWizardSessionId();
         setWizardLogoImage();
+        setWizardBaggageRatio();
         setWizardCurrencyAndMoneyPrecision();
 
         if (wizard.setStep(BusTicketsWizard.WizardStepType.Params.ordinal())) {
@@ -79,6 +79,10 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
         }
 
         wizard.setOperatorId((Long) menu.getData());
+    }
+
+    private void setWizardBaggageRatio() {
+        wizard.setBaggageRatio(settingsAppService.getBaggageRatio());
     }
 
     private void setWizardCurrentTerminal() {
@@ -121,6 +125,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
                     log.debug("Apply changed settings for workspace view");
                 }
 
+                setWizardBaggageRatio();
                 setWizardCurrencyAndMoneyPrecision();
             }
         });

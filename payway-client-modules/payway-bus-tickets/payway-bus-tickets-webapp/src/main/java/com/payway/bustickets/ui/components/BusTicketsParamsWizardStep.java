@@ -61,10 +61,16 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
     private ComboBox cbTripDate;
 
     @UiField
-    private ComboBox cbBaggage;
+    private Slider sliderBaggage;
+
+    @UiField
+    private Label labelBaggage;
 
     @UiField
     private Slider sliderQuantity;
+
+    @UiField
+    private Label labelQuantity;
 
     @UiField
     private Label lblSummary;
@@ -74,6 +80,9 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
     @Setter
     private MoneyPrecisionDto moneyPrecision;
+
+    @Setter
+    private int baggageRatio;
 
     public BusTicketsParamsWizardStep() {
         init();
@@ -85,7 +94,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         getCbDirection().setValidationVisible(false);
         getCbRoute().setValidationVisible(false);
         getCbTripDate().setValidationVisible(false);
-        getCbBaggage().setValidationVisible(false);
         getSliderQuantity().setValidationVisible(false);
 
         getEditContactNo().addValidator(new RegexpValidator("[0-9]+", "Only digits allowed"));
@@ -94,7 +102,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         getCbDirection().addValidator(new NullValidator("Empty direction", false));
         getCbRoute().addValidator(new NullValidator("Empty route", false));
         getCbTripDate().addValidator(new NullValidator("Empty trip date", false));
-        getCbBaggage().addValidator(new NullValidator("Empty baggage", false));
         getSliderQuantity().addValidator(new DoubleRangeValidator("Invalid quantity", 1.0, Double.MAX_VALUE));
     }
 
@@ -114,13 +121,9 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         getCbTripDate().setItemCaptionPropertyId("label");
         getCbTripDate().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
-        getCbBaggage().setItemCaptionPropertyId("label");
-        getCbBaggage().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-
         getCbDirection().setContainerDataSource(new DirectionDtoBeanContainer());
         getCbRoute().setContainerDataSource(new RouteDtoBeanContainer());
         getCbTripDate().setContainerDataSource(new ChoiceDtoBeanContainer());
-        getCbBaggage().setContainerDataSource(new ChoiceDtoBeanContainer());
 
         //event change directions
         getCbDirection().addValueChangeListener(new Property.ValueChangeListener() {
@@ -136,7 +139,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
 
                 getCbRoute().select(null);
                 getCbTripDate().select(null);
-                getCbBaggage().select(null);
                 refreshSummary();
             }
         });
@@ -167,34 +169,56 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         });
 
         //event change slider
+        getSliderBaggage().addValueChangeListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = -382717228031608542L;
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                int value = ((Double) event.getProperty().getValue()).intValue();
+                labelBaggage.setValue(Integer.toString(value));
+            }
+        });
+
+        //event change slider
         getSliderQuantity().addValueChangeListener(new Property.ValueChangeListener() {
             private static final long serialVersionUID = -382717228031608542L;
 
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
+
+                int value = ((Double) event.getProperty().getValue()).intValue();
+
                 refreshSummary();
+                getSliderBaggage().setValue(getSliderBaggage().getMin());
+                getSliderBaggage().setMax(value * getBaggageRatio());
+                labelQuantity.setValue(Integer.toString(value));
             }
         });
     }
 
-    public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, List<ChoiceDto> baggages) {
+    public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, int baggageRatio) {
+
+        setBaggageRatio(baggageRatio);
 
         getEditContactNo().setValue("");
+        getLblSummary().setValue("");
+
         getSliderQuantity().setMin(1.0);
         getSliderQuantity().setMax(100.0);
         getSliderQuantity().setValue(1.0);
-        getLblSummary().setValue("");
+
+        getSliderBaggage().setMin(0.0);
+        getSliderBaggage().setMax(getBaggageRatio() * getSliderQuantity().getValue().intValue());
+        getSliderBaggage().setValue(0.0);
 
         ((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).addAll(directions);
         ((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).addAll(routes);
         ((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).addAll(dates);
-        ((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).addAll(baggages);
 
         //set default values
         getCbDirection().select(((DirectionDtoBeanContainer) getCbDirection().getContainerDataSource()).getIdByIndex(0));
         getCbRoute().select(((RouteDtoBeanContainer) getCbRoute().getContainerDataSource()).getIdByIndex(0));
         getCbTripDate().select(((ChoiceDtoBeanContainer) getCbTripDate().getContainerDataSource()).getIdByIndex(0));
-        getCbBaggage().select(((ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource()).getIdByIndex(0));
     }
 
     @Override
@@ -206,7 +230,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
             getCbDirection().validate();
             getCbRoute().validate();
             getCbTripDate().validate();
-            getCbBaggage().validate();
             getSliderQuantity().validate();
 
         } catch (Exception ex) {
@@ -215,7 +238,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
             getCbDirection().setValidationVisible(true);
             getCbRoute().setValidationVisible(true);
             getCbTripDate().setValidationVisible(true);
-            getCbBaggage().setValidationVisible(true);
             getSliderQuantity().setValidationVisible(true);
 
             throw new WizardStepValidationException("Bad bus tickets params", ex);
@@ -228,6 +250,10 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         return getSliderQuantity().getValue().intValue();
     }
 
+    public int getBaggageQuantity() {
+        return getSliderBaggage().getValue().intValue();
+    }
+
     public String getContactNo() {
         return getEditContactNo().getValue();
     }
@@ -237,19 +263,6 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
         if (getCbDirection().getContainerDataSource() != null) {
             DirectionDtoBeanContainer container = (DirectionDtoBeanContainer) getCbDirection().getContainerDataSource();
             BeanItem<DirectionDto> beanItem = container.getItem(getCbDirection().getValue());
-            if (beanItem != null) {
-                return beanItem.getBean();
-            }
-        }
-
-        return null;
-    }
-
-    public ChoiceDto getBaggage() {
-
-        if (getCbBaggage().getContainerDataSource() != null) {
-            ChoiceDtoBeanContainer container = (ChoiceDtoBeanContainer) getCbBaggage().getContainerDataSource();
-            BeanItem<ChoiceDto> beanItem = container.getItem(getCbBaggage().getValue());
             if (beanItem != null) {
                 return beanItem.getBean();
             }
