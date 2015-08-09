@@ -3,8 +3,8 @@
  */
 package com.payway.commons.webapp.messaging;
 
-import com.payway.commons.webapp.messaging.client.IMessagingClient;
-import com.payway.commons.webapp.messaging.client.IMessagingQueue;
+import com.payway.commons.webapp.messaging.client.MessagingClient;
+import com.payway.commons.webapp.messaging.client.MessagingQueue;
 import com.payway.messaging.core.ResponseEnvelope;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
 
     private ApplicationContext applicationContext;
 
-    private IMessagingClient messagingClient;
+    private MessagingClient messagingClient;
 
     private TaskExecutor serverTaskExecutor;
 
@@ -55,8 +55,8 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
 
         while (running) {
             try {
-                if (IMessagingClient.State.Connected.equals(messagingClient.getState())) {
-                    IMessagingQueue<ResponseEnvelope> clientQueue = messagingClient.<ResponseEnvelope>getClientQueue();
+                if (MessagingClient.State.Connected.equals(messagingClient.getState())) {
+                    MessagingQueue<ResponseEnvelope> clientQueue = messagingClient.<ResponseEnvelope>getClientQueue();
 
                     if (log.isDebugEnabled()) {
                         log.debug("Client queue={} ", clientQueue);

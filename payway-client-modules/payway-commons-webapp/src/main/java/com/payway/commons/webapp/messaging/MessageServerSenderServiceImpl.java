@@ -3,8 +3,8 @@
  */
 package com.payway.commons.webapp.messaging;
 
-import com.payway.commons.webapp.messaging.client.IMessagingClient;
-import com.payway.commons.webapp.messaging.client.IMessagingQueue;
+import com.payway.commons.webapp.messaging.client.MessagingClient;
+import com.payway.commons.webapp.messaging.client.MessagingQueue;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
 import com.payway.messaging.message.request.auth.AuthLoginPasswordCommandRequest;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Slf4j
 public class MessageServerSenderServiceImpl implements MessageServerSenderService {
 
-    private IMessagingClient messagingClient;
+    private MessagingClient messagingClient;
 
     private MessageRequestContextHolderService serviceContext;
 
@@ -58,7 +58,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
 
         try {
 
-            IMessagingQueue<RequestEnvelope> serverQueue;
+            MessagingQueue<RequestEnvelope> serverQueue;
 
             log.info("Preparing a message to send to the server");
 

@@ -1,10 +1,10 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.commons.webapp.messaging.client;
+package com.payway.commons.webapp.messaging.client.exception;
 
 /**
- * MessageClientRecoverTask
+ * MessagingException
  *
  * @author Sergey Kichenko
  * @created 01.06.15 00:00
