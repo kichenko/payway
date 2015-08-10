@@ -3,13 +3,12 @@
  */
 package com.payway.commons.webapp.web.event.listener;
 
-import com.payway.commons.webapp.messaging.client.MessagingClientRecoverTask;
-import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
+import com.payway.commons.webapp.messaging.MessageServerResponseListener;
+import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.commons.webapp.web.event.ApplicationStartEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,13 +21,17 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartEventListener implements ApplicationListener<ApplicationStartEvent> {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private MessagingClient client;
 
     @Autowired
-    private TaskExecutor serverTaskExecutor;
+    private ThreadPoolTaskExecutor serverTaskExecutor;
+
+    @Autowired
+    private MessageServerResponseListener messageServerResponseListener;
 
     @Override
     public void onApplicationEvent(ApplicationStartEvent event) {
-        serverTaskExecutor.execute((MessagingClientRecoverTask) applicationContext.getBean("app.MessagingClientRecoverTask", new ApplicationStartClientConnectedEvent(this)));
+        client.start(true);
+        serverTaskExecutor.execute(messageServerResponseListener);
     }
 }

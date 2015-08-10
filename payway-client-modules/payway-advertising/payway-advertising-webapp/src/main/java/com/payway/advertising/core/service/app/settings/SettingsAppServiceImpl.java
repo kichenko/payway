@@ -10,10 +10,10 @@ import com.payway.advertising.core.service.ConfigurationService;
 import com.payway.advertising.core.service.exception.ServiceException;
 import com.payway.advertising.model.common.DbConfiguration;
 import com.payway.advertising.model.common.DbConfigurationKeyType;
+import com.payway.commons.webapp.bus.event.ConnectedClientAppEventBus;
 import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallbackSupport;
-import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.media.core.attributes.audio.AudioAttributes;
 import com.payway.media.core.attributes.video.VideoAttributes;
 import com.payway.media.core.codec.Codec;
@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +47,7 @@ import org.springframework.stereotype.Component;
 @SubscribeOnAppEventBus
 @Component(value = "app.advertising.SettingsAppService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationStartClientConnectedEvent> {
+public class SettingsAppServiceImpl implements SettingsAppService {
 
     @Value("${app.config.local.path}")
     private String localConfigPath;
@@ -199,13 +198,8 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         this.serverConfigPath = serverConfigPath;
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationStartClientConnectedEvent event) {
-        loadRemoteConfiguration();
-    }
-
     private void loadRemoteConfiguration() {
-        log.debug("Loading settings from cluster");
+        log.debug("Start loading settings from cluster...");
         sender.sendMessage(new AdvertisingSettingsRequest(), new ResponseCallbackSupport<AdvertisingSettingsResponse, ExceptionResponse>() {
             @Override
             public void onServerResponse(AdvertisingSettingsResponse response) {
@@ -218,6 +212,11 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
 
     @Subscribe
     public void onMessage(SettingsChangedMessage message) {
+        loadRemoteConfiguration();
+    }
+
+    @Subscribe
+    public void onApplicationEvent(ConnectedClientAppEventBus event) {
         loadRemoteConfiguration();
     }
 
@@ -308,9 +307,9 @@ public class SettingsAppServiceImpl implements SettingsAppService, ApplicationLi
         List<DbConfigurationKeyType> keys = new ArrayList<>(3);
 
         Collections.addAll(keys,
-                DbConfigurationKeyType.AdvertisingConvertVideoEnable,
-                DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
-                DbConfigurationKeyType.AdvertisingConvertVideoBitRate
+          DbConfigurationKeyType.AdvertisingConvertVideoEnable,
+          DbConfigurationKeyType.AdvertisingConvertVideoFormatContainer,
+          DbConfigurationKeyType.AdvertisingConvertVideoBitRate
         );
 
         List<DbConfiguration> configs = configurationService.getByKeys(keys);

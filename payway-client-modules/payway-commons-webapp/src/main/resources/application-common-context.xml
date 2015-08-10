@@ -10,7 +10,7 @@
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
-       
+
     <context:component-scan base-package="com.payway.commons.webapp"/>
 
     <bean id="app.VaadinCommonConfiguration" class="com.payway.commons.webapp.config.VaadinCommonConfiguration" />
@@ -20,6 +20,7 @@
 
     <!-- Server task executor -->
     <bean id="app.ServerTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="daemon" value="true"/>
         <property name="corePoolSize" value="${app.server.task.executor.corePoolSize:10}"/>
         <property name="maxPoolSize" value="${app.server.task.executor.maxPoolSize:25}"/>
         <property name="queueCapacity" value="${app.server.task.executor.queueCapacity:5}"/>
@@ -61,7 +62,7 @@
     <!-- App event bus exception handler -->
     <bean id="app.SubscriberExceptionHandler" class="com.payway.commons.webapp.bus.SubscriberExceptionHandlerImpl"/>
 
-    <!-- App event bus -->   
+    <!-- App event bus -->
     <bean id="app.AppEventBus" class="com.payway.commons.webapp.bus.AppEventBusImpl">
         <property name="eventBus">
             <bean class="com.google.common.eventbus.AsyncEventBus">
@@ -79,5 +80,5 @@
             </bean>
         </property>
     </bean>
-   
+
 </beans>

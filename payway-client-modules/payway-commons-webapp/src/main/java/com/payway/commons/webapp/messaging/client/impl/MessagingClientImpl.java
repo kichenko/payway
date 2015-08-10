@@ -11,13 +11,12 @@ import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import com.payway.commons.webapp.bus.AppEventPublisher;
-import com.payway.commons.webapp.bus.event.MessageClientConnectedAppEventBus;
-import com.payway.commons.webapp.bus.event.MessageClientDisconnectedAppEventBus;
+import com.payway.commons.webapp.bus.event.ConnectedClientAppEventBus;
+import com.payway.commons.webapp.bus.event.DisconnectedClientAppEventBus;
 import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.commons.webapp.messaging.client.exception.MessagingException;
 import java.io.Serializable;
-import java.util.Queue;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 import javax.annotation.PreDestroy;
 import lombok.AccessLevel;
@@ -43,15 +42,21 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
     private HazelcastInstance client;
 
+    private final Object lockObject = new Object();
+
     @Autowired
     private TaskExecutor serverTaskExecutor;
 
     @Autowired
     private AppEventPublisher appEventPublisher;
 
+    @Getter(onMethod = @_({
+        @Override}))
     @Value("${app.server.queue.name}")
     private String serverQueueName;
 
+    @Getter(onMethod = @_({
+        @Override}))
     @Value("")
     private String clientQueueName;
 
@@ -73,8 +78,6 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     @Value("${app.cluster.address}")
     private String[] clusterAddress;
 
-    private final Semaphore semaphore = new Semaphore(1);
-
     @Setter(AccessLevel.PRIVATE)
     private volatile MessagingClient.State state = MessagingClient.State.Stopped;
 
@@ -85,11 +88,6 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
             appEventPublisher.sendNotification(message.getMessageObject());
         }
     };
-
-    @PreDestroy
-    public void preDestroy() {
-        stop();
-    }
 
     @NoArgsConstructor
     @Getter(AccessLevel.PRIVATE)
@@ -175,31 +173,34 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
         boolean flag = false;
 
-        try {
+        synchronized (lockObject) {
 
-            log.debug("Connecting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
+            try {
 
-            setState(State.Started);
-            if (!semaphore.tryAcquire()) {
-                throw new Exception("Message client connecting failed, cannot get semaphore acquire");
+                log.debug("Connecting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
+
+                if (getState() != State.Stopped) {
+                    throw new Exception(String.format("Cannot start client, invalid state (must be 'Stopped') - [%s]", getState()));
+                }
+
+                setState(State.Started);
+                client = new MessageClientInstanceBuilder()
+                  .withClusterName(clusterName)
+                  .withClusterPassword(clusterPassword)
+                  .withClusterAddress(clusterAddress)
+                  .withConnectionAttemptLimit(0)
+                  .withLifecycleListener(this)
+                  .build();
+
+                setup();
+
+                flag = true;
+
+                log.debug("Successfully message client connecting: cluster = {}, address = {}, async={}", clusterName, StringUtils.join(clusterAddress, ","));
+            } catch (Exception ex) {
+                log.error("Message client connecting failed with exception  [{}]", ex);
+                setState(State.Stopped);
             }
-
-            client = new MessageClientInstanceBuilder()
-              .withClusterName(clusterName)
-              .withClusterPassword(clusterPassword)
-              .withClusterAddress(clusterAddress)
-              .withConnectionAttemptLimit(0)
-              .withLifecycleListener(this)
-              .build();
-
-            flag = true;
-
-            log.debug("Successfully message client connecting: cluster = {}, address = {}, async={}", clusterName, StringUtils.join(clusterAddress, ","));
-        } catch (Exception ex) {
-            log.error("Message client connecting failed with exception  [{}]", ex);
-            setState(State.Stopped);
-        } finally {
-            semaphore.release();
         }
 
         return flag;
@@ -207,11 +208,6 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
     @Override
     public boolean start(boolean async) {
-
-        if (!State.Stopped.equals(getState())) {
-            log.error("Message client connect aborted, invalid state [{}]", getState());
-            return false;
-        }
 
         if (async) {
             serverTaskExecutor.execute(new Runnable() {
@@ -229,12 +225,33 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     @Override
     public void stop() {
 
-        log.debug("Disconnecting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
-        if (client != null) {
-            client.shutdown();
-            setState(State.Stopped);
-            client = null;
+        synchronized (lockObject) {
+            log.debug("Disconnecting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
+            if (client != null) {
+                client.shutdown();
+                setState(State.Stopped);
+                client = null;
+            }
         }
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        stop();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return MessagingClient.State.Connected.equals(getState());
+    }
+
+    //?
+    private void setup() {
+        log.debug("Client connected: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
+        setState(State.Connected);
+        client.getTopic(appTopicName).addMessageListener(messageListener);
+        clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());
+        appEventPublisher.sendNotification(new ConnectedClientAppEventBus());
     }
 
     @Override
@@ -246,15 +263,9 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
         } else if (LifecycleEvent.LifecycleState.CLIENT_DISCONNECTED.equals(event.getState())) {
             log.debug("Client disconnected: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
             setState(State.Disconnected);
-            appEventPublisher.sendNotification(new MessageClientDisconnectedAppEventBus());
+            appEventPublisher.sendNotification(new DisconnectedClientAppEventBus());
         } else if (LifecycleEvent.LifecycleState.CLIENT_CONNECTED.equals(event.getState())) {
-            log.debug("Client connected: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
-
-            //?
-            client.getTopic(appTopicName).addMessageListener(messageListener);
-            clientQueueName = String.format("%s%d", clientQueueTemplateName, client.getIdGenerator(clientIdGeneratorQueueName).newId());
-            setState(State.Connected);
-            appEventPublisher.sendNotification(new MessageClientConnectedAppEventBus());
+            setup();
         }
     }
 
@@ -264,7 +275,7 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     }
 
     @Override
-    public <E extends Serializable> Queue<E> getQueue(String name) throws MessagingException {
+    public <E extends Serializable> BlockingQueue<E> getQueue(String name) throws MessagingException {
         check();
         return client.<E>getQueue(name);
     }
@@ -276,12 +287,12 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     }
 
     @Override
-    public <E extends Serializable> Queue getClientQueue() throws MessagingException {
+    public <E extends Serializable> BlockingQueue getClientQueue() throws MessagingException {
         return getQueue(clientQueueName);
     }
 
     @Override
-    public <E extends Serializable> Queue getServerQueue() throws MessagingException {
+    public <E extends Serializable> BlockingQueue getServerQueue() throws MessagingException {
         return getQueue(serverQueueName);
     }
 

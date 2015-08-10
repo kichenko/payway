@@ -5,7 +5,7 @@ package com.payway.commons.webapp.messaging.client;
 
 import com.payway.commons.webapp.messaging.client.exception.MessagingException;
 import java.io.Serializable;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -30,11 +30,17 @@ public interface MessagingClient {
 
     void stop();
 
-    <E extends Serializable> Queue<E> getQueue(String name) throws MessagingException;
+    <E extends Serializable> BlockingQueue<E> getQueue(String name) throws MessagingException;
 
     Lock getLock(String name) throws MessagingException;
 
-    <E extends Serializable> Queue<E> getClientQueue() throws MessagingException;
+    <E extends Serializable> BlockingQueue<E> getClientQueue() throws MessagingException;
 
-    <E extends Serializable> Queue<E> getServerQueue() throws MessagingException;
+    <E extends Serializable> BlockingQueue<E> getServerQueue() throws MessagingException;
+
+    String getClientQueueName();
+
+    String getServerQueueName();
+
+    boolean isConnected();
 }

@@ -4,7 +4,6 @@
 package com.payway.commons.webapp.messaging;
 
 import com.payway.commons.webapp.messaging.client.MessagingClient;
-import com.payway.commons.webapp.messaging.client.MessagingQueue;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
 import com.payway.messaging.message.request.auth.AuthLoginPasswordCommandRequest;
@@ -54,36 +53,28 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
     @Override
     public void sendMessage(Request request, ResponseCallBack callback) {
 
-        RequestEnvelope envelope = new RequestEnvelope();
+        final RequestEnvelope envelope = new RequestEnvelope();
 
         try {
 
-            MessagingQueue<RequestEnvelope> serverQueue;
+            getServiceContext().put(envelope.getMessageId(), new MessageContextImpl(envelope.getMessageId(), callback));
 
-            log.info("Preparing a message to send to the server");
-
-            serviceContext.put(envelope.getMessageId(), new MessageContextImpl(envelope.getMessageId(), callback));
-
-            envelope.setOrigin(messagingClient.toString());
-            envelope.setReplyTo(messagingClient.getClientQueue().getName());
+            envelope.setOrigin(getMessagingClient().toString());
+            envelope.setReplyTo(getMessagingClient().getClientQueueName());
             envelope.setBody(request);
 
-            serverQueue = messagingClient.<RequestEnvelope>getServerQueue();
+            log.debug("Try send message to the server...");
+            log.debug("Server queue = [{}] ", getMessagingClient().getServerQueueName());
+            log.debug("Client queue = [{}] ", getMessagingClient().getClientQueueName());
+            log.debug("Envelope = [{}] ", envelope);
 
-            log.info("Sending a message to the server");
-            if (log.isDebugEnabled()) {
-                log.debug("Server queue={} ", serverQueue);
-                log.debug("Client queue name={} ", messagingClient.getClientQueue().getName());
-                log.debug("Envelope={} ", envelope);
-            }
-
-            serverQueue.offer(envelope, timeOut, timeUnit);
-            log.info("Message sent to the server");
+            getMessagingClient().getServerQueue().offer(envelope, timeOut, timeUnit);
+            log.debug("Message successfully sent to the server");
 
         } catch (Exception ex) {
-            log.error("Bad sending message to the server", ex);
+            log.error("Cannot send message to the server - [{}]", ex);
             try {
-                MessageContextImpl ctx = (MessageContextImpl) serviceContext.remove(envelope.getMessageId());
+                MessageContext ctx = getServiceContext().remove(envelope.getMessageId());
                 if (ctx != null) {
                     ResponseCallBack cb = ctx.getCallback();
                     if (cb != null) {
@@ -91,7 +82,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
                     }
                 }
             } catch (Exception e) {
-                log.error("Bad clearing fail message", e);
+                log.error("Cannot cleanup context map with message - [{}]", e);
             }
         }
     }

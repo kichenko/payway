@@ -5,18 +5,17 @@ package com.payway.commons.webapp.service.app.settings;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.commons.webapp.bus.AppEventPublisher;
+import com.payway.commons.webapp.bus.event.ConnectedClientAppEventBus;
 import com.payway.commons.webapp.config.SubscribeOnAppEventBus;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.service.app.settings.model.AbstractAppSessionSettings;
-import com.payway.commons.webapp.web.event.ApplicationStartClientConnectedEvent;
 import com.payway.messaging.message.SettingsChangedMessage;
 import com.payway.messaging.model.common.CurrencyDto;
 import com.payway.messaging.model.common.MoneyPrecisionDto;
 import com.vaadin.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
 
 /**
  * AbstractSettingsAppService
@@ -27,7 +26,7 @@ import org.springframework.context.ApplicationListener;
  */
 @Slf4j
 @SubscribeOnAppEventBus
-public abstract class AbstractSettingsAppService<T extends AbstractAppSessionSettings> implements SettingsAppService<T>, ApplicationListener<ApplicationStartClientConnectedEvent> {
+public abstract class AbstractSettingsAppService<T extends AbstractAppSessionSettings> implements SettingsAppService<T> {
 
     @Autowired
     protected MessageServerSenderService sender;
@@ -82,8 +81,8 @@ public abstract class AbstractSettingsAppService<T extends AbstractAppSessionSet
         doLoadRemoteConfiguration();
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationStartClientConnectedEvent event) {
+    @Subscribe
+    public void onApplicationEvent(ConnectedClientAppEventBus event) {
         doLoadRemoteConfiguration();
     }
 
