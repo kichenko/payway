@@ -23,11 +23,13 @@ import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
 import com.payway.messaging.model.user.UserDto;
+import com.payway.webapp.reporting.web.handler.ReportingContentRequestHandler;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
@@ -38,6 +40,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  * AdvertisingUI
@@ -53,6 +56,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AdvertisingUI extends AbstractLoginUI {
 
     private static final long serialVersionUID = -2447415985839871519L;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private AdvertisingMainView mainView;
@@ -71,6 +77,9 @@ public class AdvertisingUI extends AbstractLoginUI {
     @Override
     protected void setupWebApp(VaadinRequest request) {
         settingsAppService.setContextPath(request.getContextPath());
+
+        //TODO: add reporting request handler
+        VaadinSession.getCurrent().addRequestHandler(applicationContext.getBean(ReportingContentRequestHandler.class));
     }
 
     @Override
@@ -96,10 +105,10 @@ public class AdvertisingUI extends AbstractLoginUI {
     protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
 
         List<SideBarMenu.MenuItem> items = new ArrayList<>(1);
-        
+
         items.add(new SideBarMenu.MenuItem("configuration", AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID, "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
         items.add(new SideBarMenu.MenuItem("reporting", AdvertisingReportingWorkspace.ADVERTISING_REPORTING_WORKSPACE_VIEW_ID, "Reporting", new ThemeResource("images/sidebar_configuration.png"), null, null));
-        
+
         return items;
     }
 

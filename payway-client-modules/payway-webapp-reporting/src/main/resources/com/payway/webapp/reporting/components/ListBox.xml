@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:org.vaadin.ui" id="listBox" spacing="true" width="100%"> 
+
+    <Table id="tableListBox" pageLength="0" height="150px" width="100%" styleName="no-vertical-lines no-horizontal-lines no-header no-stripes compact small"/> 
+       
+    <HorizontalLayout spacing="true" width="100%">
+        <HorizontalLayout p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" spacing="true">
+            <Button id="btnSelectAll" styleName="small friendly" caption="Select all"/>
+            <Button id="btnClearAll" styleName="small friendly" caption="Clear all"/>
+        </HorizontalLayout>
+    </HorizontalLayout>
+    
+</VerticalLayout>

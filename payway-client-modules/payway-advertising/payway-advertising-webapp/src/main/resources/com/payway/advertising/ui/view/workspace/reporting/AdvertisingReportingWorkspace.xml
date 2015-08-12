@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutAdvertisingReportingWorkspace" sizeFull="true">
+    
+    <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
+        <FormLayout >
+            <TextField id="editReportNo" caption="Report No" p:componentAlignment="MIDDLE_CENTER"/>
+            <Button id="btnReport" caption="Run report" p:componentAlignment="MIDDLE_CENTER" styleName="primary"/>
+        </FormLayout>
+    </HorizontalLayout>
+    
+</VerticalLayout>
