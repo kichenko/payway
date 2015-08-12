@@ -26,7 +26,9 @@ public interface MessagingClient {
 
     State getState();
 
-    boolean start(boolean async);
+    void start() throws MessagingException;
+
+    void startAsync() throws MessagingException;
 
     void stop();
 

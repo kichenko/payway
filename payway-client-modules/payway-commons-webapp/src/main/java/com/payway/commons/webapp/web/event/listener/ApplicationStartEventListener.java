@@ -6,6 +6,7 @@ package com.payway.commons.webapp.web.event.listener;
 import com.payway.commons.webapp.messaging.MessageServerResponseListener;
 import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.commons.webapp.web.event.ApplicationStartEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  * @author Sergey Kichenko
  * @created 06.06.15 00:00
  */
+@Slf4j
 @Component(value = "app.ApplicationStartEventListener")
 public class ApplicationStartEventListener implements ApplicationListener<ApplicationStartEvent> {
 
@@ -31,7 +33,12 @@ public class ApplicationStartEventListener implements ApplicationListener<Applic
 
     @Override
     public void onApplicationEvent(ApplicationStartEvent event) {
-        client.start(true);
-        serverTaskExecutor.execute(messageServerResponseListener);
+        
+        try {
+            client.startAsync();
+            serverTaskExecutor.execute(messageServerResponseListener);
+        } catch (Exception ex) {
+            log.error("Application context start exception - ", ex);
+        }
     }
 }
