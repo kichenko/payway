@@ -23,6 +23,8 @@
         <project.build.timestamp>${maven.build.timestamp}</project.build.timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 
+        <project.vaadin.production.mode>false</project.vaadin.production.mode>
+
         <!-- настройки плагинов -->
         <project.build.encoding>UTF-8</project.build.encoding>
         <project.build.resource.encoding>UTF-8</project.build.resource.encoding>

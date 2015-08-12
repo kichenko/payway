@@ -298,6 +298,6 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
     @Override
     public String toString() {
-        return client == null ? toString() + " - <empty messaging client>" : toString() + " - " + client.toString();
+        return client == null ? "<empty messaging client>" : client.toString();
     }
 }

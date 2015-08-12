@@ -72,7 +72,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                 log.error("Message server response listener detect interrupted exception, stop running and exit");
                 break;
             } catch (Exception ex) {
-                log.error("Message server response listener exception - [{}]", ex);
+                log.error("Message server response listener exception", ex);
             }
         }
 
