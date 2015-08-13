@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util 
+                           http://www.springframework.org/schema/util/spring-util.xsd">
+    
+    
+    <context:component-scan base-package="com.payway.webapp.reporting"/>
+        
+    <util:map id="app.reporting.ComponentTransformerMap"> 
+       
+        <entry key="intervalstatedto">
+            <ref bean="app.reporting.transformer.IntervalTransformer"/>
+        </entry> 
+                
+        <entry key="entitycomponentstatedto">
+            <ref bean="app.reporting.transformer.EntityTransformer"/>
+        </entry>  
+               
+        <entry key="checkboxstatedto">
+            <ref bean="app.reporting.transformer.CheckBoxTransformer"/>
+        </entry> 
+        
+        <entry key="datetimepickerstatedto">
+            <ref bean="app.reporting.transformer.DateTimeTransformer"/>
+        </entry> 
+        
+        <entry key="textfieldstatedto">
+            <ref bean="app.reporting.transformer.TextFieldTransformer"/>
+        </entry> 
+        
+        <entry key="listboxstatedto">
+            <ref bean="app.reporting.transformer.ListBoxTransformer"/>
+        </entry> 
+        
+        <entry key="verticallayoutstatedto">
+            <ref bean="app.reporting.transformer.VerticalLayoutTransformer"/>
+        </entry> 
+        
+        <entry key="horizontallayoutstatedto">
+            <ref bean="app.reporting.transformer.HorizontalLayoutTransformer"/>
+        </entry>
+        
+    </util:map>
+    
+</beans>

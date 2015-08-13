@@ -13,4 +13,6 @@ import java.io.Serializable;
  */
 public abstract class AbstractAppEventBus implements Serializable {
 
+    private static final long serialVersionUID = -7659581023233569377L;
+
 }

@@ -4,6 +4,9 @@
 package com.payway.messaging.message.reporting;
 
 import com.payway.messaging.core.response.SuccessResponse;
+import com.payway.messaging.model.reporting.ReportDto;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -14,9 +17,12 @@ import lombok.ToString;
  * @created 30.07.15 00:00
  */
 @Getter
+@AllArgsConstructor
 @ToString(callSuper = true)
-public final class GetReportListResponse implements SuccessResponse {
+public final class GetReportListQueryResponse implements SuccessResponse {
 
     private static final long serialVersionUID = -2045473704810143010L;
 
+    private final long count;
+    private final List<ReportDto> reports;
 }

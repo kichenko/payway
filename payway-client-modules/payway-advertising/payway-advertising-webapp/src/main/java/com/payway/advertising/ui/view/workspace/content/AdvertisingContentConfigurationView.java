@@ -230,6 +230,8 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     @Override
     public void activate() {
+        getMenuBar().setVisible(true);
+        getButtonFileUploadToolBar().setVisible(true);
         if (!isFileGridLoadedOnActivate) {
             try {
                 ((InteractionUI) UI.getCurrent()).showProgressBar();

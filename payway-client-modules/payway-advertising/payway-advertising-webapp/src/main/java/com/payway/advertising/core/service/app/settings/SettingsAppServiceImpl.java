@@ -33,9 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,7 +45,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @SubscribeOnAppEventBus
 @Component(value = "app.advertising.SettingsAppService")
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class SettingsAppServiceImpl implements SettingsAppService, ApplicationListener<ApplicationStartClientConnectedEvent> {
 
     @Value("${app.config.local.path}")

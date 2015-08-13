@@ -4,6 +4,8 @@
 package com.payway.commons.webapp.messaging;
 
 import com.payway.messaging.core.request.Request;
+import com.payway.messaging.core.response.Response;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Интрефейс сервиса отправки сообщений на сервер.
@@ -18,5 +20,7 @@ public interface MessageServerSenderService {
     void auth(String token, String remoteAddress, ResponseCallBack callback);
 
     void sendMessage(Request request, ResponseCallBack callback);
+
+    Response sendMessage(Request request, long timeOut, TimeUnit timeUnit) throws Exception;
 
 }

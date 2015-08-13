@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PagingTableImpl extends Table implements IPagingTable {
 
+    private static final long serialVersionUID = 4386497202501701066L;
+
     private final List<PageChangeListener> listeners = new ArrayList<>(1);
 
     public PagingTableImpl() {
@@ -115,7 +117,6 @@ public class PagingTableImpl extends Table implements IPagingTable {
 
     @Override
     public boolean setPageSize(int pageSize) {
-        //setPageLength(pageSize);
         boolean success = ((IPagingContainer) this.getContainerDataSource()).setPageSize(pageSize);
         if (success) {
             firePageChangeEvent();

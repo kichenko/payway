@@ -13,9 +13,9 @@ public interface IPagingContainer {
 
     public interface IPagingLoadCallback {
 
-        void start();
+        void begin();
 
-        void finish();
+        void end();
 
         void exception(Exception ex);
     }

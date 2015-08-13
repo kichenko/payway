@@ -452,7 +452,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                                 log.debug("Apply configuration - start waiting for server response...");
                             }
 
-                            //warning: timeout used if server never answered (onTimeout event must be implemented)
+                            //TODO: Warning - timeout used if server never answered (onTimeout event must be implemented)
                             if (!latch.await(serverTimeOut, getUnit())) {
                                 log.error("Timeout applying task - no answer from the server");
                                 throw new Exception("Timeout applying task - no answer from the server");
