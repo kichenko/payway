@@ -28,7 +28,7 @@ public class SimpleClientQueueNameUniqueIdGenerator implements UniqueIdGenerator
 
     @Override
     public String generate() {
-        return new StringBuilder(appId).append("-").append(UUID.randomUUID().toString()).append("-").append(new SimpleDateFormat(patternDate).format(new Date())).toString();
+        return new StringBuilder(appId).append("@").append(UUID.randomUUID().toString()).append("@").append(new SimpleDateFormat(patternDate).format(new Date())).toString();
     }
 
 }

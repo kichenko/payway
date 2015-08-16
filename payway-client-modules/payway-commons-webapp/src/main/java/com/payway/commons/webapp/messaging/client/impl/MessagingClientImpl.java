@@ -52,7 +52,7 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
     @Getter(onMethod = @_({
         @Override}))
-    @Value("#{app.SimpleClientQueueNameUniqueIdGenerator.generate()}")
+    @Value("#{@'app.SimpleClientQueueNameUniqueIdGenerator'.generate()}")
     private String clientQueueName;
 
     @Value("${app.id}.Topic")
@@ -99,7 +99,7 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
         try {
 
-            log.debug("Connecting client: cluster = {}, address = {}", clusterName, StringUtils.join(clusterAddress, ","));
+            log.debug("Connecting client: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
             if (getState() != State.Stopped) {
                 throw new Exception(String.format("Cannot start client, invalid state (must be 'Stopped') - [%s]", getState()));
             }

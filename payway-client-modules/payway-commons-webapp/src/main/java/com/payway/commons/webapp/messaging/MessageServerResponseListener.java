@@ -65,7 +65,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
                         serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("app.MessageServerResponseHandler", envelope));
                     }
                 } else {
-                    log.debug("Message server response listener cannot detect client message connection, start waiting [{}] ms...", clientTimeOut);
+                    log.debug("Message server response listener cannot detect client message connection (message client in not connected status), start waiting [{}] ms...", clientTimeOut);
                     Thread.sleep(clientTimeOut);
                 }
             } catch (InterruptedException ex) {

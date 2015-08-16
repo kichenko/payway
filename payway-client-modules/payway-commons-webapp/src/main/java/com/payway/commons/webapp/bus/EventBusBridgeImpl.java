@@ -30,7 +30,7 @@ public class EventBusBridgeImpl implements EventBusBridge {
     public void addSession(VaadinSession session) {
 
         if (log.isDebugEnabled()) {
-            log.debug("add session {}", session);
+            log.debug("Add session {}", session);
         }
         sessions.add(session);
     }
@@ -39,7 +39,7 @@ public class EventBusBridgeImpl implements EventBusBridge {
     public void removeSession(VaadinSession session) {
 
         if (log.isDebugEnabled()) {
-            log.debug("remove session {}", session);
+            log.debug("Remove session {}", session);
         }
         sessions.remove(session);
     }
@@ -48,7 +48,7 @@ public class EventBusBridgeImpl implements EventBusBridge {
     public void processEvent(Object event) {
 
         if (log.isDebugEnabled()) {
-            log.debug("process event {}", event);
+            log.debug("Process event {}", event);
         }
 
         try {

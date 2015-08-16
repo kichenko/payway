@@ -19,15 +19,19 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor
 @Getter(AccessLevel.PRIVATE)
-public final class MessageClientInstanceBuilder {
+final class MessageClientInstanceBuilder {
+
+    private static final int CONNECTION_TIMEOUT = 5000;
+    private static final int CONNECTION_ATTEMPT_LIMIT = 2;
+    private static final int CONNECTION_ATTEMPT_PERIOD = 3000;
 
     private String clusterName;
     private String clusterPassword;
     private String[] clusterAddress;
 
-    private int connectionTimeout;
-    private int connectionAttemptLimit;
-    private int connectionAttemptPeriod;
+    private int connectionTimeout = CONNECTION_TIMEOUT;
+    private int connectionAttemptLimit = CONNECTION_ATTEMPT_LIMIT;
+    private int connectionAttemptPeriod = CONNECTION_ATTEMPT_PERIOD;
 
     private LifecycleListener lifecycleListener;
 

@@ -3,8 +3,10 @@
  */
 package com.payway.commons.webapp.web.event.listener;
 
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -23,10 +25,22 @@ class ContextClosedEventListener implements ApplicationListener<ContextClosedEve
     @Autowired
     private ThreadPoolTaskExecutor serverTaskExecutor;
 
+    @Value("15")
+    private int awaitTerminationTimeOut;
+
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
 
-        log.debug("Run shutdown server task executor on context close event...");
-        serverTaskExecutor.getThreadPoolExecutor().shutdown();
+        try {
+            log.debug("Shutdown server task executor in context close event...");
+            serverTaskExecutor.getThreadPoolExecutor().shutdownNow();
+            if (serverTaskExecutor.getThreadPoolExecutor().awaitTermination(awaitTerminationTimeOut, TimeUnit.SECONDS)) {
+                log.debug("Shutdown server task executor is successfully terminated");
+            } else {
+                log.debug("Shutdown server task executor is failed terminate");
+            }
+        } catch (Exception ex) {
+            log.error("Failed shutdown server task executor in context close event -", ex);
+        }
     }
 }
