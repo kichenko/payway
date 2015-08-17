@@ -45,8 +45,15 @@ public class ReportingContentRequestHandler implements RequestHandler {
 
     @PostConstruct
     public void postConstruct() {
+
+        final String pattern = "/";
+
         if (!StringUtils.isBlank(getRootPath())) {
-            setRootPath(getRootPath().replace("\\", "/"));
+            setRootPath(getRootPath().replace("\\", pattern));
+        }
+
+        if (!StringUtils.isBlank(getRestPath())) {
+            setRestPath(StringUtils.prependIfMissingIgnoreCase(StringUtils.appendIfMissingIgnoreCase(restPath, pattern), pattern));
         }
     }
 
@@ -57,8 +64,8 @@ public class ReportingContentRequestHandler implements RequestHandler {
             log.debug("Receive report content web handler request with path = [{}]", request.getPathInfo());
             String result = new StringBuilder(getRootPath()).append("/").append(session.getSession().getId()).append("/").append(request.getPathInfo().replace(getRestPath(), "")).toString();
 
-            try {
-                IOUtils.copy(new FileInputStream(new File(new URI(result))), response.getOutputStream());
+            try (final FileInputStream fis = new FileInputStream(new File(new URI(result)))) {
+                IOUtils.copy(fis, response.getOutputStream());
             } catch (Exception ex) {
                 log.error("Cannot copy input stream to response", ex);
                 throw new IOException(ex.getMessage(), ex);

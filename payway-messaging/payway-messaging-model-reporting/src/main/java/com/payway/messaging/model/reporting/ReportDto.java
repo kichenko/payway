@@ -13,13 +13,13 @@ import lombok.ToString;
  * @author Sergey Kichenko
  * @created 12.08.2015
  */
-@Getter
 @ToString(callSuper = true)
 public final class ReportDto extends IdentifiableDto {
 
     private static final long serialVersionUID = 1359806820505842395L;
 
     private final String name;
+
     private final String description;
 
     public ReportDto(long id, String name, String description) {
@@ -27,4 +27,13 @@ public final class ReportDto extends IdentifiableDto {
         this.name = name;
         this.description = description;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
 }

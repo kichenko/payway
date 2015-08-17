@@ -3,37 +3,41 @@
  */
 package com.payway.advertising.ui.view.workspace.reporting;
 
+import com.payway.advertising.ui.component.notification.events.report.ExecuteReportNotificationEvent;
+import com.payway.advertising.ui.component.notification.events.report.ExecuteReportStatusType;
 import com.payway.advertising.ui.view.core.AbstractAdvertisingWorkspaceView;
 import com.payway.advertising.ui.view.workspace.reporting.container.ReportPagingBeanContainer;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.commons.webapp.ui.InteractionUI;
-import com.payway.commons.webapp.ui.components.buiders.WindowBuilder;
+import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.table.paging.IPagingContainer;
 import com.payway.commons.webapp.ui.components.table.paging.PagingTableControls;
 import com.payway.commons.webapp.ui.components.table.paging.PagingTableImpl;
 import com.payway.messaging.model.reporting.ReportDto;
 import com.payway.webapp.reporting.ui.service.UIReportService;
-import com.payway.webapp.reporting.ui.service.UIReportServiceCallback;
+import com.payway.webapp.reporting.ui.service.UIReportServiceMetaDataCallback;
+import com.payway.webapp.reporting.ui.service.UIReportServiceReportCallback;
 import com.payway.webapp.reporting.ui.service.content.ReportContentService;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -69,6 +73,12 @@ public class AdvertisingReportingWorkspace extends AbstractAdvertisingWorkspaceV
 
     @Autowired
     private WebAppUserService webAppUserService;
+
+    @Autowired
+    protected SessionEventBus sessionEventBus;
+
+    @Value("${app.config.reporting.rest.path:/reporting}")
+    private String restPath;
 
     @Getter
     @Setter
@@ -199,50 +209,67 @@ public class AdvertisingReportingWorkspace extends AbstractAdvertisingWorkspaceV
 
     private void actionRunReport(Object itemId) {
 
-        //702079960
-        reportingService.execute(gridContainer.getItem(itemId).getBean().getId(), new UIReportServiceCallback() {
+        reportingService.execute(
+                gridContainer.getItem(itemId).getBean().getId(),
+                new UIReportServiceMetaDataCallback() {
 
-            @Override
-            public void begin() {
-                ((InteractionUI) UI.getCurrent()).showProgressBar();
-            }
+                    @Override
+                    public void begin() {
+                        ((InteractionUI) UI.getCurrent()).showProgressBar();
+                    }
 
-            @Override
-            public void end() {
-                ((InteractionUI) UI.getCurrent()).closeProgressBar();
-            }
+                    @Override
+                    public void end() {
+                        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                    }
 
-            @Override
-            public void response(String fileName, byte[] content) {
-                try {
+                    @Override
+                    public void exception(Exception ex) {
+                        ((InteractionUI) UI.getCurrent()).showNotification("Reporting", "Internal server error", Notification.Type.ERROR_MESSAGE);
+                    }
+                },
+                new UIReportServiceReportCallback() {
 
-                    String servletPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                    ReportContentService.ReportContentInfo info = reportingContentService.save(UI.getCurrent().getSession().getSession().getId(), fileName, content);
+                    private UUID uid;
+                    private LocalDateTime start;
+                    private String reportName;
 
-                    Link link = new Link(fileName, new ExternalResource(servletPath + "/reporting/" + info.getRelativeURLPath()));
-                    link.setTargetName("_blank");
-                    HorizontalLayout layout = new HorizontalLayout(link);
+                    @Override
+                    public void metadata(long id, String name) {
+                        reportName = name;
+                    }
 
-                    layout.setSpacing(true);
+                    @Override
+                    public void begin() {
+                        uid = UUID.randomUUID();
+                        start = new LocalDateTime();
+                        sessionEventBus.sendNotification(new ExecuteReportNotificationEvent(uid, reportName, webAppUserService.getUser().getLogin(), start, new LocalDateTime(), ExecuteReportStatusType.Run));
+                    }
 
-                    new WindowBuilder()
-                            .withCaption("Report content")
-                            .withContent(layout)
-                            .withModal()
-                            .withClosable()
-                            .withSizeUndefined()
-                            .buildAndShow();
+                    @Override
+                    public void end() {
+                        //
+                    }
 
-                } catch (Exception ex) {
-                    log.error("Cannot save report content on server response", ex);
+                    @Override
+                    public void response(String fileName, byte[] content) {
+
+                        try {
+                            ReportContentService.ReportContentInfo info = reportingContentService.save(UI.getCurrent().getSession().getSession().getId(), fileName, content);
+                            String url = VaadinServlet.getCurrent().getServletContext().getContextPath() + StringUtils.prependIfMissingIgnoreCase(StringUtils.appendIfMissingIgnoreCase(restPath, "/"), "/") + info.getRelativeURLPath();
+                            sessionEventBus.sendNotification(new ExecuteReportNotificationEvent(uid, reportName, webAppUserService.getUser().getLogin(), start, new LocalDateTime(), ExecuteReportStatusType.Success, new Object[]{url}));
+                        } catch (Exception ex) {
+                            log.error("Cannot save report content on server response", ex);
+                            sessionEventBus.sendNotification(new ExecuteReportNotificationEvent(uid, reportName, webAppUserService.getUser().getLogin(), start, new LocalDateTime(), ExecuteReportStatusType.Fail, new Object[]{ex}));
+                        }
+                    }
+
+                    @Override
+                    public void exception(Exception ex) {
+                        sessionEventBus.sendNotification(new ExecuteReportNotificationEvent(uid, reportName, webAppUserService.getUser().getLogin(), start, new LocalDateTime(), ExecuteReportStatusType.Fail, new Object[]{ex}));
+                    }
+
                 }
-            }
-
-            @Override
-            public void exception(Exception ex) {
-                ((InteractionUI) UI.getCurrent()).showNotification("Reporting", "Internal server error", Notification.Type.ERROR_MESSAGE);
-            }
-        }
         );
     }
 

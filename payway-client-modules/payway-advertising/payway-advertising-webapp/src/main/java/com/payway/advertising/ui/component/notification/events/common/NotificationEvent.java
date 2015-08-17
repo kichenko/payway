@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.component.notification.events;
+package com.payway.advertising.ui.component.notification.events.common;
 
 /**
  * NotificationEvent
@@ -14,4 +14,5 @@ public interface NotificationEvent {
     NotificationEventPriorityType getPriority();
 
     NotificationEventType getKind();
+
 }

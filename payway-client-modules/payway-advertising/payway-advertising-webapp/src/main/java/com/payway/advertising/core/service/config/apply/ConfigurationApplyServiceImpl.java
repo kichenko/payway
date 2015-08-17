@@ -221,6 +221,10 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
             //set current thread UI
             UI.setCurrent(currentUI);
 
+            //set info
+            setLogin(userName);
+            setStartTime(new LocalDateTime());
+
             ApplyConfigurationStatus acs = new ApplyConfigurationStatus(getLogin(), getStartTime(), ApplyStatus.Prepare, new LocalDateTime());
 
             //1. get unique name
@@ -249,10 +253,6 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     } catch (Exception ex) {
                         log.error("Applying configuration - exception on success callback [{}]", ex);
                     }
-
-                    //set info
-                    setLogin(userName);
-                    setStartTime(new LocalDateTime());
 
                     //status - prepare
                     setStatus(acs);

@@ -1,9 +1,11 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.advertising.ui.component;
+package com.payway.advertising.ui.component.notification.apply;
 
 import com.payway.advertising.core.service.config.apply.ApplyStatus;
+import com.payway.advertising.ui.component.notification.AbstractNotificationItemView;
+import com.payway.advertising.ui.component.notification.NotificationItemAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDateTime;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
+import org.vaadin.teemu.clara.binder.annotation.UiHandler;
 
 /**
  * ApplyConfigurationNotificationItemView
@@ -22,6 +25,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
  */
 @Slf4j
 public class ApplyConfigurationNotificationItemView extends AbstractNotificationItemView {
+
+    private static final long serialVersionUID = -6217297030176205599L;
 
     @UiField
     private Label lblCaption;
@@ -53,6 +58,13 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
     @Setter
     @Getter
     private NotificationItemAction action;
+
+    public ApplyConfigurationNotificationItemView(String caption, ApplyStatus status, String login, LocalDateTime dateCreate, LocalDateTime dateStatus, NotificationItemAction action, Object... args) {
+
+        init();
+        setAction(action);
+        refresh(caption, login, status, dateCreate, dateStatus, args);
+    }
 
     private void init() {
         setSizeFull();
@@ -152,28 +164,17 @@ public class ApplyConfigurationNotificationItemView extends AbstractNotification
         }
     }
 
-    public ApplyConfigurationNotificationItemView(String caption, ApplyStatus status, String login, LocalDateTime dateCreate, LocalDateTime dateStatus, NotificationItemAction action, Object... args) {
+    @UiHandler(value = "btnClose")
+    public void onClickClose(Button.ClickEvent event) {
+        if (getAction() != null) {
+            getAction().close();
+        }
+    }
 
-        init();
-        setAction(action);
-        refresh(caption, login, status, dateCreate, dateStatus, args);
-
-        btnClose.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (ApplyConfigurationNotificationItemView.this.getAction() != null) {
-                    ApplyConfigurationNotificationItemView.this.getAction().close();
-                }
-            }
-        });
-
-        btnCancel.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (ApplyConfigurationNotificationItemView.this.getAction() != null) {
-                    btnCancel.setEnabled(!ApplyConfigurationNotificationItemView.this.getAction().cancel());
-                }
-            }
-        });
+    @UiHandler(value = "btnCancel")
+    public void onClickCancel(Button.ClickEvent event) {
+        if (getAction() != null) {
+            btnCancel.setEnabled(!getAction().cancel());
+        }
     }
 }

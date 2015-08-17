@@ -48,12 +48,12 @@ public class FileDestCopyHandler implements FileHandler {
             //set real file size after all handler processing
             args.setLength(fileSystemManagerService.resolve(dst).getSize());
         } catch (Exception ex) {
-            log.error("Could not copy src to dst file - {}", ex);
+            log.error("Could not copy src to dst file - ", ex);
 
             try {
                 fileSystemManagerService.delete(dstTmp);
             } catch (Exception e) {
-                log.error("Could not delete dst file on crush file handler - {}", ex);
+                log.error("Could not delete dst file on crush file handler - ", ex);
             }
 
             throw new FileHandlerException("Could not finish file handler (copy src to dst file)", ex);

@@ -27,6 +27,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -192,12 +193,16 @@ public class FilePropertyPanel extends VerticalLayout {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
 
             if (getBean().getId() == null) {
+
                 //set name only for new object, where id == null
                 getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
 
                 //set digest only for new object, where id == null
-                String digest = fileSystemManagerServiceSecurity.digestMD5Hex(fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
-                getBean().setDigest(digest);
+                try (InputStream is = fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null))) {
+                    getBean().setDigest(fileSystemManagerServiceSecurity.digestMD5Hex(is));
+                } catch (Exception ex) {
+                    throw ex;
+                }
             }
 
             if (agentFileValidator.validate(getBean())) {
@@ -263,12 +268,6 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getCbFileType().setItemCaption(DbFileType.Archive, "Archive");
     }
 
-    public void updateFileName(String fileName) {
-        tabGeneral.getEditFileName().setReadOnly(false);
-        tabGeneral.getEditFileName().setValue(fileName);
-        tabGeneral.getEditFileName().setReadOnly(true);
-    }
-
     public void showProperty(String rootPath, String relativePath, String fileName, DbAgentFile bean) {
 
         setBean(bean);
@@ -292,6 +291,17 @@ public class FilePropertyPanel extends VerticalLayout {
 
         filePreviewPanel.setFileSystemManagerService(fileSystemManagerService);
         filePreviewPanel.show(fileName, relativePath, bean == null ? null : bean.getKind());
+    }
+
+    public void refreshProperty(String rootPath, String relativePath, String fileName, String pathNew) {
+
+        setRootPath(rootPath);
+        getBean().setName(pathNew);
+        setRelativePath(relativePath);
+
+        tabGeneral.getEditFileName().setReadOnly(false);
+        tabGeneral.getEditFileName().setValue(fileName);
+        tabGeneral.getEditFileName().setReadOnly(true);
     }
 
     public void clearProperty() {

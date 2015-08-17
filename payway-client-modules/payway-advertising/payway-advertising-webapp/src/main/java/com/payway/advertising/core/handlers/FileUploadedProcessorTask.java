@@ -102,7 +102,7 @@ public class FileUploadedProcessorTask implements FileProcessorTask, Runnable {
                     callback.onFail(i, getHandlers().size());
                 }
             } catch (Exception e) {
-                log.error("Could not call callback onFail - {}", e);
+                log.error("Could not call callback onFail - ", e);
             }
         } finally {
             //delete uploaded file

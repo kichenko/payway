@@ -15,15 +15,17 @@ import lombok.ToString;
  * @author Sergey Kichenko
  * @created 30.07.15 00:00
  */
-@Getter
 @ToString(callSuper = true)
 public final class GetReportListQueryRequest extends SessionCommandRequest {
 
     private static final long serialVersionUID = -2990884617758127707L;
 
     private final int firstResult;
+
     private final int maxResults;
+
     private final List<OrderDto> orders;
+
     private final String search;
 
     public GetReportListQueryRequest(String sessionId, List<OrderDto> orders, String search, int firstResult, int maxResults) {
@@ -33,4 +35,21 @@ public final class GetReportListQueryRequest extends SessionCommandRequest {
         this.firstResult = firstResult;
         this.maxResults = maxResults;
     }
+
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public List<OrderDto> getOrders() {
+        return orders;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
 }

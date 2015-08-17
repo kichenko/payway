@@ -14,6 +14,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -66,6 +67,9 @@ public class StandartReportParameterDialog extends Window {
     private VerticalLayout layoutOptionsPanelContent;
 
     @UiField
+    private HorizontalLayout layoutParametersPanel;
+
+    @UiField
     private Button btnParameters;
 
     @UiField
@@ -97,7 +101,13 @@ public class StandartReportParameterDialog extends Window {
 
         setCaption(metadata.getReportDescription());
         setContent(Clara.create("StandartReportParameterDialog.xml", this));
-        layoutParametersPanelContent.addComponent(transformer.transform(metadata.getReportForm()));
+
+        if (metadata.getReportForm() != null) {
+            layoutParametersPanelContent.addComponent(transformer.transform(metadata.getReportForm()));
+        } else {
+            log.debug("Detected no args report, creating standard report dialog with empty parameters layout");
+            layoutParametersPanel.setVisible(false);
+        }
 
         btnParameters.setIcon(FontAwesome.MINUS);
         btnViewAs.setIcon(FontAwesome.MINUS);

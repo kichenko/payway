@@ -2,7 +2,7 @@
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutStandartReportParameterDialog" width="100%" spacing="true" margin="true">
         
     <!--Parameters-->
-    <HorizontalLayout spacing="true" width="100%">
+    <HorizontalLayout id="layoutParametersPanel" spacing="true" width="100%">
         <VerticalLayout width="100%" styleName="card" spacing="true">
             <HorizontalLayout styleName="v-panel-caption" width="100%" spacing="true">
                 <Button id="btnParameters" styleName="tiny friendly icon-only"/>

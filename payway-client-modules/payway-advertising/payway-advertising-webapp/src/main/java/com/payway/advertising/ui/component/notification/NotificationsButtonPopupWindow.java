@@ -31,7 +31,6 @@ public class NotificationsButtonPopupWindow extends Window {
     }
 
     private void init() {
-        setCaption("Notifications");
         setClosable(false);
         setResizable(false);
         setDraggable(false);
@@ -39,8 +38,6 @@ public class NotificationsButtonPopupWindow extends Window {
         setCloseShortcut(ShortcutAction.KeyCode.ESCAPE, null);
         setContent(Clara.create("NotificationsButtonPopupWindow.xml", this));
 
-        gridNotifications.setSizeFull();
-        gridNotifications.setSelectable(true);
-        gridNotifications.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+        gridNotifications.setSelectable(false);
     }
 }

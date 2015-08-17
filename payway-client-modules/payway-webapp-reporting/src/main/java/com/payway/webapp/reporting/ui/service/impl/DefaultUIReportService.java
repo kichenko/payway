@@ -18,6 +18,8 @@ import com.payway.messaging.model.reporting.ReportParameterDto;
 import com.payway.webapp.reporting.ui.dialog.StandartReportParameterDialog;
 import com.payway.webapp.reporting.ui.service.UIReportService;
 import com.payway.webapp.reporting.ui.service.UIReportServiceCallback;
+import com.payway.webapp.reporting.ui.service.UIReportServiceMetaDataCallback;
+import com.payway.webapp.reporting.ui.service.UIReportServiceReportCallback;
 import com.vaadin.ui.UI;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +46,10 @@ public class DefaultUIReportService implements UIReportService {
     protected WebAppUserService webAppUserService;
 
     @Override
-    public void execute(final long reportId, final UIReportServiceCallback callback) {
+    public void execute(final long reportId, final UIReportServiceMetaDataCallback callbackMetaData, final UIReportServiceReportCallback callbackReport) {
 
-        if (callback != null) {
-            callback.begin();
+        if (callbackMetaData != null) {
+            callbackMetaData.begin();
         }
 
         //send report ui-params request
@@ -62,14 +64,16 @@ public class DefaultUIReportService implements UIReportService {
 
                         GenerateReportParametersUIResponse rsp = (GenerateReportParametersUIResponse) response;
                         StandartReportParameterDialog dialog = (StandartReportParameterDialog) applicationContext.getBean(StandartReportParameterDialog.BEAN_NAME, rsp.getReportUi());
+                        final String reportName = rsp.getReportUi().getReportName();
 
                         dialog.show(new StandartReportParameterDialog.ExecuteCallback() {
 
                             @Override
                             public void execute(long reportId, boolean ignorePagination, ReportExportFormatTypeDto format, List<ReportParameterDto> params) {
 
-                                if (callback != null) {
-                                    callback.begin();
+                                if (callbackReport != null) {
+                                    callbackReport.metadata(reportId, reportName);
+                                    callbackReport.begin();
                                 }
 
                                 //send execute report request
@@ -80,63 +84,63 @@ public class DefaultUIReportService implements UIReportService {
 
                                         if (response instanceof ExecuteReportResponse) {
                                             ExecuteReportResponse rsp = (ExecuteReportResponse) response;
-                                            if (callback != null) {
-                                                callback.response(rsp.getFileName(), rsp.getContent());
-                                                callback.end();
+                                            if (callbackReport != null) {
+                                                callbackReport.response(rsp.getFileName(), rsp.getContent());
+                                                callbackReport.end();
                                             }
                                         } else {
-                                            processException(String.format("Cannot execute report, unknown response - [%s]", response), callback);
+                                            processException(String.format("Cannot execute report, unknown response - [%s]", response), callbackReport);
                                         }
                                     }
 
                                     @Override
                                     public void doServerException(ExceptionResponse exception) {
-                                        processException(String.format("Cannot process response of execute report, exception=[%s]", exception), callback);
+                                        processException(String.format("Cannot process response of execute report, exception=[%s]", exception), callbackReport);
                                     }
 
                                     @Override
                                     public void doLocalException(Exception exception) {
-                                        processException(String.format("Cannot process response of execute report, exception=[%s]", exception), callback);
+                                        processException(String.format("Cannot process response of execute report, exception=[%s]", exception), callbackReport);
                                     }
 
                                     @Override
                                     public void doTimeout() {
-                                        processException(String.format("Cannot process response of execute report, timeout exception"), callback);
+                                        processException(String.format("Cannot process response of execute report, timeout exception"), callbackReport);
                                     }
                                 }));
                             }
 
                             @Override
                             public void error(Exception ex) {
-                                processException(String.format("Cannot execute report, exception - [%s]", ex), callback);
+                                processException(String.format("Cannot execute report, exception - [%s]", ex), callbackMetaData);
                             }
                         });
 
-                        if (callback != null) {
-                            callback.end();
+                        if (callbackMetaData != null) {
+                            callbackMetaData.end();
                         }
 
                     } catch (Exception ex) {
-                        processException(String.format("Cannot execute report, exception - [%s]", ex), callback);
+                        processException(String.format("Cannot execute report, exception - [%s]", ex), callbackMetaData);
                     }
                 } else {
-                    processException(String.format("Cannot show report parameter dialog, unknown response - [%s]", response), callback);
+                    processException(String.format("Cannot show report parameter dialog, unknown response - [%s]", response), callbackMetaData);
                 }
             }
 
             @Override
             public void doServerException(ExceptionResponse exception) {
-                processException(String.format("Cannot show report parameter dialog, exception=[%s]", exception), callback);
+                processException(String.format("Cannot show report parameter dialog, exception=[%s]", exception), callbackMetaData);
             }
 
             @Override
             public void doLocalException(Exception exception) {
-                processException(String.format("Cannot show report parameter dialog, exception=[%s]", exception), callback);
+                processException(String.format("Cannot show report parameter dialog, exception=[%s]", exception), callbackMetaData);
             }
 
             @Override
             public void doTimeout() {
-                processException(String.format("Cannot show report parameter dialog, timeout exception"), callback);
+                processException(String.format("Cannot show report parameter dialog, timeout exception"), callbackMetaData);
             }
         }));
     }

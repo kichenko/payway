@@ -11,5 +11,5 @@ package com.payway.webapp.reporting.ui.service;
  */
 public interface UIReportService {
 
-    void execute(final long reportId, final UIReportServiceCallback callback);
+    void execute(final long reportId, final UIReportServiceMetaDataCallback callbackMetaData, final UIReportServiceReportCallback callbackReport);
 }
