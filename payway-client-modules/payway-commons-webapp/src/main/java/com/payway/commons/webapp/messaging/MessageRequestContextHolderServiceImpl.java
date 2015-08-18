@@ -3,11 +3,13 @@
  */
 package com.payway.commons.webapp.messaging;
 
+import java.util.Iterator;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * MessageRequestContextHolderServiceImpl
@@ -15,6 +17,7 @@ import lombok.Setter;
  * @author Sergey Kichenko
  * @created 27.04.15 00:00
  */
+@Slf4j
 @Setter
 @Getter
 @NoArgsConstructor
@@ -59,4 +62,24 @@ public class MessageRequestContextHolderServiceImpl implements MessageRequestCon
         return map.remove(id);
     }
 
+    @Override
+    public void cleanup() {
+
+        log.debug("Start cleanup message context...");
+
+        Iterator<Map.Entry<String, MessageContext>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, MessageContext> entry = iterator.next();
+            if (entry.getValue().isExpired()) {
+                log.debug("Find expired message context, removing from map - [{}]", entry.getValue());
+                if (entry.getValue().getCallback() != null) {
+                    log.debug("Calling timeout event...");
+                    entry.getValue().getCallback().onTimeout();
+                }
+                iterator.remove();
+            }
+        }
+
+        log.debug("Stop cleanup message context...");
+    }
 }

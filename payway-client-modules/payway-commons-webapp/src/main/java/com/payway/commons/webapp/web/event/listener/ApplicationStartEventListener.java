@@ -8,8 +8,9 @@ import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.commons.webapp.web.event.ApplicationStartEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,7 +27,8 @@ public class ApplicationStartEventListener implements ApplicationListener<Applic
     private MessagingClient client;
 
     @Autowired
-    private ThreadPoolTaskExecutor serverTaskExecutor;
+    @Qualifier("app.ServerTaskExecutor")
+    private TaskExecutor serverTaskExecutor;
 
     @Autowired
     private MessageServerResponseListener messageServerResponseListener;

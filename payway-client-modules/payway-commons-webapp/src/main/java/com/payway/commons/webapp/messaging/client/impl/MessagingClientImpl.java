@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,11 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
     private HazelcastInstance client;
 
+    @Getter(AccessLevel.PRIVATE)
+    private final Object objectLock = new Object();
+
     @Autowired
+    @Qualifier("app.ServerTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
     @Autowired
@@ -97,29 +102,32 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     @Override
     public void start() throws MessagingException {
 
-        try {
+        synchronized (getObjectLock()) {
 
-            log.debug("Connecting client: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
-            if (getState() != State.Stopped) {
-                throw new Exception(String.format("Cannot start client, invalid state (must be 'Stopped') - [%s]", getState()));
+            try {
+
+                log.debug("Connecting client: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
+                if (getState() != State.Stopped) {
+                    throw new Exception(String.format("Cannot start client, invalid state (must be 'Stopped') - [%s]", getState()));
+                }
+
+                setState(State.Started);
+                client = new MessageClientInstanceBuilder()
+                        .withClusterName(clusterName)
+                        .withClusterPassword(clusterPassword)
+                        .withClusterAddress(clusterAddress)
+                        .withConnectionAttemptLimit(0)
+                        .withLifecycleListener(this)
+                        .build();
+
+                setState(State.Connected);
+                client.getTopic(appTopicName).addMessageListener(messageListener);
+                log.debug("Successfully message client connecting: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
+            } catch (Exception ex) {
+                log.error("Message client connecting failed - ", ex);
+                setState(State.Stopped);
+                throw new MessagingException(ex.getMessage(), ex);
             }
-
-            setState(State.Started);
-            client = new MessageClientInstanceBuilder()
-                    .withClusterName(clusterName)
-                    .withClusterPassword(clusterPassword)
-                    .withClusterAddress(clusterAddress)
-                    .withConnectionAttemptLimit(0)
-                    .withLifecycleListener(this)
-                    .build();
-
-            setState(State.Connected);
-            client.getTopic(appTopicName).addMessageListener(messageListener);
-            log.debug("Successfully message client connecting: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
-        } catch (Exception ex) {
-            log.error("Message client connecting failed - ", ex);
-            setState(State.Stopped);
-            throw new MessagingException(ex.getMessage(), ex);
         }
     }
 
@@ -141,11 +149,14 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
     @Override
     public void stop() {
 
-        log.debug("Disconnecting client: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
-        if (client != null) {
-            client.shutdown();
-            setState(State.Stopped);
-            client = null;
+        synchronized (getObjectLock()) {
+
+            log.debug("Disconnecting client: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
+            if (client != null) {
+                client.shutdown();
+                setState(State.Stopped);
+                client = null;
+            }
         }
     }
 

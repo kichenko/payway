@@ -57,7 +57,7 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
 
         try {
 
-            getServiceContext().put(envelope.getMessageId(), new MessageContextImpl(envelope.getMessageId(), callback));
+            getServiceContext().put(envelope.getMessageId(), new MessageContextImpl(request.getTimeout(), callback));
 
             envelope.setOrigin(getMessagingClient().toString());
             envelope.setReplyTo(getMessagingClient().getClientQueueName());
