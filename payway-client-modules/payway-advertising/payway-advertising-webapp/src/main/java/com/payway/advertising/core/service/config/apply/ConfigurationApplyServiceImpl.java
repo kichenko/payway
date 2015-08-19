@@ -15,8 +15,7 @@ import com.payway.advertising.model.DbFileType;
 import com.payway.commons.webapp.bus.AppEventPublisher;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.ResponseCallBack;
-import com.payway.commons.webapp.messaging.client.IMessagingClient;
-import com.payway.commons.webapp.messaging.client.IMessagingLock;
+import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.messaging.core.response.ExceptionResponse;
 import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.advertising.AdvertisingApplyConfigurationRequest;
@@ -33,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +66,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
     private String serverApplyLockName;
 
     @Autowired
-    private IMessagingClient messagingClient;
+    private MessagingClient messagingClient;
 
     @Getter
     @Setter
@@ -323,7 +323,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     }
 
                     //3. send server msg
-                    IMessagingLock serverApplyLock = messagingClient.getLock(serverApplyLockName);
+                    Lock serverApplyLock = messagingClient.getLock(serverApplyLockName);
                     if (serverApplyLock.tryLock(getApplyLockTimeOut(), getUnit())) {
                         try {
 

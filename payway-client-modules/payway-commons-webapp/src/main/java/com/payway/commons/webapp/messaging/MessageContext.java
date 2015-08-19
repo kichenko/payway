@@ -4,6 +4,7 @@
 package com.payway.commons.webapp.messaging;
 
 import java.io.Serializable;
+import org.joda.time.LocalDateTime;
 
 /**
  * Интерфейс контекста сообщения
@@ -13,5 +14,11 @@ import java.io.Serializable;
  */
 public interface MessageContext extends Serializable {
 
+    long getLifeTime();
+
+    LocalDateTime getCreated();
+
     ResponseCallBack getCallback();
+
+    boolean isExpired();
 }

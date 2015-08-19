@@ -84,8 +84,8 @@
         <de.steinwedel.vaadin.addon.messagebox>2.0.7</de.steinwedel.vaadin.addon.messagebox>
         <org.vaadin.addons.imagescaler.version>2.0.0</org.vaadin.addons.imagescaler.version>
 
-        <hazelcast.all.version>3.4.2</hazelcast.all.version>
-        <hazelcast.client.version>3.4.2</hazelcast.client.version>
+        <hazelcast.all.version>3.5.1</hazelcast.all.version>
+        <hazelcast.client.version>3.5.1</hazelcast.client.version>
 
         <org.apache.pdfbox.version>1.8.9</org.apache.pdfbox.version>
         <net.coobird.thumbnailator>0.4.8</net.coobird.thumbnailator>

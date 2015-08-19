@@ -11,18 +11,16 @@
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <import resource="classpath:application-root-context.xml"/> 
+    <import resource="classpath:application-root-context.xml"/>
     <import resource="data-source-context.xml"/>
     <import resource="spring-data-context.xml"/>
-    <import resource="classpath:application-common-context.xml"/> 
-    <import resource="classpath:application-reporting-context.xml"/> 
-    
-    <task:annotation-driven/>
+    <import resource="classpath:application-common-context.xml"/>
+    <import resource="classpath:application-reporting-context.xml"/>
     <context:component-scan base-package="com.payway.advertising"/>
-               
+
     <!-- File system manager-->
     <bean id="app.advertising.FileSystemManager" class="org.apache.commons.vfs2.impl.StandardFileSystemManager" scope="prototype" init-method="init"/>
-   
+
     <!-- Contains all file ext's, that may be handled by file video converter handler-->
     <util:list id="app.advertising.SupportedVideoFileExtensions" list-class="java.util.ArrayList" value-type="java.lang.String">
         <value>avi</value>
@@ -58,14 +56,14 @@
         <property name="videoConverter" ref="app.advertising.ProxyVideoConverter"/>
         <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
     </bean>
-    
+
     <!-- Mapping file to agent file in database-->
     <bean id="app.advertising.FileAgentMappingHandler" class="com.payway.advertising.core.handlers.FileAgentMappingHandler">
         <property name="fileSystemManagerService" ref="app.advertising.FileManagerService"/>
         <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
         <property name="agentFileService" ref="app.advertising.AgentFileService"/>
     </bean>
-    
+
     <!-- Destantion file copy handler based -->
     <bean id="app.advertising.FileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
         <property name="fileSystemManagerService" ref="app.advertising.FileManagerService"/>

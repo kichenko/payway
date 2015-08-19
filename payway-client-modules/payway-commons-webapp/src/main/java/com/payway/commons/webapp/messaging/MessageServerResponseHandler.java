@@ -38,12 +38,10 @@ public class MessageServerResponseHandler implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Start processing the response message from the server");
+            log.debug("Start processing the response message from the server");
             if (envelope != null) {
-                log.info("Start of message processing from the server");
-                if (log.isDebugEnabled()) {
-                    log.debug("Envelope={} ", envelope);
-                }
+                log.debug("Start of message processing from the server");
+                log.debug("Envelope={} ", envelope);
                 MessageContext msgContext = (MessageContext) serviceContext.remove(envelope.getRequestId());
                 if (msgContext != null) {
                     if (msgContext.getCallback() != null) {
@@ -54,16 +52,16 @@ public class MessageServerResponseHandler implements Runnable {
                             msgContext.getCallback().onServerException((ExceptionResponse) rsp);
                         }
                     } else {
-                        log.info("Invalid context data");
+                        log.debug("Invalid context data");
                     }
                 } else {
-                    log.info("Not found in the context of the reply message server");
+                    log.debug("Not found in the context of the reply message server");
                 }
-                log.info("End of message processing from the server");
+                log.debug("End of message processing from the server");
             } else {
-                log.info("An empty message from the server");
+                log.debug("An empty message from the server");
             }
-            log.info("End processing the response message from the server");
+            log.debug("End processing the response message from the server");
         } catch (Exception ex) {
             log.error("Error processing the response from the server", ex);
         }

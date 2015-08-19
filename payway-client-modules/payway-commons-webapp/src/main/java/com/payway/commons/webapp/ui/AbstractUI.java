@@ -3,6 +3,9 @@
  */
 package com.payway.commons.webapp.ui;
 
+import com.google.common.eventbus.Subscribe;
+import com.payway.commons.webapp.bus.event.ConnectedClientAppEventBus;
+import com.payway.commons.webapp.bus.event.DisconnectedClientAppEventBus;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
 import com.payway.commons.webapp.ui.components.ProgressBarWindow;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
@@ -124,5 +127,15 @@ public abstract class AbstractUI extends UI implements InteractionUI {
         }
 
         return null;
+    }
+
+    @Subscribe
+    public void onConnectedClientAppEventBus(ConnectedClientAppEventBus event) {
+        ((InteractionUI) UI.getCurrent()).showNotification("", "Connected", Notification.Type.TRAY_NOTIFICATION);
+    }
+
+    @Subscribe
+    public void onDisconnectedClientAppEventBus(DisconnectedClientAppEventBus event) {
+        ((InteractionUI) UI.getCurrent()).showNotification("", "Disconnected", Notification.Type.TRAY_NOTIFICATION);
     }
 }

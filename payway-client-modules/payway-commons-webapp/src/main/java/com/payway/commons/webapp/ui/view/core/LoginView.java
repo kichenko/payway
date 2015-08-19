@@ -62,6 +62,7 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
     private static final long serialVersionUID = -8709373681721076425L;
 
     @Autowired
+    @Qualifier("app.ServerTaskExecutor")
     private TaskExecutor serverTaskExecutor;
 
     @Autowired

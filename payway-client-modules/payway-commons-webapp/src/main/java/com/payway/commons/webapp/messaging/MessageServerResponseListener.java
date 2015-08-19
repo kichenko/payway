@@ -3,8 +3,7 @@
  */
 package com.payway.commons.webapp.messaging;
 
-import com.payway.commons.webapp.messaging.client.IMessagingClient;
-import com.payway.commons.webapp.messaging.client.IMessagingQueue;
+import com.payway.commons.webapp.messaging.client.MessagingClient;
 import com.payway.messaging.core.ResponseEnvelope;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
@@ -31,13 +31,16 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
 
     private ApplicationContext applicationContext;
 
-    private IMessagingClient messagingClient;
+    private MessagingClient messagingClient;
 
     private TaskExecutor serverTaskExecutor;
 
     private long timeOut;
 
     private TimeUnit timeUnit;
+
+    @Value("5000")
+    private long clientTimeOut;
 
     private volatile boolean running = true;
 
@@ -55,25 +58,21 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
 
         while (running) {
             try {
-                if (IMessagingClient.State.Connected.equals(messagingClient.getState())) {
-                    IMessagingQueue<ResponseEnvelope> clientQueue = messagingClient.<ResponseEnvelope>getClientQueue();
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Client queue={} ", clientQueue);
+                if (getMessagingClient().isConnected()) {
+                    ResponseEnvelope envelope = getMessagingClient().<ResponseEnvelope>getClientQueue().poll(timeOut, timeUnit);
+                    if (envelope != null) {
+                        log.info("Receive & processing response message from the server");
+                        serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("app.MessageServerResponseHandler", envelope));
                     }
-
-                    log.info("Waiting for a response message from the server");
-                    ResponseEnvelope envelope = clientQueue.poll(timeOut, timeUnit);
-                    log.info("Getting the response message from the server, start processing");
-                    serverTaskExecutor.execute((MessageServerResponseHandler) applicationContext.getBean("app.MessageServerResponseHandler", envelope));
                 } else {
-                    Thread.sleep(5000);
+                    log.debug("Message server response listener cannot detect client message connection (message client in not connected status), start waiting [{}] ms...", clientTimeOut);
+                    Thread.sleep(clientTimeOut);
                 }
             } catch (InterruptedException ex) {
-                log.error("Server message listener - Thread is interrupted", ex);
+                log.error("Message server response listener detect interrupted exception, stop running and exit");
                 break;
             } catch (Exception ex) {
-                log.error("Server message listener - Unknown exception", ex);
+                log.error("Message server response listener exception", ex);
             }
         }
 
@@ -81,7 +80,7 @@ public class MessageServerResponseListener implements Runnable, ApplicationConte
             log.warn("Exit from message server listener in active status");
             running = false;
         } else {
-            log.info("Exit from message server listener ");
+            log.info("Exit from message server listener");
         }
     }
 }

@@ -34,7 +34,7 @@
     <!-- Обработчик получения запросов -->
     <bean id="app.MessageServerListener" class="com.payway.server.messaging.MessageServerRequestListener">
         <property name="serverTaskExecutor" ref="app.ServerTaskExecutor" />
-        <property name="serverQueue" ref="app.ServerQueue" />
+        <property name="serverQueue" ref="serverQueue" />
     </bean>
 
     <!-- Обработчик входящих запросов -->
