@@ -69,7 +69,19 @@ public class AgentFileServiceImpl implements AgentFileService {
     @Override
     @Transactional(readOnly = true)
     public List<DbAgentFile> findAll(Sort sort) throws ServiceException {
-        return agentFileDao.findAll(new Sort(new Sort.Order(Sort.Direction.ASC, "id")));
+        return agentFileDao.findAll(sort);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void saveAll(List<DbAgentFile> list) {
+        agentFileDao.save(list);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getNextSeqNo() {
+        return agentFileDao.getNextSeqNo() + 1;
     }
 
     @Override
@@ -81,4 +93,5 @@ public class AgentFileServiceImpl implements AgentFileService {
     public DbAgentFile getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

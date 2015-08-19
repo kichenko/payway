@@ -1,7 +1,7 @@
 /*
  * (c) Payway, 2015. All right reserved.
  */
-package com.payway.data.config;
+package com.payway.advertising.data.config;
 
 import com.googlecode.flyway.core.Flyway;
 import java.util.Properties;
@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan
 @EnableTransactionManagement
+//TODO: webapp settings com.payway.webapp.settings.repository
 @EnableJpaRepositories(basePackages = "com.payway.advertising.data.dao")
 public class PersistenceConfig {
 
@@ -49,6 +50,7 @@ public class PersistenceConfig {
         factoryBean.setDataSource(dataSource);
 
         factoryBean.setMappingResources("DbAgentFile.hbm.xml", "DbAgentFileOwner.hbm.xml", "DbConfiguration.hbm.xml");
+        //TODO: webapp settings factoryBean.setPackagesToScan("com.payway.webapp.settings.db.model");
 
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty(AvailableSettings.DIALECT, PostgreSQL82Dialect.class.getName());

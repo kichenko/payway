@@ -3,6 +3,7 @@
  */
 package com.payway.advertising.core.handlers;
 
+import com.payway.advertising.model.DbAgentFile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class FileHandlerArgs {
 
     private String dstFilePath;
     private String dstFileName;
+    private DbAgentFile agentFile;
 
     private long length;
 }

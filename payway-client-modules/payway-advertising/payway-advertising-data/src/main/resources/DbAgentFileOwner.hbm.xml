@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.payway.advertising.model.DbAgentFileOwner" table="agent_file_owners">
+    <class name="com.payway.advertising.model.DbAgentFileOwner" table="agent_file_owners" dynamic-update="true" dynamic-insert="true">
         <id name="id" column="id" >
             <generator class="identity"/>
         </id>

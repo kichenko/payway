@@ -39,14 +39,11 @@ public class FilePreviewImage extends AbstractFilePreview {
     @Override
     protected void loadContent(InputStream stream, String fileName) {
 
-        if (stream != null) {
-            BufferedImage image = loadImage(stream);
-            if (image == null) {
-                log.error("Empty image loaded from file stream");
-                return;
-            }
-
+        try (InputStream is = stream) {
+            BufferedImage image = ImageIO.read(is);
             imageScaler.setImage(createContentResource(image, fileName), image.getWidth(), image.getHeight());
+        } catch (Exception ex) {
+            log.error("Cannot load image content for preview - ", ex);
         }
     }
 
@@ -64,12 +61,13 @@ public class FilePreviewImage extends AbstractFilePreview {
 
             @Override
             public InputStream getStream() {
+
                 try {
                     ByteArrayOutputStream imagebuffer = new ByteArrayOutputStream();
                     ImageIO.write(image, "png", imagebuffer);
                     return new ByteArrayInputStream(imagebuffer.toByteArray());
                 } catch (Exception ex) {
-                    log.error("Bad image resource - {}", ex);
+                    log.error("Bad image resource - ", ex);
                 }
 
                 return null;
@@ -79,17 +77,5 @@ public class FilePreviewImage extends AbstractFilePreview {
         streamResource.setCacheTime(0);
 
         return streamResource;
-    }
-
-    private BufferedImage loadImage(InputStream stream) {
-
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(stream);
-        } catch (Exception ex) {
-            log.error("Bad image from input stream - {}", ex);
-        }
-
-        return image;
     }
 }

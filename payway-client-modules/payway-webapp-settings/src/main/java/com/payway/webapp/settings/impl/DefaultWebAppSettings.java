@@ -11,28 +11,25 @@ import com.payway.webapp.settings.storage.SettingsStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 
 /**
- * DatabaseWebAppSettings
+ * DefaultWebAppSettings - write/read with database and json
+ * seriazile/deserialize.
  *
  * @author Sergey Kichenko
  * @created 17.08.2015
  */
-@Component(value = "app.settings.DatabaseJsonWebAppSettings")
-public class DatabaseJsonWebAppSettings implements WebAppSettingsService {
+@Component(value = "app.settings.DefaultWebAppSettings")
+public class DefaultWebAppSettings implements WebAppSettingsService {
 
     @Value("${app.id}")
     private String appId;
 
     @Autowired
-    @Qualifier(value = "app.settings.WebAppSetting2JsonConvertor")
-    private Converter<Setting, String> serializer;
-
-    @Autowired
-    @Qualifier(value = "app.settings.Json2WebAppSettingConvertor")
-    private Converter<String, Setting> deserializer;
+    @Qualifier(value = "app.settings.WebAppSettingsConversionService")
+    private ConversionService conversionService;
 
     @Autowired
     @Qualifier(value = "app.settings.DataBaseSettingsStorageService")
@@ -50,8 +47,9 @@ public class DatabaseJsonWebAppSettings implements WebAppSettingsService {
 
     @Override
     public void save(String appId, String login, String key, Setting value) throws SettingsException {
+
         try {
-            storage.save(new DbWebAppUserSettings(appId, login, key, serializer.convert(value)));
+            storage.save(new DbWebAppUserSettings(appId, login, key, conversionService.convert(value, String.class)));
         } catch (Exception ex) {
             throw new SettingsException(ex.getMessage(), ex);
         }
@@ -59,8 +57,10 @@ public class DatabaseJsonWebAppSettings implements WebAppSettingsService {
 
     @Override
     public Setting load(String appId, String login, String key) throws SettingsException {
+
+        //Class.forName("").get
         try {
-            return deserializer.convert(storage.load(appId, login, key).getValue());
+            return conversionService.convert(storage.load(appId, login, key).getValue(), Setting.class);
         } catch (Exception ex) {
             throw new SettingsException(ex.getMessage(), ex);
         }

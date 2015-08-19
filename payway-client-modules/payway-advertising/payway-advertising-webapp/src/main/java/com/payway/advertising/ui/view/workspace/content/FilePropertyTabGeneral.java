@@ -21,6 +21,8 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Getter
 public class FilePropertyTabGeneral extends VerticalLayout {
 
+    private static final long serialVersionUID = -6741511197889825907L;
+
     @UiField
     private TextField editFileName;
 
@@ -32,9 +34,6 @@ public class FilePropertyTabGeneral extends VerticalLayout {
 
     @UiField
     private ComboBox cbFileType;
-
-    @UiField
-    private TextField spinSeqNo;
 
     public FilePropertyTabGeneral() {
         init();

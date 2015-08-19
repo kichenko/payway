@@ -27,4 +27,8 @@ public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
     void deleteByNamePrefix(String srcName, FileSystemObject fo) throws ServiceException;
 
     List<DbAgentFile> findAll(Sort sort) throws ServiceException;
+
+    void saveAll(List<DbAgentFile> list);
+    
+    int getNextSeqNo();
 }

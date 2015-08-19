@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
@@ -223,5 +224,16 @@ public class FileManagerServiceImpl implements FileSystemManagerService {
         }
 
         return "";
+    }
+
+    @Override
+    public String digestMD5Hex(FileSystemObject in) throws FileSystemManagerServiceException {
+
+        try {
+            return DigestUtils.md5Hex(getInputStream(in));
+        } catch (Exception ex) {
+            log.error("Error generate md5 hex digest", ex);
+            throw new FileSystemManagerServiceException("Error generate md5 hex digest", ex);
+        }
     }
 }

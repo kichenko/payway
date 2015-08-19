@@ -75,11 +75,11 @@ public class AdvertisingSettingsWindow extends Window {
     }
 
     public void show() {
+        
         if (!isAttached()) {
             for (AbstractAdvertisingSettingsTab tab : tabs) {
                 tab.load();
             }
-
             UI.getCurrent().addWindow(this);
         }
     }

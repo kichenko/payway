@@ -3,10 +3,10 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
-import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.google.gwt.thirdparty.guava.common.base.Predicate;
-import com.google.gwt.thirdparty.guava.common.collect.FluentIterable;
-import com.google.gwt.thirdparty.guava.common.collect.Iterables;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.payway.advertising.core.handlers.FileHandlerArgs;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
@@ -15,7 +15,6 @@ import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.core.service.config.apply.ApplyConfigRunCallback;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
-import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
 import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.utils.Helpers;
 import com.payway.advertising.model.DbAgentFile;
@@ -32,6 +31,7 @@ import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.AbstractAdvertisingWorkspaceView;
 import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.commons.webapp.ui.InteractionUI;
+import com.payway.commons.webapp.ui.components.buiders.WindowBuilder;
 import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -59,6 +59,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Window;
 import de.steinwedel.messagebox.ButtonId;
 import de.steinwedel.messagebox.Icon;
 import de.steinwedel.messagebox.MessageBoxListener;
@@ -79,6 +80,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -115,10 +117,12 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             ROW_EDIT,
             ROW_REMOVE,
             ROW_CFG_APPLY,
+            ROW_FILE_SEQUENCE,
             ROW_DOWNLOAD_FILE,
             TABLE_NEW_FOLDER,
             TABLE_REFRESH_FOLDER,
             TABLE_CFG_APPLY,
+            TABLE_FILE_SEQUENCE
         }
 
         private MenuAction action;
@@ -142,15 +146,13 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     private ContextMenu gridContextMenu = new ContextMenu();
 
-    @Getter
-    @Setter
     @Autowired
-    private FileSystemManagerService fileSystemManagerService;
+    private ApplicationContext applicationContext;
 
     @Getter
     @Setter
     @Autowired
-    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
+    private FileSystemManagerService fileSystemManagerService;
 
     @Autowired
     private SettingsAppService settingsAppService;
@@ -376,7 +378,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         if (getCurrentPath().equals(task.getDestFilePath())) {
             BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
             if (container != null) {
-                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, args.getDstFileName(), task.getDestFilePath() + args.getDstFileName(), args.getLength(), new DbAgentFile("", null, null, "", "", false, 0), new LocalDateTime()));
+                container.addBean(new FileExplorerItemData(FileExplorerItemData.FileType.File, args.getDstFileName(), task.getDestFilePath() + args.getDstFileName(), args.getLength(), args.getAgentFile(), new LocalDateTime()));
             }
         }
     }
@@ -428,6 +430,16 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuApplyConfig();
+            }
+        });
+
+        //Sequence
+        getMenuBar().addItem("Sequence", new ThemeResource("images/grid_files_menu_item_file_sequence.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuFileSequence();
             }
         });
     }
@@ -497,6 +509,16 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 actionMenuApplyConfig();
+            }
+        });
+
+        //Sequence
+        getMenuBar().addItem("Sequence", new ThemeResource("images/grid_files_menu_item_file_sequence.png"), new MenuBar.Command() {
+            private static final long serialVersionUID = 7160936162824727503L;
+
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                actionMenuFileSequence();
             }
         });
     }
@@ -800,6 +822,10 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
             tmp = menu.addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"));
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_CFG_APPLY, data));
             tmp.addItemClickListener(this);
+
+            tmp = menu.addItem("Sequence", new ThemeResource("images/grid_files_menu_item_file_sequence.png"));
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.ROW_FILE_SEQUENCE, data));
+            tmp.addItemClickListener(this);
         }
     }
 
@@ -821,6 +847,10 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
             tmp = menu.addItem("Apply", new ThemeResource("images/grid_files_menu_item_cfg_apply.png"));
             tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_CFG_APPLY, null));
+            tmp.addItemClickListener(this);
+
+            tmp = menu.addItem("Sequence", new ThemeResource("images/grid_files_menu_item_file_sequence.png"));
+            tmp.setData(new ContextMenuItemData(ContextMenuItemData.MenuAction.TABLE_FILE_SEQUENCE, null));
             tmp.addItemClickListener(this);
         }
     }
@@ -1050,7 +1080,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
                     //upd grid
                     container.removeItem(selectedItemId);
-                    
+
                     //refresh property panel
                     panelFileProperty.clearProperty();
                 }
@@ -1182,6 +1212,49 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         );
     }
 
+    private void actionMenuFileSequence() {
+
+        new WindowBuilder()
+                .withCaption("File sequence")
+                .withContent((FileSequenceView) applicationContext.getBean(FileSequenceView.FILE_SEQUENCE_VIEW_ID, new FileSequenceView.ActionCallBack() {
+
+                    @Override
+                    public void save(Button.ClickEvent event, com.vaadin.ui.Component component) {
+                        ((Window) component.getParent()).close();
+                    }
+
+                    @Override
+                    public void refresh(List<DbAgentFile> files) {
+
+                        BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
+                        for (FileExplorerItemData data : container.getItemIds()) {
+                            if (data.getProperty() != null && FileExplorerItemData.FileType.File.equals(data.getFileType())) {
+                                for (DbAgentFile file : files) {
+                                    if (file.getId().equals(data.getProperty().getId())) {
+                                        data.getProperty().setSeqNo(file.getSeqNo());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        FileExplorerItemData data = (FileExplorerItemData) gridFileExplorer.getValue();
+                        if (data != null && data.getProperty() != null && FileExplorerItemData.FileType.File.equals(data.getFileType())) {
+                            panelFileProperty.refreshSeqNo(data.getProperty().getSeqNo());
+                        }
+                    }
+
+                    @Override
+                    public void cancel(Button.ClickEvent event, com.vaadin.ui.Component component) {
+                        ((Window) component.getParent()).close();
+                    }
+                }))
+                .withModal()
+                .withClosable()
+                .withSizeUndefined()
+                .buildAndShow();
+    }
+
     private void actionMenuDownloadFile() {
 
         Object itemId = gridFileExplorer.getValue();
@@ -1253,6 +1326,8 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
                             ButtonId.OK,
                             ButtonId.CANCEL
                     );
+                } else if (ContextMenuItemData.MenuAction.ROW_FILE_SEQUENCE.equals(data.getAction()) || ContextMenuItemData.MenuAction.TABLE_FILE_SEQUENCE.equals(data.getAction())) {
+                    actionMenuFileSequence();
                 }
             }
         }
@@ -1260,7 +1335,7 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     private void initTabSheetProperty() {
 
-        panelFileProperty.setUp(getAgentFileService(), getAgentFileOwnerService(), getFileSystemManagerService(), getFileSystemManagerServiceSecurity());
+        panelFileProperty.setUp(getAgentFileService(), getAgentFileOwnerService(), getFileSystemManagerService());
         panelFileProperty.setUpOwnerBeanContainer();
         panelFileProperty.setUpFileTypeBeanContainer();
 
