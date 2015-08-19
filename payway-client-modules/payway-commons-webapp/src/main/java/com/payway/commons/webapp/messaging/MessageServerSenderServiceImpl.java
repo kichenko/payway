@@ -3,12 +3,17 @@
  */
 package com.payway.commons.webapp.messaging;
 
+import com.google.common.util.concurrent.SettableFuture;
 import com.payway.commons.webapp.messaging.client.IMessagingClient;
 import com.payway.commons.webapp.messaging.client.IMessagingQueue;
 import com.payway.messaging.core.RequestEnvelope;
 import com.payway.messaging.core.request.Request;
+import com.payway.messaging.core.response.ExceptionResponse;
+import com.payway.messaging.core.response.Response;
+import com.payway.messaging.core.response.SuccessResponse;
 import com.payway.messaging.message.request.auth.AuthLoginPasswordCommandRequest;
 import com.payway.messaging.message.request.auth.AuthTokenCommandRequest;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -94,5 +99,43 @@ public class MessageServerSenderServiceImpl implements MessageServerSenderServic
                 log.error("Bad clearing fail message", e);
             }
         }
+    }
+
+    @Override
+    public Response sendMessage(Request request, long timeOut, TimeUnit timeUnit) throws Exception {
+
+        final SettableFuture<Response> settableFuture = SettableFuture.<Response>create();
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        sendMessage(request, new ResponseCallBack() {
+
+            @Override
+            public void onServerResponse(SuccessResponse response) {
+                settableFuture.set(response);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onServerException(ExceptionResponse ex) {
+                settableFuture.setException(new Exception(ex.getMessage()));
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onLocalException(Exception ex) {
+                settableFuture.setException(ex);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onTimeout() {
+                settableFuture.setException(new Exception("Time out"));
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await(timeOut, timeUnit);
+
+        return settableFuture.get();
     }
 }

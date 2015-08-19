@@ -1,25 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutStandartReportParameterDialog" width="100%" spacing="true" margin="true">
-    
-    <VerticalLayout id="layoutReportParameterContent" spacing="true" width="100%"/>   
-          
-    <VerticalLayout width="100%" spacing="true">
-
-        <HorizontalLayout width="100%">
-            <HorizontalLayout p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" spacing="true">
-                <FormLayout spacing="false" margin="false">
-                    <ComboBox id="cbExportFormat" caption="Export to" width="200px" textInputAllowed="false" nullSelectionAllowed="false"/>
-                </FormLayout>
+        
+    <!--Parameters-->
+    <HorizontalLayout id="layoutParametersPanel" spacing="true" width="100%">
+        <VerticalLayout width="100%" styleName="card" spacing="true">
+            <HorizontalLayout styleName="v-panel-caption" width="100%" spacing="true">
+                <Button id="btnParameters" styleName="tiny friendly icon-only"/>
+                <Label id="lblParameters" p:expandRatio="1.0" value="Parameters" width="100%"/>
+            </HorizontalLayout> 
+            <VerticalLayout id="layoutParametersPanelContent" styleName="app-repoting-style-space-padding" spacing="true" width="100%"/>       
+        </VerticalLayout>
+    </HorizontalLayout>
+                 
+    <!--ViewAs-->
+    <HorizontalLayout spacing="true" width="100%">
+        <VerticalLayout width="100%" styleName="card" spacing="true" >
+            <HorizontalLayout styleName="v-panel-caption" spacing="true"  width="100%">
+                <Button id="btnViewAs" styleName="tiny friendly icon-only"/>
+                <Label id="lblViewAs" p:expandRatio="1.0" value="View as" width="100%"/>
             </HorizontalLayout>
-        </HorizontalLayout>
 
-        <HorizontalLayout width="100%">
-            <HorizontalLayout p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" spacing="true">
-                <Button id="btnCancel" caption="Cancel"/>
-                <Button id="btnExecute" caption="Execute" styleName="primary"/>
+            <VerticalLayout id="layoutViewAsPanelContent" styleName="app-repoting-style-space-padding" width="100%" spacing="true">
+                <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
+                    <OptionGroup id="ogExportFormat" styleName="horizontal"/>
+                </HorizontalLayout>                  
+            </VerticalLayout>
+            
+        </VerticalLayout>
+    </HorizontalLayout>                  
+        
+    <!--Options-->
+    <HorizontalLayout spacing="true" width="100%">
+        <VerticalLayout width="100%" styleName="card" spacing="true" >
+            <HorizontalLayout styleName="v-panel-caption" spacing="true" width="100%">
+                <Button id="btnOptions" styleName="tiny friendly icon-only"/>
+                <Label id="lblOptions" p:expandRatio="1.0" value="Options" width="100%"/>
             </HorizontalLayout>
-        </HorizontalLayout>
 
-    </VerticalLayout>
+            <VerticalLayout id="layoutOptionsPanelContent" styleName="app-repoting-style-space-padding" width="100%">
+                <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
+                    <CheckBox id="chIgnorePagination" caption="Ignore pagination" value="true" /> 
+                </HorizontalLayout>              
+            </VerticalLayout>
+        </VerticalLayout>
+    </HorizontalLayout>
+        
+    <!--Action Buttons-->
+    <HorizontalLayout width="100%">
+        <HorizontalLayout p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" spacing="true">
+            <Button id="btnCancel" caption="Cancel"/>
+            <Button id="btnExecute" caption="View" styleName="primary"/>
+        </HorizontalLayout>
+    </HorizontalLayout>
+
 
 </VerticalLayout>

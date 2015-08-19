@@ -76,10 +76,10 @@ public class FileVideoConverterHandler implements FileHandler {
                 args.setSrcFileName(outputFile.getName());
                 args.setDstFileName(Helpers.changeFileExt(args.getDstFileName(), fileExt));
             } else {
-                throw new Exception("Could not rename dst to src file after video convertion - {}");
+                throw new Exception("Could not rename dst to src file after video convertion");
             }
         } catch (Exception ex) {
-            log.error("Could not convert video file - {}", ex);
+            log.error("Could not convert video file - ", ex);
             throw new FileHandlerException("", ex);
         }
 

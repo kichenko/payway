@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" width="100%">
+    
+    <VerticalLayout styleName="card" width="100%">
+
+        <HorizontalLayout width="100%" styleName="v-panel-caption">                                  
+            <HorizontalLayout>
+                <Label id="lblCaption" value="Notification title" width="100%" styleName="small"/>
+            </HorizontalLayout>
+            <HorizontalLayout  p:componentAlignment="MIDDLE_RIGHT">
+                <Button id="btnClose" caption="x" styleName="tiny danger"/>
+            </HorizontalLayout>               
+        </HorizontalLayout>
+
+        <VerticalLayout width="100%" styleName="common-padding-all">
+            
+            <HorizontalLayout width="100%">
+                <HorizontalLayout>
+                    <Label id="lblLogin" value="Login" width="100%" styleName="tiny"/>
+                </HorizontalLayout>
+                <HorizontalLayout  p:componentAlignment="MIDDLE_RIGHT">
+                    <Label id="lblStartDate" value="Start" width="100%" styleName="tiny"/>
+                </HorizontalLayout>                                
+            </HorizontalLayout>
+            
+            <HorizontalLayout width="100%">
+                <HorizontalLayout>
+                    <Label id="lblStatus" value="Status" styleName="tiny"/>
+                </HorizontalLayout>
+                <HorizontalLayout  p:componentAlignment="MIDDLE_RIGHT">
+                    <Label id="lblStatusDate" value="Status date" styleName="tiny"/>
+                </HorizontalLayout>                                
+            </HorizontalLayout>
+
+            <VerticalLayout width="100%">
+                <ProgressBar id="progressBar" width="100%"  p:componentAlignment="MIDDLE_CENTER" styleName="tiny"/>
+                <Label id="lblProgress" value="Progress, please wait...." width="100%" styleName="tiny"/>
+            </VerticalLayout>
+
+            <HorizontalLayout width="100%">
+                <HorizontalLayout  p:componentAlignment="MIDDLE_RIGHT">
+                    <Button id="btnOpen" caption = "Open" styleName="tiny primary"/>
+                </HorizontalLayout>
+            </HorizontalLayout>
+        </VerticalLayout>
+
+    </VerticalLayout>
+</VerticalLayout>

@@ -16,4 +16,5 @@ public class SimpleComponentModelStateDto extends AbstractModelStateDto<Object, 
     public SimpleComponentModelStateDto(Object id, String value) {
         super(id, value);
     }
+
 }

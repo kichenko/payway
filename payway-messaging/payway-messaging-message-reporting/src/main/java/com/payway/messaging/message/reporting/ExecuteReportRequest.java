@@ -14,7 +14,6 @@ import lombok.ToString;
  * @author Sergey Kichenko
  * @created 30.07.15 00:00
  */
-@Getter
 @ToString(callSuper = true)
 public final class ExecuteReportRequest extends SessionCommandRequest {
 
@@ -26,4 +25,9 @@ public final class ExecuteReportRequest extends SessionCommandRequest {
         super(sessionId);
         this.data = data;
     }
+
+    public ReportExecuteParamsDto getData() {
+        return data;
+    }
+
 }

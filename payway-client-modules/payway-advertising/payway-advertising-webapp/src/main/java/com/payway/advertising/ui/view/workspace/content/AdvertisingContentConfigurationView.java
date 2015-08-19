@@ -230,6 +230,8 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
     @Override
     public void activate() {
+        getMenuBar().setVisible(true);
+        getButtonFileUploadToolBar().setVisible(true);
         if (!isFileGridLoadedOnActivate) {
             try {
                 ((InteractionUI) UI.getCurrent()).showProgressBar();
@@ -959,67 +961,77 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     }
 
     private void renameFileOrFolder(final Object selectedItemId) {
+
         final BeanItemContainer<FileExplorerItemData> container = (BeanItemContainer<FileExplorerItemData>) gridFileExplorer.getContainerDataSource();
-        if (container != null) {
-            final BeanItem<FileExplorerItemData> item = container.getItem(selectedItemId);
-            if (item != null && item.getBean() != null) {
-                new TextEditDialogWindow("Rename", item.getBean().getName(), new TextEditDialogWindow.TextEditDialogWindowEvent() {
-                    @Override
-                    public boolean onOk(String text) {
-                        boolean isOk = false;
-                        if (fileNameValidator.validate(text)) {
-                            try {
-                                String pathNew;
-                                FileSystemObject foOld;
-                                FileSystemObject foNew;
-
-                                pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
-
-                                if (!StringUtils.contains(pathNew, getLocalConfigPath())) {
-                                    log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getLocalConfigPath());
-                                    ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder, not equal root file path", Notification.Type.ERROR_MESSAGE);
-                                    return isOk;
-                                }
-
-                                foOld = new FileSystemObject(item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
-                                foNew = new FileSystemObject(pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
-
-                                ((InteractionUI) UI.getCurrent()).showProgressBar();
-
-                                //refresh properties & files/folders
-                                agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getLocalConfigPath()), StringUtils.substringAfter(pathNew, getLocalConfigPath()), foOld, foNew);
-
-                                //upd grid item
-                                item.getBean().setName(text);
-                                item.getBean().setPath(pathNew);
-
-                                if (item.getBean().getProperty() != null) {
-                                    item.getBean().getProperty().setName(pathNew);
-                                    panelFileProperty.updateFileName(text);
-                                }
-
-                                //#hack to update change data model value
-                                gridFileExplorer.refreshRowCache();
-                                isOk = true;
-                            } catch (Exception ex) {
-                                log.error("Bad rename file/folder", ex);
-                                ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder", Notification.Type.ERROR_MESSAGE);
-                            } finally {
-                                ((InteractionUI) UI.getCurrent()).closeProgressBar();
-                            }
-                        } else {
-                            ((InteractionUI) UI.getCurrent()).showNotification("", "Enter correct file/folder name", Notification.Type.WARNING_MESSAGE);
-                        }
-                        return isOk;
-                    }
-
-                    @Override
-                    public boolean onCancel() {
-                        return true;
-                    }
-                }).show();
-            }
+        if (container == null) {
+            return;
         }
+
+        final BeanItem<FileExplorerItemData> item = container.getItem(selectedItemId);
+        if (item == null || item.getBean() == null) {
+            return;
+        }
+
+        new TextEditDialogWindow("Rename", item.getBean().getName(), new TextEditDialogWindow.TextEditDialogWindowEvent() {
+            @Override
+            public boolean onOk(String text) {
+
+                boolean isOk = false;
+                if (fileNameValidator.validate(text)) {
+                    try {
+
+                        String pathNew;
+                        FileSystemObject foOld;
+                        FileSystemObject foNew;
+
+                        pathNew = Helpers.addEndSeparator(StringUtils.substringBeforeLast(item.getBean().getPath(), "/")) + text;
+
+                        if (!StringUtils.contains(pathNew, getLocalConfigPath())) {
+                            log.error("Bad rename, not equal root file path  root = [{}], value = [{}]", pathNew, getLocalConfigPath());
+                            ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder, not equal root file path", Notification.Type.ERROR_MESSAGE);
+                            return isOk;
+                        }
+
+                        foOld = new FileSystemObject(item.getBean().getPath(), FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+                        foNew = new FileSystemObject(pathNew, FileExplorerItemData.FileType.File.equals(item.getBean().getFileType()) ? FileSystemObject.FileType.FILE : FileSystemObject.FileType.FOLDER, 0L, null);
+
+                        ((InteractionUI) UI.getCurrent()).showProgressBar();
+
+                        //refresh properties & files/folders
+                        agentFileService.updateByNamePrefix(StringUtils.substringAfter(item.getBean().getPath(), getLocalConfigPath()), StringUtils.substringAfter(pathNew, getLocalConfigPath()), foOld, foNew);
+
+                        //upd grid item
+                        item.getBean().setName(text);
+                        item.getBean().setPath(pathNew);
+
+                        //Refresh property panel after rename
+                        if (FileExplorerItemData.FileType.File.equals(item.getBean().getFileType())) {
+                            item.getBean().getProperty().setName(StringUtils.substringAfter(pathNew, getLocalConfigPath()));
+                            panelFileProperty.refreshProperty(getLocalConfigPath(), item.getBean().getPath(), item.getBean().getName(), StringUtils.substringAfter(pathNew, getLocalConfigPath()));
+                        }
+
+                        //#hack to update change data model value
+                        gridFileExplorer.refreshRowCache();
+                        isOk = true;
+
+                    } catch (Exception ex) {
+                        log.error("Bad rename file/folder", ex);
+                        ((InteractionUI) UI.getCurrent()).showNotification("", "Can't rename file/folder", Notification.Type.ERROR_MESSAGE);
+                    } finally {
+                        ((InteractionUI) UI.getCurrent()).closeProgressBar();
+                    }
+                } else {
+                    ((InteractionUI) UI.getCurrent()).showNotification("", "Enter correct file/folder name", Notification.Type.WARNING_MESSAGE);
+                }
+
+                return isOk;
+            }
+
+            @Override
+            public boolean onCancel() {
+                return true;
+            }
+        }).show();
     }
 
     private void removeFileOrFolder(final Object selectedItemId) {
@@ -1038,6 +1050,9 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
 
                     //upd grid
                     container.removeItem(selectedItemId);
+                    
+                    //refresh property panel
+                    panelFileProperty.clearProperty();
                 }
             }
         } catch (Exception ex) {

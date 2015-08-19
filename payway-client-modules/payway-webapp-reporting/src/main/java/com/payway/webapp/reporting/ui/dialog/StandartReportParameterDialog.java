@@ -10,9 +10,12 @@ import com.payway.webapp.reporting.collector.ParametersCollector;
 import com.payway.webapp.reporting.transformer.ReportUITransformer;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -43,16 +46,37 @@ public class StandartReportParameterDialog extends Window {
 
     public interface ExecuteCallback {
 
-        void execute(long reportId, ReportExportFormatTypeDto format, List<ReportParameterDto> params);
+        void execute(long reportId, boolean ignorePagination, ReportExportFormatTypeDto format, List<ReportParameterDto> params);
 
         void error(Exception ex);
     }
 
     @UiField
-    private VerticalLayout layoutReportParameterContent;
+    private OptionGroup ogExportFormat;
 
     @UiField
-    private ComboBox cbExportFormat;
+    private CheckBox chIgnorePagination;
+
+    @UiField
+    private VerticalLayout layoutParametersPanelContent;
+
+    @UiField
+    private VerticalLayout layoutViewAsPanelContent;
+
+    @UiField
+    private VerticalLayout layoutOptionsPanelContent;
+
+    @UiField
+    private HorizontalLayout layoutParametersPanel;
+
+    @UiField
+    private Button btnParameters;
+
+    @UiField
+    private Button btnViewAs;
+
+    @UiField
+    private Button btnOptions;
 
     @Autowired
     private ReportUITransformer transformer;
@@ -77,7 +101,17 @@ public class StandartReportParameterDialog extends Window {
 
         setCaption(metadata.getReportDescription());
         setContent(Clara.create("StandartReportParameterDialog.xml", this));
-        layoutReportParameterContent.addComponent(transformer.transform(metadata.getReportForm()));
+
+        if (metadata.getReportForm() != null) {
+            layoutParametersPanelContent.addComponent(transformer.transform(metadata.getReportForm()));
+        } else {
+            log.debug("Detected no args report, creating standard report dialog with empty parameters layout");
+            layoutParametersPanel.setVisible(false);
+        }
+
+        btnParameters.setIcon(FontAwesome.MINUS);
+        btnViewAs.setIcon(FontAwesome.MINUS);
+        btnOptions.setIcon(FontAwesome.MINUS);
 
         IndexedContainer container = new IndexedContainer();
         container.addContainerProperty("id", ReportExportFormatTypeDto.class, ReportExportFormatTypeDto.PDF);
@@ -89,10 +123,28 @@ public class StandartReportParameterDialog extends Window {
             item.getItemProperty("caption").setValue(fmt.name());
         }
 
-        cbExportFormat.setItemCaptionPropertyId("caption");
-        cbExportFormat.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        cbExportFormat.setContainerDataSource(container);
-        cbExportFormat.select(container.getIdByIndex(0));
+        ogExportFormat.setItemCaptionPropertyId("caption");
+        ogExportFormat.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+        ogExportFormat.setContainerDataSource(container);
+        ogExportFormat.select(container.getIdByIndex(0));
+    }
+
+    @UiHandler("btnParameters")
+    public void clickSave(Button.ClickEvent event) {
+        layoutParametersPanelContent.setVisible(!layoutParametersPanelContent.isVisible());
+        btnParameters.setIcon(layoutParametersPanelContent.isVisible() ? FontAwesome.MINUS : FontAwesome.PLUS);
+    }
+
+    @UiHandler("btnViewAs")
+    public void clickViewAs(Button.ClickEvent event) {
+        layoutViewAsPanelContent.setVisible(!layoutViewAsPanelContent.isVisible());
+        btnViewAs.setIcon(layoutViewAsPanelContent.isVisible() ? FontAwesome.MINUS : FontAwesome.PLUS);
+    }
+
+    @UiHandler("btnOptions")
+    public void clickOptions(Button.ClickEvent event) {
+        layoutOptionsPanelContent.setVisible(!layoutOptionsPanelContent.isVisible());
+        btnOptions.setIcon(layoutOptionsPanelContent.isVisible() ? FontAwesome.MINUS : FontAwesome.PLUS);
     }
 
     @UiHandler(value = "btnCancel")
@@ -105,7 +157,7 @@ public class StandartReportParameterDialog extends Window {
 
         try {
             if (callback != null) {
-                callback.execute(metadata.getReportId(), (ReportExportFormatTypeDto) cbExportFormat.getItem(cbExportFormat.getValue()).getItemProperty("id").getValue(), collector.collect(layoutReportParameterContent));
+                callback.execute(metadata.getReportId(), chIgnorePagination.getValue(), (ReportExportFormatTypeDto) ogExportFormat.getItem(ogExportFormat.getValue()).getItemProperty("id").getValue(), collector.collect(layoutParametersPanelContent));
             }
         } catch (Exception ex) {
             log.error("Cannot execute report - [{}]", ex);

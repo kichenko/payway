@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutAdvertisingReportingWorkspace" sizeFull="true">
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tp="urn:import:com.payway.commons.webapp.ui.components.table.paging" sizeFull="true" styleName="common-padding-all">
+       
+    <HorizontalLayout width="100%">
+        <HorizontalLayout p:componentAlignment="MIDDLE_RIGHT" styleName="common-margin-bottom">
+            <TextField id="txtSearch" inputPrompt="Enter text to search"  styleName="inline-icon small"/>
+        </HorizontalLayout>
+    </HorizontalLayout>
     
-    <HorizontalLayout p:componentAlignment="MIDDLE_CENTER">
-        <FormLayout >
-            <TextField id="editReportNo" caption="Report No" p:componentAlignment="MIDDLE_CENTER"/>
-            <Button id="btnReport" caption="Run report" p:componentAlignment="MIDDLE_CENTER" styleName="primary"/>
-        </FormLayout>
+    <HorizontalLayout p:expandRatio="1" sizeFull="true">
+        <tp:PagingTableImpl id="gridReports" sizeFull="true" pageLength="0" styleName="compact"/>
+    </HorizontalLayout>
+         
+    <HorizontalLayout width="100%">
+        <HorizontalLayout p:expandRatio="0" p:componentAlignment="MIDDLE_RIGHT" styleName="common-padding-top">
+            <tp:PagingTableControls id="pagingControls"/>
+        </HorizontalLayout>
     </HorizontalLayout>
     
 </VerticalLayout>

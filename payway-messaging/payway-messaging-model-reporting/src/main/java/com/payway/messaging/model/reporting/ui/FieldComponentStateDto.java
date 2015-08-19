@@ -12,11 +12,18 @@ import lombok.Setter;
  * @author Sergey Kichenko
  * @created 30.07.15 00:00
  */
-@Getter
-@Setter
 public abstract class FieldComponentStateDto extends ComponentStateDto {
 
     private static final long serialVersionUID = 7255500110587826590L;
 
     protected Object value;
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
 }

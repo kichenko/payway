@@ -21,4 +21,5 @@ public class ListBoxStateDto extends EagerDatasourceComponentStateDto {
         setValue(value);
         setDatasource(values);
     }
+
 }

@@ -17,5 +17,5 @@ public interface UIReportServiceCallback {
 
     void exception(Exception ex);
 
-    void response(String fileName, byte[] content);
+ 
 }

@@ -50,6 +50,10 @@ public class PagingTableControls extends VerticalLayout {
 
     private IntegerRangeValidator pageNumberValidator;
 
+    private boolean skipEditPageEvent;
+    private boolean skipCbPageSize;
+    private boolean skipInitControls;
+
     public PagingTableControls() {
         init();
     }
@@ -65,7 +69,9 @@ public class PagingTableControls extends VerticalLayout {
     }
 
     private void initControls() {
-
+        
+        skipInitControls = true;
+        
         if (table == null) {
             return;
         }
@@ -85,11 +91,14 @@ public class PagingTableControls extends VerticalLayout {
 
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                table.setPageSize(Integer.valueOf(String.valueOf(event.getProperty().getValue())));
+                if (!skipCbPageSize && !skipInitControls) {
+                    table.setPageSize(Integer.valueOf(String.valueOf(event.getProperty().getValue())));
+                }
+                skipCbPageSize = false;
             }
         });
 
-        cbPageSize.select("10");
+        cbPageSize.select("25");
 
         editPage.setConverter(Integer.class);
         editPage.setValue(String.valueOf(table.getCurrentPage() + 1));
@@ -101,9 +110,10 @@ public class PagingTableControls extends VerticalLayout {
 
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                if (editPage.isValid() && editPage.getValue() != null) {
+                if (!skipEditPageEvent && !skipInitControls && editPage.isValid() && editPage.getValue() != null) {
                     table.setCurrentPage(Integer.valueOf(String.valueOf(editPage.getValue())) - 1);
                 }
+                skipEditPageEvent = false;
             }
         });
 
@@ -163,17 +173,21 @@ public class PagingTableControls extends VerticalLayout {
                 btnLast.setEnabled(table.getTotalPages() > 0 && table.getCurrentPage() != (table.getTotalPages() - 1));
 
                 if (table.getCurrentPage() + 1 != Integer.parseInt((String) editPage.getValue())) {
+                    skipEditPageEvent = true;
                     editPage.setValue(String.valueOf(table.getCurrentPage() + 1));
                 }
 
                 lbPageTotal.setValue(String.valueOf(table.getTotalPages()));
 
                 if (table.getPageSize() != Integer.parseInt((String) cbPageSize.getValue())) {
+                    skipCbPageSize = true;
                     cbPageSize.setValue(String.valueOf(table.getPageSize()));
                 }
 
                 pageNumberValidator.setMaxValue(table.getTotalPages());
             }
         });
+        
+        skipInitControls = false;
     }
 }
