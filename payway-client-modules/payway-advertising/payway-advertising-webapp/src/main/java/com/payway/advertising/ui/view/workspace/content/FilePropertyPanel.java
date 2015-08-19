@@ -6,8 +6,6 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
-import com.payway.advertising.core.service.file.FileSystemManagerServiceSecurity;
-import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.AgentFileExpressionValidator;
 import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.model.DbAgentFile;
@@ -27,14 +25,12 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
@@ -90,10 +86,6 @@ public class FilePropertyPanel extends VerticalLayout {
 
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
-    private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
-
-    @Getter(AccessLevel.PRIVATE)
-    @Setter(AccessLevel.PRIVATE)
     private DbAgentFile bean;
 
     @Getter(AccessLevel.PRIVATE)
@@ -137,7 +129,6 @@ public class FilePropertyPanel extends VerticalLayout {
         fieldGroup.setBuffered(false);
         fieldGroup.bind(tabGeneral.getCbOwner(), "owner");
         fieldGroup.bind(tabGeneral.getCbFileType(), "kind");
-        fieldGroup.bind(tabGeneral.getSpinSeqNo(), "seqNo");
         fieldGroup.bind(tabAdditional.getEditExpression(), "expression");
         fieldGroup.bind(tabAdditional.getChCountHints(), "isCountHits");
 
@@ -191,20 +182,6 @@ public class FilePropertyPanel extends VerticalLayout {
 
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
-
-            if (getBean().getId() == null) {
-
-                //set name only for new object, where id == null
-                getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
-
-                //set digest only for new object, where id == null
-                try (InputStream is = fileSystemManagerService.getInputStream(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null))) {
-                    getBean().setDigest(fileSystemManagerServiceSecurity.digestMD5Hex(is));
-                } catch (Exception ex) {
-                    throw ex;
-                }
-            }
-
             if (agentFileValidator.validate(getBean())) {
                 agentFileService.save(getBean());
                 if (getListener() != null) {
@@ -221,12 +198,11 @@ public class FilePropertyPanel extends VerticalLayout {
         }
     }
 
-    public void setUp(AgentFileService agentFileService, AgentFileOwnerService agentFileOwnerService, FileSystemManagerService fileSystemManagerService, FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity) {
+    public void setUp(AgentFileService agentFileService, AgentFileOwnerService agentFileOwnerService, FileSystemManagerService fileSystemManagerService) {
 
         setAgentFileService(agentFileService);
         setAgentFileOwnerService(agentFileOwnerService);
         setFileSystemManagerService(fileSystemManagerService);
-        setFileSystemManagerServiceSecurity(fileSystemManagerServiceSecurity);
     }
 
     public void setUpOwnerBeanContainer() {
@@ -245,27 +221,19 @@ public class FilePropertyPanel extends VerticalLayout {
         }
     }
 
+    private void addFileType(DbFileType kind) {
+
+        tabGeneral.getCbFileType().addItem(kind);
+        tabGeneral.getCbFileType().setItemIcon(kind, new ThemeResource("images/file_" + kind.name().toLowerCase() + ".png"));
+        tabGeneral.getCbFileType().setItemCaption(kind, kind.name());
+    }
+
     public void setUpFileTypeBeanContainer() {
 
         tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Unknown);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Unknown, "Unknown");
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Popup);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Popup, "Popup");
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Logo);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Logo, "Logo");
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Clip);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Clip, "Clip");
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Banner);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Banner, "Banner");
-
-        tabGeneral.getCbFileType().addItem(DbFileType.Archive);
-        tabGeneral.getCbFileType().setItemCaption(DbFileType.Archive, "Archive");
+        for (DbFileType ft : DbFileType.values()) {
+            addFileType(ft);
+        }
     }
 
     public void showProperty(String rootPath, String relativePath, String fileName, DbAgentFile bean) {
@@ -291,6 +259,10 @@ public class FilePropertyPanel extends VerticalLayout {
 
         filePreviewPanel.setFileSystemManagerService(fileSystemManagerService);
         filePreviewPanel.show(fileName, relativePath, bean == null ? null : bean.getKind());
+    }
+
+    public void refreshSeqNo(int seqNo) {
+        bean.setSeqNo(seqNo);
     }
 
     public void refreshProperty(String rootPath, String relativePath, String fileName, String pathNew) {

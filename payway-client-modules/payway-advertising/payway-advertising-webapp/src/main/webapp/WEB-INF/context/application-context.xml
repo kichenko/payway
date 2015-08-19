@@ -58,7 +58,14 @@
         <property name="videoConverter" ref="app.advertising.ProxyVideoConverter"/>
         <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
     </bean>
-
+    
+    <!-- Mapping file to agent file in database-->
+    <bean id="app.advertising.FileAgentMappingHandler" class="com.payway.advertising.core.handlers.FileAgentMappingHandler">
+        <property name="fileSystemManagerService" ref="app.advertising.FileManagerService"/>
+        <property name="settingsAppService" ref="app.advertising.SettingsAppService"/>
+        <property name="agentFileService" ref="app.advertising.AgentFileService"/>
+    </bean>
+    
     <!-- Destantion file copy handler based -->
     <bean id="app.advertising.FileDestCopyHandler" class="com.payway.advertising.core.handlers.FileDestCopyHandler">
         <property name="fileSystemManagerService" ref="app.advertising.FileManagerService"/>
@@ -68,6 +75,7 @@
     <!-- Contains all file upload processor handler's, index ordered-->
     <util:list id="app.advertising.FileUploadedHandlers" value-type="com.payway.advertising.core.handlers.FileHandler" list-class="java.util.ArrayList">
         <ref bean="app.advertising.FileVideoConverterHandler"/>
+        <ref bean="app.advertising.FileAgentMappingHandler"/>
         <ref bean="app.advertising.FileDestCopyHandler"/>
     </util:list>
 

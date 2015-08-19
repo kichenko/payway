@@ -24,7 +24,7 @@ public class DataBaseSettingsStorageService implements SettingsStorageService {
     private WebAppUserSettingsRepository repository;
 
     @Override
-    @Transactional(noRollbackFor = {Exception.class})
+    @Transactional(rollbackFor = {Exception.class})
     public void save(DbWebAppUserSettings settings) throws SettingsStorageException {
         repository.save(settings);
     }

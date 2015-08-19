@@ -17,11 +17,7 @@
     </VerticalLayout>
 
     <VerticalLayout id="layoutFileType" styleName="tab-general-layout-cb-file-type">
-        <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" width="100%"/>
+        <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" nullSelectionAllowed="false" width="100%"/>
     </VerticalLayout>
-
-    <VerticalLayout id="layoutSpinSeqNo" styleName="tab-general-layout-spin-seq-no">
-        <TextField id="spinSeqNo" caption="Seq No" width="80px"/>
-    </VerticalLayout>
-
+    
 </VerticalLayout>

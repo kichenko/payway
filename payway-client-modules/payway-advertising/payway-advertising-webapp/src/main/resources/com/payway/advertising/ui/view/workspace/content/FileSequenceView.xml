@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VerticalLayout  xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" sizeFull="true" spacing="true" styleName="common-padding-all">
+    
+    <HorizontalLayout width="100%">
+        <Table id="tableFileSequence" pageLength="0" height="500px" width="700px"/> 
+    </HorizontalLayout>
+        
+    <HorizontalLayout width="700px">
+        <HorizontalLayout p:componentAlignment="MIDDLE_RIGHT" spacing="true">
+            <Button id="btnCancel" caption="Cancel"/>
+            <Button id="btnSave" caption="Save" styleName="primary"/>
+        </HorizontalLayout>
+    </HorizontalLayout>
+           
+</VerticalLayout>

@@ -1,4 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutFilePreviewArchive" styleName="" sizeFull="true">
-    <Image id="image" p:componentAlignment="MIDDLE_CENTER"/>
-</VerticalLayout>
+<TreeTable id="treeArchive" immediate="true" styleName="borderless compact no-header no-horizontal-lines no-stripes no-vertical-lines small" width="100%" height="100%"/>

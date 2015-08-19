@@ -44,6 +44,7 @@ public class FilePreviewPanel extends Panel {
     }
 
     private void init() {
+        setSizeFull();
         setCaption("File preview");
         setIcon(new ThemeResource("images/file_preview_panel.png"));
         setContent(Clara.create("FilePreviewPanel.xml", this));
@@ -53,7 +54,7 @@ public class FilePreviewPanel extends Panel {
         try {
             return fileSystemManagerService.getInputStream(new FileSystemObject(path, FileSystemObject.FileType.FILE, 0L, null));
         } catch (Exception ex) {
-            log.error("Can not get file input stream - {}", ex);
+            log.error("Can not get file input stream - ", ex);
         }
 
         return null;
