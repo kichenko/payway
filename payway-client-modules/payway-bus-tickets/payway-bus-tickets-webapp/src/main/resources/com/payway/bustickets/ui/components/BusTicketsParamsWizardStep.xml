@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutBusTicketsParamsWizardStep" sizeFull="true">
+    
     <FormLayout id="layoutParamsForm" sizeFull="true">
+        
         <TextField id="editContactNo" immediate="true" caption="Contact No" styleName="" width="100%"/>
         <ComboBox id="cbDirection" nullSelectionAllowed="false" caption="Direction" textInputAllowed="false" styleName="" width="100%"/>    
         <ComboBox id="cbRoute" nullSelectionAllowed="false" caption="Route" textInputAllowed="false" styleName="" width="100%"/>   
         <ComboBox id="cbTripDate" nullSelectionAllowed="false" caption="Trip date" textInputAllowed="false" styleName="" width="100%"/> 
+        
         <HorizontalLayout caption="Quantity"  width="100%">
-            <Slider id="sliderQuantity" styleName="" p:expandRatio="1" width="95%"/>  
-            <Label id="labelQuantity" p:expandRatio="0" width="30px" p:componentAlignment="MIDDLE_RIGHT" value="0"/>
+            <Slider id="sliderQuantity" styleName="" p:expandRatio="1" width="99%"/>  
+            <Label id="labelQuantity" p:expandRatio="0" width="45px" styleName="tiny colored common-text-align-right" p:componentAlignment="MIDDLE_RIGHT" value="0"/>
         </HorizontalLayout>
+        
         <HorizontalLayout caption="Baggage" width="100%">
-            <Slider id="sliderBaggage" p:expandRatio="1" width="95%" styleName="" /> 
-            <Label id="labelBaggage" p:expandRatio="0" width="30px" p:componentAlignment="MIDDLE_RIGHT" value="0"/>
+            <Slider id="sliderBaggage" p:expandRatio="1" width="99%" styleName="" /> 
+            <Label id="labelBaggage" p:expandRatio="0" width="45px" styleName="tiny colored common-text-align-right" p:componentAlignment="MIDDLE_RIGHT" value="0"/>
         </HorizontalLayout>
+        
         <Label id="lblSummary" caption="Summary" sizeUndefined="true" styleName="colored"/> 
+        
     </FormLayout>
 </VerticalLayout>

@@ -40,4 +40,13 @@ public class DbAgentFile extends DbAbstractEntity {
         setIsCountHits(isCountHits);
         setSeqNo(seqNo);
     }
+
+    public DbAgentFile(String name, DbFileType kind, DbAgentFileOwner owner, String expression, String digest, Boolean isCountHits) {
+        setName(name);
+        setKind(kind);
+        setOwner(owner);
+        setExpression(expression);
+        setDigest(digest);
+        setIsCountHits(isCountHits);
+    }
 }

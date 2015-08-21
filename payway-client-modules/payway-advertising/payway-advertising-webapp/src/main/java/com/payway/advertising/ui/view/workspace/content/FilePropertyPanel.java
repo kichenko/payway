@@ -6,6 +6,7 @@ package com.payway.advertising.ui.view.workspace.content;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.file.FileSystemManagerService;
+import com.payway.advertising.core.service.file.FileSystemObject;
 import com.payway.advertising.core.validator.AgentFileExpressionValidator;
 import com.payway.advertising.core.validator.AgentFileValidator;
 import com.payway.advertising.model.DbAgentFile;
@@ -31,6 +32,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.teemu.clara.Clara;
 import org.vaadin.teemu.clara.binder.annotation.UiField;
 import org.vaadin.teemu.clara.binder.annotation.UiHandler;
@@ -182,6 +184,12 @@ public class FilePropertyPanel extends VerticalLayout {
 
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
+
+            if (getBean().getId() == null) {
+                getBean().setName(StringUtils.substringAfter(getRelativePath(), getRootPath()));
+                getBean().setDigest(fileSystemManagerService.digestMD5Hex(new FileSystemObject(getRelativePath(), FileSystemObject.FileType.FILE, 0L, null)));
+            }
+
             if (agentFileValidator.validate(getBean())) {
                 agentFileService.save(getBean());
                 if (getListener() != null) {

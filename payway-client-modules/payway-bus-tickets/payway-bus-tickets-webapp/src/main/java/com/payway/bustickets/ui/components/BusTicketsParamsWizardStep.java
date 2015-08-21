@@ -162,6 +162,14 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
                         if (getSliderQuantity().getValue().intValue() > getSliderQuantity().getMax()) {
                             getSliderQuantity().setValue(1.0);
                         }
+
+                        refreshSliderLabels(
+                                getSliderQuantity().getValue().intValue(),
+                                (int) getSliderQuantity().getMax(),
+                                getSliderBaggage().getValue().intValue(),
+                                (int) getSliderBaggage().getMax()
+                        );
+
                     }
                 }
                 refreshSummary();
@@ -175,7 +183,13 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 int value = ((Double) event.getProperty().getValue()).intValue();
-                labelBaggage.setValue(Integer.toString(value));
+
+                refreshSliderLabels(
+                        getSliderQuantity().getValue().intValue(),
+                        (int) getSliderQuantity().getMax(),
+                        value,
+                        (int) getSliderBaggage().getMax()
+                );
             }
         });
 
@@ -189,11 +203,23 @@ public final class BusTicketsParamsWizardStep extends AbstractWizardStep {
                 int value = ((Double) event.getProperty().getValue()).intValue();
 
                 refreshSummary();
+
                 getSliderBaggage().setValue(getSliderBaggage().getMin());
                 getSliderBaggage().setMax(value * getBaggageRatio());
-                labelQuantity.setValue(Integer.toString(value));
+
+                refreshSliderLabels(
+                        value,
+                        (int) getSliderQuantity().getMax(),
+                        getSliderBaggage().getValue().intValue(),
+                        (int) getSliderBaggage().getMax()
+                );
             }
         });
+    }
+
+    private void refreshSliderLabels(int quantityValue, int quantityMaxValue, int baggageValue, int baggageMaxValue) {
+        labelQuantity.setValue(String.format("%d/%d", quantityValue, quantityMaxValue));
+        labelBaggage.setValue(String.format("%d/%d", baggageValue, baggageMaxValue));
     }
 
     public void setUp(List<DirectionDto> directions, List<RouteDto> routes, List<ChoiceDto> dates, int baggageRatio) {

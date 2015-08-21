@@ -122,6 +122,7 @@ public class MessagingClientImpl implements MessagingClient, LifecycleListener {
 
                 setState(State.Connected);
                 client.getTopic(appTopicName).addMessageListener(messageListener);
+                appEventPublisher.sendNotification(new ConnectedClientAppEventBus());
                 log.debug("Successfully message client connecting: cluster = {}, address = {}, clientQueueName = {}", clusterName, StringUtils.join(clusterAddress, ","), clientQueueName);
             } catch (Exception ex) {
                 log.error("Message client connecting failed - ", ex);

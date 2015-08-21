@@ -47,6 +47,9 @@ public class FileVideoConverterHandler implements FileHandler {
             AudioAttributes audioAttributes;
             FormatContainer formatContainer;
 
+            log.debug("Start handle file video convertor handler...");
+            log.debug("Args = [{}]", args);
+
             if (!settingsAppService.isConvertVideoFiles()) {
                 log.debug("Video converting is not enabled, skip handler");
                 return false;
@@ -81,6 +84,8 @@ public class FileVideoConverterHandler implements FileHandler {
         } catch (Exception ex) {
             log.error("Could not convert video file - ", ex);
             throw new FileHandlerException("", ex);
+        } finally {
+            log.debug("Stop handle file video convertor handler...");
         }
 
         return true;

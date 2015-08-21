@@ -24,7 +24,7 @@ public class MessagingCollectorServiceImpl implements MessagingCollectorService 
     private MessageRequestContextHolderService contextService;
 
     @Override
-    @Scheduled(fixedDelayString = "${app.messaging.collector.fixed.delay:60000}")
+    @Scheduled(fixedDelayString = "${app.messaging.collector.fixed.delay:900000}")
     public void execute() {
         log.debug("Start message collector executing...");
         contextService.cleanup();

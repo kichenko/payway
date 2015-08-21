@@ -29,6 +29,6 @@ public interface AgentFileService extends CrudEntityService<Long, DbAgentFile> {
     List<DbAgentFile> findAll(Sort sort) throws ServiceException;
 
     void saveAll(List<DbAgentFile> list);
-    
+
     int getNextSeqNo();
 }

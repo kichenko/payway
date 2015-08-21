@@ -35,7 +35,7 @@ public interface AgentFileDao extends JpaRepository<DbAgentFile, Long> {
     @Query(value = "delete from DbAgentFile f where f.name like :srcName || '%'")
     int deleteByNamePrefix(@Param("srcName") String srcName);
 
-    @Query(value = "select max(f.seqNo) from DbAgentFile f")
+    @Query(value = "select coalesce(max(f.seqNo),0) from DbAgentFile f")
     int getNextSeqNo();
 
 }

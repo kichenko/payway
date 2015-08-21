@@ -4,7 +4,7 @@
 package com.payway.commons.webapp.messaging;
 
 import lombok.ToString;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * MessageContextImpl
@@ -19,7 +19,7 @@ public final class MessageContextImpl implements MessageContext {
 
     private final long lifetime;
     private final ResponseCallBack callback;
-    private final LocalDateTime created = new LocalDateTime();
+    private final DateTime created = new DateTime();
 
     public MessageContextImpl(long lifetime, ResponseCallBack callback) {
         this.lifetime = lifetime;
@@ -37,12 +37,17 @@ public final class MessageContextImpl implements MessageContext {
     }
 
     @Override
-    public LocalDateTime getCreated() {
+    public DateTime getCreated() {
         return created;
     }
 
     @Override
     public boolean isExpired() {
-        return created.plusMillis((int) lifetime).isAfter(LocalDateTime.now());
+
+        if (Long.MAX_VALUE == lifetime) {
+            return false;
+        }
+
+        return !created.plus(lifetime).isAfter(DateTime.now());
     }
 }

@@ -63,6 +63,12 @@ public class AgentFileServiceImpl implements AgentFileService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public DbAgentFile save(DbAgentFile entity) throws ServiceException {
+
+        //only if new...
+        if (entity.getId() == null) {
+            entity.setSeqNo(getNextSeqNo());
+        }
+
         return agentFileDao.save(entity);
     }
 
@@ -93,5 +99,4 @@ public class AgentFileServiceImpl implements AgentFileService {
     public DbAgentFile getById(Long id) throws ServiceException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }

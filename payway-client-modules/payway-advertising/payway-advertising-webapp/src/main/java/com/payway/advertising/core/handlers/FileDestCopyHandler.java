@@ -29,6 +29,9 @@ public class FileDestCopyHandler implements FileHandler {
     @Override
     public boolean handle(FileHandlerArgs args) throws FileHandlerException {
 
+        log.debug("Start handle file dest copy handler...");
+        log.debug("Args = [{}]", args);
+
         String input = Helpers.addEndSeparator(args.getSrcFilePath()) + args.getSrcFileName();
         String output = Helpers.addEndSeparator(args.getDstFilePath()) + args.getDstFileName();
         String outputTmp = Helpers.addEndSeparator(args.getDstFilePath()) + args.getDstFileName() + settingsAppService.getTemporaryFileExt();
@@ -48,15 +51,17 @@ public class FileDestCopyHandler implements FileHandler {
             //set real file size after all handler processing
             args.setLength(fileSystemManagerService.resolve(dst).getSize());
         } catch (Exception ex) {
-            log.error("Could not copy src to dst file - ", ex);
 
+            log.error("Could not copy src to dst file - ", ex);
             try {
                 fileSystemManagerService.delete(dstTmp);
             } catch (Exception e) {
                 log.error("Could not delete dst file on crush file handler - ", ex);
             }
-
             throw new FileHandlerException("Could not finish file handler (copy src to dst file)", ex);
+
+        } finally {
+            log.debug("Stop handle file dest copy handler...");
         }
 
         return true;

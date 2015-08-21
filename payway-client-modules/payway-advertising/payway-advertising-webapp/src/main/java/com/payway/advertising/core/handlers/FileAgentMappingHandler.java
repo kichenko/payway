@@ -33,19 +33,18 @@ public class FileAgentMappingHandler implements FileHandler {
     @Override
     public boolean handle(FileHandlerArgs args) throws FileHandlerException {
 
-        String pattern = "/";
         try {
 
             final String digest;
             final String fileName;
+            final String pattern = "/";
             final DbAgentFile agentFile;
 
+            log.debug("Start handle file agent mapping handler...");
+
             fileName = StringUtils.substringAfter(
-                    args.getDstFilePath(),
-                    StringUtils.appendIfMissingIgnoreCase(
-                            settingsAppService.getLocalConfigPath().replace("\\", pattern),
-                            pattern
-                    )
+                    StringUtils.appendIfMissingIgnoreCase(fileSystemManagerService.canonicalization(args.getDstFilePath()), pattern),
+                    StringUtils.appendIfMissingIgnoreCase(fileSystemManagerService.canonicalization(settingsAppService.getLocalConfigPath()), pattern)
             ) + args.getDstFileName();
 
             digest = fileSystemManagerService.digestMD5Hex(new FileSystemObject(
@@ -55,12 +54,19 @@ public class FileAgentMappingHandler implements FileHandler {
                     null)
             );
 
-            agentFile = agentFileService.save(new DbAgentFile(fileName, DbFileType.Unknown, null, null, digest, Boolean.FALSE, agentFileService.getNextSeqNo()));
+            log.debug("Args = [{}]", args);
+            log.debug("FileName = [{}]", fileName);
+            log.debug("FileDigest = [{}]", digest);
+
+            agentFile = agentFileService.save(new DbAgentFile(fileName, DbFileType.Unknown, null, null, digest, Boolean.FALSE));
             args.setAgentFile(agentFile);
-            return true;
         } catch (Exception ex) {
             log.error("Could not mapping file to database - ", ex);
             throw new FileHandlerException("Could not mapping file to database", ex);
+        } finally {
+            log.debug("Stop handle file agent mapping handler...");
         }
+
+        return true;
     }
 }
