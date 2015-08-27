@@ -16,15 +16,8 @@
     <packaging>war</packaging>
     <name>payway-kiosk-cashier-webapp</name>
 
-    <!-- используем версию родителя-->
+    <!-- use parent version -->
     <!--<version>1.0-SNAPSHOT</version>-->
-
-    <properties>
-
-        <!-- vaadin production mode in web.xml -->
-        <productionMode>false</productionMode>
-
-    </properties>
 
     <!-- dependencies-->
     <dependencies>
@@ -172,8 +165,8 @@
 
         <finalName>payway-kiosk-cashier-webapp</finalName>     
         
-        <!-- Add app version-->
-        <resources>           
+        <resources>       
+            <!-- add app version-->    
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
@@ -192,99 +185,16 @@
                 </includes>
             </resource>                                
         </resources>
-
+        
         <plugins>
-
-            <!-- I don't want this module in the repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-
-            <!-- directory is cleaned properly -->
-            <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven.maven.clean.plugin.version}</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/webapp/VAADIN/widgetsets</directory>
-                            <directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
-
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.plugin.version}</version>
-                <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-                    <!-- <runTarget>mobilemail</runTarget> -->
-                    <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This way compatible with Vaadin eclipse plugin. -->
-                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
-                    <noServer>true</noServer>
-                    <!-- Remove draftCompile when project is ready -->
-                    <draftCompile>false</draftCompile>
-                    <compileReport>true</compileReport>
-                    <style>OBF</style>
-                    <strict>true</strict>
-                    <runTarget>http://localhost:8080/</runTarget>
-                </configuration>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!-- if you don't specify any modules, the plugin will find them -->
-                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> </modules> -->
-                        </configuration>
-                        <goals>
-                            <goal>resources</goal>
-                            <goal>update-widgetset</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>${plugin.m2elifecycle-mapping.version}</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>com.vaadin</groupId>
-                                        <artifactId>vaadin-maven-plugin</artifactId>
-                                        <versionRange>[7.0.0.rc1,)</versionRange>
-                                        <goals>
-                                            <goal>resources</goal>
-                                            <goal>update-widgetset</goal>
-                                            <goal>compile</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+       
     </build>
 </project>

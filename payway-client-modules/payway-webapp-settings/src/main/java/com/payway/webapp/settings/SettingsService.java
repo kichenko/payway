@@ -4,7 +4,6 @@
 package com.payway.webapp.settings;
 
 import com.payway.webapp.settings.exception.SettingsException;
-import com.payway.webapp.settings.model.Setting;
 
 /**
  * SettingsService
@@ -14,7 +13,9 @@ import com.payway.webapp.settings.model.Setting;
  */
 public interface SettingsService {
 
-    void save(String appId, String login, String key, Setting value) throws SettingsException;
+    void save(String appId, String login, String key, Object value) throws SettingsException;
 
-    Setting load(String appId, String login, String key) throws SettingsException;
+    Object load(String appId, String login, String key) throws SettingsException;
+
+    boolean exist(String appId, String login, String key);
 }

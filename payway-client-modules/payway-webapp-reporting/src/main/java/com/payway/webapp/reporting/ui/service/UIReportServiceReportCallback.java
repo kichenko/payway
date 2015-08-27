@@ -3,6 +3,10 @@
  */
 package com.payway.webapp.reporting.ui.service;
 
+import com.payway.messaging.model.reporting.ReportExportFormatTypeDto;
+import com.payway.messaging.model.reporting.ReportParameterDto;
+import java.util.List;
+
 /**
  * UIReportServiceReportCallback
  *
@@ -11,7 +15,7 @@ package com.payway.webapp.reporting.ui.service;
  */
 public interface UIReportServiceReportCallback extends UIReportServiceCallback {
 
-    void metadata(long id, String name);
+    void metadata(long id, String name, boolean ignorePagination, ReportExportFormatTypeDto format, List<ReportParameterDto> params);
 
     void response(String fileName, byte[] content);
 }

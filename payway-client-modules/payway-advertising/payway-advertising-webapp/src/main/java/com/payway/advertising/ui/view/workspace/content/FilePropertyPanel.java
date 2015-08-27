@@ -16,8 +16,11 @@ import com.payway.advertising.ui.view.workspace.content.container.AgentFileOwner
 import com.payway.advertising.ui.view.workspace.content.preview.FilePreviewPanel;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.validator.Validator;
+import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -52,9 +55,6 @@ public class FilePropertyPanel extends VerticalLayout {
 
         void onSave(DbAgentFile file);
     }
-
-    @UiField
-    private Button btnSave;
 
     @UiField
     private TabSheet tabSheetFileProperty;
@@ -122,8 +122,6 @@ public class FilePropertyPanel extends VerticalLayout {
         addStyleName("tab-panel-file-property");
         addComponent(Clara.create("FilePropertyTabs.xml", this));
 
-        btnSave.setIcon(new ThemeResource("images/btn_save_property.png"));
-
         tabSheetFileProperty.addTab(tabGeneral, "General", new ThemeResource("images/tab_general.png"));
         tabSheetFileProperty.addTab(tabAdditional, "Additional", new ThemeResource("images/tab_additional.png"));
 
@@ -133,6 +131,15 @@ public class FilePropertyPanel extends VerticalLayout {
         fieldGroup.bind(tabGeneral.getCbFileType(), "kind");
         fieldGroup.bind(tabAdditional.getEditExpression(), "expression");
         fieldGroup.bind(tabAdditional.getChCountHints(), "isCountHits");
+        
+        tabAdditional.getEditExpression().addShortcutListener(new ShortcutListener("Shortcut CTRL+S", ShortcutAction.KeyCode.S, new int[]{ShortcutAction.ModifierKey.CTRL}) {
+            private static final long serialVersionUID = -7690864248678996551L;
+
+            @Override
+            public void handleAction(Object sender, Object target) {
+                save();
+            }
+        });
 
         tabGeneral.getBtnOwnerBook().addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 5019806363620874205L;
@@ -153,9 +160,27 @@ public class FilePropertyPanel extends VerticalLayout {
                 });
 
                 UI.getCurrent().addWindow(wnd);
-                wnd.markAsDirtyRecursive(); //#hack, because window is wrong painted
+                wnd.markAsDirtyRecursive(); //TODO: #hack, because window is wrong painted
             }
         });
+    }
+
+    @UiHandler("chCountHints")
+    public void onChCountHintsValueChange(Property.ValueChangeEvent event) {
+        save();
+    }
+
+    @UiHandler("cbFileType")
+    public void onCbFileTypeValueChange(Property.ValueChangeEvent event) {
+
+        if (save()) {
+            filePreviewPanel.show(tabGeneral.getEditFileName().getValue(), getRelativePath(), getBean() == null ? null : getBean().getKind());
+        }
+    }
+
+    @UiHandler("cbOwner")
+    public void onCbOwnerValueChange(Property.ValueChangeEvent event) {
+        save();
     }
 
     private void refreshOwners() {
@@ -163,13 +188,16 @@ public class FilePropertyPanel extends VerticalLayout {
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
 
+            tabGeneral.getCbOwner().setFireValueChange(false);
+
             setOwners(agentFileOwnerService.list());
 
             Object selectedItemId = tabGeneral.getCbOwner().getValue();
             ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).removeAllItems();
             ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addAll(getOwners());
-
             tabGeneral.getCbOwner().setValue(selectedItemId);
+
+            tabGeneral.getCbOwner().resetFireValueChange();
 
         } catch (Exception ex) {
             log.error("Refresh agent owner list", ex);
@@ -179,8 +207,7 @@ public class FilePropertyPanel extends VerticalLayout {
         }
     }
 
-    @UiHandler("btnSave")
-    public void clickSave(Button.ClickEvent event) {
+    public boolean save() {
 
         try {
             ((InteractionUI) UI.getCurrent()).showProgressBar();
@@ -195,6 +222,7 @@ public class FilePropertyPanel extends VerticalLayout {
                 if (getListener() != null) {
                     getListener().onSave(getBean());
                 }
+                return true;
             } else {
                 ((InteractionUI) UI.getCurrent()).showNotification("", "Can't save, invalid file property values", Notification.Type.ERROR_MESSAGE);
             }
@@ -204,10 +232,11 @@ public class FilePropertyPanel extends VerticalLayout {
         } finally {
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
         }
+
+        return false;
     }
 
     public void setUp(AgentFileService agentFileService, AgentFileOwnerService agentFileOwnerService, FileSystemManagerService fileSystemManagerService) {
-
         setAgentFileService(agentFileService);
         setAgentFileOwnerService(agentFileOwnerService);
         setFileSystemManagerService(fileSystemManagerService);
@@ -215,22 +244,26 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void setUpOwnerBeanContainer() {
 
-        tabGeneral.getCbOwner().setContainerDataSource(new AgentFileOwnerBeanItemContainer());
-        tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
-        tabGeneral.getCbOwner().setNullSelectionAllowed(true);
-
         try {
+
+            tabGeneral.getCbOwner().setFireValueChange(false);
+
+            tabGeneral.getCbOwner().setContainerDataSource(new AgentFileOwnerBeanItemContainer());
+            tabGeneral.getCbOwner().setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+            tabGeneral.getCbOwner().setItemCaptionPropertyId("name");
+            tabGeneral.getCbOwner().setNullSelectionAllowed(true);
+
             setOwners(getAgentFileOwnerService().list());
             ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).removeAllItems();
             ((AgentFileOwnerBeanItemContainer) tabGeneral.getCbOwner().getContainerDataSource()).addAll(getOwners());
+
+            tabGeneral.getCbOwner().resetFireValueChange();
         } catch (Exception ex) {
             log.error("Set up owner bean container failed - {}", ex);
         }
     }
 
     private void addFileType(DbFileType kind) {
-
         tabGeneral.getCbFileType().addItem(kind);
         tabGeneral.getCbFileType().setItemIcon(kind, new ThemeResource("images/file_" + kind.name().toLowerCase() + ".png"));
         tabGeneral.getCbFileType().setItemCaption(kind, kind.name());
@@ -238,10 +271,12 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void setUpFileTypeBeanContainer() {
 
+        tabGeneral.getCbFileType().setFireValueChange(false);
         tabGeneral.getCbFileType().setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
         for (DbFileType ft : DbFileType.values()) {
             addFileType(ft);
         }
+        tabGeneral.getCbFileType().resetFireValueChange();
     }
 
     public void showProperty(String rootPath, String relativePath, String fileName, DbAgentFile bean) {
@@ -249,6 +284,10 @@ public class FilePropertyPanel extends VerticalLayout {
         setBean(bean);
         setRootPath(rootPath);
         setRelativePath(relativePath);
+
+        tabGeneral.getCbOwner().setFireValueChange(false);
+        tabGeneral.getCbFileType().setFireValueChange(false);
+        tabAdditional.getChCountHints().setFireValueChange(false);
 
         if (getBean().getOwner() != null) {
             tabGeneral.getCbOwner().setValue(bean.getOwner().getId());
@@ -259,14 +298,18 @@ public class FilePropertyPanel extends VerticalLayout {
         tabGeneral.getEditFileName().setReadOnly(false);
         tabGeneral.getEditFileName().setValue(fileName);
         tabGeneral.getEditFileName().setReadOnly(true);
+
         fieldGroup.setItemDataSource(new BeanItem<>(getBean()));
 
         tabGeneral.setEnabled(true);
         tabAdditional.setEnabled(true);
-        btnSave.setEnabled(true);
 
         filePreviewPanel.setFileSystemManagerService(fileSystemManagerService);
         filePreviewPanel.show(fileName, relativePath, bean == null ? null : bean.getKind());
+
+        tabGeneral.getCbOwner().resetFireValueChange();
+        tabGeneral.getCbFileType().resetFireValueChange();
+        tabAdditional.getChCountHints().resetFireValueChange();
     }
 
     public void refreshSeqNo(int seqNo) {
@@ -286,9 +329,14 @@ public class FilePropertyPanel extends VerticalLayout {
 
     public void clearProperty() {
 
+        tabGeneral.getCbOwner().setFireValueChange(false);
+        tabGeneral.getCbFileType().setFireValueChange(false);
+        tabAdditional.getChCountHints().setFireValueChange(false);
+
         tabGeneral.getEditFileName().setReadOnly(false);
         tabGeneral.getEditFileName().setValue("");
         tabGeneral.getEditFileName().setReadOnly(true);
+
         tabGeneral.getCbOwner().select(null);
         tabGeneral.getCbFileType().select(null);
         tabAdditional.getEditExpression().setValue("");
@@ -296,8 +344,12 @@ public class FilePropertyPanel extends VerticalLayout {
 
         tabGeneral.setEnabled(false);
         tabAdditional.setEnabled(false);
-        btnSave.setEnabled(false);
 
         filePreviewPanel.clear();
+
+        tabGeneral.getCbOwner().resetFireValueChange();
+        tabGeneral.getCbFileType().resetFireValueChange();
+        tabAdditional.getChCountHints().resetFireValueChange();
+        tabAdditional.getChCountHints().resetFireValueChange();
     }
 }

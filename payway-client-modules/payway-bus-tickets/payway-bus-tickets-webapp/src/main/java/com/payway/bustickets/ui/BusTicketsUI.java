@@ -155,7 +155,7 @@ public class BusTicketsUI extends AbstractLoginUI {
 
     @Override
     protected String getLoginTitle() {
-        return "Payway Bus Tickets Desktop";
+        return "Payway Bus Tickets Dashboard";
     }
 
     @Override

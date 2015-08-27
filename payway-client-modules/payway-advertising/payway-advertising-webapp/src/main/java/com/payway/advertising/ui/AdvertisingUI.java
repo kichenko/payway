@@ -151,7 +151,7 @@ public class AdvertisingUI extends AbstractLoginUI {
 
     @Override
     protected String getLoginTitle() {
-        return "Payway Advertising Desktop";
+        return "Payway Advertising Dashboard";
     }
 
     @Override

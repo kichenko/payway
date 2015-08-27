@@ -15,10 +15,13 @@ import com.payway.commons.webapp.ui.components.table.paging.IPagingContainer;
 import com.payway.commons.webapp.ui.components.table.paging.PagingTableControls;
 import com.payway.commons.webapp.ui.components.table.paging.PagingTableImpl;
 import com.payway.messaging.model.reporting.ReportDto;
+import com.payway.messaging.model.reporting.ReportExportFormatTypeDto;
+import com.payway.messaging.model.reporting.ReportParameterDto;
 import com.payway.webapp.reporting.ui.service.UIReportService;
 import com.payway.webapp.reporting.ui.service.UIReportServiceMetaDataCallback;
 import com.payway.webapp.reporting.ui.service.UIReportServiceReportCallback;
 import com.payway.webapp.reporting.ui.service.content.ReportContentService;
+import com.payway.webapp.settings.WebAppSettingsService;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.server.FontAwesome;
@@ -30,6 +33,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -76,6 +80,9 @@ public class AdvertisingReportingWorkspace extends AbstractAdvertisingWorkspaceV
 
     @Autowired
     protected SessionEventBus sessionEventBus;
+
+    @Autowired
+    protected WebAppSettingsService settingsService;
 
     @Value("${app.config.reporting.rest.path:/reporting}")
     private String restPath;
@@ -188,8 +195,11 @@ public class AdvertisingReportingWorkspace extends AbstractAdvertisingWorkspaceV
         gridReports.setColumnHeader("description", "Description");
         gridReports.setColumnHeader("run", "Action");
 
-        gridReports.setColumnWidth("run", 70);
         gridReports.setColumnAlignment("run", Table.Align.CENTER);
+        
+        gridReports.setColumnExpandRatio("name", 0.25F);
+        gridReports.setColumnExpandRatio("description", 0.7F);
+        gridReports.setColumnExpandRatio("run", 0.05F);
 
         gridReports.setVisibleColumns("name", "description", "run");
         gridReports.sort(new Object[]{"name"}, new boolean[]{true});
@@ -235,7 +245,7 @@ public class AdvertisingReportingWorkspace extends AbstractAdvertisingWorkspaceV
                     private String reportName;
 
                     @Override
-                    public void metadata(long id, String name) {
+                    public void metadata(long id, String name, boolean ignorePagination, ReportExportFormatTypeDto format, List<ReportParameterDto> params) {
                         reportName = name;
                     }
 

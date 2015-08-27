@@ -3,7 +3,7 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
-import com.vaadin.ui.CheckBox;
+import com.payway.commons.webapp.ui.components.CheckBoxEx;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import lombok.Getter;
@@ -19,12 +19,14 @@ import org.vaadin.teemu.clara.binder.annotation.UiField;
 @Getter
 public class FilePropertyTabAdditional extends VerticalLayout {
 
+    private static final long serialVersionUID = 3499637339796494906L;
+
     @UiField
     private TextArea editExpression;
 
     @UiField
-    private CheckBox chCountHints;
-    
+    private CheckBoxEx chCountHints;
+
     public FilePropertyTabAdditional() {
         init();
     }

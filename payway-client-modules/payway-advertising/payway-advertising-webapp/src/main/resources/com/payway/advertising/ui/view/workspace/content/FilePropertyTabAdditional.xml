@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTabAdditionalProperty" sizeFull="true" styleName="tab-additional-layout">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.commons.webapp.ui.components" id="layoutTabAdditionalProperty" sizeFull="true" styleName="tab-additional-layout">
     
     <CssLayout id="layoutEditExpression" width="100%" styleName="tab-additional-layout-edit-expression">
-        <TextArea id="editExpression" caption="Expression"  width="100%" height="180px"/>
+        <TextArea id="editExpression" caption="Expression" nullRepresentation="" description="Press CTRL+S to save changes" width="100%" height="180px"/>
     </CssLayout>
     
     <CssLayout id="layoutChCountHints" width="100%" styleName="tab-additional-layout-ch-count-hints">
-        <CheckBox id="chCountHints" caption="Count hints" width="100%"/>
+        <cmp:CheckBoxEx id="chCountHints" caption="Count hints" width="100%"/>
     </CssLayout>
     
 </CssLayout>

@@ -95,7 +95,12 @@ public abstract class AbstractUI extends UI implements InteractionUI {
 
     @Override
     public void closeProgressBar() {
+        
         progressCounter -= 1;
+        if (progressCounter < 0) {
+            progressCounter = 0;
+        }
+
         if (progressBarWindow.isAttached() && progressCounter == 0) {
             progressBarWindow.close();
             UI.getCurrent().push();

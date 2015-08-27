@@ -138,6 +138,7 @@ public class ConfigurationApplyServiceImpl implements ConfigurationApplyService 
                     AgentFileDto dto = new AgentFileDto();
 
                     dto.setName(file.getName());
+                    dto.setSeqNo(file.getSeqNo());
                     dto.setDigest(file.getDigest());
                     dto.setExpression(file.getExpression());
                     dto.setCountHits(ObjectUtils.defaultIfNull(file.getIsCountHits(), false));

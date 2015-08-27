@@ -55,7 +55,7 @@ public class KioskCashierUI extends AbstractLoginUI {
 
     @Override
     protected String getLoginTitle() {
-        return "Payway Kiosk Cashier Desktop";
+        return "Payway Kiosk Cashier Dashboard";
     }
 
     @Override

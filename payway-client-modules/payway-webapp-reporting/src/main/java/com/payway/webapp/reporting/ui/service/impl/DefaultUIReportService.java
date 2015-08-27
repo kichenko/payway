@@ -15,15 +15,18 @@ import com.payway.messaging.message.reporting.GenerateReportParametersUIResponse
 import com.payway.messaging.model.reporting.ReportExecuteParamsDto;
 import com.payway.messaging.model.reporting.ReportExportFormatTypeDto;
 import com.payway.messaging.model.reporting.ReportParameterDto;
+import com.payway.webapp.reporting.model.settings.ReportDialogSettings;
 import com.payway.webapp.reporting.ui.dialog.StandartReportParameterDialog;
 import com.payway.webapp.reporting.ui.service.UIReportService;
 import com.payway.webapp.reporting.ui.service.UIReportServiceCallback;
 import com.payway.webapp.reporting.ui.service.UIReportServiceMetaDataCallback;
 import com.payway.webapp.reporting.ui.service.UIReportServiceReportCallback;
+import com.payway.webapp.settings.WebAppSettingsService;
 import com.vaadin.ui.UI;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -36,6 +39,9 @@ import org.springframework.context.ApplicationContext;
 @org.springframework.stereotype.Component(value = "app.reporting.ui.service.DefaultUIReportService")
 public class DefaultUIReportService implements UIReportService {
 
+    @Value("app.report.dialog.settings.id.%d")
+    private String appReportSettingsKeyTemplate;
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -44,6 +50,9 @@ public class DefaultUIReportService implements UIReportService {
 
     @Autowired
     protected WebAppUserService webAppUserService;
+
+    @Autowired
+    protected WebAppSettingsService settingsService;
 
     @Override
     public void execute(final long reportId, final UIReportServiceMetaDataCallback callbackMetaData, final UIReportServiceReportCallback callbackReport) {
@@ -62,9 +71,21 @@ public class DefaultUIReportService implements UIReportService {
 
                     try {
 
+                        ReportDialogSettings dlgSettings = null;
+                        try {
+                            //load report dialog settings
+                            dlgSettings = (ReportDialogSettings) settingsService.load(webAppUserService.getUser().getLogin(), String.format(appReportSettingsKeyTemplate, reportId));
+                        } catch (Exception ex) {
+                            log.debug("Cannot load report dialog settings - ", ex);
+                        }
+
                         GenerateReportParametersUIResponse rsp = (GenerateReportParametersUIResponse) response;
                         StandartReportParameterDialog dialog = (StandartReportParameterDialog) applicationContext.getBean(StandartReportParameterDialog.BEAN_NAME, rsp.getReportUi());
                         final String reportName = rsp.getReportUi().getReportName();
+
+                        if (dlgSettings != null) {
+                            dialog.setup(dlgSettings);
+                        }
 
                         dialog.show(new StandartReportParameterDialog.ExecuteCallback() {
 
@@ -72,8 +93,18 @@ public class DefaultUIReportService implements UIReportService {
                             public void execute(long reportId, boolean ignorePagination, ReportExportFormatTypeDto format, List<ReportParameterDto> params) {
 
                                 if (callbackReport != null) {
-                                    callbackReport.metadata(reportId, reportName);
+                                    callbackReport.metadata(reportId, reportName, ignorePagination, format, params);
                                     callbackReport.begin();
+                                }
+
+                                try {
+                                    settingsService.save(
+                                            webAppUserService.getUser().getLogin(),
+                                            String.format(appReportSettingsKeyTemplate, reportId),
+                                            new ReportDialogSettings(ignorePagination, format)
+                                    );
+                                } catch (Exception ex) {
+                                    log.debug("Cannot save report dialog settings - ", ex);
                                 }
 
                                 //send execute report request

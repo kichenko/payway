@@ -84,8 +84,33 @@
                 
     </dependencies>
     
+    
+    
     <!-- build -->
     <build>
         <finalName>payway-commons-webapp</finalName>
+        
+         <resources>   
+            <!-- add app version-->      
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <excludes>
+                    <exclude>com/payway/commons/webapp/ui/view/core/LoginView.xml</exclude>
+                </excludes>
+            </resource>  
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>com/payway/commons/webapp/ui/view/core/LoginView.xml</include>
+                </includes>
+            </resource> 
+        </resources>
+        
+        
     </build>
 </project>

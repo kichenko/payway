@@ -49,9 +49,13 @@ public class DbWebAppUserSettings implements Serializable {
     @Column(nullable = false)
     private String value;
 
-    public DbWebAppUserSettings(String appId, String login, String key, String value) {
+    @Column(nullable = false)
+    private String className;
+
+    public DbWebAppUserSettings(String appId, String login, String className, String key, String value) {
         this.appId = appId;
         this.login = login;
+        this.className = className;
         this.key = key;
         this.value = value;
     }

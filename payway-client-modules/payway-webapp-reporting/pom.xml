@@ -29,6 +29,12 @@
         
         <dependency>
             <groupId>com.payway</groupId>
+            <artifactId>payway-webapp-settings</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>  
+        
+        <dependency>
+            <groupId>com.payway</groupId>
             <artifactId>payway-messaging-message</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

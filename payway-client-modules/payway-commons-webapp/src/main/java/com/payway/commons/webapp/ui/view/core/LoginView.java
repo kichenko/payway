@@ -23,6 +23,7 @@ import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinService;
@@ -103,6 +104,9 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
     private void init() {
 
         setCompositionRoot(Clara.create("LoginView.xml", this));
+        
+        editUserName.setIcon(FontAwesome.USER);
+        editPassword.setIcon(FontAwesome.LOCK);
 
         editUserName.addShortcutListener(new ShortcutListener("Sign in (Enter)", ShortcutAction.KeyCode.ENTER, null) {
             private static final long serialVersionUID = -7690864248678996551L;

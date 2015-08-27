@@ -775,6 +775,14 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
         gridFileExplorer.setColumnHeader("size", "File size");
         gridFileExplorer.setColumnHeader("lastModifiedTime", "File last modified time");
 
+        gridFileExplorer.setColumnAlignment("name", Table.Align.LEFT);
+        gridFileExplorer.setColumnAlignment("size", Table.Align.RIGHT);
+        gridFileExplorer.setColumnAlignment("lastModifiedTime", Table.Align.CENTER);
+        
+        gridFileExplorer.setColumnExpandRatio("name", 0.75F);
+        gridFileExplorer.setColumnExpandRatio("size", 0.1F);
+        gridFileExplorer.setColumnExpandRatio("lastModifiedTime", 0.15F);
+
         gridFileExplorer.setVisibleColumns("name", "size", "lastModifiedTime");
         gridFileExplorer.sort(new Object[]{"name"}, new boolean[]{true});
     }

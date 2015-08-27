@@ -4,8 +4,8 @@
     <HorizontalSplitPanel id="splitHorizontalPanel"/>
 
     <CssLayout id="layoutLeft" styleName="main-panel-left" width="100%" height="100%" sizeFull="true"> 
-        <Label id="lbAppVersion" value="r${svn.revision}-${project.build.timestamp}" width="100%" styleName="app-version"/>    
         <CssLayout id="layoutSideBar" styleName="main-panel-left-layout-side-bar" width="100%" height="100%">
+            <Label id="lbAppVersion" value="r${svn.revision}-${project.build.timestamp}" width="100%" styleName="app-version"/>    
             <cmp:SideBarMenu id="sideBarMenu" sizeFull="true"/>
         </CssLayout>     
     </CssLayout>

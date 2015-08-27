@@ -32,7 +32,7 @@
         <!-- версии плагинов -->
         <maven.source.plugin.version>2.2.1</maven.source.plugin.version>
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-        <maven.maven.clean.plugin.version>2.4.1</maven.maven.clean.plugin.version>
+        <maven.clean.plugin.version>2.4.1</maven.clean.plugin.version>
         <maven.surefire.plugin.version>2.17</maven.surefire.plugin.version>
         <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
         <maven.dependency.plugin.version>2.5.1</maven.dependency.plugin.version>
@@ -41,6 +41,7 @@
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <plugin.m2elifecycle-mapping.version> 1.0.0</plugin.m2elifecycle-mapping.version>
         <maven.plugin.svn.revision.number.version>1.13</maven.plugin.svn.revision.number.version>
+        <maven.plugin.war.version>2.4</maven.plugin.war.version>
         
         <!-- версии библиотек -->
         <joda.time.version>2.3</joda.time.version>

@@ -18,5 +18,13 @@ public enum ReportExportFormatTypeDto {
     CSV,
     RTF,
     DOCX,
-    XLSX
+    XLSX;
+
+    public String getCaption() {
+        return name();
+    }
+
+    public int getId() {
+        return ordinal();
+    }
 }

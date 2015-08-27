@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="loginViewLayout" sizeFull="true">
     <VerticalLayout id="loginPanelLayout" spacing="true" styleName="login-panel" sizeUndefined="true" p:componentAlignment="MIDDLE_CENTER">
-        <CssLayout id="labelLayout" styleName="labels">
+        
+        <CssLayout id="labelLayout" styleName="labels">       
             <Label id="labelCaption" sizeUndefined="true" styleName="login-label-caption" value= "Welcome"/>
             <Label id="labelTitle" sizeUndefined="true" styleName="login-label-title" value=""/>
         </CssLayout>
+        
         <HorizontalLayout id = "horizontalFieldLayout" spacing="true" styleName="fields">
-            <TextField id = "editUserName" icon="" styleName="" caption = "UserName"/>
-            <PasswordField id = "editPassword" icon="" styleName="" caption = "Password"/>
-            <Button id="buttonSignIn" clickShortcut="ENTER" styleName="" p:componentAlignment="BOTTOM_LEFT" caption="Sign In" />
+            <TextField id = "editUserName" icon="" styleName="inline-icon" caption = "Username"/>
+            <PasswordField id = "editPassword" icon="" styleName="inline-icon" caption = "Password"/>
+            <Button id="buttonSignIn" clickShortcut="ENTER" styleName="primary" p:componentAlignment="BOTTOM_LEFT" caption="Sign In" />
         </HorizontalLayout>
-        <CheckBox id="checkBoxRememberMe" value="true" caption = "Remember me"/>
+                
+        <HorizontalLayout width="100%"> 
+            <HorizontalLayout p:componentAlignment="MIDDLE_LEFT">
+                <CheckBox id="checkBoxRememberMe" value="true" caption="Remember me"/>  
+            </HorizontalLayout>          
+            <HorizontalLayout p:componentAlignment="MIDDLE_RIGHT">
+                <Label id="lbAppVersion" styleName="app-version-login" value="r${svn.revision}-${project.build.timestamp}"/> 
+            </HorizontalLayout>  
+        </HorizontalLayout>
+        
     </VerticalLayout>
+            
 </VerticalLayout>

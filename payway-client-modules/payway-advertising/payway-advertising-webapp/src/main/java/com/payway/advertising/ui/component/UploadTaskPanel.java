@@ -79,7 +79,7 @@ public class UploadTaskPanel extends Panel implements UploadListener {
         gridTasks.addContainerProperty("Progress", ProgressBar.class, null);
         gridTasks.addContainerProperty("Decription", String.class, null);
         gridTasks.addContainerProperty("Cancel", Button.class, null);
-        gridTasks.addStyleName("upload-task-panel-grid-task");
+        gridTasks.addStyleName("upload-task-panel-grid-task small compact");
 
         return gridTasks;
     }

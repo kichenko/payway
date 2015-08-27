@@ -34,4 +34,11 @@ public class DataBaseSettingsStorageService implements SettingsStorageService {
     public DbWebAppUserSettings load(String appId, String login, String key) throws SettingsStorageException {
         return repository.findByAppIdAndLoginAndKey(appId, login, key);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean exist(String appId, String login, String key) {
+        return repository.exist(appId, login, key) != null;
+    }
+
 }

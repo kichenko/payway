@@ -7,9 +7,9 @@ import com.payway.messaging.model.reporting.ReportExportFormatTypeDto;
 import com.payway.messaging.model.reporting.ReportParameterDto;
 import com.payway.messaging.model.reporting.ReportUIDto;
 import com.payway.webapp.reporting.collector.ParametersCollector;
+import com.payway.webapp.reporting.model.settings.ReportDialogSettings;
 import com.payway.webapp.reporting.transformer.ReportUITransformer;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -113,15 +113,8 @@ public class StandartReportParameterDialog extends Window {
         btnViewAs.setIcon(FontAwesome.MINUS);
         btnOptions.setIcon(FontAwesome.MINUS);
 
-        IndexedContainer container = new IndexedContainer();
-        container.addContainerProperty("id", ReportExportFormatTypeDto.class, ReportExportFormatTypeDto.PDF);
-        container.addContainerProperty("caption", String.class, "");
-
-        for (ReportExportFormatTypeDto fmt : metadata.getFormats()) {
-            Item item = container.getItem(container.addItem());
-            item.getItemProperty("id").setValue(fmt);
-            item.getItemProperty("caption").setValue(fmt.name());
-        }
+        BeanItemContainer<ReportExportFormatTypeDto> container = new BeanItemContainer<>(ReportExportFormatTypeDto.class);
+        container.addAll(metadata.getFormats());
 
         ogExportFormat.setItemCaptionPropertyId("caption");
         ogExportFormat.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
@@ -157,15 +150,15 @@ public class StandartReportParameterDialog extends Window {
 
         try {
             if (callback != null) {
-                callback.execute(metadata.getReportId(), chIgnorePagination.getValue(), (ReportExportFormatTypeDto) ogExportFormat.getItem(ogExportFormat.getValue()).getItemProperty("id").getValue(), collector.collect(layoutParametersPanelContent));
+                callback.execute(metadata.getReportId(), chIgnorePagination.getValue(), (ReportExportFormatTypeDto) ogExportFormat.getValue(), collector.collect(layoutParametersPanelContent));
             }
         } catch (Exception ex) {
-            log.error("Cannot execute report - [{}]", ex);
+            log.error("Cannot execute report - ", ex);
             if (callback != null) {
                 try {
                     callback.error(ex);
                 } catch (Exception e) {
-                    log.error("Callback execute report - [{}]", e);
+                    log.error("Callback execute report - ", e);
                 }
             }
         }
@@ -178,5 +171,14 @@ public class StandartReportParameterDialog extends Window {
         if (!this.isAttached()) {
             UI.getCurrent().addWindow(this);
         }
+    }
+
+    public void setup(ReportDialogSettings settings) {
+        ogExportFormat.setValue(settings.getFormat());
+        chIgnorePagination.setValue(settings.getIgnorePagination());
+    }
+
+    public ReportDialogSettings getSettings() {
+        return new ReportDialogSettings(chIgnorePagination.getValue(), (ReportExportFormatTypeDto) ogExportFormat.getValue());
     }
 }

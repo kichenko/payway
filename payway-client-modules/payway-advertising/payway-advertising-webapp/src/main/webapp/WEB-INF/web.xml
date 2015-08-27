@@ -28,12 +28,12 @@
         <init-param>
             <description>Vaadin UI heartbeat interval (seconds)</description>
             <param-name>heartbeatInterval</param-name>
-            <param-value>300</param-value>
+            <param-value>${project.vaadin.heart.beat.interval}</param-value>
         </init-param>
         <init-param>
             <description>Vaadin closeIdleSessions</description>
             <param-name>closeIdleSessions</param-name>
-            <param-value>false</param-value>
+            <param-value>${project.vaadin.close.idle.sessions}</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>

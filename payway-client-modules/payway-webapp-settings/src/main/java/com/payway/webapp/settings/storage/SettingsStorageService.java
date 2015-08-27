@@ -17,4 +17,6 @@ public interface SettingsStorageService {
     void save(DbWebAppUserSettings settings) throws SettingsStorageException;
 
     DbWebAppUserSettings load(String appId, String login, String key) throws SettingsStorageException;
+    
+    boolean exist(String appId, String login, String key);
 }

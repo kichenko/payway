@@ -1,5 +1,12 @@
 @mixin app-common-style {
 
+    //TODO: hack for spinner loader without bk color
+    .v-window-modalitycurtain {
+        background-image: none;
+        background-color: none;
+        opacity: 0;
+    }
+
     .app-common-style-margin-all-5px {
         margin: 5px;
     }

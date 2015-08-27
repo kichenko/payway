@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" id="layoutTabGeneralProperty" sizeFull="true" styleName="tab-general-layout">
+<VerticalLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:cmp="urn:import:com.payway.commons.webapp.ui.components" id="layoutTabGeneralProperty" sizeFull="true" styleName="tab-general-layout">
 
     <VerticalLayout id="layoutEditName" styleName="tab-general-layout-edit-name">
         <TextField id="editFileName" caption="File name" readOnly="true" width="100%"/>
@@ -8,7 +8,7 @@
     <VerticalLayout id="layoutOwnerArea" width="100%">
         <CssLayout id="layoutHorizontalOwnerArea" styleName="tab-general-layout-owner-area">
             <CssLayout id="layoutCbOwner" styleName="tab-general-layout-cb-owner">
-                <ComboBox id="cbOwner" caption="Owner" textInputAllowed="false" width="100%"/>
+                <cmp:ComboBoxEx id="cbOwner" caption="Owner" textInputAllowed="false" width="100%"/>
             </CssLayout>
             <CssLayout id="layoutBtnOwnerBook" styleName="tab-general-layout-btn-ownerbook">
                 <Button id="btnOwnerBook" caption=""/>
@@ -17,7 +17,7 @@
     </VerticalLayout>
 
     <VerticalLayout id="layoutFileType" styleName="tab-general-layout-cb-file-type">
-        <ComboBox id="cbFileType" caption="File type" textInputAllowed="false" nullSelectionAllowed="false" width="100%"/>
+        <cmp:ComboBoxEx id="cbFileType" caption="File type" textInputAllowed="false" nullSelectionAllowed="false" width="100%"/>
     </VerticalLayout>
     
 </VerticalLayout>

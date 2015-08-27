@@ -10,11 +10,12 @@
                            http://www.springframework.org/schema/util 
                            http://www.springframework.org/schema/util/spring-util.xsd">
     
+    <context:component-scan base-package="com.payway.webapp.settings"/> 
+    
     <bean id="app.settings.WebAppSettingsConversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>                
-                <bean class="com.payway.webapp.settings.convertor.Json2WebAppSettingConvertor"/>            
-                <bean class="com.payway.webapp.settings.convertor.WebAppSetting2JsonConvertor"/>            
+                <ref bean="app.settings.WebAppSettingJsonAnnotationConvertor"/>            
             </set>
         </property>
     </bean>

@@ -23,4 +23,12 @@ public interface WebAppUserSettingsRepository extends JpaRepository<DbWebAppUser
             + "lower(s.key) = lower(:key)"
     )
     DbWebAppUserSettings findByAppIdAndLoginAndKey(@Param("appId") String appId, @Param("login") String login, @Param("key") String key);
+
+    @Query(value = "select 1 from DbWebAppUserSettings s "
+            + "where "
+            + "lower(s.appId) = lower(:appId) and "
+            + "lower(s.login) = lower(:login) and "
+            + "lower(s.key) = lower(:key)"
+    )
+    Integer exist(@Param("appId") String appId, @Param("login") String login, @Param("key") String key);
 }

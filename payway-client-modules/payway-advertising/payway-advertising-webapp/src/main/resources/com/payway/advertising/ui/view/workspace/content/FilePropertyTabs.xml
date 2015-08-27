@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tb="urn:import:com.payway.advertising.ui.view.workspace.content" xmlns:cmp="urn:import:com.payway.advertising.ui.view.workspace.content.preview" id="layoutTabsProperty" styleName="" sizeFull="true">
+<CssLayout xmlns="urn:import:com.vaadin.ui" xmlns:p="urn:vaadin:parent" xmlns:tb="urn:import:com.payway.advertising.ui.view.workspace.content" xmlns:cmp="urn:import:com.payway.advertising.ui.view.workspace.content.preview" id="layoutTabsProperty" sizeFull="true">
 
     <CssLayout id="layoutTab" styleName="tab-property-layout-tabs" width="100%" height="305px">
         <TabSheet id="tabSheetFileProperty" styleName="framed padded-tabbar"/>
@@ -7,12 +7,8 @@
         <tb:FilePropertyTabAdditional id="tabAdditional" height="260px"/>
     </CssLayout>
         
-    <CssLayout id ="layoutFilePreviewPanel" styleName="tab-property-file-preview">
+    <HorizontalLayout id ="layoutFilePreviewPanel" styleName="tab-property-file-preview" sizeFull="true">
         <cmp:FilePreviewPanel id="filePreviewPanel" sizeFull="true"/>
-    </CssLayout>
+    </HorizontalLayout>
     
-    <CssLayout id="layoutButtons" styleName="tab-property-layout-save">
-        <Button id="btnSave" caption="Save" styleName="tab-property-layout-btn-save"/>
-    </CssLayout>
-
 </CssLayout>

@@ -55,8 +55,8 @@ public class Interval extends VerticalLayout {
 
     private void init() {
 
-        setSizeFull();
         addComponent(Clara.create(getClass().getResourceAsStream("/com/payway/webapp/reporting/components/Interval.xml"), this));
+        setWidth(menuBar.getWidth(), menuBar.getWidthUnits());
 
         addAttachListener(new AttachListener() {
             private static final long serialVersionUID = 928024836680874045L;
@@ -72,7 +72,7 @@ public class Interval extends VerticalLayout {
     private void configureMenuBar() {
 
         MenuBar.MenuItem dropdown;
-      
+
         dropdown = menuBar.addItem("", FontAwesome.CLOCK_O, null);
 
         dropdown.addItem("Today", new MenuBar.Command() {

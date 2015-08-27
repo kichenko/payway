@@ -132,6 +132,10 @@ public class EntityBox extends VerticalLayout implements Container<SimpleSelecti
     @Override
     public void select(List<?> ids) {
 
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
         if (ComboBox.class.equals(getWidget().getClass())) {
             SimpleSelectionModel selected = null;
             SimpleSelectionModelBeanItemContainer container = (SimpleSelectionModelBeanItemContainer) ((ComboBox) getWidget()).getContainerDataSource();

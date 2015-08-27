@@ -4,10 +4,14 @@
 package com.payway.webapp.reporting.transformer.impl;
 
 import com.payway.messaging.model.reporting.ui.ComponentStateContainerDto;
+import com.payway.webapp.reporting.components.Interval;
 import com.payway.webapp.reporting.exception.ReportException;
 import com.payway.webapp.reporting.transformer.ReportUITransformer;
 import com.payway.webapp.reporting.transformer.factory.ComponentTransformer;
 import com.payway.webapp.reporting.utils.ReportComponentTransformerUtils;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +27,30 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @Component(value = "app.reporting.DefaultReportUITransformer")
 public class DefaultReportUITransformer implements ReportUITransformer {
-    
+
     @Autowired
     private ReportComponentTransformerUtils reportComponentTransformerUtils;
-    
+
     @Override
     public com.vaadin.ui.Component transform(com.payway.messaging.model.reporting.ui.ComponentStateDto content) throws ReportException {
-        
+
         VerticalLayout layout = new VerticalLayout();
-        
+
         if (!(content instanceof ComponentStateContainerDto)) {
             throw new ReportException("Argument is not instance of ContainerComponent");
         }
-        
+
         try {
             walk(content, layout);
         } catch (Exception ex) {
             throw new ReportException(ex.getMessage(), ex);
         }
-        
+
         return (com.vaadin.ui.Component) layout;
     }
-    
+
     private void walk(com.payway.messaging.model.reporting.ui.ComponentStateDto cmp, com.vaadin.ui.ComponentContainer parent) throws Exception {
-        
+
         if (cmp instanceof ComponentStateContainerDto) {
             com.vaadin.ui.ComponentContainer child = (com.vaadin.ui.ComponentContainer) convert(cmp);
             if (!checkIfNull(parent, child)) {
@@ -58,9 +62,9 @@ public class DefaultReportUITransformer implements ReportUITransformer {
         } else {
             com.vaadin.ui.Component child = convert(cmp);
             if (!checkIfNull(parent, child)) {
-                
+
                 parent.addComponent(child);
-/*
+
                 //TODO: hack for Interval
                 if (parent instanceof AbstractOrderedLayout) {
                     if (child instanceof Interval) {
@@ -72,32 +76,32 @@ public class DefaultReportUITransformer implements ReportUITransformer {
 
                 //TODO: hack for Interval
                 if (child instanceof Interval && parent instanceof HorizontalLayout) {
-                    ((HorizontalLayout) parent).setComponentAlignment(child, Alignment.BOTTOM_RIGHT);
+                    ((HorizontalLayout) parent).setComponentAlignment(child, Alignment.BOTTOM_LEFT);
                 }
-*/
+
             } else {
                 log.error("Converted component is null");
             }
         }
     }
-    
+
     private com.vaadin.ui.Component convert(com.payway.messaging.model.reporting.ui.ComponentStateDto cmp) throws Exception {
-        
+
         ComponentTransformer transformer = reportComponentTransformerUtils.getComponentTransformer(cmp.getClass().getSimpleName());
         if (transformer != null) {
             return transformer.transform(cmp);
         }
-        
+
         return null;
     }
-    
+
     private boolean checkIfNull(com.vaadin.ui.Component... components) {
-        
+
         if (ObjectUtils.containsElement(components, null)) {
             log.error("On walking founded null component");
             return true;
         }
-        
+
         return false;
     }
 }

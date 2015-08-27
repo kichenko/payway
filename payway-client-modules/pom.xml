@@ -23,5 +23,93 @@
         <module>payway-bus-tickets</module>
         <module>payway-kiosk-cashier</module>
     </modules>
+    
+    <properties>
+        <!-- vaadin production mode in web.xml for all web-apps -->
+        <project.vaadin.production.mode>false</project.vaadin.production.mode>
+        <project.vaadin.heart.beat.interval>300</project.vaadin.heart.beat.interval> 
+        <project.vaadin.close.idle.sessions>false</project.vaadin.close.idle.sessions>
+    </properties>
+        
+    <build>
+        <pluginManagement>
+            <plugins>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven.plugin.war.version}</version>
+                    <configuration>
+                        <failOnMissingWebXml>true</failOnMissingWebXml>
+                        <webResources>
+                            <resource>
+                                <directory>src/main/webapp</directory>
+                                <filtering>false</filtering>
+                                <excludes>
+                                    <exclude>WEB-INF/web.xml</exclude>
+                                </excludes>
+                            </resource>
+                            <resource>
+                                <directory>src/main/webapp</directory>
+                                <filtering>true</filtering>
+                                <includes>
+                                    <include>WEB-INF/web.xml</include>
+                                </includes>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                </plugin>
+                
+                <!-- directory is cleaned properly -->
+                <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin.version}</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>src/main/webapp/VAADIN/widgetsets</directory>
+                                <directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>vaadin-maven-plugin</artifactId>
+                    <version>${vaadin.plugin.version}</version>
+                    <configuration>
+                        <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                        <!-- <runTarget>mobilemail</runTarget> -->
+                        <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This way compatible with Vaadin eclipse plugin. -->
+                        <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
+                        <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
+                        <noServer>true</noServer>
+                        <!-- Remove draftCompile when project is ready -->
+                        <draftCompile>false</draftCompile>
+                        <compileReport>true</compileReport>
+                        <style>OBF</style>
+                        <strict>true</strict>
+                        <runTarget>http://localhost:8080/</runTarget>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <configuration>
+                                <!-- if you don't specify any modules, the plugin will find them -->
+                                <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> </modules> -->
+                            </configuration>
+                            <goals>
+                                <goal>resources</goal>
+                                <goal>update-widgetset</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>            
+        </pluginManagement>    
+    </build>
                 
 </project>

@@ -3,9 +3,9 @@
  */
 package com.payway.advertising.ui.view.workspace.content;
 
+import com.payway.commons.webapp.ui.components.ComboBoxEx;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import lombok.Getter;
@@ -27,13 +27,13 @@ public class FilePropertyTabGeneral extends VerticalLayout {
     private TextField editFileName;
 
     @UiField
-    private ComboBox cbOwner;
+    private ComboBoxEx cbOwner;
 
     @UiField
     private Button btnOwnerBook;
 
     @UiField
-    private ComboBox cbFileType;
+    private ComboBoxEx cbFileType;
 
     public FilePropertyTabGeneral() {
         init();

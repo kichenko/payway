@@ -2,17 +2,6 @@
 
     //var's
     $panelTabsHeight:305px;
-    $btnSaveHeight:40px;
-
-    .tab-property-layout-btn-save {
-        float: right;
-        height: $btnSaveHeight;
-    }
-
-    .tab-property-layout-save{
-        //background: green;
-        width: 100%;
-    }
 
     .tab-property-file-preview {
         //background: darkorange;
@@ -20,8 +9,7 @@
         height: 100%;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        padding-bottom: $panelTabsHeight + $btnSaveHeight;
-        margin-bottom: -1 * ($panelTabsHeight + $btnSaveHeight);
+        padding-bottom: $panelTabsHeight;
+        margin-bottom: -1 * ($panelTabsHeight);
     }
-
 }

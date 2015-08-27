@@ -35,6 +35,8 @@
 @import "views/login";
 @import "views/main";
 
+@import "app-common-style";
+
 @import "components/appversion";
 @import "components/sidebarmenu";
 @import "components/bus-tickets-wizard";
@@ -45,6 +47,8 @@
     @include valo;
     @include addons;
     @include commons;
+    
+    @include app-common-style;
 
     @include app-version-component;
     @include sidebar-menu-component;

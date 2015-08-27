@@ -12,6 +12,7 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan
 @EnableTransactionManagement
 //TODO: webapp settings com.payway.webapp.settings.repository
-@EnableJpaRepositories(basePackages = "com.payway.advertising.data.dao")
+@EnableJpaRepositories(basePackages = {"com.payway.advertising.data.dao", "com.payway.webapp.settings.repository"})
 public class PersistenceConfig {
 
     /**
@@ -39,6 +40,21 @@ public class PersistenceConfig {
      */
     @Autowired
     private DataSource dataSource;
+
+    @Value("${app.hibernate.show.sql:true}")
+    private String appHibernateShowSql;
+
+    @Value("${app.hibernate.format.sql:true}")
+    private String appHibernateFormatSql;
+
+    @Value("${app.hibernate.use.sql.comments:true}")
+    private String appHibernateUseSqlComments;
+
+    @Value("${app.hibernate.statement.fetch.size:50}")
+    private String appHibernateStatementFetchSize;
+
+    @Value("${app.hibernate.max.fetch.depth:3}")
+    private String appHibernateMaxFetchDepth;
 
     @Bean
     public EntityManagerFactory entityManagerFactory() {
@@ -50,16 +66,18 @@ public class PersistenceConfig {
         factoryBean.setDataSource(dataSource);
 
         factoryBean.setMappingResources("DbAgentFile.hbm.xml", "DbAgentFileOwner.hbm.xml", "DbConfiguration.hbm.xml");
-        //TODO: webapp settings factoryBean.setPackagesToScan("com.payway.webapp.settings.db.model");
+        //TODO: webapp settings 
+        factoryBean.setPackagesToScan("com.payway.webapp.settings.db.model");
 
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty(AvailableSettings.DIALECT, PostgreSQL82Dialect.class.getName());
         jpaProperties.setProperty(AvailableSettings.HBM2DDL_AUTO, "validate");
         jpaProperties.setProperty(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
-        jpaProperties.setProperty(AvailableSettings.SHOW_SQL, "true");
-        jpaProperties.setProperty(AvailableSettings.FORMAT_SQL, "true");
-        jpaProperties.setProperty(AvailableSettings.USE_SQL_COMMENTS, "true");
-        jpaProperties.setProperty(AvailableSettings.STATEMENT_FETCH_SIZE, "50");
+        jpaProperties.setProperty(AvailableSettings.SHOW_SQL, appHibernateShowSql);
+        jpaProperties.setProperty(AvailableSettings.FORMAT_SQL, appHibernateFormatSql);
+        jpaProperties.setProperty(AvailableSettings.USE_SQL_COMMENTS, appHibernateUseSqlComments);
+        jpaProperties.setProperty(AvailableSettings.MAX_FETCH_DEPTH, appHibernateMaxFetchDepth);
+        jpaProperties.setProperty(AvailableSettings.STATEMENT_FETCH_SIZE, appHibernateStatementFetchSize);
         jpaProperties.setProperty(org.hibernate.jpa.AvailableSettings.NAMING_STRATEGY, ImprovedNamingStrategy.class.getName());
         jpaProperties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
 

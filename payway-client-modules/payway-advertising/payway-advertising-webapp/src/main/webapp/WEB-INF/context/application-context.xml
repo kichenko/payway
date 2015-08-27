@@ -17,6 +17,7 @@
     <import resource="spring-data-context.xml"/>
     
     <import resource="classpath:application-common-context.xml"/>
+    <import resource="classpath:application-settings-context.xml"/>
     <import resource="classpath:application-reporting-context.xml"/>
     
     <context:component-scan base-package="com.payway.advertising"/>
