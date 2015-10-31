@@ -11,7 +11,7 @@ import com.payway.messaging.message.advertising.AdvertisingApplyConfigurationReq
 import com.payway.messaging.message.advertising.AdvertisingApplySuccessConfigurationResponse;
 import com.payway.messaging.message.advertising.AdvertisingSettingsRequest;
 import com.payway.messaging.message.advertising.AdvertisingSettingsResponse;
-import com.payway.messaging.message.request.auth.AuthCommandRequest;
+import com.payway.messaging.message.request.auth.AuthLoginPasswordCommandRequest;
 import com.payway.messaging.message.response.auth.AuthSuccessCommandResponse;
 import com.payway.messaging.model.advertising.SettingsDto;
 import com.payway.messaging.model.user.UserDto;
@@ -76,8 +76,8 @@ public class MessageServerRequestHandler implements Runnable {
                         String rid = envelope.getMessageId();
                         String origin = hzInstance.toString();
 
-                        if (envelope.getBody() instanceof AuthCommandRequest) {
-                            env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthCommandRequest) envelope.getBody()).getUserName(), null, null), null));
+                        if (envelope.getBody() instanceof AuthLoginPasswordCommandRequest) {
+                            env = new ResponseEnvelope(rid, origin, new AuthSuccessCommandResponse(new UserDto(((AuthLoginPasswordCommandRequest) envelope.getBody()).getUserName(), null, null), null));
                         } else if (envelope.getBody() instanceof AdvertisingApplyConfigurationRequest) {
                             env = new ResponseEnvelope(rid, origin, new AdvertisingApplySuccessConfigurationResponse());
                         } else if (envelope.getBody() instanceof AdvertisingSettingsRequest) {

@@ -11,9 +11,8 @@ package com.payway.commons.webapp.core;
  */
 public enum CommonAttributes {
 
-    USER("user_name"),
+    USER("user"),
     REMEMBER_ME("remember_me"),
-    WEB_APP_SESSION_ID("web_app_session_id"),
     SESSION_SETTINGS("session_settings");
 
     private final String value;

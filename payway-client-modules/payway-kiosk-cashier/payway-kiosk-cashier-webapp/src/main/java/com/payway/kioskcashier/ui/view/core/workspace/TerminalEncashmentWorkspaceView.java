@@ -5,7 +5,7 @@ package com.payway.kioskcashier.ui.view.core.workspace;
 
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.service.app.settings.SettingsAppService;
-import com.payway.commons.webapp.service.app.user.UserAppService;
+import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.kioskcashier.service.app.settings.model.KioskCashierSessionSettings;
 import com.payway.kioskcashier.ui.components.terminal.encashment.TerminalEncashmentWizard;
 import com.payway.kioskcashier.ui.view.core.AbstractKioskCashierWorkspaceView;
@@ -45,8 +45,8 @@ public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspa
     SettingsAppService<KioskCashierSessionSettings> settingsAppService;
 
     @Autowired
-    @Qualifier(value = "webApps.UserAppService")
-    private UserAppService userAppService;
+    @Qualifier(value = "webApps.WebAppUserService")
+    private WebAppUserService userAppService;
 
     @PostConstruct
     public void postConstruct() {
@@ -57,7 +57,7 @@ public class TerminalEncashmentWorkspaceView extends AbstractKioskCashierWorkspa
     @Override
     public void activate() {
         wizard.setService(service);
-        wizard.setSessionId(userAppService.getSessionId());
+        wizard.setSessionId(userAppService.getUser().getSessionId());
         wizard.setCurrency(settingsAppService.getCurrency());
     }
 }

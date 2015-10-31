@@ -5,23 +5,19 @@ package com.payway.advertising.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.payway.advertising.core.service.AgentFileOwnerService;
-import com.payway.advertising.core.service.UserService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
-import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.config.apply.ApplyConfigurationStatus;
 import com.payway.advertising.core.service.config.apply.ApplyStatus;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
-import com.payway.advertising.model.DbUser;
 import com.payway.advertising.ui.bus.events.CloseNotificationsButtonPopupWindowsEvent;
 import com.payway.advertising.ui.component.notification.NotificationsButtonPopupWindow;
 import com.payway.advertising.ui.component.notification.events.ApplyConfigurationNotificationEvent;
 import com.payway.advertising.ui.view.core.AdvertisingMainView;
 import com.payway.advertising.ui.view.core.AdvertisingSettingsWindow;
 import com.payway.advertising.ui.view.workspace.content.AdvertisingContentConfigurationView;
-import com.payway.commons.webapp.ui.AbstractUI;
+import com.payway.commons.webapp.service.app.user.WebAppUser;
+import com.payway.commons.webapp.ui.AbstractLoginUI;
 import com.payway.commons.webapp.ui.InteractionUI;
-import com.payway.commons.webapp.ui.bus.events.LoginExceptionSessionBusEvent;
-import com.payway.commons.webapp.ui.bus.events.LoginFailSessionBusEvent;
 import com.payway.commons.webapp.ui.bus.events.LoginSuccessSessionBusEvent;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.commons.webapp.ui.view.core.AbstractMainView;
@@ -54,7 +50,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Theme("default")
 @PreserveOnRefresh
 @Widgetset("com.payway.advertising.AdvertisingWidgetSet")
-public class AdvertisingUI extends AbstractUI {
+public class AdvertisingUI extends AbstractLoginUI {
 
     private static final long serialVersionUID = -2447415985839871519L;
 
@@ -62,16 +58,8 @@ public class AdvertisingUI extends AbstractUI {
     private AdvertisingMainView mainView;
 
     @Autowired
-    @Qualifier(value = "userAppService")
-    private UserAppService userAppService;
-
-    @Autowired
-    @Qualifier(value = "userService")
-    private UserService userService;
-
-    @Autowired
     @Qualifier(value = "settingsAppService")
-    SettingsAppService settingsAppService;
+    private SettingsAppService settingsAppService;
 
     @Getter
     @Autowired
@@ -84,13 +72,8 @@ public class AdvertisingUI extends AbstractUI {
     private AgentFileOwnerService agentFileOwnerService;
 
     @Override
-    protected void init(VaadinRequest request) {
-
+    protected void setupWebApp(VaadinRequest request) {
         settingsAppService.setContextPath(request.getContextPath());
-
-        subscribeSessionEventBus();
-        registerDetach();
-        updateContent();
     }
 
     @Override
@@ -114,6 +97,7 @@ public class AdvertisingUI extends AbstractUI {
 
     @Override
     protected List<SideBarMenu.MenuItem> getSideBarMenuItems() {
+
         List<SideBarMenu.MenuItem> items = new ArrayList<>(1);
         items.add(new SideBarMenu.MenuItem("configuration", AdvertisingContentConfigurationView.ADVERTISING_CONTENT_WORKSPACE_VIEW_ID, "Configuration", new ThemeResource("images/sidebar_configuration.png"), null, null));
         return items;
@@ -122,7 +106,6 @@ public class AdvertisingUI extends AbstractUI {
     private void refreshApplyConfigNotification() {
 
         ApplyConfigurationStatus status = configurationApplyService.getStatus();
-
         if (status != null && !ApplyStatus.None.equals(status.getStatus())) {
             sessionEventBus.sendNotification(new ApplyConfigurationNotificationEvent(status.getLogin(), status.getStartTime(), status.getStatus(), status.getStatusTime(), status.getArgs()));
         }
@@ -157,22 +140,20 @@ public class AdvertisingUI extends AbstractUI {
         refreshApplyConfigNotification();
     }
 
-    private void updateContent() {
+    @Override
+    protected String getLoginTitle() {
+        return "Payway Advertising Desktop";
+    }
 
-        DbUser user = userAppService.getUser();
-        if (user != null) {
-            mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
-            mainView.initializeUserMenu(user.getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
-            sessionEventBus.addSubscriber(mainView.getBtnNotifications());
-            mainView.getSideBarMenu().select(0);
+    @Override
+    protected void setupWorkspaceContent() {
 
-            refreshNotifications();
-            setContent(mainView);
-        } else {
-            loginView.setTitle("Payway Advertising Desktop");
-            loginView.initialize();
-            setContent(loginView);
-        }
+        mainView.initializeSideBarMenu(getSideBarMenuItems(), null);
+        mainView.initializeUserMenu(webAppUserService.getUser().getLogin(), new ThemeResource("images/user_menu_bar_main.png"), getMenuBarItems());
+        sessionEventBus.addSubscriber(mainView.getBtnNotifications());
+        mainView.getSideBarMenu().select(0);
+        refreshNotifications();
+        setContent(mainView);
     }
 
     @Subscribe
@@ -186,20 +167,6 @@ public class AdvertisingUI extends AbstractUI {
     }
 
     @Subscribe
-    public void processSessionBusEvent(LoginFailSessionBusEvent event) {
-        log.error("Bad user sign in (bad auth)");
-        ((InteractionUI) UI.getCurrent()).closeProgressBar();
-        ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
-    }
-
-    @Subscribe
-    public void processSessionBusEvent(LoginExceptionSessionBusEvent event) {
-        log.error("Bad user sign in (exception)");
-        ((InteractionUI) UI.getCurrent()).closeProgressBar();
-        ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);
-    }
-
-    @Subscribe
     public void processSessionBusEvent(LoginSuccessSessionBusEvent event) {
 
         try {
@@ -209,19 +176,11 @@ public class AdvertisingUI extends AbstractUI {
                 throw new Exception("User sign in (empty dto)");
             }
 
-            DbUser user = userService.findUserByLogin(userDto.getUsername(), true);
-            if (user == null) {
-                throw new Exception("Bad user sign in (user not found)");
-            }
-
-            user.setToken(event.getSessionId());
-
-            //set params to session
-            userAppService.setUser(user);
-            updateContent();
+            webAppUserService.setUser(new WebAppUser(userDto.getUsername(), "", event.getSessionId()));
+            setupWorkspaceContent();
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
-
-        } catch (Exception ex) {
+            
+        } catch (Exception ex) {            
             log.error("Bad user sign in", ex);
             ((InteractionUI) UI.getCurrent()).closeProgressBar();
             ((InteractionUI) UI.getCurrent()).showNotification("", "Bad user sign in", Notification.Type.ERROR_MESSAGE);

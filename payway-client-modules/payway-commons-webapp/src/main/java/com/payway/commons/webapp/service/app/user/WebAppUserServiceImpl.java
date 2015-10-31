@@ -4,20 +4,19 @@
 package com.payway.commons.webapp.service.app.user;
 
 import com.payway.commons.webapp.core.CommonAttributes;
-import com.payway.messaging.model.user.UserDto;
 import com.vaadin.server.VaadinSession;
 import org.springframework.stereotype.Component;
 
 /**
- * UserAppServiceImpl
+ * WebAppUserServiceImpl
  *
  * Warning in background thread, used vaadin session as user storage!
  *
  * @author Sergey Kichenko
  * @created 01.07.15 00:00
  */
-@Component(value = "webApps.UserAppService")
-public class UserAppServiceImpl implements UserAppService {
+@Component(value = "webApps.WebAppUserService")
+public class WebAppUserServiceImpl implements WebAppUserService {
 
     protected boolean setSessionValue(String key, Object value) {
 
@@ -41,22 +40,12 @@ public class UserAppServiceImpl implements UserAppService {
     }
 
     @Override
-    public UserDto getUser() {
-        return (UserDto) getSessionValue(CommonAttributes.USER.value());
+    public WebAppUser getUser() {
+        return (WebAppUser) getSessionValue(CommonAttributes.USER.value());
     }
 
     @Override
-    public boolean setUser(UserDto user) {
+    public boolean setUser(WebAppUser user) {
         return setSessionValue(CommonAttributes.USER.value(), user);
-    }
-
-    @Override
-    public boolean setSessionId(String sessionId) {
-        return setSessionValue(CommonAttributes.WEB_APP_SESSION_ID.value(), sessionId);
-    }
-
-    @Override
-    public String getSessionId() {
-        return (String) getSessionValue(CommonAttributes.WEB_APP_SESSION_ID.value());
     }
 }

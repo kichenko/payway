@@ -11,7 +11,6 @@ import com.payway.advertising.core.handlers.FileHandlerArgs;
 import com.payway.advertising.core.service.AgentFileOwnerService;
 import com.payway.advertising.core.service.AgentFileService;
 import com.payway.advertising.core.service.app.settings.SettingsAppService;
-import com.payway.advertising.core.service.app.user.UserAppService;
 import com.payway.advertising.core.service.bean.BeanService;
 import com.payway.advertising.core.service.config.apply.ApplyConfigRunCallback;
 import com.payway.advertising.core.service.config.apply.ConfigurationApplyService;
@@ -31,6 +30,7 @@ import com.payway.advertising.ui.upload.UploadTaskDnD;
 import com.payway.advertising.ui.upload.UploadTaskFileInput;
 import com.payway.advertising.ui.utils.UIUtils;
 import com.payway.advertising.ui.view.core.AbstractAdvertisingWorkspaceView;
+import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.validator.Validator;
 import com.vaadin.data.Item;
@@ -155,12 +155,12 @@ public class AdvertisingContentConfigurationView extends AbstractAdvertisingWork
     private FileSystemManagerServiceSecurity fileSystemManagerServiceSecurity;
 
     @Autowired
-    @Qualifier("userAppService")
-    private UserAppService userAppService;
-
-    @Autowired
     @Qualifier("settingsAppService")
     private SettingsAppService settingsAppService;
+
+    @Autowired
+    @Qualifier(value = "webApps.WebAppUserService")
+    protected WebAppUserService userAppService;
 
     @Autowired
     @Qualifier("fileNameValidator")

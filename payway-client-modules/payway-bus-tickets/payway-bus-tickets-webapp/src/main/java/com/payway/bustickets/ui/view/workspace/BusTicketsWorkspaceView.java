@@ -10,12 +10,12 @@ import com.payway.bustickets.ui.view.core.AbstractBusTicketsWorkspaceView;
 import com.payway.commons.webapp.bus.event.SettingsChangedAppEventBus;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.service.app.settings.SettingsAppService;
+import com.payway.commons.webapp.service.app.user.WebAppUserService;
 import com.payway.commons.webapp.ui.components.SideBarMenu;
 import com.payway.messaging.model.common.OperatorDto;
 import com.vaadin.ui.UI;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -49,6 +49,10 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
     @Autowired
     @Qualifier("settingsAppService")
     private SettingsAppService<BusTicketsSessionSettings> settingsAppService;
+
+    @Autowired
+    @Qualifier(value = "webApps.WebAppUserService")
+    protected WebAppUserService userAppService;
 
     @PostConstruct
     public void postConstruct() {
@@ -86,14 +90,7 @@ public class BusTicketsWorkspaceView extends AbstractBusTicketsWorkspaceView {
     }
 
     private void setWizardSessionId() {
-
-        String sessionId = settingsAppService.getSessionSettings().getSessionId();
-        if (StringUtils.isBlank(sessionId)) {
-            log.warn("Empty sessionId in session storage");
-            return;
-        }
-
-        wizard.setSessionId(sessionId);
+        wizard.setSessionId(userAppService.getUser().getSessionId());
     }
 
     private void setWizardLogoImage() {

@@ -6,6 +6,7 @@ package com.payway.commons.webapp.ui.view.core;
 import com.payway.commons.webapp.core.CommonAttributes;
 import com.payway.commons.webapp.messaging.MessageServerSenderService;
 import com.payway.commons.webapp.messaging.UIResponseCallBackSupport;
+import com.payway.commons.webapp.ui.AbstractLoginUI;
 import com.payway.commons.webapp.ui.AbstractUI;
 import com.payway.commons.webapp.ui.InteractionUI;
 import com.payway.commons.webapp.ui.bus.SessionEventBus;
@@ -38,6 +39,7 @@ import javax.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.task.TaskExecutor;
@@ -74,6 +76,9 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
     @Autowired
     @Qualifier("userPasswordValidator")
     private Validator userPasswordValidator;
+
+    @Value("${app.auth.token.expired.days:7}")
+    protected int authTokenExpiredDays;
 
     @UiField
     private TextField editUserName;
@@ -198,10 +203,6 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
     public void doServerResponse(final SuccessResponse response) {
 
         SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
-        if (sessionEventBus == null) {
-            log.error("Could not pop session event bus from ui on sucess server response");
-            return;
-        }
 
         if (!(response instanceof AbstractAuthCommandResponse)) {
             log.error("Bad auth server response (unknown type) - {}", response);
@@ -214,9 +215,9 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
             AuthSuccessCommandResponse rsp = (AuthSuccessCommandResponse) response;
 
             //#hack cookie
-            if (((AbstractUI) UI.getCurrent()).getLoginView().isRememberMe()) {
+            if (((AbstractLoginUI) UI.getCurrent()).getLoginView().isRememberMe()) {
                 URI uri = UI.getCurrent().getPage().getLocation();
-                UI.getCurrent().getPage().getJavaScript().execute("var date = new Date(); date.setTime(date.getTime()+(7*24*60*60*1000)); document.cookie='" + CommonAttributes.REMEMBER_ME.value() + "=" + rsp.getSessionId() + "; path=" + uri.getPath() + "; expires=' + date.toGMTString();");
+                UI.getCurrent().getPage().getJavaScript().execute("var date = new Date(); date.setTime(date.getTime()+(" + Integer.toString(authTokenExpiredDays) + "*24*60*60*1000)); document.cookie='" + CommonAttributes.REMEMBER_ME.value() + "=" + rsp.getSessionId() + "; path=" + uri.getPath() + "; expires=' + date.toGMTString();");
             }
 
             sessionEventBus.sendNotification(new LoginSuccessSessionBusEvent(rsp.getUser(), rsp.getSessionId(), rsp.getExtensions()));
@@ -227,40 +228,19 @@ public class LoginView extends CustomComponent implements CustomComponentInitial
 
     @Override
     public void doServerException(final ExceptionResponse ex) {
-
-        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
-        if (sessionEventBus == null) {
-            log.error("Could not pop session event bus from ui on server exception response");
-            return;
-        }
-
         log.error("Bad auth server response (server exception) - {}", ex);
-        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
+        popSessionEventBus(UI.getCurrent()).sendNotification(new LoginExceptionSessionBusEvent());
     }
 
     @Override
     public void doLocalException(final Exception ex) {
-
-        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
-        if (sessionEventBus == null) {
-            log.error("Could not pop session event bus from ui on local server exception response");
-            return;
-        }
-
         log.error("Bad auth server response (local exception) - {}", ex);
-        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
+        popSessionEventBus(UI.getCurrent()).sendNotification(new LoginExceptionSessionBusEvent());
     }
 
     @Override
     public void doTimeout() {
-
-        SessionEventBus sessionEventBus = popSessionEventBus(UI.getCurrent());
-        if (sessionEventBus == null) {
-            log.error("Could not pop session event bus from ui on server response timeout");
-            return;
-        }
-
         log.error("Bad auth server response (timeout)");
-        sessionEventBus.sendNotification(new LoginExceptionSessionBusEvent());
+        popSessionEventBus(UI.getCurrent()).sendNotification(new LoginExceptionSessionBusEvent());
     }
 }
